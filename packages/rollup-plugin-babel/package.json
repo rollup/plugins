@@ -1,0 +1,15 @@
+{
+  "name": "rollup-plugin-babel",
+  "version": "0.1.0",
+  "devDependencies": {
+    "eslint": "^1.7.2",
+    "mocha": "^2.3.3",
+    "rollup": "^0.19.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "babel-core": "^5.8.25"
+  }
+}
