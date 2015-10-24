@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "devDependencies": {
     "eslint": "^1.7.2",
-    "mocha": "^2.3.3",
-    "rollup": "^0.19.1"
+    "mocha": "^2.3.3"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "prepublish": "test"
   },
   "dependencies": {
-    "babel-core": "^5.8.25"
+    "babel-core": "^5.8.25",
+    "rollup-pluginutils": "^1.0.1"
   }
 }
