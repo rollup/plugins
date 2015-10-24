@@ -1,4 +1,5 @@
 var babel = require( 'babel-core' );
+var createFilter = require( 'rollup-pluginutils' ).createFilter;
 
 var assign = Object.assign || function ( target, source ) {
 	Object.keys( source ).forEach( function ( key ) {
@@ -9,9 +10,13 @@ var assign = Object.assign || function ( target, source ) {
 };
 
 module.exports = function ( options ) {
-	options = options || {};
+	options = assign( {}, options || {} );
 	var usedHelpers = [];
 	var index;
+
+	var filter = createFilter( options.include, options.exclude );
+	delete options.include;
+	delete options.exclude;
 
 	// ensure es6.modules are blacklisted
 	if ( options.whitelist ) {
@@ -27,6 +32,8 @@ module.exports = function ( options ) {
 
 	return {
 		transform: function ( code, id ) {
+			if ( !filter( id ) ) return null;
+
 			var transformed = babel.transform( code, assign({ filename: id }, options ) );
 
 			transformed.metadata.usedHelpers.forEach( function ( helper ) {
@@ -41,7 +48,9 @@ module.exports = function ( options ) {
 		intro: function () {
 			// TODO replace babelHelpers.foo with babelHelpers_foo – though first
 			// we need the ability to find and replace within the generated bundle
-			return babel.buildExternalHelpers( usedHelpers, 'var' ).trim();
+			return usedHelpers.length ?
+				babel.buildExternalHelpers( usedHelpers, 'var' ).trim() :
+				'';
 		}
 	};
 };
