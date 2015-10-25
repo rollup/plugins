@@ -1,7 +1,5 @@
 # rollup-plugin-babel
 
-**experimental, depends on unreleased version of Rollup**
-
 Seamless integration between Rollup and Babel.
 
 ## Why?
