@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "mocha",
-    "prepublish": "test"
+    "prepublish": "npm run test"
   },
   "dependencies": {
     "babel-core": "^5.8.25",
