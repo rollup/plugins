@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-babel",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "devDependencies": {
     "eslint": "^1.7.2",
     "mocha": "^2.3.3",
