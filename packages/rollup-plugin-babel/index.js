@@ -1,3 +1,4 @@
+var path = require( 'path' );
 var babel = require( 'babel-core' );
 var createFilter = require( 'rollup-pluginutils' ).createFilter;
 
@@ -18,17 +19,10 @@ module.exports = function ( options ) {
 	delete options.include;
 	delete options.exclude;
 
-	// ensure es6.modules are blacklisted
-	if ( options.whitelist ) {
-		index = options.whitelist.indexOf( 'es6.modules' );
-		if ( ~index ) options.whitelist.splice( index, 1 );
-	}
-
-	if ( !options.blacklist ) options.blacklist = [];
-	index = options.blacklist.indexOf( 'es6.modules' );
-	if ( !~index ) options.blacklist.push( 'es6.modules' );
-
-	options.externalHelpers = true;
+	// preflight check
+	var check = babel.transform( 'export default class Foo {}', assign({ filename: path.resolve( 'test.js' ) }, options ) ).code;
+	if ( ~check.indexOf( 'function _classCallCheck' ) ) throw new Error( 'External helpers are not enabled. Please add the "external-helpers-2" plugin or use the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
+	if ( !~check.indexOf( 'export default' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
 
 	return {
 		transform: function ( code, id ) {

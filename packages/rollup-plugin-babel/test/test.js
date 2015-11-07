@@ -5,15 +5,23 @@ var babelPlugin = require( '..' );
 process.chdir( __dirname );
 
 describe( 'rollup-plugin-babel', function () {
+	this.timeout( 5000 );
+
 	it( 'runs code through babel', function () {
+		var start = Date.now();
 		return rollup.rollup({
 			entry: 'samples/basic/main.js',
 			plugins: [ babelPlugin() ]
 		}).then( function ( bundle ) {
+			console.log( 'bundled in %s ms', Date.now() - start );
+
+			start = Date.now();
 			const generated = bundle.generate();
+			console.log( 'generated in %s ms', Date.now() - start );
+
 			const code = generated.code;
 
-			assert.ok( code.indexOf( 'const' ) === -1, generated.code );
+			assert.ok( code.indexOf( 'const' ) === -1, code );
 		});
 	});
 
@@ -26,6 +34,7 @@ describe( 'rollup-plugin-babel', function () {
 			const code = generated.code;
 
 			assert.ok( code.indexOf( 'babelHelpers.classCallCheck =' ) !== -1, generated.code );
+			assert.ok( code.indexOf( 'var _createClass =' ) === -1, generated.code );
 		});
 	});
 
