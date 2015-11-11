@@ -1,21 +1,38 @@
 {
   "name": "rollup-plugin-babel",
   "version": "2.0.0",
-  "devDependencies": {
-    "eslint": "^1.7.2",
-    "mocha": "^2.3.3",
-    "rollup": "^0.20.0"
-  },
+  "description": "Seamless integration between Rollup and Babel.",
+  "keywords": [
+    "rollup-plugin",
+    "babel",
+    "es2015",
+    "es6"
+  ],
+  "homepage": "https://github.com/rollup/rollup-plugin-babel",
+  "author": "Rich Harris",
+  "contributors": [
+    "Bogdan Chadkin <trysound@yandex.ru>"
+  ],
   "scripts": {
     "test": "mocha",
     "prepublish": "npm run test"
   },
   "dependencies": {
     "babel-core": "6",
+    "object-assign": "^4.0.1",
     "rollup-pluginutils": "^1.1.0"
+  },
+  "devDependencies": {
+    "babel-preset-es2015-rollup": "^1.0.0",
+    "eslint": "^1.7.2",
+    "mocha": "^2.3.3",
+    "rollup": "^0.20.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rollup/rollup-plugin-babel"
+    "url": "git+https://github.com/rollup/rollup-plugin-babel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rollup/rollup-plugin-babel/issues"
   }
 }

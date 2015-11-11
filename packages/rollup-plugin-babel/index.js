@@ -1,14 +1,7 @@
 var path = require( 'path' );
 var babel = require( 'babel-core' );
 var createFilter = require( 'rollup-pluginutils' ).createFilter;
-
-var assign = Object.assign || function ( target, source ) {
-	Object.keys( source ).forEach( function ( key ) {
-		target[ key ] = source[ key ];
-	});
-
-	return target;
-};
+var assign = require( 'object-assign' );
 
 module.exports = function ( options ) {
 	options = assign( {}, options || {} );
