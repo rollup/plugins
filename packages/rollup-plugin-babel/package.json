@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-babel",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Seamless integration between Rollup and Babel.",
   "keywords": [
     "rollup-plugin",
