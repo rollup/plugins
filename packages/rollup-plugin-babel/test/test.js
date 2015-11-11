@@ -5,7 +5,7 @@ var babelPlugin = require( '..' );
 process.chdir( __dirname );
 
 describe( 'rollup-plugin-babel', function () {
-	this.timeout( 5000 );
+	this.timeout( 15000 );
 
 	it( 'runs code through babel', function () {
 		var start = Date.now();
