@@ -13,11 +13,8 @@ describe( 'rollup-plugin-babel', function () {
 			entry: 'samples/basic/main.js',
 			plugins: [ babelPlugin() ]
 		}).then( function ( bundle ) {
-			console.log( 'bundled in %s ms', Date.now() - start );
-
 			start = Date.now();
 			const generated = bundle.generate();
-			console.log( 'generated in %s ms', Date.now() - start );
 
 			const code = generated.code;
 
