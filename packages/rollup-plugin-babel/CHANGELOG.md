@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.1.0
+
+* Generate sourcemaps by default
+
 ## 2.0.1
 
 * Use object-assign ponyfill
