@@ -33,8 +33,7 @@ rollup({
   entry: 'main.js',
   plugins: [
     babel({
-      exclude: 'node_modules/**',
-      sourceMap: true
+      exclude: 'node_modules/**'
     })
   ]
 }).then(...)

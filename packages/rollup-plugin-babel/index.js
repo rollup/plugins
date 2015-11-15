@@ -17,6 +17,10 @@ module.exports = function ( options ) {
 	if ( ~check.indexOf( 'function _classCallCheck' ) ) throw new Error( 'External helpers are not enabled. Please add the "external-helpers-2" plugin or use the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
 	if ( !~check.indexOf( 'export default' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
 
+	if ( options.sourceMap !== false ) options.sourceMaps = true;
+	if ( options.sourceMaps !== false ) options.sourceMaps = true;
+	delete options.sourceMap;
+
 	return {
 		transform: function ( code, id ) {
 			if ( !filter( id ) ) return null;

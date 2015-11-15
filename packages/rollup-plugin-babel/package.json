@@ -26,7 +26,8 @@
     "babel-preset-es2015-rollup": "^1.0.0",
     "eslint": "^1.7.2",
     "mocha": "^2.3.3",
-    "rollup": "^0.20.0"
+    "rollup": "^0.20.0",
+    "source-map": "^0.5.3"
   },
   "repository": {
     "type": "git",
