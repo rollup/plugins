@@ -3,6 +3,12 @@ var babel = require( 'babel-core' );
 var createFilter = require( 'rollup-pluginutils' ).createFilter;
 var assign = require( 'object-assign' );
 
+function preflightCheck ( localOpts ) {
+	var check = babel.transform( 'export default class Foo {}', localOpts ).code;
+	if ( ~check.indexOf( 'function _classCallCheck' ) ) throw new Error( 'External helpers are not enabled. Please add the "external-helpers-2" plugin or use the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
+	if ( !~check.indexOf( 'export default' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
+}
+
 module.exports = function ( options ) {
 	options = assign( {}, options || {} );
 	var usedHelpers = [];
@@ -12,11 +18,6 @@ module.exports = function ( options ) {
 	delete options.include;
 	delete options.exclude;
 
-	// preflight check
-	var check = babel.transform( 'export default class Foo {}', assign({ filename: path.resolve( 'test.js' ) }, options ) ).code;
-	if ( ~check.indexOf( 'function _classCallCheck' ) ) throw new Error( 'External helpers are not enabled. Please add the "external-helpers-2" plugin or use the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
-	if ( !~check.indexOf( 'export default' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
-
 	if ( options.sourceMap !== false ) options.sourceMaps = true;
 	if ( options.sourceMaps !== false ) options.sourceMaps = true;
 	delete options.sourceMap;
@@ -25,7 +26,10 @@ module.exports = function ( options ) {
 		transform: function ( code, id ) {
 			if ( !filter( id ) ) return null;
 
-			var transformed = babel.transform( code, assign({ filename: id }, options ) );
+			var localOpts = assign({ filename: id }, options );
+			preflightCheck( localOpts );
+
+			var transformed = babel.transform( code, localOpts );
 
 			transformed.metadata.usedHelpers.forEach( function ( helper ) {
 				if ( !~usedHelpers.indexOf( helper ) ) usedHelpers.push( helper );
