@@ -105,4 +105,17 @@ describe( 'rollup-plugin-babel', function () {
 			});
 		});
 	});
+
+	it( 'checks config per-file', function () {
+		return rollup.rollup({
+			entry: 'samples/checks/main.js',
+			plugins: [ babelPlugin() ]
+		})
+			.then( function () {
+				assert.ok( false, 'promise should not fulfil' );
+			})
+			.catch( function ( err ) {
+				assert.ok( /es2015-rollup/.test( err.message ) );
+			});
+	});
 });
