@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.2.0
+
+* Preflight checks are run per-file, to avoid configuration snafus ([#16](https://github.com/rollup/rollup-plugin-babel/issues/16))
+
 ## 2.1.0
 
 * Generate sourcemaps by default
