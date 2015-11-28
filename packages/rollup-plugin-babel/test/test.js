@@ -115,7 +115,7 @@ describe( 'rollup-plugin-babel', function () {
 				assert.ok( false, 'promise should not fulfil' );
 			})
 			.catch( function ( err ) {
-				assert.ok( /es2015-rollup/.test( err.message ) );
+				assert.ok( /es2015-rollup/.test( err.message ), 'Expected an error about external helpers or module transform, got "' + err.message + '"' );
 			});
 	});
 });
