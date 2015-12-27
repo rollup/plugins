@@ -2,6 +2,8 @@
   "name": "rollup-plugin-babel",
   "version": "2.2.0",
   "description": "Seamless integration between Rollup and Babel.",
+  "main": "dist/rollup-plugin-babel.cjs.js",
+  "jsnext:main": "dist/rollup-plugin-babel.es6.js",
   "keywords": [
     "rollup-plugin",
     "babel",
@@ -14,8 +16,11 @@
     "Bogdan Chadkin <trysound@yandex.ru>"
   ],
   "scripts": {
-    "test": "mocha",
-    "prepublish": "npm run test"
+    "test": "mocha --compilers js:babel-register",
+    "prepublish": "npm run test",
+    "pretest": "npm run build",
+    "build": "rollup -c -f cjs -o dist/rollup-plugin-babel.cjs.js && rollup -c -f es6 -o dist/rollup-plugin-babel.es6.js",
+    "prebuild": "rm -rf dist/*"
   },
   "dependencies": {
     "babel-core": "6",
@@ -27,7 +32,8 @@
     "babel-preset-es2015-rollup": "^1.0.0",
     "eslint": "^1.7.2",
     "mocha": "^2.3.3",
-    "rollup": "^0.20.0",
+    "rollup": "^0.22.0",
+    "rollup-plugin-babel": "^2.2.0",
     "source-map": "^0.5.3"
   },
   "repository": {

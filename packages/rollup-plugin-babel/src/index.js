@@ -1,15 +1,20 @@
-var path = require( 'path' );
-var babel = require( 'babel-core' );
-var createFilter = require( 'rollup-pluginutils' ).createFilter;
-var assign = require( 'object-assign' );
+import { buildExternalHelpers, transform } from 'babel-core';
+import { createFilter } from 'rollup-pluginutils';
 
 function preflightCheck ( localOpts ) {
-	var check = babel.transform( 'export default class Foo {}', localOpts ).code;
+	var check = transform( 'export default class Foo {}', localOpts ).code;
 	if ( ~check.indexOf( 'function _classCallCheck' ) ) throw new Error( 'External helpers are not enabled. Please add the "external-helpers-2" plugin or use the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
 	if ( !~check.indexOf( 'export default' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
 }
 
-module.exports = function ( options ) {
+function assign ( target, source ) {
+	Object.keys( source ).forEach( key => {
+		target[ key ] = source[ key ];
+	});
+	return target;
+}
+
+export default function babel ( options ) {
 	options = assign( {}, options || {} );
 	var usedHelpers = [];
 
@@ -22,15 +27,15 @@ module.exports = function ( options ) {
 	delete options.sourceMap;
 
 	return {
-		transform: function ( code, id ) {
+		transform ( code, id ) {
 			if ( !filter( id ) ) return null;
 
 			var localOpts = assign({ filename: id }, options );
 			preflightCheck( localOpts );
 
-			var transformed = babel.transform( code, localOpts );
+			var transformed = transform( code, localOpts );
 
-			transformed.metadata.usedHelpers.forEach( function ( helper ) {
+			transformed.metadata.usedHelpers.forEach( helper => {
 				if ( !~usedHelpers.indexOf( helper ) ) usedHelpers.push( helper );
 			});
 
@@ -39,12 +44,12 @@ module.exports = function ( options ) {
 				map: transformed.map
 			};
 		},
-		intro: function () {
+		intro () {
 			// TODO replace babelHelpers.foo with babelHelpers_foo – though first
 			// we need the ability to find and replace within the generated bundle
 			return usedHelpers.length ?
-				babel.buildExternalHelpers( usedHelpers, 'var' ).trim() :
+				buildExternalHelpers( usedHelpers, 'var' ).trim() :
 				'';
 		}
 	};
-};
+}
