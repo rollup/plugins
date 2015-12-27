@@ -98,7 +98,7 @@ describe( 'rollup-plugin-babel', function () {
 			var original = smc.originalPositionFor( loc );
 
 			assert.deepEqual( original, {
-				source: path.resolve( 'samples/class/main.js' ),
+				source: path.resolve( 'samples/class/main.js' ).split( path.sep ).join( '/' ),
 				line: 3,
 				column: 10,
 				name: null
