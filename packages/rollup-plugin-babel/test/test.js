@@ -32,12 +32,10 @@ describe( 'rollup-plugin-babel', function () {
 	this.timeout( 15000 );
 
 	it( 'runs code through babel', function () {
-		var start = Date.now();
 		return rollup.rollup({
 			entry: 'samples/basic/main.js',
 			plugins: [ babelPlugin() ]
 		}).then( function ( bundle ) {
-			start = Date.now();
 			var generated = bundle.generate();
 
 			var code = generated.code;
@@ -54,7 +52,7 @@ describe( 'rollup-plugin-babel', function () {
 			var generated = bundle.generate();
 			var code = generated.code;
 
-			assert.ok( code.indexOf( 'babelHelpers.classCallCheck =' ) !== -1, generated.code );
+			assert.ok( code.indexOf( 'function babelHelpers_classCallCheck' ) !== -1, generated.code );
 			assert.ok( code.indexOf( 'var _createClass =' ) === -1, generated.code );
 		});
 	});
@@ -106,6 +104,13 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
+	it( 'works with transform-decorators-legacy (#18)', function () {
+		return rollup.rollup({
+			entry: 'samples/transform-decorators-legacy/main.js',
+			plugins: [ babelPlugin() ]
+		});
+	});
+
 	it( 'checks config per-file', function () {
 		return rollup.rollup({
 			entry: 'samples/checks/main.js',
@@ -117,5 +122,18 @@ describe( 'rollup-plugin-babel', function () {
 			.catch( function ( err ) {
 				assert.ok( /es2015-rollup/.test( err.message ), 'Expected an error about external helpers or module transform, got "' + err.message + '"' );
 			});
+	});
+
+	it( 'allows transform-runtime to be used instead of bundled helpers', function () {
+		return rollup.rollup({
+			entry: 'samples/runtime-helpers/main.js',
+			plugins: [ babelPlugin({ runtimeHelpers: true }) ],
+			onwarn: function ( msg ) {
+				assert.equal( msg, `Treating 'babel-runtime/helpers/classCallCheck' as external dependency` );
+			}
+		}).then( function ( bundle ) {
+			var cjs = bundle.generate({ format: 'cjs' }).code;
+			assert.ok( !~cjs.indexOf( 'babelHelpers' ) );
+		});
 	});
 });

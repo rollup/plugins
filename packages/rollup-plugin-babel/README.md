@@ -44,20 +44,15 @@ All options are as per the [Babel documentation](https://babeljs.io/), except `o
 Babel will respect `.babelrc` files – this is generally the best place to put your configuration.
 
 
-## Babel 5
+## Configuring Babel
 
-The latest version of rollup-plugin-babel is designed to work with Babel 6. To use rollup-plugin-babel with Babel 5, install a 1.x version:
+**The following applies to Babel 6 only. If you're using Babel 5, do `npm i -D rollup-plugin-babel@1`, as version 2 and above no longer supports Babel 5**
+
+tl;dr: use the `es2015-rollup` preset instead of `es2015`.
 
 ```bash
-npm install --save-dev rollup-plugin-babel@1
+npm install --save-dev babel-preset-es2015-rollup
 ```
-
-
-## Babel 6
-
-With Babel 5, rollup-plugin-babel overrides the configuration to ensure that module syntax is left alone and that external helpers are collected for inclusion at the top of the bundle.
-
-Babel 6 works differently – there's no `blacklist` or `externalHelpers` options. Instead of using the `es2015` preset, install and use [babel-preset-es2015-rollup](https://github.com/rollup/babel-preset-es2015-rollup):
 
 ```js
 // .babelrc
@@ -66,13 +61,25 @@ Babel 6 works differently – there's no `blacklist` or `externalHelpers` option
 }
 ```
 
-If you're not using the preset, be sure to include the external helpers plugin:
+### Modules
+
+The `es2015` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Instead, you should either use the `es2015-rollup` preset, which excludes that plugin, or otherwise ensure that the `modules-commonjs` plugin is excluded. Rollup will throw an error if this is incorrectly configured.
+
+### Helpers
+
+In some cases Babel uses *helpers* to avoid repeating chunks of code – for example, if you use the `class` keyword, it will use a `classCallCheck` function to ensure that the class is instantiated correctly.
+
+By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. It's therefore recommended that you use the `external-helpers-2` plugin, which is automatically included in the `es2015-rollup` preset. Rollup will combine the helpers in a single block at the top of your bundle.
+
+Alternatively, if you know what you're doing, you can use the `transform-runtime` plugin. If you do this, use `runtimeHelpers: true`:
 
 ```js
-// .babelrc
-{
-  "plugins": [ "external-helpers-2" ]
-}
+rollup.rollup({
+  ...,
+  plugins: [
+    babel({ runtimeHelpers: true })
+  ]
+}).then(...)
 ```
 
 
