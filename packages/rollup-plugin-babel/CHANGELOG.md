@@ -1,5 +1,11 @@
 # rollup-plugin-babel changelog
 
+## 2.3.0
+
+* Allow `transform-runtime` Babel plugin, if combined with `runtimeHelpers: true` option ([#17](https://github.com/rollup/rollup-plugin-babel/issues/17))
+* More permissive handling of helpers – only warn if inline helpers are duplicated
+* Handle plugins that change export patterns ([#18](https://github.com/rollup/rollup-plugin-babel/issues/18))
+
 ## 2.2.0
 
 * Preflight checks are run per-file, to avoid configuration snafus ([#16](https://github.com/rollup/rollup-plugin-babel/issues/16))
