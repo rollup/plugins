@@ -86,7 +86,7 @@ export default function babel ( options ) {
 
 			return buildExternalHelpers( helpers, 'var' )
 				.replace( /var babelHelpers.+\n/, '' )
-				.replace( /babelHelpers\.(.+) = function/g, 'function babelHelpers_$1' )
+				.replace( /babelHelpers\.(.+) = function(?: \w+)?/g, 'function babelHelpers_$1' )
 				.replace( /babelHelpers\.(.+) = /g, 'var babelHelpers_$1 = ' )
 				.replace( 'babelHelpers;', '' ) // not sure where this comes from...
 				.trim() + '\n';

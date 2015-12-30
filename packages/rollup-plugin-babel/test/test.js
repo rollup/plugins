@@ -136,4 +136,17 @@ describe( 'rollup-plugin-babel', function () {
 			assert.ok( !~cjs.indexOf( 'babelHelpers' ) );
 		});
 	});
+
+	it( 'correctly renames helpers (#22)', () => {
+		return rollup.rollup({
+			entry: 'samples/named-function-helper/main.js',
+			plugins: [ babelPlugin() ],
+			onwarn: function ( msg ) {
+				assert.equal( msg, `Treating 'babel-runtime/helpers/classCallCheck' as external dependency` );
+			}
+		}).then( function ( bundle ) {
+			var cjs = bundle.generate({ format: 'cjs' }).code;
+			assert.ok( !~cjs.indexOf( 'babelHelpers_get get' ), 'helper was incorrectly renamed' );
+		});
+	});
 });
