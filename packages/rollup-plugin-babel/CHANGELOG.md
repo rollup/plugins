@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.3.1-2
+
+* Include correct files in npm package
+
 ## 2.3.0
 
 * Allow `transform-runtime` Babel plugin, if combined with `runtimeHelpers: true` option ([#17](https://github.com/rollup/rollup-plugin-babel/issues/17))
