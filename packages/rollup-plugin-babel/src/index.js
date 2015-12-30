@@ -12,7 +12,7 @@ function preflightCheck ( localOpts ) {
 
 	if ( ~check.indexOf( 'import _classCallCheck from "babel-runtime' ) ) return RUNTIME;
 	if ( ~check.indexOf( 'function _classCallCheck' ) ) return INLINE;
-	if ( ~check.indexOf( 'babelHelpers.classCallCheck' ) ) return BUNDLED;
+	if ( ~check.indexOf( 'babelHelpers' ) ) return BUNDLED;
 
 	throw new Error( 'An unexpected situation arose. Please raise an issue at https://github.com/rollup/rollup-plugin-babel/issues. Thanks!' );
 }
