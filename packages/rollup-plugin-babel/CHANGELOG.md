@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.3.3
+
+* Fix helper renaming ([#22](https://github.com/rollup/rollup-plugin-babel/issues/22))
+
 ## 2.3.1-2
 
 * Include correct files in npm package
