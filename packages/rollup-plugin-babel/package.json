@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "babel-core": "6",
+    "babel-plugin-transform-es2015-classes": "^6.3.15",
     "object-assign": "^4.0.1",
     "rollup-pluginutils": "^1.1.0"
   },

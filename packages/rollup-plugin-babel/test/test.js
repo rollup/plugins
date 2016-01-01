@@ -149,4 +149,11 @@ describe( 'rollup-plugin-babel', function () {
 			assert.ok( !~cjs.indexOf( 'babelHelpers_get get' ), 'helper was incorrectly renamed' );
 		});
 	});
+
+	it( 'runs preflight check correctly in absence of class transformer (#23)', () => {
+		return rollup.rollup({
+			entry: 'samples/no-class-transformer/main.js',
+			plugins: [ babelPlugin() ]
+		});
+	});
 });

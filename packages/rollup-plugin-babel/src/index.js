@@ -1,3 +1,4 @@
+import { dirname, join } from 'path';
 import { buildExternalHelpers, transform } from 'babel-core';
 import { createFilter } from 'rollup-pluginutils';
 
@@ -5,16 +6,32 @@ const INLINE = {};
 const RUNTIME = {};
 const BUNDLED = {};
 
-function preflightCheck ( localOpts ) {
-	var check = transform( 'export default class Foo {}', localOpts ).code;
+let preflightCheckResults = {};
 
-	if ( !~check.indexOf( 'export default' ) && !~check.indexOf( 'export { Foo as default }' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#TK for more information' );
+function preflightCheck ( options, dir ) {
+	let helpers;
 
-	if ( ~check.indexOf( 'import _classCallCheck from "babel-runtime' ) ) return RUNTIME;
-	if ( ~check.indexOf( 'function _classCallCheck' ) ) return INLINE;
-	if ( ~check.indexOf( 'babelHelpers' ) ) return BUNDLED;
+	if ( !preflightCheckResults[ dir ] ) {
+		options = assign( {}, options );
+		options.filename = join( dir, 'x.js' );
 
-	throw new Error( 'An unexpected situation arose. Please raise an issue at https://github.com/rollup/rollup-plugin-babel/issues. Thanks!' );
+		if ( !options.plugins ) options.plugins = [];
+		options.plugins.push( 'transform-es2015-classes' );
+
+		const check = transform( 'export default class Foo {}', options ).code;
+
+		if ( !~check.indexOf( 'export default' ) && !~check.indexOf( 'export { Foo as default }' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+
+		if ( ~check.indexOf( 'import _classCallCheck from "babel-runtime' ) ) helpers = RUNTIME;
+		else if ( ~check.indexOf( 'function _classCallCheck' ) ) helpers = INLINE;
+		else if ( ~check.indexOf( 'babelHelpers' ) ) helpers = BUNDLED;
+
+		else {
+			throw new Error( 'An unexpected situation arose. Please raise an issue at https://github.com/rollup/rollup-plugin-babel/issues. Thanks!' );
+		}
+	}
+
+	return preflightCheckResults[ dir ] = helpers;
 }
 
 function assign ( target, source ) {
@@ -51,8 +68,8 @@ export default function babel ( options ) {
 		transform ( code, id ) {
 			if ( !filter( id ) ) return null;
 
+			const helpers = preflightCheck( options, dirname( id ) );
 			var localOpts = assign({ filename: id }, options );
-			const helpers = preflightCheck( localOpts );
 
 			var transformed = transform( code, localOpts );
 			const { usedHelpers } = transformed.metadata;
