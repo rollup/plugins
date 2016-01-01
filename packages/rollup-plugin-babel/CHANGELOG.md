@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.3.4
+
+* Ensure class transformer is present for preflight check, and only run check once per directory ([#23](https://github.com/rollup/rollup-plugin-babel/issues/23))
+
 ## 2.3.3
 
 * Fix helper renaming ([#22](https://github.com/rollup/rollup-plugin-babel/issues/22))
