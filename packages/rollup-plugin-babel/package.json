@@ -20,6 +20,7 @@
   "contributors": [
     "Bogdan Chadkin <trysound@yandex.ru>"
   ],
+  "license": "MIT",
   "scripts": {
     "test": "mocha --compilers js:babel-register",
     "prepublish": "npm run test",
