@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.3.5
+
+* Use class transformer local to plugin, not project being built
+
 ## 2.3.4
 
 * Ensure class transformer is present for preflight check, and only run check once per directory ([#23](https://github.com/rollup/rollup-plugin-babel/issues/23))
