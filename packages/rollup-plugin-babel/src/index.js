@@ -1,6 +1,7 @@
 import { dirname, join } from 'path';
 import { buildExternalHelpers, transform } from 'babel-core';
 import { createFilter } from 'rollup-pluginutils';
+import classes from 'babel-plugin-transform-es2015-classes';
 
 const INLINE = {};
 const RUNTIME = {};
@@ -16,7 +17,7 @@ function preflightCheck ( options, dir ) {
 		options.filename = join( dir, 'x.js' );
 
 		if ( !options.plugins ) options.plugins = [];
-		options.plugins.push( 'transform-es2015-classes' );
+		options.plugins.push( classes );
 
 		const check = transform( 'export default class Foo {}', options ).code;
 
