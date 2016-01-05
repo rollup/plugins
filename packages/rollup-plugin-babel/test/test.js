@@ -148,7 +148,6 @@ describe( 'rollup-plugin-babel', function () {
 			}
 		}).then( function ( bundle ) {
 			var cjs = bundle.generate({ format: 'cjs' }).code;
-			console.log( 'cjs', cjs )
 			assert.ok( !~cjs.indexOf( 'babelHelpers_get get' ), 'helper was incorrectly renamed' );
 		});
 	});
