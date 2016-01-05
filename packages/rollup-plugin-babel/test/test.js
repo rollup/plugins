@@ -27,6 +27,8 @@ function getLocation ( source, charIndex ) {
 	throw new Error( 'Could not determine location of character' );
 }
 
+const consoleWarn = console.warn;
+
 
 describe( 'rollup-plugin-babel', function () {
 	this.timeout( 15000 );
@@ -146,6 +148,7 @@ describe( 'rollup-plugin-babel', function () {
 			}
 		}).then( function ( bundle ) {
 			var cjs = bundle.generate({ format: 'cjs' }).code;
+			console.log( 'cjs', cjs )
 			assert.ok( !~cjs.indexOf( 'babelHelpers_get get' ), 'helper was incorrectly renamed' );
 		});
 	});
@@ -154,6 +157,34 @@ describe( 'rollup-plugin-babel', function () {
 		return rollup.rollup({
 			entry: 'samples/no-class-transformer/main.js',
 			plugins: [ babelPlugin() ]
+		});
+	});
+
+	it( 'warns on duplicated helpers', () => {
+		let messages = [];
+		console.warn = msg => messages.push( msg );
+
+		return rollup.rollup({
+			entry: 'samples/duplicated-helpers-warning/main.js',
+			plugins: [ babelPlugin() ]
+		}).then( () => {
+			console.warn = consoleWarn;
+			assert.deepEqual( messages, [
+				`The 'classCallCheck' Babel helper is used more than once in your code. It's strongly recommended that you use the "external-helpers-2" plugin or the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information`
+			]);
+		});
+	});
+
+	it( 'does not warn on duplicated helpers if correctly configured', () => {
+		let messages = [];
+		console.warn = msg => messages.push( msg );
+
+		return rollup.rollup({
+			entry: 'samples/duplicated-helpers-no-warning/main.js',
+			plugins: [ babelPlugin() ]
+		}).then( () => {
+			console.warn = consoleWarn;
+			assert.deepEqual( messages, []);
 		});
 	});
 });
