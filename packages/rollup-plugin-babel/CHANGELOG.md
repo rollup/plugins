@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.3.6
+
+* Fix cache misses in preflight check ([#29](https://github.com/rollup/rollup-plugin-babel/pull/29))
+
 ## 2.3.5
 
 * Use class transformer local to plugin, not project being built
