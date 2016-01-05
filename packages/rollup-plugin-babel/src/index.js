@@ -10,9 +10,9 @@ const BUNDLED = {};
 let preflightCheckResults = {};
 
 function preflightCheck ( options, dir ) {
-	let helpers;
-
 	if ( !preflightCheckResults[ dir ] ) {
+		let helpers;
+
 		options = assign( {}, options );
 		options.filename = join( dir, 'x.js' );
 
@@ -30,9 +30,11 @@ function preflightCheck ( options, dir ) {
 		else {
 			throw new Error( 'An unexpected situation arose. Please raise an issue at https://github.com/rollup/rollup-plugin-babel/issues. Thanks!' );
 		}
+
+		preflightCheckResults[ dir ] = helpers;
 	}
 
-	return preflightCheckResults[ dir ] = helpers;
+	return preflightCheckResults[ dir ];
 }
 
 function assign ( target, source ) {
