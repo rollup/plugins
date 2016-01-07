@@ -54,7 +54,7 @@ describe( 'rollup-plugin-babel', function () {
 			var generated = bundle.generate();
 			var code = generated.code;
 
-			assert.ok( code.indexOf( 'function babelHelpers_classCallCheck' ) !== -1, generated.code );
+			assert.ok( code.indexOf( 'babelHelpers_classCallCheck =' ) !== -1, generated.code );
 			assert.ok( code.indexOf( 'var _createClass =' ) === -1, generated.code );
 		});
 	});
