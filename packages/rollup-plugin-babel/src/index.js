@@ -87,7 +87,7 @@ export default function babel ( options ) {
 				} else {
 					usedHelpers.forEach( helper => {
 						if ( inlineHelpers[ helper ] ) {
-							warnOnce( `The '${helper}' Babel helper is used more than once in your code. It's strongly recommended that you use the "external-helpers-2" plugin or the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information` );
+							warnOnce( `The '${helper}' Babel helper is used more than once in your code. It's strongly recommended that you use the "external-helpers" plugin or the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information` );
 						}
 
 						inlineHelpers[ helper ] = true;
