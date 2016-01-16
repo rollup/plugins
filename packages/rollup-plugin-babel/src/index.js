@@ -96,7 +96,7 @@ export default function babel ( options ) {
 			}
 
 			return {
-				code: transformed.code.replace( /babelHelpers\./g, 'babelHelpers_' ),
+				code: transformed.code,
 				map: transformed.map
 			};
 		},
@@ -104,11 +104,7 @@ export default function babel ( options ) {
 			const helpers = Object.keys( bundledHelpers );
 			if ( !helpers.length ) return '';
 
-			return buildExternalHelpers( helpers, 'var' )
-				.replace( /var babelHelpers = {};\n/, '' )
-				.replace( /babelHelpers\.(.+) = /g, 'var babelHelpers_$1 = ' )
-				.replace( 'babelHelpers;', '' ) // not sure where this comes from...
-				.trim() + '\n';
+			return buildExternalHelpers( helpers, 'var' ).trim() + '\n';
 		}
 	};
 }
