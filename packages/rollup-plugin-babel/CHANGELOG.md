@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.3.9
+
+* Do not rename Babel helpers ([#34](https://github.com/rollup/rollup-plugin-babel/pull/34))
+
 ## 2.3.8
 
 * Create new version to (hopefully) solve bizarre CI issue
