@@ -43,6 +43,14 @@ All options are as per the [Babel documentation](https://babeljs.io/), except `o
 
 Babel will respect `.babelrc` files – this is generally the best place to put your configuration.
 
+### External dependencies
+
+Ideally, you should only be transforming your own source code, rather than running all of your external dependencies through Babel – hence the `exclude: 'node_modules/**'` in the example above. If you have a dependency that exposes untranspiled ES6 source code that doesn't run in your target environment, then you may need to break this rule, but it often causes problems with unusual `.babelrc` files or mismatched versions of Babel.
+
+We encourage library authors not to distribute code that uses untranspiled ES6 features (other than modules) for this reason. Consumers of your library should *not* have to transpile your ES6 code, any more than they should have to transpile your CoffeeScript, ClojureScript or TypeScript.
+
+Use `babelrc: false` to prevent Babel from using local (i.e. to your external dependencies) `.babelrc` files, relying instead on the configuration you pass in.
+
 
 ## Configuring Babel
 
