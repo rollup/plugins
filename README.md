@@ -39,21 +39,21 @@ See more options here [eslint-config].
 Type: `boolean`  
 Default: `false`
 
-Enables rejecting if error or warning found.
+If true, will throw an error if any warnings or errors were found.
 
 ### include
 
 Type: `array` or `string`  
 Default: `[]`
 
-Glob pattern which will be affected.
+A single file, or array of files, to include when linting.
 
 ### exclude
 
 Type: `array` or `string`  
 Default: `node_modules/**`
 
-Glob pattern which won't be affected.
+A single file, or array of files, to exclude when linting.
 
 ### formatter
 
