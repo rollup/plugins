@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Verify entry point and all imported files with ESLint",
   "main": "dist/index.js",
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "pretest": "eslint src test/eslint.js",
     "test": "ava"
