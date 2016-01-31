@@ -11,7 +11,7 @@ export default function eslint(options = {}) {
     let formatter = options.formatter;
 
     if (typeof formatter !== 'function') {
-        formatter = cli.getFormatter(formatter);
+        formatter = cli.getFormatter(formatter || 'stylish');
     }
 
     const filter = createFilter(

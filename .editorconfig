@@ -10,3 +10,6 @@ insert_final_newline = true
 
 [*.{json,yml}]
 indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
