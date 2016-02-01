@@ -8,8 +8,11 @@
     "dist"
   ],
   "scripts": {
-    "pretest": "eslint src test/eslint.js",
-    "test": "ava"
+    "build": "rollup -c -f cjs -o dist/index.js",
+    "lint": "eslint src test/eslint.js",
+    "pretest": "npm run lint && npm run build",
+    "test": "ava",
+    "prepublish": "npm test"
   },
   "eslintConfig": {
     "extends": "eslint-config-postcss"
