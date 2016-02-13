@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-eslint",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Verify entry point and all imported files with ESLint",
   "main": "dist/index.js",
   "files": [
