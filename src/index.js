@@ -27,12 +27,14 @@ export default function eslint(options = {}) {
             }
 
             const report = cli.executeOnText(code, file);
-
             if (!report.errorCount && !report.warningCount) {
                 return;
             }
 
-            console.log(formatter(report.results) || '');
+            const result = formatter(report.results);
+            if (result) {
+                console.log(result);
+            }
 
             if (options.throwError) {
                 const err = Error(

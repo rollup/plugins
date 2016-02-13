@@ -33,5 +33,5 @@ rules:
   no-unreachable: 2
   eol-last: 0
 
-ecmaFeatures:
-    modules: true
+parserOptions:
+    sourceType: 'module'

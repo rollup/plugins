@@ -1,6 +1,6 @@
 import test from 'ava';
 import { rollup } from 'rollup';
-import npm from 'rollup-plugin-npm';
+import nodeResolve from 'rollup-plugin-node-resolve';
 import eslint from '../';
 
 test('should lint files', t => {
@@ -12,7 +12,7 @@ test('should lint files', t => {
                 formatter: (results) => {
                     count += results[0].messages.length;
                     const message = results[0].messages[0].message;
-                    t.is(message, '"x" is not defined.');
+                    t.is(message, '\'x\' is not defined.');
                 }
             })
         ]
@@ -26,7 +26,7 @@ test('should ignore node_modules with exclude option', t => {
         entry: 'fixtures/modules.js',
         external: ['path', 'minimatch', 'estree-walker'],
         plugins: [
-            npm({ jsnext: true }),
+            nodeResolve({ jsnext: true }),
             eslint({
                 configFile: 'fixtures/.eslintrc-babel',
                 exclude: '../node_modules/**',
