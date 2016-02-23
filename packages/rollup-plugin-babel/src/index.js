@@ -67,6 +67,10 @@ export default function babel ( options ) {
 	const runtimeHelpers = options.runtimeHelpers;
 	delete options.runtimeHelpers;
 
+	var externalHelpers;
+	if ( options.externalHelpers ) externalHelpers = true;
+	delete options.externalHelpers;
+
 	return {
 		transform ( code, id ) {
 			if ( !filter( id ) ) return null;
@@ -101,6 +105,7 @@ export default function babel ( options ) {
 			};
 		},
 		intro () {
+			if ( externalHelpers ) return '';
 			const helpers = Object.keys( bundledHelpers );
 			if ( !helpers.length ) return '';
 

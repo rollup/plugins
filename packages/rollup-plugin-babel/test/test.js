@@ -71,6 +71,19 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
+	it( 'does not add helpers when externalHelpers option is truthy', function () {
+		return rollup.rollup({
+			entry: 'samples/class/main.js',
+			plugins: [ babelPlugin({externalHelpers: true}) ]
+		}).then( function ( bundle ) {
+			var generated = bundle.generate();
+			var code = generated.code;
+
+			assert.ok( code.indexOf( 'babelHelpers =' ) === -1, generated.code );
+			assert.ok( code.indexOf( 'babelHelpers.classCallCheck =' ) === -1, generated.code );
+		});
+	});
+
 	it( 'does not babelify excluded code', function () {
 		return rollup.rollup({
 			entry: 'samples/exclusions/main.js',
