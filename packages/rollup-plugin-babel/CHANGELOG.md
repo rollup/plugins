@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.4.0
+
+* Add `externalHelpers` option ([#41](https://github.com/rollup/rollup-plugin-babel/pull/41))
+
 ## 2.3.9
 
 * Do not rename Babel helpers ([#34](https://github.com/rollup/rollup-plugin-babel/pull/34))
