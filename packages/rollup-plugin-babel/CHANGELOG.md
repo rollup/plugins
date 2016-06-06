@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.5.0
+
+* Import `babelHelpers` rather than injecting them – allows `transform` function to be pure ([#rollup/658](https://github.com/rollup/rollup/pull/658#issuecomment-223876824))
+
 ## 2.4.0
 
 * Add `externalHelpers` option ([#41](https://github.com/rollup/rollup-plugin-babel/pull/41))
