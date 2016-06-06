@@ -54,8 +54,10 @@ describe( 'rollup-plugin-babel', function () {
 			var generated = bundle.generate();
 			var code = generated.code;
 
-			assert.ok( code.indexOf( 'babelHelpers.classCallCheck =' ) !== -1, generated.code );
-			assert.ok( code.indexOf( 'var _createClass =' ) === -1, generated.code );
+			// TODO not the greatest test... inline helpers are prefixed with
+			// an underscore for whatever reason
+			assert.ok( code.indexOf( 'var classCallCheck =' ) !== -1, generated.code );
+			assert.ok( code.indexOf( 'var _classCallCheck =' ) === -1, generated.code );
 		});
 	});
 
