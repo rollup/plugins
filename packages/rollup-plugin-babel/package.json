@@ -22,7 +22,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "mocha --compilers js:buble/register",
+    "test": "mocha",
     "prepublish": "npm run test",
     "pretest": "npm run build",
     "build": "rollup -c -f cjs -o dist/rollup-plugin-babel.cjs.js && rollup -c -f es6 -o dist/rollup-plugin-babel.es6.js",
