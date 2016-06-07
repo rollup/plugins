@@ -201,4 +201,14 @@ describe( 'rollup-plugin-babel', function () {
 			assert.deepEqual( messages, []);
 		});
 	});
+
+	it( 'produces valid code with typeof helper', () => {
+		return rollup.rollup({
+			entry: 'samples/typeof/main.js',
+			plugins: [ babelPlugin() ]
+		}).then( bundle => {
+			var generated = bundle.generate();
+			assert.equal( generated.code.indexOf( 'var typeof' ), -1, generated.code );
+		});
+	});
 });
