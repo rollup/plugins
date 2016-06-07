@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.5.1
+
+* Don't mutate `options.plugins` ([#47](https://github.com/rollup/rollup-plugin-babel/issues/47))
+
 ## 2.5.0
 
 * Import `babelHelpers` rather than injecting them – allows `transform` function to be pure ([#rollup/658](https://github.com/rollup/rollup/pull/658#issuecomment-223876824))

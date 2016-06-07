@@ -13,8 +13,7 @@ export default function preflightCheck ( options, dir ) {
 		options = assign( {}, options );
 		options.filename = join( dir, 'x.js' );
 
-		if ( !options.plugins ) options.plugins = [];
-		options.plugins.push( classes );
+		options.plugins = options.plugins ? options.plugins.concat( classes ) : [ classes ];
 
 		const check = transform( 'export default class Foo {}', options ).code;
 
