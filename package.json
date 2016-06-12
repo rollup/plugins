@@ -2,19 +2,16 @@
   "name": "rollup-plugin-eslint",
   "version": "2.0.0",
   "description": "Verify entry point and all imported files with ESLint",
-  "main": "dist/index.js",
+  "main": "dist/rollup-plugin-eslint.js",
+  "jsnext:main": "dist/rollup-plugin-eslint.mjs",
   "files": [
-    "src",
     "dist"
   ],
   "scripts": {
-    "pretest": "rollup -c",
-    "test": "ava",
-    "posttest": "eslint src test/eslint.js",
+    "build": "rollup -c",
+    "pretest": "npm run build",
+    "test": "mocha test/*.js --compilers js:buble/register",
     "prepublish": "npm test"
-  },
-  "eslintConfig": {
-    "extends": "postcss"
   },
   "repository": {
     "type": "git",
@@ -34,12 +31,11 @@
   },
   "homepage": "https://github.com/TrySound/rollup-plugin-eslint#readme",
   "devDependencies": {
-    "ava": "^0.11.0",
-    "babel-preset-es2015-rollup": "^1.1.1",
-    "eslint-config-postcss": "^2.0.0",
-    "rollup": "^0.25.3",
-    "rollup-plugin-babel": "^2.3.9",
-    "rollup-plugin-node-resolve": "^1.4.0"
+    "buble": "^0.10.6",
+    "mocha": "^2.5.3",
+    "rollup": "^0.31.1",
+    "rollup-plugin-buble": "^0.10.0",
+    "rollup-plugin-node-resolve": "^1.7.0"
   },
   "dependencies": {
     "eslint": "^2.0.0",

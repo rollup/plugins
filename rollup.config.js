@@ -1,17 +1,18 @@
-import babel from 'rollup-plugin-babel';
+import buble from 'rollup-plugin-buble';
+
+var pkg = require('./package.json');
 
 export default {
-    entry: 'src/index.js',
-    external: [
-        'path',
-        'eslint',
-        'rollup-pluginutils'
-    ],
-    plugins: [
-        babel({
-            presets: ['es2015-rollup']
-        })
-    ],
-    format: 'cjs',
-    dest: 'dist/index.js'
+	entry: 'index.js',
+	plugins: [buble()],
+	targets: [
+		{
+			format: 'cjs',
+			dest: pkg['main']
+		},
+		{
+			format: 'es6',
+			dest: pkg['jsnext:main']
+		}
+	]
 };
