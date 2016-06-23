@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 2.6.0
+
+* Use `\0` convention for helper module ID ([#64](https://github.com/rollup/rollup-plugin-babel/issues/64))
+
 ## 2.5.1
 
 * Don't mutate `options.plugins` ([#47](https://github.com/rollup/rollup-plugin-babel/issues/47))
