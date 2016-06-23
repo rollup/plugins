@@ -27,6 +27,8 @@ export default function babel ( options ) {
 	delete options.externalHelpers;
 
 	return {
+		name: 'babel',
+
 		resolveId ( id ) {
 			if ( id === HELPERS ) return id;
 		},
