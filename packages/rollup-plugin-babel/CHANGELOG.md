@@ -2,7 +2,7 @@
 
 ## 2.6.1
 
-Return a `name`
+* Return a `name`
 
 ## 2.6.0
 
