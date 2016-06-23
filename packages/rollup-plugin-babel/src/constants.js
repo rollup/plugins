@@ -2,4 +2,4 @@ export const INLINE = {};
 export const RUNTIME = {};
 export const BUNDLED = {};
 
-export const HELPERS = '__babelHelpers__';
+export const HELPERS = '\0babelHelpers';
