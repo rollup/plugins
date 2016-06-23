@@ -20,6 +20,8 @@ export default function eslint(options = {}) {
 	);
 
 	return {
+		name: 'eslint',
+
 		transform(code, id) {
 			const file = normalizePath(id);
 			if (cli.isPathIgnored(file) || !filter(id)) {
