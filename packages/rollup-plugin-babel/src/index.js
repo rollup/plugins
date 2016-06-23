@@ -36,7 +36,7 @@ export default function babel ( options ) {
 				const pattern = new RegExp( `babelHelpers\\.(${keywordHelpers.join('|')})`, 'g' );
 
 				const helpers = buildExternalHelpers( null, 'var' )
-					.replace( pattern, 'export var _$1' )
+					.replace( pattern, 'var _$1' )
 					.replace( /^babelHelpers\./gm, 'export var ' ) +
 					`\n\nexport { ${keywordHelpers.map( word => `_${word} as ${word}`).join( ', ')} }`;
 
