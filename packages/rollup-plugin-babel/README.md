@@ -56,22 +56,30 @@ Use `babelrc: false` to prevent Babel from using local (i.e. to your external de
 
 **The following applies to Babel 6 only. If you're using Babel 5, do `npm i -D rollup-plugin-babel@1`, as version 2 and above no longer supports Babel 5**
 
-tl;dr: use the `es2015-rollup` preset instead of `es2015`.
-
 ```bash
-npm install --save-dev babel-preset-es2015-rollup
+npm install --save-dev babel-preset-es2015 babel-plugin-external-helpers
 ```
 
 ```js
 // .babelrc
 {
-  "presets": [ "es2015-rollup" ]
+  "presets": [
+    [
+      "es2015",
+      {
+        "modules": false
+      }
+    ]
+  ],
+  "plugins": [
+    "external-helpers"
+  ]
 }
 ```
 
 ### Modules
 
-The `es2015` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Instead, you should either use the `es2015-rollup` preset, which excludes that plugin, or otherwise ensure that the `modules-commonjs` plugin is excluded. Rollup will throw an error if this is incorrectly configured.
+The `es2015` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
 
 ### Helpers
 
