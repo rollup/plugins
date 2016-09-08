@@ -24,6 +24,15 @@ describe('rollup-plugin-eslint', () => {
 		});
 	});
 
+	it('should not fail with default options', () => {
+		return rollup({
+			entry: 'fixtures/undeclared.js',
+			plugins: [
+				eslint()
+			]
+		});
+	});
+
 	it('should ignore node_modules with exclude option', () => {
 		return rollup({
 			entry: 'fixtures/modules.js',
@@ -67,6 +76,23 @@ describe('rollup-plugin-eslint', () => {
 			assert.fail('should throw error');
 		}).catch(err => {
 			assert.notEqual(err.toString().indexOf('Warnings or errors were found'), -1);
+		});
+	});
+
+	it('should fail with not found formatter', () => {
+		assert.throws(() => {
+			eslint({ formatter: 'not-found-formatter' });
+		}, /There was a problem loading formatter/);
+	});
+
+	it('should not fail with found formatter', () => {
+		return rollup({
+			entry: 'fixtures/use-strict.js',
+			plugins: [
+				eslint({
+					formatter: 'stylish'
+				})
+			]
 		});
 	});
 });
