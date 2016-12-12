@@ -11,6 +11,7 @@ export default function preflightCheck ( options, dir ) {
 		let helpers;
 
 		options = assign( {}, options );
+		delete options.only;
 		options.filename = join( dir, 'x.js' );
 
 		options.plugins = options.plugins ? options.plugins.concat( classes ) : [ classes ];
