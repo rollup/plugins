@@ -140,7 +140,7 @@ describe( 'rollup-plugin-babel', function () {
 				assert.ok( false, 'promise should not fulfil' );
 			})
 			.catch( function ( err ) {
-				assert.ok( /es2015-rollup/.test( err.message ), 'Expected an error about external helpers or module transform, got "' + err.message + '"' );
+				assert.ok( /configuring-babel/.test( err.message ), 'Expected an error about external helpers or module transform, got "' + err.message + '"' );
 			});
 	});
 
@@ -149,7 +149,7 @@ describe( 'rollup-plugin-babel', function () {
 			entry: 'samples/runtime-helpers/main.js',
 			plugins: [ babelPlugin({ runtimeHelpers: true }) ],
 			onwarn: function ( msg ) {
-				assert.equal( msg, `Treating 'babel-runtime/helpers/classCallCheck' as external dependency` );
+				assert.equal( msg, 'Treating \'babel-runtime/helpers/classCallCheck\' as external dependency' );
 			}
 		}).then( function ( bundle ) {
 			var cjs = bundle.generate({ format: 'cjs' }).code;
@@ -162,7 +162,7 @@ describe( 'rollup-plugin-babel', function () {
 			entry: 'samples/named-function-helper/main.js',
 			plugins: [ babelPlugin() ],
 			onwarn: function ( msg ) {
-				assert.equal( msg, `Treating 'babel-runtime/helpers/classCallCheck' as external dependency` );
+				assert.equal( msg, 'Treating \'babel-runtime/helpers/classCallCheck\' as external dependency' );
 			}
 		}).then( function ( bundle ) {
 			var cjs = bundle.generate({ format: 'cjs' }).code;
@@ -187,7 +187,7 @@ describe( 'rollup-plugin-babel', function () {
 		}).then( () => {
 			console.warn = consoleWarn;
 			assert.deepEqual( messages, [
-				`The 'classCallCheck' Babel helper is used more than once in your code. It's strongly recommended that you use the "external-helpers" plugin or the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information`
+				'The \'classCallCheck\' Babel helper is used more than once in your code. It\'s strongly recommended that you use the "external-helpers" plugin or the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information'
 			]);
 		});
 	});

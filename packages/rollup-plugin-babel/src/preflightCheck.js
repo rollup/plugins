@@ -17,7 +17,7 @@ export default function preflightCheck ( options, dir ) {
 
 		const check = transform( 'export default class Foo {}', options ).code;
 
-		if ( !~check.indexOf( 'export default' ) && !~check.indexOf( 'export { Foo as default }' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. If you\'re using the "es2015" preset, consider using "es2015-rollup" instead. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+		if ( !~check.indexOf( 'export default' ) && !~check.indexOf( 'export { Foo as default }' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
 
 		if ( ~check.indexOf( 'import _classCallCheck from "babel-runtime' ) ) helpers = RUNTIME;
 		else if ( ~check.indexOf( 'function _classCallCheck' ) ) helpers = INLINE;
