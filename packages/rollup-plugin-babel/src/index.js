@@ -26,8 +26,12 @@ export default function babel ( options ) {
 	if ( options.externalHelpers ) externalHelpers = true;
 	delete options.externalHelpers;
 
+	let externalHelpersWhitelist = null;
+	if ( options.externalHelpersWhitelist ) externalHelpersWhitelist = options.externalHelpersWhitelist;
+	delete options.externalHelpersWhitelist;
+  
 	let warn = msg => console.warn(msg); // eslint-disable-line no-console
-
+  
 	return {
 		name: 'babel',
 
@@ -43,7 +47,7 @@ export default function babel ( options ) {
 			if ( id === HELPERS ) {
 				const pattern = new RegExp( `babelHelpers\\.(${keywordHelpers.join('|')})`, 'g' );
 
-				const helpers = buildExternalHelpers( null, 'var' )
+				const helpers = buildExternalHelpers( externalHelpersWhitelist, 'var' )
 					.replace( pattern, 'var _$1' )
 					.replace( /^babelHelpers\./gm, 'export var ' ) +
 					`\n\nexport { ${keywordHelpers.map( word => `_${word} as ${word}`).join( ', ')} }`;

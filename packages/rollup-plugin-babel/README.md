@@ -39,7 +39,11 @@ rollup({
 }).then(...)
 ```
 
-All options are as per the [Babel documentation](https://babeljs.io/), except `options.externalHelpers` (a boolean value indicating whether to bundle in the babel helpers), `options.include` and `options.exclude` (each a minimatch pattern, or array of minimatch patterns), which determine which files are transpiled by Babel (by default, all files are transpiled).
+All options are as per the [Babel documentation](https://babeljs.io/), except the following:
+
+   * `options.externalHelpers`: a boolean value indicating whether to bundle in the babel helpers
+   * `options.include` and `options.exclude`: each a minimatch pattern, or array of minimatch patterns, which determine which files are transpiled by Babel (by default, all files are transpiled)
+   * `options.externalHelpersWhitelist`: an array which gives explicit control over which babelHelper functions are allowed in the bundle (by default, every helper is allowed)
 
 Babel will respect `.babelrc` files – this is generally the best place to put your configuration.
 
