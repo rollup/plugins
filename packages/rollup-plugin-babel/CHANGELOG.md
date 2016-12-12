@@ -1,5 +1,12 @@
 # rollup-plugin-babel changelog
 
+## 2.7.0
+
+* Add `externalHelpersWhitelist` option ([#92](https://github.com/rollup/rollup-plugin-babel/pull/92))
+* Ignore `only` option during preflight checks ([#98](https://github.com/rollup/rollup-plugin-babel/issues/98))
+* Use `options.onwarn` if available ([#84](https://github.com/rollup/rollup-plugin-babel/issues/84))
+* Update documentation and dependencies
+
 ## 2.6.1
 
 * Return a `name`
