@@ -179,13 +179,12 @@ describe( 'rollup-plugin-babel', function () {
 
 	it( 'warns on duplicated helpers', () => {
 		let messages = [];
-		console.warn = msg => messages.push( msg );
 
 		return rollup.rollup({
 			entry: 'samples/duplicated-helpers-warning/main.js',
-			plugins: [ babelPlugin() ]
+			plugins: [ babelPlugin() ],
+			onwarn: msg => messages.push( msg )
 		}).then( () => {
-			console.warn = consoleWarn;
 			assert.deepEqual( messages, [
 				'The \'classCallCheck\' Babel helper is used more than once in your code. It\'s strongly recommended that you use the "external-helpers" plugin or the "es2015-rollup" preset. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information'
 			]);

@@ -6,8 +6,8 @@ export function assign ( target, source ) {
 }
 
 let warned = {};
-export function warnOnce ( msg ) {
+export function warnOnce ( warn, msg ) {
 	if ( warned[ msg ] ) return;
 	warned[ msg ] = true;
-	console.warn( msg ); // eslint-disable-line no-console
+	warn( msg );
 }
