@@ -8,6 +8,7 @@ export default {
 	external: external,
 	targets: [
 		{ dest: 'dist/rollup-plugin-babel.cjs.js', format: 'cjs' },
-		{ dest: 'dist/rollup-plugin-babel.es6.js', format: 'es6' } 
-	]
+		{ dest: 'dist/rollup-plugin-babel.es.js', format: 'es' }
+	],
+	sourceMap: true
 };

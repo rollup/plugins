@@ -4,6 +4,8 @@ var rollup = require( 'rollup' );
 var SourceMapConsumer = require( 'source-map' ).SourceMapConsumer;
 var babelPlugin = require( '..' );
 
+require( 'source-map-support' ).install();
+
 process.chdir( __dirname );
 
 function getLocation ( source, charIndex ) {
@@ -28,7 +30,6 @@ function getLocation ( source, charIndex ) {
 }
 
 const consoleWarn = console.warn;
-
 
 describe( 'rollup-plugin-babel', function () {
 	this.timeout( 15000 );
