@@ -106,17 +106,19 @@ describe( 'rollup-plugin-babel', function () {
 			entry: 'samples/class/main.js',
 			plugins: [ babelPlugin() ]
 		}).then( function ( bundle ) {
+			var target = 'log';
 			var generated = bundle.generate({ sourceMap: true });
 			var smc = new SourceMapConsumer( generated.map );
 
-			var loc = getLocation( generated.code, generated.code.indexOf( 'log' ) );
+			var loc = getLocation( generated.code, generated.code.indexOf( target ) );
+
 			var original = smc.originalPositionFor( loc );
 
 			assert.deepEqual( original, {
 				source: path.resolve( 'samples/class/main.js' ).split( path.sep ).join( '/' ),
 				line: 3,
 				column: 10,
-				name: null
+				name: target
 			});
 		});
 	});
