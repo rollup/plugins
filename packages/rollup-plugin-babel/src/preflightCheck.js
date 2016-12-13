@@ -12,6 +12,8 @@ export default function preflightCheck ( options, dir ) {
 
 		options = assign( {}, options );
 		delete options.only;
+		delete options.ignore;
+
 		options.filename = join( dir, 'x.js' );
 
 		options.plugins = options.plugins ? options.plugins.concat( classes ) : [ classes ];
