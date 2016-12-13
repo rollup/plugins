@@ -24,10 +24,11 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha",
-    "prepublish": "npm run test",
+    "prepublish": "npm lint && npm run test",
     "pretest": "npm run build",
     "build": "rollup -c",
-    "prebuild": "rm -rf dist/*"
+    "prebuild": "rm -rf dist/*",
+    "lint": "eslint src"
   },
   "dependencies": {
     "babel-core": "6",
