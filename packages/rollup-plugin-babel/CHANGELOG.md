@@ -1,5 +1,11 @@
 # rollup-plugin-babel changelog
 
+## 2.7.1
+
+* Prevent erroneous warnings about duplicated runtime helpers ([#105](https://github.com/rollup/rollup-plugin-babel/issues/105))
+* Ignore `ignore` option in preflight check ([#102](https://github.com/rollup/rollup-plugin-babel/issues/102))
+* Allow custom `moduleName` with `runtime-helpers` ([#95](https://github.com/rollup/rollup-plugin-babel/issues/95))
+
 ## 2.7.0
 
 * Add `externalHelpersWhitelist` option ([#92](https://github.com/rollup/rollup-plugin-babel/pull/92))
