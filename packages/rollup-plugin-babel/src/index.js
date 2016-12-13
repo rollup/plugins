@@ -29,9 +29,9 @@ export default function babel ( options ) {
 	let externalHelpersWhitelist = null;
 	if ( options.externalHelpersWhitelist ) externalHelpersWhitelist = options.externalHelpersWhitelist;
 	delete options.externalHelpersWhitelist;
-  
+
 	let warn = msg => console.warn(msg); // eslint-disable-line no-console
-  
+
 	return {
 		name: 'babel',
 
@@ -68,9 +68,13 @@ export default function babel ( options ) {
 
 			if ( usedHelpers.length ) {
 				if ( helpers === BUNDLED ) {
-					if ( !externalHelpers ) transformed.code += `\n\nimport * as babelHelpers from '${HELPERS}';`;
-				} else if ( helpers === RUNTIME && !runtimeHelpers ) {
-					throw new Error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+					if ( !externalHelpers ) {
+						transformed.code += `\n\nimport * as babelHelpers from '${HELPERS}';`;
+					}
+				} else if ( helpers === RUNTIME ) {
+					if ( !runtimeHelpers ) {
+						throw new Error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+					}
 				} else {
 					usedHelpers.forEach( helper => {
 						if ( inlineHelpers[ helper ] ) {

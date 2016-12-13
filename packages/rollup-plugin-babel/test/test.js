@@ -213,4 +213,20 @@ describe( 'rollup-plugin-babel', function () {
 			assert.equal( generated.code.indexOf( 'var typeof' ), -1, generated.code );
 		});
 	});
+
+	it( 'does not warn about duplicated helpers with transform-runtime', () => {
+		return rollup.rollup({
+			entry: 'samples/runtime-helpers-duplicated/main.js',
+			plugins: [
+				babelPlugin({
+					runtimeHelpers: true
+				})
+			],
+			onwarn ( msg ) {
+				if ( /helper is used more than once in your code/.test( msg ) ) {
+					throw new Error( 'no warning about duplicated helpers should be given' );
+				}
+			}
+		});
+	});
 });
