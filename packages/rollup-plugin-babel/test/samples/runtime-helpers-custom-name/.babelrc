@@ -1,0 +1,6 @@
+{
+	"presets": [ "es2015-rollup" ],
+	"plugins": [
+		["transform-runtime", { "moduleName": "custom-name" }]
+	]
+}

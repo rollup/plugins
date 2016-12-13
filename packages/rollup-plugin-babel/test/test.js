@@ -157,6 +157,21 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
+	it( 'allows transform-runtime to be used with custom moduleName', function () {
+		return rollup.rollup({
+			entry: 'samples/runtime-helpers-custom-name/main.js',
+			plugins: [
+				babelPlugin({ runtimeHelpers: true })
+			],
+			onwarn: function ( msg ) {
+				assert.equal( msg, 'Treating \'custom-name/helpers/classCallCheck\' as external dependency' );
+			}
+		}).then( function ( bundle ) {
+			var cjs = bundle.generate({ format: 'cjs' }).code;
+			assert.ok( !~cjs.indexOf( 'babelHelpers' ) );
+		});
+	});
+
 	it( 'correctly renames helpers (#22)', () => {
 		return rollup.rollup({
 			entry: 'samples/named-function-helper/main.js',
