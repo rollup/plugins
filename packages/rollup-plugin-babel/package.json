@@ -24,7 +24,7 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha",
-    "prepublish": "npm lint && npm run test",
+    "prepublish": "npm run lint && npm test",
     "pretest": "npm run build",
     "build": "rollup -c",
     "prebuild": "rm -rf dist/*",
