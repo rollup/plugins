@@ -49,10 +49,7 @@
     "source-map": "^0.5.6",
     "source-map-support": "^0.4.6"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rollup/rollup-plugin-babel.git"
-  },
+  "repository": "rollup/rollup-plugin-babel",
   "bugs": {
     "url": "https://github.com/rollup/rollup-plugin-babel/issues"
   }
