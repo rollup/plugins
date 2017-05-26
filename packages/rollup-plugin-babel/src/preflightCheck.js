@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { assign } from './utils.js';
+import assign from 'object-assign';
 import { transform } from 'babel-core';
 import { INLINE, RUNTIME, BUNDLED } from './constants.js';
 import classes from 'babel-plugin-transform-es2015-classes';

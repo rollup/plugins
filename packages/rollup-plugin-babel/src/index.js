@@ -1,8 +1,9 @@
 import { dirname } from 'path';
 import { buildExternalHelpers, transform } from 'babel-core';
 import { createFilter } from 'rollup-pluginutils';
+import assign from 'object-assign';
 import preflightCheck from './preflightCheck.js';
-import { assign, warnOnce } from './utils.js';
+import { warnOnce } from './utils.js';
 import { RUNTIME, BUNDLED, HELPERS } from './constants.js';
 
 const keywordHelpers = [ 'typeof', 'extends', 'instanceof' ];
