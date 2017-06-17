@@ -124,9 +124,9 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
-	it( 'works with transform-decorators-legacy (#18)', function () {
+	it( 'works with transform-decorators (#18)', function () {
 		return rollup.rollup({
-			entry: 'samples/transform-decorators-legacy/main.js',
+			entry: 'samples/transform-decorators/main.js',
 			plugins: [ babelPlugin() ]
 		});
 	});

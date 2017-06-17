@@ -1,7 +1,6 @@
 import { dirname } from 'path';
 import { buildExternalHelpers, transform } from 'babel-core';
 import { createFilter } from 'rollup-pluginutils';
-import assign from 'object-assign';
 import preflightCheck from './preflightCheck.js';
 import { warnOnce } from './utils.js';
 import { RUNTIME, BUNDLED, HELPERS } from './constants.js';
@@ -9,7 +8,7 @@ import { RUNTIME, BUNDLED, HELPERS } from './constants.js';
 const keywordHelpers = [ 'typeof', 'extends', 'instanceof' ];
 
 export default function babel ( options ) {
-	options = assign( {}, options || {} );
+	options = Object.assign( {}, options || {} );
 	let inlineHelpers = {};
 
 	const filter = createFilter( options.include, options.exclude );
@@ -62,7 +61,7 @@ export default function babel ( options ) {
 			if ( id === HELPERS ) return null;
 
 			const helpers = preflightCheck( options, dirname( id ) );
-			const localOpts = assign({ filename: id }, options );
+			const localOpts = Object.assign({ filename: id }, options );
 
 			const transformed = transform( code, localOpts );
 			const { usedHelpers } = transformed.metadata;

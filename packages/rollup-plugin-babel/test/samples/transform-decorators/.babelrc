@@ -2,6 +2,6 @@
   "presets": [ ["es2015", { "modules": false } ] ],
   "plugins": [
     "external-helpers",
-    ["transform-runtime", { "moduleName": "custom-name" }]
+    "transform-decorators"
   ]
 }

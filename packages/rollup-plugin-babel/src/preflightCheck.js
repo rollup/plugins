@@ -1,5 +1,4 @@
 import { join } from 'path';
-import assign from 'object-assign';
 import { transform } from 'babel-core';
 import { INLINE, RUNTIME, BUNDLED } from './constants.js';
 import classes from 'babel-plugin-transform-es2015-classes';
@@ -10,7 +9,7 @@ export default function preflightCheck ( options, dir ) {
 	if ( !preflightCheckResults[ dir ] ) {
 		let helpers;
 
-		options = assign( {}, options );
+		options = Object.assign( {}, options );
 		delete options.only;
 		delete options.ignore;
 
