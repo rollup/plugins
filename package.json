@@ -9,10 +9,9 @@
     "dist"
   ],
   "scripts": {
-    "report": "nyc report --reporter html",
     "build": "rollup -c",
     "pretest": "npm run build",
-    "test": "nyc mocha",
+    "test": "jest --coverage",
     "prepublish": "npm test"
   },
   "repository": {
@@ -34,8 +33,7 @@
   "homepage": "https://github.com/TrySound/rollup-plugin-eslint#readme",
   "devDependencies": {
     "buble": "^0.13.2",
-    "mocha": "^3.0.2",
-    "nyc": "^8.1.0",
+    "jest": "^20.0.4",
     "rollup": "^0.34.13",
     "rollup-plugin-buble": "^0.13.0",
     "rollup-plugin-node-resolve": "^2.0.0"
