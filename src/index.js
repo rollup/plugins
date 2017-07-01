@@ -6,7 +6,7 @@ function normalizePath(id) {
 	return path.relative(process.cwd(), id).split(path.sep).join('/');
 }
 
-export default function eslint(options = {}) {
+module.exports = function eslint(options = {}) {
 	const cli = new CLIEngine(options);
 	let formatter = options.formatter;
 
