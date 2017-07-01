@@ -34,12 +34,19 @@ rollup({
 
 See more options here [eslint-config].
 
-### throwError
+### throwOnError
 
 Type: `boolean`  
 Default: `false`
 
-If true, will throw an error if any warnings or errors were found.
+If true, will throw an error if any errors were found.
+
+### throwOnWarning
+
+Type: `boolean`  
+Default: `false`
+
+If true, will throw an error if any warnings were found.
 
 ### include
 

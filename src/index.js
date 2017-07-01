@@ -29,17 +29,29 @@ module.exports = function eslint(options = {}) {
             }
 
             const report = cli.executeOnText(code, file);
-            if (!report.errorCount && !report.warningCount) {
+            const hasWarnings = options.throwOnWarning && report.warningCount !== 0;
+            const hasErrors = options.throwOnError && report.errorCount !== 0;
+
+            if (report.warningCount === 0 && report.errorCount === 0) {
                 return null;
             }
 
             const result = formatter(report.results);
+
             if (result) {
                 console.log(result);
             }
 
-            if (options.throwError) {
+            if (hasWarnings && hasErrors) {
                 throw Error('Warnings or errors were found');
+            }
+
+            if (hasWarnings) {
+                throw Error('Warnings were found');
+            }
+
+            if (hasErrors) {
+                throw Error('Errors were found');
             }
         }
     };

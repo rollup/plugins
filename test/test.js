@@ -1,7 +1,6 @@
-import assert from 'assert';
 import { rollup } from 'rollup';
 import nodeResolve from 'rollup-plugin-node-resolve';
-import eslint from '../';
+import eslint from '../src';
 
 process.chdir('test');
 
@@ -14,12 +13,12 @@ test('should lint files', () => {
                 formatter: (results) => {
                     count += results[0].messages.length;
                     const message = results[0].messages[0].message;
-                    assert.equal(message, '\'x\' is not defined.');
+                    expect(message).toEqual('\'x\' is not defined.');
                 }
             })
         ]
     }).then(() => {
-        assert.equal(count, 1);
+        expect(count).toEqual(1);
     });
 });
 
@@ -33,6 +32,7 @@ test('should not fail with default options', () => {
 });
 
 test('should ignore node_modules with exclude option', () => {
+    let count = 0;
     return rollup({
         entry: 'fixtures/modules.js',
         plugins: [
@@ -40,46 +40,91 @@ test('should ignore node_modules with exclude option', () => {
             eslint({
                 configFile: 'fixtures/.eslintrc-babel',
                 formatter: () => {
-                    assert.fail('should not report any error');
+                    count += 1;
                 }
             })
         ]
+    }).then(() => {
+        expect(count).toEqual(0);
     });
 });
 
 test('should ignore files according .eslintignore', () => {
+    let count = 0;
     return rollup({
         entry: 'fixtures/ignored.js',
         plugins: [
             eslint({
                 formatter: () => {
-                    assert.fail('should not report any error');
+                    count += 1;
                 }
             })
         ]
+    }).then(() => {
+        expect(count).toEqual(0);
     });
 });
 
-test('should fail with enabled throwError option', () => {
+test('should fail with enabled throwOnWarning and throwOnError options', () => {
+    return expect(
+        rollup({
+            entry: 'fixtures/use-strict.js',
+            plugins: [
+                eslint({
+                    throwOnWarning: true,
+                    throwOnError: true,
+                    formatter: () => ''
+                })
+            ]
+        }).catch(e => Promise.reject(e.toString()))
+    ).rejects.toMatch(/Warnings or errors were found/);
+});
+
+test('should fail with enabled throwOnError option', () => {
+    return expect(
+        rollup({
+            entry: 'fixtures/use-strict.js',
+            plugins: [
+                eslint({
+                    throwOnError: true,
+                    formatter: () => ''
+                })
+            ]
+        }).catch(e => Promise.reject(e.toString()))
+    ).rejects.toMatch(/Errors were found/);
+});
+
+test('should fail with enabled throwOnWarning option', () => {
+    return expect(
+        rollup({
+            entry: 'fixtures/use-strict.js',
+            plugins: [
+                eslint({
+                    throwOnWarning: true,
+                    formatter: () => ''
+                })
+            ]
+        }).catch(e => Promise.reject(e.toString()))
+    ).rejects.toMatch(/Warnings were found/);
+});
+
+test('should not fail with throwOnError and throwOnWarning disabled', () => {
     return rollup({
         entry: 'fixtures/use-strict.js',
         plugins: [
             eslint({
-                throwError: true,
+                throwOnError: false,
+                throwOnWarning: false,
                 formatter: () => ''
             })
         ]
-    }).then(() => {
-        assert.fail('should throw error');
-    }).catch(err => {
-        assert.notEqual(err.toString().indexOf('Warnings or errors were found'), -1);
     });
 });
 
 test('should fail with not found formatter', () => {
-    assert.throws(() => {
+    expect(() => {
         eslint({ formatter: 'not-found-formatter' });
-    }, /There was a problem loading formatter/);
+    }).toThrowError(/There was a problem loading formatter/);
 });
 
 test('should not fail with found formatter', () => {
