@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 3.0.1
+
+* Wasn't working, fix bug with transform (not using es2015-classes for preflight check)
+
 ## 3.0.0
 
 * Drop Node 0.10/0.12 (Use native `Object.assign`)
