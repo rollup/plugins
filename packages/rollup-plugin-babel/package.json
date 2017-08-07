@@ -31,11 +31,13 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "babel-core": "7.0.0-alpha.17",
-    "babel-plugin-transform-es2015-classes": "7.0.0-alpha.17",
     "rollup-pluginutils": "^1.5.0"
   },
+  "peerDependencies": {
+    "babel-core": "6 || 7 || ^7.0.0-alpha || ^7.0.0-beta || ^7.0.0-rc"
+  },
   "devDependencies": {
+    "babel-core": "7.0.0-alpha.17",
     "babel-plugin-external-helpers": "7.0.0-alpha.17",
     "babel-plugin-transform-decorators": "7.0.0-alpha.17",
     "babel-plugin-transform-runtime": "7.0.0-alpha.17",
