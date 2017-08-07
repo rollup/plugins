@@ -1,8 +1,8 @@
 export default function importHelperPlugin () {
 	return {
 		visitor: {
-			Program (path, state) {
-				state.file.addHelper('classCallCheck');
+			ClassDeclaration (path, state) {
+				path.replaceWith(state.file.addHelper('classCallCheck'));
 			}
 		}
 	};
