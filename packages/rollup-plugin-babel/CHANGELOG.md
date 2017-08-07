@@ -1,5 +1,11 @@
 # rollup-plugin-babel changelog
 
+## 3.0.0
+
+* Drop Node 0.10/0.12 (Use native `Object.assign`)
+* Change `babel-core` to be a peerDependency
+* Support `babel-core` v7 as well as a peerDep (no changes necessary)
+
 ## 2.7.1
 
 * Prevent erroneous warnings about duplicated runtime helpers ([#105](https://github.com/rollup/rollup-plugin-babel/issues/105))
