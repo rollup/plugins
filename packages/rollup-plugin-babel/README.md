@@ -61,7 +61,7 @@ Use `babelrc: false` to prevent Babel from using local (i.e. to your external de
 **The following applies to Babel 6 only. If you're using Babel 5, do `npm i -D rollup-plugin-babel@1`, as version 2 and above no longer supports Babel 5**
 
 ```bash
-npm install --save-dev babel-preset-es2015 babel-plugin-external-helpers
+npm install --save-dev babel-preset-env babel-plugin-external-helpers
 ```
 
 ```js
@@ -69,7 +69,7 @@ npm install --save-dev babel-preset-es2015 babel-plugin-external-helpers
 {
   "presets": [
     [
-      "es2015",
+      "env",
       {
         "modules": false
       }
@@ -83,7 +83,7 @@ npm install --save-dev babel-preset-es2015 babel-plugin-external-helpers
 
 ### Modules
 
-The `es2015` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
+The `env` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
 
 ### Helpers
 
