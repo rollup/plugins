@@ -1,4 +1,4 @@
 {
-  "presets": [ ["es2015", { "modules": false } ] ],
-  "plugins": [ "external-helpers", "transform-runtime" ]
+  "presets": [ ["@babel/env", { "modules": false } ] ],
+  "plugins": [ "@babel/external-helpers", "@babel/transform-runtime" ]
 }

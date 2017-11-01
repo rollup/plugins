@@ -24,6 +24,7 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha",
+    "prepare": "npm run build",
     "prepublish": "npm run lint && npm test",
     "pretest": "npm run build",
     "build": "rollup -c",
@@ -34,14 +35,14 @@
     "rollup-pluginutils": "^1.5.0"
   },
   "peerDependencies": {
-    "babel-core": "6 || 7 || ^7.0.0-alpha || ^7.0.0-beta || ^7.0.0-rc"
+    "@babel/core": "7 || ^7.0.0-beta"
   },
   "devDependencies": {
-    "babel-core": "7.0.0-alpha.17",
-    "babel-plugin-external-helpers": "7.0.0-alpha.17",
-    "babel-plugin-transform-decorators": "7.0.0-alpha.17",
-    "babel-plugin-transform-runtime": "7.0.0-alpha.17",
-    "babel-preset-es2015": "7.0.0-alpha.17",
+    "@babel/core": "^7.0.0-beta.5",
+    "@babel/plugin-external-helpers": "^7.0.0-beta.5",
+    "@babel/plugin-proposal-decorators": "^7.0.0-beta.5",
+    "@babel/plugin-transform-runtime": "^7.0.0-beta.5",
+    "@babel/preset-env": "^7.0.0-beta.5",
     "buble": "^0.14.2",
     "eslint": "^3.12.0",
     "mocha": "^3.2.0",
