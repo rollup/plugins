@@ -3,6 +3,7 @@
   "version": "3.0.2",
   "description": "Seamless integration between Rollup and Babel.",
   "main": "dist/rollup-plugin-babel.cjs.js",
+  "module": "dist/rollup-plugin-babel.es.js",
   "jsnext:main": "dist/rollup-plugin-babel.es.js",
   "files": [
     "src",
