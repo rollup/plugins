@@ -56,7 +56,7 @@ export default function babel ( options ) {
 			const helpers = preflightCheck( options, dirname( id ) );
 
 			if ( helpers === EXTERNAL && !externalHelpers ) {
-				warnOnce( warn, 'Using "external-helpers" plugin with rollup is deprecated. "rollup-plugin-babel" knows at its own how to deduplicate your babel helpers.' );
+				warnOnce( warn, 'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.' );
 			} else if ( helpers === RUNTIME && !runtimeHelpers ) {
 				throw new Error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
 			}

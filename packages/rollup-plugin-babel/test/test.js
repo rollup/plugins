@@ -194,7 +194,7 @@ describe( 'rollup-plugin-babel', function () {
 		}).then( (bundle) => {
 			console.warn = consoleWarn;
 			assert.deepEqual( messages, [
-				'Using "external-helpers" plugin with rollup is deprecated. "rollup-plugin-babel" knows at its own how to deduplicate your babel helpers.'
+				'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.'
 			]);
 		});
 	});
