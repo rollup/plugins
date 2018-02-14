@@ -109,7 +109,9 @@ rollup.rollup({
 }).then(...)
 ```
 
-Finally, if you do not wish the babel helpers to be included in your bundle at all (but instead reference the global `babelHelpers` object), you may set the `externalHelpers` option to `true`:
+By default `externalHelpers` option is set to `false` so babel helpers will be included in your bundle.
+
+If you do not wish the babel helpers to be included in your bundle at all (but instead reference the global `babelHelpers` object), you may set the `externalHelpers` option to `true`:
 
 ```js
 rollup.rollup({
