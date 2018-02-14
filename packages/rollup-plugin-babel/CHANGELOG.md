@@ -1,5 +1,15 @@
 # rollup-plugin-babel changelog
 
+## 3.0.3
+
+* Drop babel7 support. Use 4.0.0-beta if you use babel 7
+* Use "module" in addition to "jsnext:main" ([#150](https://github.com/rollup/rollup-plugin-babel/issues/150))
+* Remove unused babel helpers namespace declaration & expression ([#164](https://github.com/rollup/rollup-plugin-babel/issues/164))
+
+## 3.0.2
+
+* Fix regression with Babel 6 ([#158](https://github.com/rollup/rollup-plugin-babel/issues/158))
+
 ## 3.0.1
 
 * Wasn't working, fix bug with transform (not using es2015-classes for preflight check)

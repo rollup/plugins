@@ -69,10 +69,6 @@ export default function babel ( options ) {
 
 			const transformed = transform( code, localOpts );
 
-			if ( helpers !== RUNTIME ) {
-				transformed.code += `\n\nimport * as ${HELPERS} from '${HELPERS}';`;
-			}
-
 			return {
 				code: transformed.code,
 				map: transformed.map

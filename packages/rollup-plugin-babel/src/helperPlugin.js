@@ -1,10 +1,17 @@
-// that is basically babel-plugin-external-helpers
 import { HELPERS } from './constants.js';
+import { addNamed } from '@babel/helper-module-imports';
 
-export default function importHelperPlugin ({ types: t }) {
+export default function importHelperPlugin () {
 	return {
 		pre (file) {
-			file.set('helpersNamespace', t.identifier(HELPERS));
-		}
+			const cachedHelpers = {};
+			file.set('helperGenerator', name => {
+				if (cachedHelpers[name]) {
+					return cachedHelpers[name];
+				}
+				return (cachedHelpers[name] = addNamed(file.path, name, HELPERS));
+			});
+		},
 	};
 }
+
