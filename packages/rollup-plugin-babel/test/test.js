@@ -37,59 +37,67 @@ const consoleWarn = console.warn;
 describe( 'rollup-plugin-babel', function () {
 	this.timeout( 15000 );
 
-	async function bundle(input, babelOptions = {}, generateOptions = {}, rollupOptions = {}) {
-		const bundle = await rollup.rollup(Object.assign({
+	function bundle (input, babelOptions = {}, generateOptions = {}, rollupOptions = {}) {
+		return rollup.rollup(Object.assign({
 			input,
 			plugins: [ babelPlugin(babelOptions) ],
-		}, rollupOptions));
-
-		return await bundle.generate(Object.assign({ format: 'cjs' }, generateOptions));
+		}, rollupOptions)).then(bundle => {
+			return bundle.generate(Object.assign({ format: 'cjs' }, generateOptions));
+		});
 	}
 
-	it( 'runs code through babel', async () => {
-		const { code } = await bundle('samples/basic/main.js');
-		assert.ok( code.indexOf( 'const' ) === -1, code );
+	it( 'runs code through babel', () => {
+		return bundle('samples/basic/main.js').then(({ code }) => {
+			assert.ok( code.indexOf( 'const' ) === -1, code );
+		});
 	});
 
-	it( 'adds helpers', async () => {
-		const { code } = await bundle('samples/class/main.js');
-		assert.ok( code.indexOf( 'function _classCallCheck' ) !== -1, code );
+	it( 'adds helpers', () => {
+		return bundle('samples/class/main.js').then(({ code }) => {
+			assert.ok( code.indexOf( 'function _classCallCheck' ) !== -1, code );
+		});
+
 	});
 
-	it( 'adds helpers in loose mode', async () => {
-		const { code } = await bundle('samples/class-loose/main.js');
-		assert.ok( code.indexOf( 'function _inherits' ) !== -1, code );
+	it( 'adds helpers in loose mode', () => {
+		return bundle('samples/class-loose/main.js').then(({ code }) => {
+			assert.ok( code.indexOf( 'function _inherits' ) !== -1, code );
+		});
 	});
 
-	it( 'does not add helpers unnecessarily', async () => {
-		const { code } = await bundle('samples/basic/main.js');
-		assert.ok( code.indexOf( HELPERS ) === -1, code );
+	it( 'does not add helpers unnecessarily', () => {
+		return bundle('samples/basic/main.js').then(({ code }) => {
+			assert.ok( code.indexOf( HELPERS ) === -1, code );
+		});
 	});
 
-	it( 'does not add helpers when externalHelpers option is truthy', async () => {
-		const { code } = await bundle('samples/class/main.js');
-		assert.ok( code.indexOf( 'babelHelpers =' ) === -1, code );
-		assert.ok( code.indexOf( `${HELPERS}.classCallCheck =` ) === -1, code );
+	it( 'does not add helpers when externalHelpers option is truthy', () => {
+		return bundle('samples/class/main.js').then(({ code }) => {
+			assert.ok( code.indexOf( 'babelHelpers =' ) === -1, code );
+			assert.ok( code.indexOf( `${HELPERS}.classCallCheck =` ) === -1, code );
+		});
 	});
 
-	it( 'does not babelify excluded code', async () => {
-		const { code } = await bundle('samples/exclusions/main.js', { exclude: '**/foo.js' });
-		assert.ok( code.indexOf( '${foo()}' ) === -1, code );
-		assert.ok( code.indexOf( '=> 42' ) !== -1, code );
+	it( 'does not babelify excluded code', () => {
+		return bundle('samples/exclusions/main.js', { exclude: '**/foo.js' }).then(({ code }) => {
+			assert.ok( code.indexOf( '${foo()}' ) === -1, code );
+			assert.ok( code.indexOf( '=> 42' ) !== -1, code );
+		});
 	});
 
-	it( 'generates sourcemap by default', async () => {
-		const { code, map } = await bundle('samples/class/main.js', {}, { sourceMap: true });
-		const target = 'log';
-		const smc = new SourceMapConsumer( map );
-    const loc = getLocation( code, code.indexOf( target ) );
-		const original = smc.originalPositionFor( loc );
+	it( 'generates sourcemap by default', () => {
+		return bundle('samples/class/main.js', {}, { sourceMap: true }).then(({ code, map }) => {
+			const target = 'log';
+			const smc = new SourceMapConsumer( map );
+			const loc = getLocation( code, code.indexOf( target ) );
+			const original = smc.originalPositionFor( loc );
 
-		assert.deepEqual( original, {
-			source: path.resolve( 'samples/class/main.js' ).split( path.sep ).join( '/' ),
-			line: 3,
-			column: 10,
-			name: target
+			assert.deepEqual( original, {
+				source: path.resolve( 'samples/class/main.js' ).split( path.sep ).join( '/' ),
+				line: 3,
+				column: 10,
+				name: target
+			});
 		});
 	});
 
@@ -113,9 +121,9 @@ describe( 'rollup-plugin-babel', function () {
 			});
 	});
 
-	it( 'allows transform-runtime to be used instead of bundled helpers', async () => {
+	it( 'allows transform-runtime to be used instead of bundled helpers', () => {
 		let warnCalled = false;
-		const { code } = await bundle(
+		return bundle(
 			'samples/runtime-helpers/main.js',
 			{ runtimeHelpers: true },
 			{},
@@ -126,14 +134,15 @@ describe( 'rollup-plugin-babel', function () {
 					warnCalled = true;
 				}
 			}
-		);
-		assert.ok( warnCalled, 'onwarn was never triggered about unresolved imports' );
-		assert.ok( !~code.indexOf( HELPERS ) );
+		).then(({ code }) => {
+			assert.ok( warnCalled, 'onwarn was never triggered about unresolved imports' );
+			assert.ok( !~code.indexOf( HELPERS ) );
+		});
 	});
 
-	it( 'allows transform-runtime to be used with custom moduleName', async () => {
+	it( 'allows transform-runtime to be used with custom moduleName', () => {
 		let warnCalled = false;
-		const { code } = await bundle(
+		return bundle(
 			'samples/runtime-helpers-custom-name/main.js',
 			{ runtimeHelpers: true },
 			{},
@@ -144,25 +153,28 @@ describe( 'rollup-plugin-babel', function () {
 					warnCalled = true;
 				}
 			}
-		);
-		assert.ok( warnCalled, 'onwarn was never triggered about unresolved imports' );
-		assert.ok( !~code.indexOf( HELPERS ) );
+		).then(({ code }) => {
+			assert.ok( warnCalled, 'onwarn was never triggered about unresolved imports' );
+			assert.ok( !~code.indexOf( HELPERS ) );
+		});
 	});
 
-	it( 'warns about deprecated usage with external-helper plugin', async () => {
+	it( 'warns about deprecated usage with external-helper plugin', () => {
 		const messages = [];
 		console.warn = msg => messages.push( msg );
-		const { code } = await bundle('samples/external-helpers-deprecated/main.js');
-		console.warn = consoleWarn;
+		return bundle('samples/external-helpers-deprecated/main.js').then(() => {
+			console.warn = consoleWarn;
 
-		assert.deepEqual( messages, [
-			'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.'
-		]);
+			assert.deepEqual( messages, [
+				'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.'
+			]);
+		});
 	});
 
-	it( 'correctly renames helpers (#22)', async () => {
-		const { code } = await bundle('samples/named-function-helper/main.js');
-		assert.ok( !~code.indexOf( 'babelHelpers_get get' ), 'helper was incorrectly renamed' );
+	it( 'correctly renames helpers (#22)', () => {
+		return bundle('samples/named-function-helper/main.js').then(({ code }) => {
+			assert.ok( !~code.indexOf( 'babelHelpers_get get' ), 'helper was incorrectly renamed' );
+		});
 	});
 
 	it( 'runs preflight check correctly in absence of class transformer (#23)', () => {
@@ -172,8 +184,9 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
-	it( 'produces valid code with typeof helper', async () => {
-		const { code } = await bundle('samples/typeof/main.js');
-		assert.equal( code.indexOf( 'var typeof' ), -1, code );
+	it( 'produces valid code with typeof helper', () => {
+		return bundle('samples/typeof/main.js').then(({ code }) => {
+			assert.equal( code.indexOf( 'var typeof' ), -1, code );
+		});
 	});
 });
