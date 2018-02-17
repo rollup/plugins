@@ -69,6 +69,10 @@ export default function babel ( options ) {
 
 			const transformed = transform( code, localOpts );
 
+			if (!transformed) {
+				return { code };
+			}
+
 			return {
 				code: transformed.code,
 				map: transformed.map

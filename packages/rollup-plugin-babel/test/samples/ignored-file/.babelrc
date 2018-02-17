@@ -1,0 +1,4 @@
+{
+  "presets": [ ["@babel/env", { "modules": false, "loose": true } ] ],
+  "ignore": ["ignored.js"]
+}

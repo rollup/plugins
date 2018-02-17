@@ -189,4 +189,10 @@ describe( 'rollup-plugin-babel', function () {
 			assert.equal( code.indexOf( 'var typeof' ), -1, code );
 		});
 	});
+
+	it( 'handles babelrc with ignore option used', () => {
+		return bundle('samples/ignored-file/main.js').then(({ code }) => {
+			assert.ok( code.indexOf('class Ignored') !== -1 );
+		});
+	});
 });
