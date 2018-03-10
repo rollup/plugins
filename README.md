@@ -24,7 +24,7 @@ import eslint from 'rollup-plugin-eslint';
 rollup({
     entry: 'main.js',
     plugins: [
-        eslint({ /* your options (do not pass this param to use eslint config file in your project's root) */ })
+        eslint({ /* your options */ })
     ]
 });
 ```
@@ -33,6 +33,8 @@ rollup({
 ## Options
 
 See more options here [eslint-config].
+
+You can use eslint configuration in the form of a `.eslintrc.*` file in your project's root by not passing any options to the plugin.
 
 ### throwOnError
 
