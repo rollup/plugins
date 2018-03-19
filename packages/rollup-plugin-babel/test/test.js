@@ -5,7 +5,7 @@ var SourceMapConsumer = require( 'source-map' ).SourceMapConsumer;
 var babelPlugin = require( '..' );
 
 // from ./src/constants
-var HELPERS = 'rollupPluginBabelHelpers';
+var HELPERS = '\0rollupPluginBabelHelpers';
 
 require( 'source-map-support' ).install();
 
