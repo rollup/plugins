@@ -27,7 +27,7 @@ npm install --save-dev rollup-plugin-babel@latest
 > babel 7.x - beta
 
 ```bash
-npm install --save-dev rollup-plugin-babel@next
+npm install --save-dev rollup-plugin-babel@beta
 ```
 
 ## Usage
