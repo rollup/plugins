@@ -39,7 +39,11 @@ export default function preflightCheck ( options, dir ) {
 			throw new Error( 'An unexpected situation arose. Please raise an issue at https://github.com/rollup/rollup-plugin-babel/issues. Thanks!' );
 		}
 
-		if ( !~check.indexOf( 'export default' ) && !~check.indexOf( 'export default Foo' ) ) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+		if (
+			!~check.indexOf( 'export default' ) &&
+			!~check.indexOf( 'export default Foo' ) &&
+			!~check.indexOf( 'export { Foo as default }' )
+		) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
 
 		preflightCheckResults[ dir ] = helpers;
 	}
