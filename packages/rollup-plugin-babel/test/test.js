@@ -86,14 +86,14 @@ describe( 'rollup-plugin-babel', function () {
 	});
 
 	it( 'generates sourcemap by default', () => {
-		return bundle('samples/class/main.js', {}, { sourceMap: true }).then(({ code, map }) => {
+		return bundle('samples/class/main.js', {}, { sourcemap: true }).then(({ code, map }) => {
 			const target = 'log';
 			const smc = new SourceMapConsumer( map );
 			const loc = getLocation( code, code.indexOf( target ) );
 			const original = smc.originalPositionFor( loc );
 
 			assert.deepEqual( original, {
-				source: path.resolve( 'samples/class/main.js' ).split( path.sep ).join( '/' ),
+				source: 'samples/class/main.js'.split( path.sep ).join( '/' ),
 				line: 3,
 				column: 10,
 				name: target
