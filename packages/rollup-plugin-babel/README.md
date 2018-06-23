@@ -92,12 +92,12 @@ npm install --save-dev babel-preset-env babel-plugin-external-helpers
 
 The `env` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that will work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
 
-However, setting `modules: false` in your `.babelrc` may conflict if you are using `babel-register`. To work around this, specify `babelrc: false` in your gulp config. This allows Rollup to bypass your `.babelrc` file. In order to use the `es2015` preset, you will also need to specify the preset `es2015-rollup` :
+However, setting `modules: false` in your `.babelrc` may conflict if you are using `babel-register`. To work around this, specify `babelrc: false` in your rollup config. This allows Rollup to bypass your `.babelrc` file. In order to use the `env` preset, you will also need to specify it with `modules: false` option:
 ```js
 plugins: [
   babel({
     babelrc: false,
-    presets: ['es2015-rollup']
+    presets: [['env', { modules: false }]]
   })
 ]
 ```
@@ -105,7 +105,7 @@ plugins: [
 
 In some cases Babel uses *helpers* to avoid repeating chunks of code – for example, if you use the `class` keyword, it will use a `classCallCheck` function to ensure that the class is instantiated correctly.
 
-By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. It's therefore recommended that you use the `external-helpers` plugin, which is automatically included in the `es2015-rollup` preset. Rollup will combine the helpers in a single block at the top of your bundle.
+By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. It's therefore recommended that you use the `external-helpers` plugin. Rollup will combine the helpers in a single block at the top of your bundle.
 
 Alternatively, if you know what you're doing, you can use the `transform-runtime` plugin. If you do this, use `runtimeHelpers: true`:
 
