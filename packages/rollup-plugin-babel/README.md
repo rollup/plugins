@@ -92,6 +92,15 @@ npm install --save-dev babel-preset-env babel-plugin-external-helpers
 
 The `env` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that will work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
 
+However, setting `modules: false` in your `.babelrc` may conflict if you are using `babel-register`. To work around this, specify `babelrc: false` in your gulp config. This allows Rollup to bypass your `.babelrc` file. In order to use the `es2015` preset, you will also need to specify the preset `es2015-rollup` :
+```js
+plugins: [
+  babel({
+    babelrc: false,
+    presets: ['es2015-rollup']
+  })
+]
+```
 ### Helpers
 
 In some cases Babel uses *helpers* to avoid repeating chunks of code – for example, if you use the `class` keyword, it will use a `classCallCheck` function to ensure that the class is instantiated correctly.
