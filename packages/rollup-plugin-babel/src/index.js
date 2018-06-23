@@ -6,27 +6,30 @@ import helperPlugin from './helperPlugin.js';
 import { warnOnce } from './utils.js';
 import { RUNTIME, EXTERNAL, HELPERS } from './constants.js';
 
+const unpackOptions = ({
+	// rollup uses sourcemap, babel uses sourceMaps
+	// just normalize them here so people don't have to worry about it
+	sourcemap = true,
+	sourcemaps = true,
+	sourceMap = true,
+	sourceMaps = true,
+	...rest
+} = {}) => ({
+	sourceMaps: sourcemap && sourcemaps && sourceMap && sourceMaps,
+	...rest
+});
+
 export default function babel ( options ) {
-	options = Object.assign( {}, options || {} );
+	const {
+		exclude,
+		externalHelpers,
+		externalHelpersWhitelist,
+		include,
+		runtimeHelpers,
+		...babelOptions
+	} = unpackOptions(options);
 
-	const filter = createFilter( options.include, options.exclude );
-	delete options.include;
-	delete options.exclude;
-
-	if ( options.sourceMap !== false ) options.sourceMaps = true;
-	if ( options.sourceMaps !== false ) options.sourceMaps = true;
-	delete options.sourceMap;
-
-	const runtimeHelpers = options.runtimeHelpers;
-	delete options.runtimeHelpers;
-
-	let externalHelpers;
-	if ( options.externalHelpers ) externalHelpers = true;
-	delete options.externalHelpers;
-
-	let externalHelpersWhitelist = null;
-	if ( options.externalHelpersWhitelist ) externalHelpersWhitelist = options.externalHelpersWhitelist;
-	delete options.externalHelpersWhitelist;
+	const filter = createFilter( include, exclude );
 
 	return {
 		name: 'babel',
@@ -47,7 +50,7 @@ export default function babel ( options ) {
 			if ( !filter( id ) ) return null;
 			if ( id === HELPERS ) return null;
 
-			const helpers = preflightCheck( this, options, dirname( id ) );
+			const helpers = preflightCheck( this, babelOptions, dirname( id ) );
 
 			if ( helpers === EXTERNAL && !externalHelpers ) {
 				warnOnce( this, 'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.' );
@@ -55,7 +58,7 @@ export default function babel ( options ) {
 				this.error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
 			}
 
-			let localOpts = Object.assign({ filename: id }, options);
+			let localOpts = Object.assign({ filename: id }, babelOptions);
 
 			if ( helpers !== RUNTIME ) {
 				localOpts = Object.assign({}, localOpts, { plugins: (localOpts.plugins || []).concat(helperPlugin) });

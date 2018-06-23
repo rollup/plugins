@@ -7,7 +7,7 @@ var external = externalDeps.concat(nodeDeps);
 
 export default {
 	input: 'src/index.js',
-	plugins: [ buble() ],
+	plugins: [ buble({ objectAssign: 'Object.assign' }) ],
 	external: external,
 	output: [
 		{
