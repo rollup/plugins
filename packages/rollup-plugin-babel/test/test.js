@@ -32,8 +32,6 @@ function getLocation ( source, charIndex ) {
 	throw new Error( 'Could not determine location of character' );
 }
 
-const consoleWarn = console.warn;
-
 describe( 'rollup-plugin-babel', function () {
 	this.timeout( 15000 );
 
@@ -160,15 +158,20 @@ describe( 'rollup-plugin-babel', function () {
 	});
 
 	it( 'warns about deprecated usage with external-helper plugin', () => {
+		/* eslint-disable no-console */
 		const messages = [];
-		console.warn = msg => messages.push( msg );
+		const originalWarn = console.warn;
+		console.warn = msg => {
+			messages.push( msg );
+		};
 		return bundle('samples/external-helpers-deprecated/main.js').then(() => {
-			console.warn = consoleWarn;
+			console.warn = originalWarn;
 
 			assert.deepEqual( messages, [
 				'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.'
 			]);
 		});
+		/* eslint-enable no-console */
 	});
 
 	it( 'correctly renames helpers (#22)', () => {

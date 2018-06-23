@@ -14,7 +14,7 @@ function fallbackClassTransform () {
 
 let preflightCheckResults = {};
 
-export default function preflightCheck ( options, dir ) {
+export default function preflightCheck ( ctx, options, dir ) {
 	if ( !preflightCheckResults[ dir ] ) {
 		let helpers;
 
@@ -36,14 +36,16 @@ export default function preflightCheck ( options, dir ) {
 		else if ( ~check.indexOf( 'function _inherits' ) ) helpers = INLINE;
 		else if ( ~check.indexOf( 'babelHelpers' ) ) helpers = EXTERNAL;
 		else {
-			throw new Error( 'An unexpected situation arose. Please raise an issue at https://github.com/rollup/rollup-plugin-babel/issues. Thanks!' );
+			ctx.error( 'An unexpected situation arose. Please raise an issue at https://github.com/rollup/rollup-plugin-babel/issues. Thanks!' );
 		}
 
 		if (
 			!~check.indexOf( 'export default' ) &&
 			!~check.indexOf( 'export default Foo' ) &&
 			!~check.indexOf( 'export { Foo as default }' )
-		) throw new Error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+		) {
+			ctx.error( 'It looks like your Babel configuration specifies a module transformer. Please disable it. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+		}
 
 		preflightCheckResults[ dir ] = helpers;
 	}

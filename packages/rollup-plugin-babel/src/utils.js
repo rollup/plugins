@@ -1,6 +1,6 @@
 let warned = {};
-export function warnOnce ( warn, msg ) {
+export function warnOnce ( ctx, msg ) {
 	if ( warned[ msg ] ) return;
 	warned[ msg ] = true;
-	warn( msg );
+	ctx.warn( msg );
 }

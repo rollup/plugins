@@ -28,14 +28,8 @@ export default function babel ( options ) {
 	if ( options.externalHelpersWhitelist ) externalHelpersWhitelist = options.externalHelpersWhitelist;
 	delete options.externalHelpersWhitelist;
 
-	let warn = msg => console.warn(msg); // eslint-disable-line no-console
-
 	return {
 		name: 'babel',
-
-		options ( options ) {
-			warn = options.onwarn || warn;
-		},
 
 		resolveId ( id ) {
 			if ( id === HELPERS ) return id;
@@ -53,12 +47,12 @@ export default function babel ( options ) {
 			if ( !filter( id ) ) return null;
 			if ( id === HELPERS ) return null;
 
-			const helpers = preflightCheck( options, dirname( id ) );
+			const helpers = preflightCheck( this, options, dirname( id ) );
 
 			if ( helpers === EXTERNAL && !externalHelpers ) {
-				warnOnce( warn, 'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.' );
+				warnOnce( this, 'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.' );
 			} else if ( helpers === RUNTIME && !runtimeHelpers ) {
-				throw new Error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+				this.error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
 			}
 
 			let localOpts = Object.assign({ filename: id }, options);
