@@ -138,6 +138,28 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
+	it( 'allows transform-runtime to inject builtin version of helpers', () => {
+		return bundle(
+			'samples/runtime-helpers-esm/main.js',
+			{ runtimeHelpers: true },
+			{},
+			{}
+		).then(({ code }) => {
+			assert.ok( !~code.indexOf( HELPERS ) );
+		});
+	});
+
+	it( 'allows transform-runtime to inject esm version of helpers', () => {
+		return bundle(
+			'samples/runtime-helpers-esm/main.js',
+			{ runtimeHelpers: true },
+			{},
+			{}
+		).then(({ code }) => {
+			assert.ok( !~code.indexOf( HELPERS ) );
+		});
+	});
+
 	it( 'allows transform-runtime to be used instead of bundled helpers, but throws when CommonJS is used', () => {
 		return bundle(
 			'samples/runtime-helpers-commonjs/main.js',

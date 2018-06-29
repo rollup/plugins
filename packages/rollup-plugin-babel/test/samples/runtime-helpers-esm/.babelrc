@@ -1,0 +1,6 @@
+{
+  "presets": [ ["@babel/env", { "modules": false } ] ],
+  "plugins": [
+    [ "@babel/transform-runtime", { "useESModules": true, "useBuiltIns": true } ]
+  ]
+}
