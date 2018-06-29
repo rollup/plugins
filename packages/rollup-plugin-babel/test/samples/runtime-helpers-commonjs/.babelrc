@@ -1,4 +1,4 @@
 {
   "presets": [ "@babel/env" ],
-  "plugins": [ "@babel/external-helpers", "@babel/transform-runtime" ]
+  "plugins": [ "@babel/transform-runtime" ]
 }
