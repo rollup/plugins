@@ -138,6 +138,17 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
+	it( 'allows transform-runtime to be used instead of bundled helpers, but throws when CommonJS is used', () => {
+		return bundle(
+			'samples/runtime-helpers-commonjs/main.js',
+			{ runtimeHelpers: true }
+		).then(() => {
+			assert.ok(false);
+		}).catch((error) => {
+			assert.ok( ~error.message.indexOf( 'Rollup requires that your Babel configuration keeps ES6 module syntax intact.' ) );
+		});
+	});
+
 	it( 'allows transform-runtime to be used with custom moduleName', () => {
 		let warnCalled = false;
 		return bundle(
