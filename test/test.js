@@ -1,6 +1,6 @@
-import { rollup } from 'rollup';
-import nodeResolve from 'rollup-plugin-node-resolve';
-import eslint from '../src';
+const { rollup } = require('rollup');
+const nodeResolve = require('rollup-plugin-node-resolve');
+const eslint = require('../');
 
 process.chdir('test');
 

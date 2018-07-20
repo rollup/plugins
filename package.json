@@ -2,26 +2,13 @@
   "name": "rollup-plugin-eslint",
   "version": "4.0.0",
   "description": "Verify entry point and all imported files with ESLint",
-  "main": "dist/index.js",
+  "main": "index.js",
   "files": [
-    "dist"
+    "index.js"
   ],
   "scripts": {
-    "pretest": "babel src --out-dir dist",
     "test": "jest --coverage",
     "prepublish": "yarn test"
-  },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "node": 4
-          }
-        }
-      ]
-    ]
   },
   "repository": {
     "type": "git",
@@ -37,9 +24,6 @@
   "author": "Bogdan Chadkin <trysound@yandex.ru>",
   "license": "MIT",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-jest": "^20.0.3",
-    "babel-preset-env": "^1.5.2",
     "jest": "^20.0.4",
     "rollup": "^0.43.0",
     "rollup-plugin-node-resolve": "^3.0.0"

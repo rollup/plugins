@@ -1,6 +1,6 @@
-import path from 'path';
-import { createFilter } from 'rollup-pluginutils';
-import { CLIEngine } from 'eslint';
+const path = require('path');
+const { createFilter } = require('rollup-pluginutils');
+const { CLIEngine } = require('eslint');
 
 function normalizePath(id) {
     return path.relative(process.cwd(), id).split(path.sep).join('/');
