@@ -7,8 +7,15 @@
     "index.js"
   ],
   "scripts": {
-    "test": "jest --coverage",
-    "prepublish": "yarn test"
+    "test": "jest",
+    "prepublish": "yarn test",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
@@ -24,7 +31,10 @@
   "author": "Bogdan Chadkin <trysound@yandex.ru>",
   "license": "MIT",
   "devDependencies": {
+    "husky": "^0.14.3",
     "jest": "^20.0.4",
+    "lint-staged": "^7.2.0",
+    "prettier": "^1.13.7",
     "rollup": "^0.43.0",
     "rollup-plugin-node-resolve": "^3.0.0"
   },

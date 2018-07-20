@@ -1,7 +1,7 @@
 (function () {
 
-    void 0;
-    x = 0;
+  void 0;
+  x = 0;
 
 }());
 
