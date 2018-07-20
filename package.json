@@ -12,7 +12,7 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": [
+    "*.{js,md}": [
       "prettier --write",
       "git add"
     ]

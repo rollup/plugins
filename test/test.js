@@ -1,6 +1,6 @@
 const { rollup } = require("rollup");
 const nodeResolve = require("rollup-plugin-node-resolve");
-const eslint = require("../");
+const { eslint } = require("../");
 
 process.chdir("test");
 

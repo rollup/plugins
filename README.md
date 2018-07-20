@@ -7,28 +7,27 @@
 
 [Rollup] plugin to verify entry point and all imported files with ESLint.
 
-
 ## Install
 
 ```sh
-npm i rollup-plugin-eslint -D
+yarn add rollup-plugin-eslint --dev
 ```
-
 
 ## Usage
 
 ```js
-import { rollup } from 'rollup';
-import eslint from 'rollup-plugin-eslint';
+import { rollup } from "rollup";
+import { eslint } from "rollup-plugin-eslint";
 
-rollup({
-    entry: 'main.js',
-    plugins: [
-        eslint({ /* your options */ })
-    ]
-});
+export default {
+  input: "main.js",
+  plugins: [
+    eslint({
+      /* your options */
+    })
+  ]
+};
 ```
-
 
 ## Options
 
@@ -70,7 +69,6 @@ Type: `function` or `string`
 Default: `stylish`
 
 Custom error formatter or the name of a built-in formatter.
-
 
 # License
 

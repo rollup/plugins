@@ -9,7 +9,7 @@ function normalizePath(id) {
     .join("/");
 }
 
-module.exports = function eslint(options = {}) {
+function eslint(options = {}) {
   const cli = new CLIEngine(options);
   let formatter = options.formatter;
 
@@ -58,4 +58,6 @@ module.exports = function eslint(options = {}) {
       }
     }
   };
-};
+}
+
+exports.eslint = eslint;
