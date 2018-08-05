@@ -1,6 +1,6 @@
 {
   "presets": [ ["@babel/env", { "modules": false } ] ],
   "plugins": [
-    [ "@babel/transform-runtime", { "useBuiltIns": true } ]
+    [ "@babel/transform-runtime" ]
   ]
 }

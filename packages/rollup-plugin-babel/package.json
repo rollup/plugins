@@ -30,18 +30,18 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@babel/helper-module-imports": "7.0.0-beta.51",
+    "@babel/helper-module-imports": "7.0.0-beta.56",
     "rollup-pluginutils": "^2.3.0"
   },
   "peerDependencies": {
     "@babel/core": "7 || ^7.0.0-beta"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.51",
-    "@babel/plugin-external-helpers": "7.0.0-beta.51",
-    "@babel/plugin-proposal-decorators": "7.0.0-beta.51",
-    "@babel/plugin-transform-runtime": "7.0.0-beta.51",
-    "@babel/preset-env": "7.0.0-beta.51",
+    "@babel/core": "7.0.0-beta.56",
+    "@babel/plugin-external-helpers": "7.0.0-beta.56",
+    "@babel/plugin-proposal-decorators": "7.0.0-beta.56",
+    "@babel/plugin-transform-runtime": "7.0.0-beta.56",
+    "@babel/preset-env": "7.0.0-beta.56",
     "buble": "^0.19.3",
     "eslint": "^5.0.1",
     "mocha": "^5.2.0",

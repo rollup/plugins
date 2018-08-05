@@ -171,25 +171,6 @@ describe( 'rollup-plugin-babel', function () {
 		});
 	});
 
-	it( 'allows transform-runtime to be used with custom moduleName', () => {
-		let warnCalled = false;
-		return bundle(
-			'samples/runtime-helpers-custom-name/main.js',
-			{ runtimeHelpers: true },
-			{},
-			{
-				onwarn: function ( warning ) {
-					assert.equal( warning.code, 'UNRESOLVED_IMPORT' );
-					assert.equal( warning.source, 'custom-name/helpers/classCallCheck' );
-					warnCalled = true;
-				}
-			}
-		).then(({ code }) => {
-			assert.ok( warnCalled, 'onwarn was never triggered about unresolved imports' );
-			assert.ok( !~code.indexOf( HELPERS ) );
-		});
-	});
-
 	it( 'warns about deprecated usage with external-helper plugin', () => {
 		/* eslint-disable no-console */
 		const messages = [];
