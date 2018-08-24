@@ -1,12 +1,13 @@
 import { dirname } from 'path';
-import { buildExternalHelpers, transform } from '@babel/core';
+import { buildExternalHelpers, DEFAULT_EXTENSIONS, transform } from '@babel/core';
 import { createFilter } from 'rollup-pluginutils';
 import createPreflightCheck from './preflightCheck.js';
 import helperPlugin from './helperPlugin.js';
-import { warnOnce } from './utils.js';
+import { escapeRegExpCharacters, warnOnce } from './utils.js';
 import { RUNTIME, EXTERNAL, HELPERS } from './constants.js';
 
 const unpackOptions = ({
+	extensions = DEFAULT_EXTENSIONS,
 	// rollup uses sourcemap, babel uses sourceMaps
 	// just normalize them here so people don't have to worry about it
 	sourcemap = true,
@@ -15,13 +16,15 @@ const unpackOptions = ({
 	sourceMaps = true,
 	...rest
 } = {}) => ({
+	extensions,
 	sourceMaps: sourcemap && sourcemaps && sourceMap && sourceMaps,
-	...rest
+	...rest,
 });
 
 export default function babel ( options ) {
 	const {
 		exclude,
+		extensions,
 		externalHelpers,
 		externalHelpersWhitelist,
 		include,
@@ -29,7 +32,9 @@ export default function babel ( options ) {
 		...babelOptions
 	} = unpackOptions(options);
 
-	const filter = createFilter( include, exclude );
+	const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
+	const includeExcludeFilter = createFilter( include, exclude );
+	const filter = id => extensionRegExp.test(id) && includeExcludeFilter(id);
 	const preflightCheck = createPreflightCheck();
 
 	return {

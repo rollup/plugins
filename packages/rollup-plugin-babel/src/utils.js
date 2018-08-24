@@ -4,3 +4,6 @@ export function warnOnce ( ctx, msg ) {
 	warned[ msg ] = true;
 	ctx.warn( msg );
 }
+
+const regExpCharactersRegExp = /[\\^$.*+?()[\]{}|]/g;
+export const escapeRegExpCharacters = str => str.replace(regExpCharactersRegExp, '\\$&');
