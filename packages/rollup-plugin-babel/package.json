@@ -30,22 +30,23 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@babel/helper-module-imports": "7.0.0-beta.56",
+    "@babel/helper-module-imports": "7.0.0-rc.2",
     "rollup-pluginutils": "^2.3.0"
   },
   "peerDependencies": {
-    "@babel/core": "7 || ^7.0.0-beta"
+    "@babel/core": "7 || ^7.0.0-rc.2",
+    "rollup": "^0.60.0"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.56",
-    "@babel/plugin-external-helpers": "7.0.0-beta.56",
-    "@babel/plugin-proposal-decorators": "7.0.0-beta.56",
-    "@babel/plugin-transform-runtime": "7.0.0-beta.56",
-    "@babel/preset-env": "7.0.0-beta.56",
+    "@babel/core": "7.0.0-rc.2",
+    "@babel/plugin-external-helpers": "7.0.0-rc.2",
+    "@babel/plugin-proposal-decorators": "7.0.0-rc.2",
+    "@babel/plugin-transform-runtime": "7.0.0-rc.2",
+    "@babel/preset-env": "7.0.0-rc.2",
     "buble": "^0.19.3",
     "eslint": "^5.0.1",
     "mocha": "^5.2.0",
-    "rollup": "^0.62.0",
+    "rollup": "^0.64.1",
     "rollup-plugin-buble": "^0.19.2",
     "rollup-plugin-json": "^3.0.0",
     "source-map": "^0.6.1",

@@ -1,3 +1,5 @@
-import foo from './foo/index.js';
+import Foo from './foo/index.js';
 
-console.log( foo );
+class Bar {}
+
+console.log( { Foo, Bar } );

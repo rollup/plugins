@@ -112,11 +112,14 @@ describe( 'rollup-plugin-babel', function () {
 			input: 'samples/checks/main.js',
 			plugins: [ babelPlugin() ]
 		})
-			.then( () => {
-				assert.ok( false, 'promise should not fulfil' );
+			.then(bundle => bundle.generate({ output: { format: 'esm' } }))
+			.then(({ code }) => {
+				assert.ok( /class Foo/.test(code));
+				assert.ok( /var Bar/.test(code));
+				assert.ok( !/class Bar/.test(code));
 			})
 			.catch( ( err ) => {
-				assert.ok( /module transformer/i.test( err.message ), 'Expected an error about external helpers or module transform, got "' + err.message + '"' );
+				assert.ok( false, err.message );
 			});
 	});
 

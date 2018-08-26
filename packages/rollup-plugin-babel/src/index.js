@@ -1,5 +1,5 @@
 import { dirname } from 'path';
-import { buildExternalHelpers, DEFAULT_EXTENSIONS, transform } from '@babel/core';
+import { buildExternalHelpers, DEFAULT_EXTENSIONS, loadPartialConfig, transform } from '@babel/core';
 import { createFilter } from 'rollup-pluginutils';
 import createPreflightCheck from './preflightCheck.js';
 import helperPlugin from './helperPlugin.js';
@@ -17,11 +17,29 @@ const unpackOptions = ({
 	...rest
 } = {}) => ({
 	extensions,
+	plugins: [],
 	sourceMaps: sourcemap && sourcemaps && sourceMap && sourceMaps,
 	...rest,
+	caller: {
+		name: 'rollup-plugin-babel',
+		supportsStaticESM: true,
+		supportsDynamicImport: true,
+		...rest.caller,
+	}
 });
 
 export default function babel ( options ) {
+	// TODO: remove it later, just provide a helpful warning to people for now
+	try {
+		loadPartialConfig({
+			caller: undefined,
+			babelrc: false,
+			configFile: false,
+		});
+	} catch (err) {
+		throw new Error('You should be using @babel/core@^7.0.0-rc.2. Please upgrade or pin rollup-plugin-babel to 4.0.0-beta.8');
+	}
+
 	const {
 		exclude,
 		extensions,
@@ -64,11 +82,13 @@ export default function babel ( options ) {
 				this.error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
 			}
 
-			let localOpts = Object.assign({ filename: id }, babelOptions);
-
-			if ( helpers !== RUNTIME ) {
-				localOpts = Object.assign({}, localOpts, { plugins: (localOpts.plugins || []).concat(helperPlugin) });
-			}
+			const localOpts = {
+				filename: id,
+				...babelOptions,
+				plugins: helpers !== RUNTIME
+					? [...babelOptions.plugins, helperPlugin]
+					: babelOptions.plugins,
+			};
 
 			const transformed = transform( code, localOpts );
 
