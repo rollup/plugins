@@ -18,16 +18,16 @@ Using Rollup with rollup-plugin-babel makes the process far easier.
 
 ## Installation
 
-> babel 6.x
+> babel 7.x
 
 ```bash
 npm install --save-dev rollup-plugin-babel@latest
 ```
 
-> babel 7.x - beta
+> babel 6.x
 
 ```bash
-npm install --save-dev rollup-plugin-babel@beta
+npm install --save-dev rollup-plugin-babel@3
 ```
 
 ## Usage
