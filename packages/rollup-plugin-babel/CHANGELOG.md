@@ -1,5 +1,13 @@
 # rollup-plugin-babel changelog
 
+## 4.0.0
+
+Babel 7 compatible! (dropped Babel 6 compatibility though).
+
+Additionally:
+* Internal preflight checks are created now per plugin instance, so using 2 instances of rollup-plugin-babel (i.e. targeting 2 different set of files with include/exclude options) shouldn't conflict with each other
+* Transpiling by default only what Babel transpiles - files with those extensions: .js, .jsx, .es6, .es, .mjs. You can customize this with new `extensions` option. This also fixes long standing issue with rollup-plugin-babel trying to transform JSON files.
+
 ## 3.0.3
 
 * Drop babel7 support. Use 4.0.0-beta if you use babel 7

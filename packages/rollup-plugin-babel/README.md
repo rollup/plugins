@@ -62,50 +62,11 @@ We encourage library authors not to distribute code that uses untranspiled ES6 f
 
 Use `babelrc: false` to prevent Babel from using local (i.e. to your external dependencies) `.babelrc` files, relying instead on the configuration you pass in.
 
-
-## Configuring Babel
-
-**The following applies to Babel 6 only. If you're using Babel 5, do `npm i -D rollup-plugin-babel@1`, as version 2 and above no longer supports Babel 5**
-
-```bash
-npm install --save-dev babel-preset-env babel-plugin-external-helpers
-```
-
-```js
-// .babelrc
-{
-  "presets": [
-    [
-      "env",
-      {
-        "modules": false
-      }
-    ]
-  ],
-  "plugins": [
-    "external-helpers"
-  ]
-}
-```
-
-### Modules
-
-The `env` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that will work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
-
-However, setting `modules: false` in your `.babelrc` may conflict if you are using `babel-register`. To work around this, specify `babelrc: false` in your rollup config. This allows Rollup to bypass your `.babelrc` file. In order to use the `env` preset, you will also need to specify it with `modules: false` option:
-```js
-plugins: [
-  babel({
-    babelrc: false,
-    presets: [['env', { modules: false }]]
-  })
-]
-```
 ### Helpers
 
 In some cases Babel uses *helpers* to avoid repeating chunks of code – for example, if you use the `class` keyword, it will use a `classCallCheck` function to ensure that the class is instantiated correctly.
 
-By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. It's therefore recommended that you use the `external-helpers` plugin. Rollup will combine the helpers in a single block at the top of your bundle.
+By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. This rollup plugin automatically deduplicates those helpers, keeping only one copy of each one used in the output bundle. Rollup will combine the helpers in a single block at the top of your bundle. To achieve the same in Babel 6 you must use the `external-helpers` plugin.
 
 Alternatively, if you know what you're doing, you can use the `transform-runtime` plugin. If you do this, use `runtimeHelpers: true`:
 
@@ -132,6 +93,47 @@ rollup.rollup({
     })
   ]
 }).then(...)
+```
+
+### Modules
+
+*This is not needed for Babel 7 - it knows automatically that Rollup understands ES modules & that it shouldn't use any module transform with it. The section below describes what needs to be done for Babel 6.*
+
+The `env` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that will work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
+
+However, setting `modules: false` in your `.babelrc` may conflict if you are using `babel-register`. To work around this, specify `babelrc: false` in your rollup config. This allows Rollup to bypass your `.babelrc` file. In order to use the `env` preset, you will also need to specify it with `modules: false` option:
+```js
+plugins: [
+  babel({
+    babelrc: false,
+    presets: [['env', { modules: false }]]
+  })
+]
+```
+
+## Configuring Babel 6
+
+**The following applies to Babel 6 only. If you're using Babel 5, do `npm i -D rollup-plugin-babel@1`, as version 2 and above no longer supports Babel 5**
+
+```bash
+npm install --save-dev rollup-plugin-babel@3 babel-preset-env babel-plugin-external-helpers
+```
+
+```js
+// .babelrc
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false
+      }
+    ]
+  ],
+  "plugins": [
+    "external-helpers"
+  ]
+}
 ```
 
 ## License
