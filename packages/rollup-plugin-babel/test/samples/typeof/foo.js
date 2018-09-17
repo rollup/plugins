@@ -1,3 +1,3 @@
-export default function foo ( a ) {
+export default function foo(a) {
 	return typeof a;
 }

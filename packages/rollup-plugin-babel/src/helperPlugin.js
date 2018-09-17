@@ -1,9 +1,9 @@
 import { HELPERS } from './constants.js';
 import { addNamed } from '@babel/helper-module-imports';
 
-export default function importHelperPlugin () {
+export default function importHelperPlugin() {
 	return {
-		pre (file) {
+		pre(file) {
 			const cachedHelpers = {};
 			file.set('helperGenerator', name => {
 				if (cachedHelpers[name]) {
@@ -14,4 +14,3 @@ export default function importHelperPlugin () {
 		},
 	};
 }
-

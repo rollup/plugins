@@ -1,4 +1,4 @@
 module.exports = {
 	solo: true,
-	description: 'correctly renames helpers'
+	description: 'correctly renames helpers',
 };

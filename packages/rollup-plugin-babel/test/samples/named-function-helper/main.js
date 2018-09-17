@@ -1,11 +1,11 @@
 class Bar {
-	baz () {
-		alert( 'baz' );
+	baz() {
+		alert('baz');
 	}
 }
 
 export class Foo extends Bar {
-	baz () {
+	baz() {
 		super.baz();
 	}
 }

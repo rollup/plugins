@@ -1,5 +1,5 @@
 export default class Foo extends Bar {
-	baz () {
-		console.log( 'xyz' );
+	baz() {
+		console.log('xyz');
 	}
 }
