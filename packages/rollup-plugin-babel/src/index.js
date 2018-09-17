@@ -1,4 +1,3 @@
-import { dirname } from 'path';
 import { buildExternalHelpers, DEFAULT_EXTENSIONS, loadPartialConfig, transform } from '@babel/core';
 import { createFilter } from 'rollup-pluginutils';
 import createPreflightCheck from './preflightCheck.js';
@@ -25,10 +24,10 @@ const unpackOptions = ({
 		supportsStaticESM: true,
 		supportsDynamicImport: true,
 		...rest.caller,
-	}
+	},
 });
 
-export default function babel ( options ) {
+export default function babel(options) {
 	// TODO: remove it later, just provide a helpful warning to people for now
 	try {
 		loadPartialConfig({
@@ -37,7 +36,9 @@ export default function babel ( options ) {
 			configFile: false,
 		});
 	} catch (err) {
-		throw new Error('You should be using @babel/core@^7.0.0-rc.2. Please upgrade or pin rollup-plugin-babel to 4.0.0-beta.8');
+		throw new Error(
+			'You should be using @babel/core@^7.0.0-rc.2. Please upgrade or pin rollup-plugin-babel to 4.0.0-beta.8',
+		);
 	}
 
 	const {
@@ -51,50 +52,53 @@ export default function babel ( options ) {
 	} = unpackOptions(options);
 
 	const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
-	const includeExcludeFilter = createFilter( include, exclude );
+	const includeExcludeFilter = createFilter(include, exclude);
 	const filter = id => extensionRegExp.test(id) && includeExcludeFilter(id);
 	const preflightCheck = createPreflightCheck();
 
 	return {
 		name: 'babel',
 
-		resolveId ( id ) {
-			if ( id === HELPERS ) return id;
+		resolveId(id) {
+			if (id === HELPERS) return id;
 		},
 
-		load ( id ) {
-			if ( id !== HELPERS ) {
+		load(id) {
+			if (id !== HELPERS) {
 				return;
 			}
 
-			return buildExternalHelpers( externalHelpersWhitelist, 'module' );
+			return buildExternalHelpers(externalHelpersWhitelist, 'module');
 		},
 
-		transform ( code, id ) {
-			if ( !filter( id ) ) return null;
-			if ( id === HELPERS ) return null;
+		transform(code, id) {
+			if (!filter(id)) return null;
+			if (id === HELPERS) return null;
 
-			const helpers = preflightCheck( this, babelOptions, id );
+			const helpers = preflightCheck(this, babelOptions, id);
 
 			if (!helpers) {
 				return { code };
 			}
 
-			if ( helpers === EXTERNAL && !externalHelpers ) {
-				warnOnce( this, 'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.' );
-			} else if ( helpers === RUNTIME && !runtimeHelpers ) {
-				this.error( 'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information' );
+			if (helpers === EXTERNAL && !externalHelpers) {
+				warnOnce(
+					this,
+					'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.',
+				);
+			} else if (helpers === RUNTIME && !runtimeHelpers) {
+				this.error(
+					'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information',
+				);
 			}
 
 			const localOpts = {
 				filename: id,
 				...babelOptions,
-				plugins: helpers !== RUNTIME
-					? [...babelOptions.plugins, helperPlugin]
-					: babelOptions.plugins,
+				plugins: helpers !== RUNTIME ? [...babelOptions.plugins, helperPlugin] : babelOptions.plugins,
 			};
 
-			const transformed = transform( code, localOpts );
+			const transformed = transform(code, localOpts);
 
 			if (!transformed) {
 				return { code };
@@ -102,8 +106,8 @@ export default function babel ( options ) {
 
 			return {
 				code: transformed.code,
-				map: transformed.map
+				map: transformed.map,
 			};
-		}
+		},
 	};
 }
