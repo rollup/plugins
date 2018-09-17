@@ -74,7 +74,11 @@ export default function babel ( options ) {
 			if ( !filter( id ) ) return null;
 			if ( id === HELPERS ) return null;
 
-			const helpers = preflightCheck( this, babelOptions, dirname( id ) );
+			const helpers = preflightCheck( this, babelOptions, id );
+
+			if (!helpers) {
+				return { code };
+			}
 
 			if ( helpers === EXTERNAL && !externalHelpers ) {
 				warnOnce( this, 'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.' );

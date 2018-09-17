@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { transform } from '@babel/core';
 import { INLINE, RUNTIME, EXTERNAL } from './constants.js';
 
@@ -28,18 +28,24 @@ function fallbackClassTransform () {
 export default function createPreflightCheck () {
 	let preflightCheckResults = {};
 
-	return ( ctx, options, dir ) => {
-		if ( !preflightCheckResults[ dir ] ) {
+	return ( ctx, options, file ) => {
+		if ( preflightCheckResults[ file ] === undefined ) {
 			let helpers;
 
 			options = Object.assign( {}, options );
 			delete options.only;
 			delete options.ignore;
 
-			options.filename = join( dir, 'x.js' );
+			options.filename = join( dirname( file ), 'x.js' );
 
 			const inputCode = 'class Foo extends Bar {};\nexport default Foo;';
-			let check = transform( inputCode, options ).code;
+			const transformed = transform( inputCode, options );
+
+			if (!transformed) {
+				return (preflightCheckResults[ file ] = null);
+			}
+
+			let check = transformed.code;
 
 			if ( ~check.indexOf('class ') ) {
 				options.plugins = (options.plugins || []).concat( fallbackClassTransform );
@@ -61,9 +67,9 @@ export default function createPreflightCheck () {
 				ctx.error( UNEXPECTED_ERROR );
 			}
 
-			preflightCheckResults[ dir ] = helpers;
+			preflightCheckResults[ file ] = helpers;
 		}
 
-		return preflightCheckResults[ dir ];
+		return preflightCheckResults[ file ];
 	};
 }
