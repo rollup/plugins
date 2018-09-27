@@ -50,6 +50,7 @@ All options are as per the [Babel documentation](https://babeljs.io/), except th
 - `options.externalHelpers`: a boolean value indicating whether to bundle in the Babel helpers
 - `options.include` and `options.exclude`: each a minimatch pattern, or array of minimatch patterns, which determine which files are transpiled by Babel (by default, all files are transpiled)
 - `options.externalHelpersWhitelist`: an array which gives explicit control over which babelHelper functions are allowed in the bundle (by default, every helper is allowed)
+- `options.extensions`: an array of file extensions that Babel should transpile (by default the Babel defaults of .js, .jsx, .es6, .es, .mjs. are used)
 
 Babel will respect `.babelrc` files – this is generally the best place to put your configuration.
 
