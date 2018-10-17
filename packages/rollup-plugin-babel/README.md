@@ -105,10 +105,10 @@ However, setting `modules: false` in your `.babelrc` may conflict if you are usi
 
 ```js
 plugins: [
-	babel({
-		babelrc: false,
-		presets: [['env', { modules: false }]],
-	}),
+  babel({
+    babelrc: false,
+    presets: [['env', { modules: false }]],
+  }),
 ];
 ```
 
