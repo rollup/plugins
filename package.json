@@ -1,0 +1,22 @@
+{
+  "name": "@rollup/plugin-auto-install",
+  "version": "1.0.0",
+  "description": "Auto-install packages from npm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rollup/plugin-auto-install.git"
+  },
+  "keywords": [
+    "rollup"
+  ],
+  "author": "Rich Harris",
+  "license": "LIL",
+  "bugs": {
+    "url": "https://github.com/rollup/plugin-auto-install/issues"
+  },
+  "homepage": "https://github.com/rollup/plugin-auto-install#readme"
+}
