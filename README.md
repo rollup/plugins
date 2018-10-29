@@ -1,4 +1,4 @@
-# rollup-plugin-auto-install
+# @rollup/plugin-auto-install
 
 Automatically install dependencies that are imported by your bundle, but aren't yet in package.json.
 
@@ -7,7 +7,7 @@ Automatically install dependencies that are imported by your bundle, but aren't 
 Install in the usual fashion...
 
 ```
-npm install -D rollup-plugin-auto-install
+npm install -D @rollup/plugin-auto-install
 ```
 
 ...then add to your plugins array, ensuring that it goes *before* [rollup-plugin-node-resolve](https://github.com/rollup/rollup-plugin-node-resolve):
