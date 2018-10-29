@@ -52,6 +52,7 @@ module.exports = function(opts = {}) {
 				if (name[0] === '@') name += `/${parts.shift()}`;
 
 				if (!installed.has(name)) {
+					installed.add(name);
 					console.log(`installing ${name}...`)
 					await exec(`${cmd} ${name}`);
 				}
