@@ -45,7 +45,13 @@ module.exports = function(opts = {}) {
 			// this function doesn't actually resolve anything, but it
 			// provides us with a hook to discover uninstalled deps
 
-			if (importee[0] !== '.' && !path.isAbsolute(importee)) {
+			const isExternalPackage = (
+				importee[0] !== '.' &&
+				importee[0] !== '\0' &&
+				!path.isAbsolute(importee)
+			);
+
+			if (isExternalPackage) {
 				// we have a bare import — check it's installed
 				const parts = importee.split('/');
 				let name = parts.shift();
