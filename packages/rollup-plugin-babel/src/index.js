@@ -78,7 +78,7 @@ export default function babel(options) {
 			const helpers = preflightCheck(this, babelOptions, id);
 
 			if (!helpers) {
-				return { code };
+				return null;
 			}
 
 			if (helpers === EXTERNAL && !externalHelpers) {
@@ -101,7 +101,7 @@ export default function babel(options) {
 			const transformed = transform(code, localOpts);
 
 			if (!transformed) {
-				return { code };
+				return null;
 			}
 
 			return {
