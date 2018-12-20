@@ -45,7 +45,7 @@ rollup({
 }).then(...)
 ```
 
-All options are as per the [Babel documentation](https://babeljs.io/), except the following:
+All options are as per the [Babel documentation](https://babeljs.io/), plus the following:
 
 - `options.externalHelpers`: a boolean value indicating whether to bundle in the Babel helpers
 - `options.include` and `options.exclude`: each a minimatch pattern, or array of minimatch patterns, which determine which files are transpiled by Babel (by default, all files are transpiled)
