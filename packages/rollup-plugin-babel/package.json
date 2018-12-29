@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "@babel/core": "7 || ^7.0.0-rc.2",
-    "rollup": ">=0.60.0 <1"
+    "rollup": ">=0.60.0 <2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
