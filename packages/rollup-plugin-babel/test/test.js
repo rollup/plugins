@@ -49,7 +49,8 @@ describe('rollup-plugin-babel', function() {
 			)
 			.then(bundle => {
 				return bundle.generate(Object.assign({ format: 'cjs' }, generateOptions));
-			});
+			})
+			.then(({ output: [generated] }) => generated);
 	}
 
 	it('runs code through babel', () => {
@@ -120,7 +121,7 @@ describe('rollup-plugin-babel', function() {
 				plugins: [babelPlugin()],
 			})
 			.then(bundle => bundle.generate({ output: { format: 'esm' } }))
-			.then(({ code }) => {
+			.then(({ output: [{ code }] }) => {
 				assert.ok(/class Foo/.test(code));
 				assert.ok(/var Bar/.test(code));
 				assert.ok(!/class Bar/.test(code));
