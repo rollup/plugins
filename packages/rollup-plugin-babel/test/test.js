@@ -241,4 +241,27 @@ describe('rollup-plugin-babel', function() {
 			assert.ok(code.indexOf('class Other ') === -1, 'should transpile .other');
 		});
 	});
+
+	it('throws when trying to add babel helper unavailable in used @babel/core version', () => {
+		return bundle('samples/basic/main.js', {
+			plugins: [
+				function() {
+					return {
+						visitor: {
+							Program(path, state) {
+								state.file.addHelper('__nonexistentHelper');
+							},
+						},
+					};
+				},
+			],
+		}).then(
+			() => {
+				assert.ok(false);
+			},
+			err => {
+				assert.equal(err.message, 'Unknown helper __nonexistentHelper');
+			},
+		);
+	});
 });
