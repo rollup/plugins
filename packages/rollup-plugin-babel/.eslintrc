@@ -1,26 +1,19 @@
 {
-    "rules": {
-        "indent": [ 2, "tab", { "SwitchCase": 1 } ],
-        "quotes": [ 2, "single" , { "avoidEscape": true }],
-        "linebreak-style": [ 2, "unix" ],
-        "semi": [ 2, "always" ],
-        "keyword-spacing": [ 2, { "before": true, "after": true } ],
-        "space-before-blocks": [ 2, "always" ],
-        "no-mixed-spaces-and-tabs": [ 2, "smart-tabs" ],
-        "no-cond-assign": [ 0 ],
-    },
-    "env": {
-        "es6": true,
-        "browser": true,
-        "mocha": true,
-        "node": true
-    },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "sourceType": "module",
-        "ecmaVersion": 2018,
-        "ecmaFeatures": {
-            "spread": true
-        }
-    }
+	"extends": ["eslint:recommended", "prettier", "plugin:prettier/recommended"],
+	"rules": {
+		"no-cond-assign": [0]
+	},
+	"env": {
+		"es6": true,
+		"browser": true,
+		"mocha": true,
+		"node": true
+	},
+	"parserOptions": {
+		"sourceType": "module",
+		"ecmaVersion": 2018,
+		"ecmaFeatures": {
+			"spread": true
+		}
+	}
 }

@@ -1,6 +1,6 @@
-import { join, dirname } from 'path';
-import { transform } from '@babel/core';
+import { transformSync } from '@babel/core';
 import { INLINE, RUNTIME, EXTERNAL } from './constants.js';
+import { addBabelPlugin } from './utils.js';
 
 const MODULE_ERROR =
 	'Rollup requires that your Babel configuration keeps ES6 module syntax intact. ' +
@@ -28,28 +28,19 @@ function fallbackClassTransform() {
 export default function createPreflightCheck() {
 	let preflightCheckResults = {};
 
-	return (ctx, options, file) => {
-		if (preflightCheckResults[file] === undefined) {
+	return (ctx, options) => {
+		const key = options.filename;
+
+		if (preflightCheckResults[key] === undefined) {
 			let helpers;
 
-			options = Object.assign({}, options);
-			delete options.only;
-			delete options.ignore;
-
-			options.filename = join(dirname(file), 'x.js');
-
 			const inputCode = 'class Foo extends Bar {};\nexport default Foo;';
-			const transformed = transform(inputCode, options);
-
-			if (!transformed) {
-				return (preflightCheckResults[file] = null);
-			}
+			const transformed = transformSync(inputCode, options);
 
 			let check = transformed.code;
 
 			if (~check.indexOf('class ')) {
-				options.plugins = (options.plugins || []).concat(fallbackClassTransform);
-				check = transform(inputCode, options).code;
+				check = transformSync(inputCode, addBabelPlugin(options, fallbackClassTransform)).code;
 			}
 
 			if (
@@ -67,9 +58,9 @@ export default function createPreflightCheck() {
 				ctx.error(UNEXPECTED_ERROR);
 			}
 
-			preflightCheckResults[file] = helpers;
+			preflightCheckResults[key] = helpers;
 		}
 
-		return preflightCheckResults[file];
+		return preflightCheckResults[key];
 	};
 }

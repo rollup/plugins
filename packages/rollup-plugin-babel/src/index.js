@@ -1,12 +1,12 @@
-import { buildExternalHelpers, DEFAULT_EXTENSIONS, loadPartialConfig, transform } from '@babel/core';
+import * as babel from '@babel/core';
 import { createFilter } from 'rollup-pluginutils';
 import createPreflightCheck from './preflightCheck.js';
 import helperPlugin from './helperPlugin.js';
-import { escapeRegExpCharacters, warnOnce } from './utils.js';
+import { addBabelPlugin, escapeRegExpCharacters, warnOnce } from './utils.js';
 import { RUNTIME, EXTERNAL, HELPERS } from './constants.js';
 
 const unpackOptions = ({
-	extensions = DEFAULT_EXTENSIONS,
+	extensions = babel.DEFAULT_EXTENSIONS,
 	// rollup uses sourcemap, babel uses sourceMaps
 	// just normalize them here so people don't have to worry about it
 	sourcemap = true,
@@ -27,87 +27,107 @@ const unpackOptions = ({
 	},
 });
 
-export default function babel(options) {
-	// TODO: remove it later, just provide a helpful warning to people for now
-	try {
-		loadPartialConfig({
-			caller: undefined,
-			babelrc: false,
-			configFile: false,
-		});
-	} catch (err) {
-		throw new Error(
-			'You should be using @babel/core@^7.0.0-rc.2. Please upgrade or pin rollup-plugin-babel to 4.0.0-beta.8',
-		);
-	}
+const returnObject = () => ({});
 
-	const {
-		exclude,
-		extensions,
-		externalHelpers,
-		externalHelpersWhitelist,
-		include,
-		runtimeHelpers,
-		...babelOptions
-	} = unpackOptions(options);
+function createBabelPluginFactory(customCallback = returnObject) {
+	const overrides = customCallback(babel);
 
-	const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
-	const includeExcludeFilter = createFilter(include, exclude);
-	const filter = id => extensionRegExp.test(id) && includeExcludeFilter(id);
-	const preflightCheck = createPreflightCheck();
+	return pluginOptions => {
+		let customOptions = null;
 
-	return {
-		name: 'babel',
+		if (overrides.options) {
+			const overridden = overrides.options(pluginOptions);
 
-		resolveId(id) {
-			if (id === HELPERS) return id;
-		},
-
-		load(id) {
-			if (id !== HELPERS) {
-				return;
-			}
-
-			return buildExternalHelpers(externalHelpersWhitelist, 'module');
-		},
-
-		transform(code, id) {
-			if (!filter(id)) return null;
-			if (id === HELPERS) return null;
-
-			const helpers = preflightCheck(this, babelOptions, id);
-
-			if (!helpers) {
-				return null;
-			}
-
-			if (helpers === EXTERNAL && !externalHelpers) {
-				warnOnce(
-					this,
-					'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.',
-				);
-			} else if (helpers === RUNTIME && !runtimeHelpers) {
-				this.error(
-					'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information',
+			if (typeof overridden.then === 'function') {
+				throw new Error(
+					".options hook can't be asynchronous. It should return `{ customOptions, pluginsOptions }` synchronously.",
 				);
 			}
+			({ customOptions = null, pluginOptions } = overridden);
+		}
 
-			const localOpts = {
-				filename: id,
-				...babelOptions,
-				plugins: helpers !== RUNTIME ? [...babelOptions.plugins, helperPlugin] : babelOptions.plugins,
-			};
+		const {
+			exclude,
+			extensions,
+			externalHelpers,
+			externalHelpersWhitelist,
+			include,
+			runtimeHelpers,
+			...babelOptions
+		} = unpackOptions(pluginOptions);
 
-			const transformed = transform(code, localOpts);
+		const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
+		const includeExcludeFilter = createFilter(include, exclude);
+		const filter = id => extensionRegExp.test(id) && includeExcludeFilter(id);
+		const preflightCheck = createPreflightCheck();
 
-			if (!transformed) {
-				return null;
-			}
+		return {
+			name: 'babel',
+			resolveId(id) {
+				if (id === HELPERS) return id;
+			},
+			load(id) {
+				if (id !== HELPERS) {
+					return;
+				}
 
-			return {
-				code: transformed.code,
-				map: transformed.map,
-			};
-		},
+				return babel.buildExternalHelpers(externalHelpersWhitelist, 'module');
+			},
+			transform(code, filename) {
+				if (!filter(filename)) return Promise.resolve(null);
+				if (filename === HELPERS) return Promise.resolve(null);
+
+				const config = babel.loadPartialConfig({ ...babelOptions, filename });
+
+				// file is ignored
+				if (!config) {
+					return Promise.resolve(null);
+				}
+
+				return Promise.resolve(
+					!overrides.config
+						? config.options
+						: overrides.config.call(this, config, {
+								code,
+								customOptions,
+						  }),
+				).then(transformOptions => {
+					const helpers = preflightCheck(this, transformOptions);
+
+					if (helpers === EXTERNAL && !externalHelpers) {
+						warnOnce(
+							this,
+							'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.',
+						);
+					} else if (helpers === RUNTIME && !runtimeHelpers) {
+						this.error(
+							'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information',
+						);
+					}
+
+					if (helpers !== RUNTIME) {
+						transformOptions = addBabelPlugin(transformOptions, helperPlugin);
+					}
+
+					const result = babel.transformSync(code, transformOptions);
+
+					return Promise.resolve(
+						!overrides.result
+							? result
+							: overrides.result.call(this, result, {
+									code,
+									customOptions,
+									config,
+									transformOptions,
+							  }),
+					).then(({ code, map }) => ({ code, map }));
+				});
+			},
+		};
 	};
 }
+
+const babelPluginFactory = createBabelPluginFactory();
+babelPluginFactory.custom = createBabelPluginFactory;
+
+export default babelPluginFactory;
