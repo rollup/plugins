@@ -1,5 +1,27 @@
 # rollup-plugin-babel changelog
 
+## 4.3.0
+
+- Added `.custom` builder.
+- Fail build when a plugin tries to add non existent babel helper
+
+## 4.2.0
+
+Allow `rollup@1` as peer dependency.
+
+## 4.1.0
+
+- Fixed "preflight check" for ignored files.
+- Return `null` when no transformation has been done (fixing source maps for this case)
+
+## 4.0.3
+
+Fixed fallback class transform in "preflight check".
+
+## 4.0.2
+
+Fixed `rollup` peer dependency.
+
 ## 4.0.0
 
 Babel 7 compatible! (dropped Babel 6 compatibility though).
