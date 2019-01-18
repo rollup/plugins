@@ -6,7 +6,7 @@ var jsonPlugin = require('rollup-plugin-json');
 var babelPlugin = require('..');
 
 // from ./src/constants
-var HELPERS = '\0rollupPluginBabelHelpers';
+var HELPERS = '\0rollupPluginBabelHelpers.js';
 
 require('source-map-support').install();
 
