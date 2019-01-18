@@ -1,5 +1,9 @@
 # rollup-plugin-babel changelog
 
+## 4.3.1
+
+- Add `.js` extension to the virtual babel helpers file (only matters when using `preserveModules` option in rollup)
+
 ## 4.3.0
 
 - Added `.custom` builder.
