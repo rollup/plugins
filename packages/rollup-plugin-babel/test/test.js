@@ -91,13 +91,6 @@ describe('rollup-plugin-babel', function() {
 		});
 	});
 
-	it('does not add helpers when externalHelpers option is truthy', () => {
-		return bundle('samples/class/main.js').then(({ code }) => {
-			assert.ok(code.indexOf('babelHelpers =') === -1, code);
-			assert.ok(code.indexOf(`${HELPERS}.classCallCheck =`) === -1, code);
-		});
-	});
-
 	it('does not babelify excluded code', () => {
 		return bundle('samples/exclusions/main.js', { exclude: '**/foo.js' }).then(({ code }) => {
 			assert.ok(code.indexOf('${foo()}') === -1, code);
@@ -188,14 +181,21 @@ describe('rollup-plugin-babel', function() {
 			});
 	});
 
-	it('warns about deprecated usage with external-helper plugin', () => {
+	it('allows using external-helpers plugin in combination with externalHelpers flag', () => {
+		return bundle('samples/external-helpers/main.js', { externalHelpers: true }).then(({ code }) => {
+			assert.ok(code.indexOf('function _classCallCheck') === -1);
+			assert.ok(code.indexOf('babelHelpers.classCallCheck') !== -1);
+		});
+	});
+
+	it('warns about deprecated usage with external-helpers plugin (without externalHelpers flag)', () => {
 		/* eslint-disable no-console */
 		const messages = [];
 		const originalWarn = console.warn;
 		console.warn = msg => {
 			messages.push(msg);
 		};
-		return bundle('samples/external-helpers-deprecated/main.js').then(() => {
+		return bundle('samples/external-helpers/main.js').then(() => {
 			console.warn = originalWarn;
 
 			assert.deepEqual(messages, [

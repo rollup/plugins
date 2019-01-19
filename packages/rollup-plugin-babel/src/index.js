@@ -105,7 +105,7 @@ function createBabelPluginFactory(customCallback = returnObject) {
 						);
 					}
 
-					if (helpers !== RUNTIME) {
+					if (helpers !== RUNTIME && !externalHelpers) {
 						transformOptions = addBabelPlugin(transformOptions, helperPlugin);
 					}
 
