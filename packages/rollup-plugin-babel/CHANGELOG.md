@@ -1,4 +1,6 @@
-# rollup-plugin-babel changelog
+## 4.3.2
+
+- Fixed usage with `externalHelpers: true` option
 
 ## 4.3.1
 
