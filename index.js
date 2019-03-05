@@ -11,8 +11,9 @@ function normalizePath(id) {
 
 function eslint(options = {}) {
   if (typeof options === 'string') {
-    const configFile = path.resolve(process.cwd(), options)
-    options = require(configFile)
+    const configFile = path.resolve(process.cwd(), options);
+    options = require(configFile);
+    options.useEslintrc = false; // Tell eslint not to look for configuration files.
   }
 
   const cli = new CLIEngine(options);
