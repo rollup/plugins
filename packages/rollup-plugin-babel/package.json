@@ -32,20 +32,20 @@
   },
   "dependencies": {
     "@babel/helper-module-imports": "^7.0.0",
-    "rollup-pluginutils": "^2.3.0"
+    "rollup-pluginutils": "^2.4.1"
   },
   "peerDependencies": {
     "@babel/core": "7 || ^7.0.0-rc.2",
     "rollup": ">=0.60.0 <2"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
+    "@babel/core": "^7.3.4",
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-proposal-decorators": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-env": "^7.3.4",
     "buble": "^0.19.3",
-    "eslint": "^5.11.0",
+    "eslint": "^5.15.1",
     "eslint-config-prettier": "^3.3.0",
     "eslint-plugin-prettier": "^3.0.0",
     "husky": "^1.0.1",
