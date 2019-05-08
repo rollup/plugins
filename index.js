@@ -40,6 +40,10 @@ function eslint(options = {}) {
       const report = cli.executeOnText(code, file);
       const hasWarnings = options.throwOnWarning && report.warningCount !== 0;
       const hasErrors = options.throwOnError && report.errorCount !== 0;
+      
+      if (options.fix && report) {
+        CLIEngine.outputFixes(report)
+      }
 
       if (report.warningCount === 0 && report.errorCount === 0) {
         return null;

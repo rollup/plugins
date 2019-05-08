@@ -35,6 +35,13 @@ See more options here [eslint-config].
 
 You can also use eslint configuration in the form of a `.eslintrc.*` file in your project's root. It will be loaded automatically.
 
+### fix
+
+Type: `boolean`  
+Default: `false`
+
+If true, will auto fix source code.
+
 ### throwOnError
 
 Type: `boolean`  
