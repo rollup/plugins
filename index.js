@@ -10,7 +10,7 @@ function normalizePath(id) {
 }
 
 function eslint(options = {}) {
-  if (typeof options === 'string') {
+  if (typeof options === "string") {
     const configFile = path.resolve(process.cwd(), options);
     options = require(configFile);
     options.useEslintrc = false; // Tell eslint not to look for configuration files.
@@ -40,9 +40,9 @@ function eslint(options = {}) {
       const report = cli.executeOnText(code, file);
       const hasWarnings = options.throwOnWarning && report.warningCount !== 0;
       const hasErrors = options.throwOnError && report.errorCount !== 0;
-      
+
       if (options.fix && report) {
-        CLIEngine.outputFixes(report)
+        CLIEngine.outputFixes(report);
       }
 
       if (report.warningCount === 0 && report.errorCount === 0) {
