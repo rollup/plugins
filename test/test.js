@@ -3,12 +3,10 @@ const { rollup } = require("rollup");
 const nodeResolve = require("rollup-plugin-node-resolve");
 const { eslint } = require("../");
 
-process.chdir("test");
-
 test("should lint files", () => {
   let count = 0;
   return rollup({
-    input: "fixtures/undeclared.js",
+    input: "./test/fixtures/undeclared.js",
     plugins: [
       eslint({
         formatter: results => {
@@ -25,7 +23,7 @@ test("should lint files", () => {
 
 test("should not fail with default options", () => {
   return rollup({
-    input: "fixtures/undeclared.js",
+    input: "./test/fixtures/undeclared.js",
     plugins: [eslint()]
   });
 });
@@ -33,11 +31,11 @@ test("should not fail with default options", () => {
 test("should ignore node_modules with exclude option", () => {
   let count = 0;
   return rollup({
-    input: "fixtures/modules.js",
+    input: "./test/fixtures/modules.js",
     plugins: [
       nodeResolve({ jsnext: true }),
       eslint({
-        configFile: "fixtures/.eslintrc-babel",
+        configFile: "./test/fixtures/.eslintrc-babel",
         formatter: () => {
           count += 1;
         }
@@ -51,10 +49,10 @@ test("should ignore node_modules with exclude option", () => {
 test("should ignore files according .eslintignore", () => {
   let count = 0;
   return rollup({
-    input: "fixtures/ignored.js",
+    input: "./test/fixtures/ignored.js",
     plugins: [
       eslint({
-        formatter: () => {
+        formatter: results => {
           count += 1;
         }
       })
@@ -67,7 +65,7 @@ test("should ignore files according .eslintignore", () => {
 test("should fail with enabled throwOnWarning and throwOnError options", () => {
   return expect(
     rollup({
-      input: "fixtures/use-strict.js",
+      input: "./test/fixtures/use-strict.js",
       plugins: [
         eslint({
           throwOnWarning: true,
@@ -82,7 +80,7 @@ test("should fail with enabled throwOnWarning and throwOnError options", () => {
 test("should fail with enabled throwOnError option", () => {
   return expect(
     rollup({
-      input: "fixtures/use-strict.js",
+      input: "./test/fixtures/use-strict.js",
       plugins: [
         eslint({
           throwOnError: true,
@@ -96,7 +94,7 @@ test("should fail with enabled throwOnError option", () => {
 test("should fail with enabled throwOnWarning option", () => {
   return expect(
     rollup({
-      input: "fixtures/use-strict.js",
+      input: "./test/fixtures/use-strict.js",
       plugins: [
         eslint({
           throwOnWarning: true,
@@ -109,7 +107,7 @@ test("should fail with enabled throwOnWarning option", () => {
 
 test("should not fail with throwOnError and throwOnWarning disabled", () => {
   return rollup({
-    input: "fixtures/use-strict.js",
+    input: "./test/fixtures/use-strict.js",
     plugins: [
       eslint({
         throwOnError: false,
@@ -128,7 +126,7 @@ test("should fail with not found formatter", () => {
 
 test("should not fail with found formatter", () => {
   return rollup({
-    input: "fixtures/use-strict.js",
+    input: "./test/fixtures/use-strict.js",
     plugins: [
       eslint({
         formatter: "stylish"
@@ -139,20 +137,20 @@ test("should not fail with found formatter", () => {
 
 test("should fix source code", () => {
   fs.writeFileSync(
-    "./fixtures/fixable-clone.js",
-    fs.readFileSync("./fixtures/fixable.js")
+    "./test/fixtures/fixable-clone.js",
+    fs.readFileSync("./test/fixtures/fixable.js")
   );
   return rollup({
-    input: "fixtures/fixable-clone.js",
+    input: "./test/fixtures/fixable-clone.js",
     plugins: [
       eslint({
         fix: true
       })
     ]
   }).then(() => {
-    expect(fs.readFileSync("./fixtures/fixable-clone.js").toString()).toEqual(
-      fs.readFileSync("./fixtures/fixed.js").toString()
-    );
-    fs.unlinkSync("./fixtures/fixable-clone.js");
+    expect(
+      fs.readFileSync("./test/fixtures/fixable-clone.js").toString()
+    ).toEqual(fs.readFileSync("./test/fixtures/fixed.js").toString());
+    fs.unlinkSync("./test/fixtures/fixable-clone.js");
   });
 });
