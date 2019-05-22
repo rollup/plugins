@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { rollup } = require("rollup");
 const nodeResolve = require("rollup-plugin-node-resolve");
 const { eslint } = require("../");
@@ -133,5 +134,25 @@ test("should not fail with found formatter", () => {
         formatter: "stylish"
       })
     ]
+  });
+});
+
+test("should fix source code", () => {
+  fs.writeFileSync(
+    "./fixtures/fixable-clone.js",
+    fs.readFileSync("./fixtures/fixable.js")
+  );
+  return rollup({
+    input: "fixtures/fixable-clone.js",
+    plugins: [
+      eslint({
+        fix: true
+      })
+    ]
+  }).then(() => {
+    expect(fs.readFileSync("./fixtures/fixable-clone.js").toString()).toEqual(
+      fs.readFileSync("./fixtures/fixed.js").toString()
+    );
+    fs.unlinkSync("./fixtures/fixable-clone.js");
   });
 });
