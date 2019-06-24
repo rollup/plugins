@@ -39,7 +39,7 @@
     "rollup-plugin-node-resolve": "^5.0.0"
   },
   "dependencies": {
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.0",
     "rollup-pluginutils": "^2.7.1"
   }
 }
