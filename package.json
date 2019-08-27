@@ -1,0 +1,17 @@
+{
+  "name": "beaver",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "main": "index.js",
+  "scripts": {
+    "server:start": "pnpm recursive run start --filter @beaver/server",
+    "test": "pnpm recursive run test",
+    "test:pkg": "pnpm run test --filter"
+  },
+  "devDependencies": {
+    "pnpm": "3"
+  }
+}
