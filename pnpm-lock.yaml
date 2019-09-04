@@ -1,10 +1,12 @@
 importers:
   .:
     devDependencies:
+      chalk: 2.4.2
       eslint-config-rollup: 0.1.0
       execa: 2.0.4
       pnpm: 3.7.5
     specifiers:
+      chalk: ^2.4.2
       eslint-config-rollup: ^0.1.0
       execa: ^2.0.4
       pnpm: '3'
