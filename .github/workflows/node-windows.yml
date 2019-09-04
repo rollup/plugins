@@ -21,12 +21,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node }}
-    - name: Check npm version
-      # This is only necessary until we dump Node 6
-      run: IF ${{ matrix.node }} LSS 8 npm i npm@5 -g
+    - name: Install PNPM
+      run: npm install pnpm -g
     - name: Install dependencies
-      run: npm ci --ignore-scripts
+      run: pnpm install --frozen-shrinkwrap
     - name: Run tests
-      run: npm test
+      run: pnpm run test
       env:
         CI: true
