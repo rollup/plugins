@@ -2,7 +2,7 @@
   "name": "@rollup/plugins",
   "private": true,
   "scripts": {
-    "test": "scripts/run-changed.js test"
+    "test": "node scripts/run-changed.js test"
   },
   "devDependencies": {
     "ava": "^2.2.0",

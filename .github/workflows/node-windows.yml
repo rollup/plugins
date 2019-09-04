@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [ '10', '6' ]
+        node: [ '10', '8' ]
 
     name: ${{ matrix.node }} (Windows)
     steps:
@@ -21,11 +21,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node }}
-    - name: Install PNPM
+    - name: checkout master
+      run: git branch -f master origin/master
+    - name: install pnpm
       run: npm install pnpm -g
-    - name: Install dependencies
-      run: pnpm install --frozen-shrinkwrap
-    - name: Run tests
+    - name: pnpm install
+      run: pnpm install --ignore-scripts
+    - name: run tests
       run: pnpm run test
-      env:
-        CI: true
