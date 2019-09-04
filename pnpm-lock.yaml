@@ -1,12 +1,10 @@
 importers:
   .:
     devDependencies:
-      chalk: 2.4.2
       eslint-config-rollup: 0.1.0
       execa: 2.0.4
-      pnpm: 3.7.5
+      pnpm: 3.8.1
     specifiers:
-      chalk: ^2.4.2
       eslint-config-rollup: ^0.1.0
       execa: ^2.0.4
       pnpm: '3'
@@ -2771,13 +2769,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-t1Ax8KUvV3FFII8ltczPn2tJdjqbd1sIzu6t4JL7nQ3EyeL/lTrj5PWKb06ic5/6XYDr65rQ4uzQEGN70/6X5w==
-  /pnpm/3.7.5:
+  /pnpm/3.8.1:
     dev: true
     engines:
       node: '>=8.15'
     hasBin: true
     resolution:
-      integrity: sha512-hEigYLg2GHIxHa2zx8kFTIFanfd/efuJL9XPxAjsKElKLySs4LS1yOfZ5uLYI3adv+6WxnrHBAP2lV1yuaJlbA==
+      integrity: sha512-uINy/U+TNvUHInG1l0/NrgDosUtafn9BrHjP5+v+ojpw+zb/lgXjkQmMHB4461LKezlNoBb7+0JOrNnm5JhZFg==
   /prelude-ls/1.1.2:
     dev: true
     engines:

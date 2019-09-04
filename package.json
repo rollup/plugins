@@ -2,22 +2,12 @@
   "name": "@rollup/plugins",
   "private": true,
   "scripts": {
-    "lint": "eslint scripts/*",
     "test": "pnpm recursive run test",
     "test:pkg": "pnpm run test --filter"
   },
   "devDependencies": {
-    "chalk": "^2.4.2",
     "eslint-config-rollup": "^0.1.0",
     "execa": "^2.0.4",
     "pnpm": "3"
-  },
-  "hoist": {
-    "eslint-config-rollup": [
-      "eslint",
-      "eslint-plugin-import",
-      "eslint-plugin-prettier",
-      "prettier"
-    ]
   }
 }
