@@ -13,11 +13,11 @@ const { stderr, stdout } = process;
 const { log } = console;
 
 (async () => {
-  const rePkg = /(packages\/([\w\-_.]+))\/?/;
+  const rePkg = /(packages\/([\w\-_]+))\/?/;
   const { stdout: diff } = await execa('git', ['diff', 'master...HEAD', '--name-only']);
   const filters = diff
     .split('\n')
-    .filter((line) => rePkg.test(line) && existsSync(join(__dirname, line)))
+    .filter((line) => rePkg.test(line) && existsSync(join(__dirname, '..', line)))
     .map((line) => {
       const [, directory] = line.match(rePkg);
       return `--filter ./${directory}`;
@@ -26,11 +26,11 @@ const { log } = console;
   if (filters.length) {
     const unique = Array.from(new Set(filters));
 
-    log(chalk`{blue Executing \`${task}\`} for: ${unique}`);
+    log(chalk`{blue Executing \`${task}\`} for:\n  ${unique.join('\n  ')}`);
 
     const args = ['recursive', 'run', task].concat(unique);
     await execa('pnpm', args, { stdout, stderr });
+  } else {
+    log(chalk`{yellow No package changes detected, nothing run}`);
   }
-
-  log(chalk`{yellow No package changes detected, nothing run}`);
 })();
