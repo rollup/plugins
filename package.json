@@ -2,12 +2,42 @@
   "name": "@rollup/plugins",
   "private": true,
   "scripts": {
-    "test": "pnpm recursive run test",
-    "test:pkg": "pnpm run test --filter"
+    "test": "scripts/run-changed.js test"
   },
   "devDependencies": {
+    "ava": "^2.2.0",
+    "chalk": "^2.4.2",
     "eslint-config-rollup": "^0.1.0",
     "execa": "^2.0.4",
-    "pnpm": "3"
-  }
+    "lint-staged": "^9.2.0",
+    "nyc": "^14.1.1",
+    "pnpm": "3",
+    "pre-commit": "^1.2.2",
+    "rollup": "^1.20.1",
+    "tslib": "^1.10.0",
+    "tslint": "^5.19.0"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**"
+    ]
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "nyc": {
+    "include": [
+      "lib/**/*.js"
+    ],
+    "exclude": [
+      "lib/client*.js",
+      "test/"
+    ]
+  },
+  "pre-commit": "lint-staged"
 }

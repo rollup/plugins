@@ -1,0 +1,41 @@
+{
+  "name": "@rollup/plugin-beep",
+  "version": "0.1.0",
+  "description": "A Rollup plugin which beeps on errors and warnings",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "shellscape",
+  "homepage": "https://github.com/rollup/plugins",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "scripts": {
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run lint && pnpm run security",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "eslint --fix --cache lib test",
+    "lint-staged": "lint-staged",
+    "pretest": "del test/fixtures/multi/output test/fixtures/simple/output",
+    "security": "pnpm audit",
+    "test": "ava"
+  },
+  "files": [
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "devDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "keywords": [
+    "beep",
+    "plugin",
+    "rollup"
+  ]
+}
