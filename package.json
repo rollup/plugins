@@ -1,17 +1,14 @@
 {
-  "name": "beaver",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "license": "ISC",
-  "author": "",
-  "main": "index.js",
+  "name": "@rollup/plugins",
+  "private": true,
   "scripts": {
-    "server:start": "pnpm recursive run start --filter @beaver/server",
+    "lint": "eslint scripts/*",
     "test": "pnpm recursive run test",
     "test:pkg": "pnpm run test --filter"
   },
   "devDependencies": {
+    "eslint-config-rollup": "^0.1.0",
+    "execa": "^2.0.4",
     "pnpm": "3"
   }
 }
