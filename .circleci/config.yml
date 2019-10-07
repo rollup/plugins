@@ -6,8 +6,11 @@ unit_tests: &unit_tests
     - restore_cache:
         key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
     - run:
+        name: Install pnpm
+        command: npm install pnpm -g
+    - run:
         name: Run unit tests.
-        command: npm run ci:test
+        command: pnpm run ci:test
 
 jobs:
   analysis:
@@ -15,14 +18,17 @@ jobs:
       - image: rollupcabal/circleci-node-base:latest
     steps:
       - checkout
+      - run:
+          name: Install pnpm
+          command: npm install pnpm -g
       - restore_cache:
           key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
       - run:
           name: Install Dependencies
-          command: npm ci --ignore-scripts
+          command: pnpm install --ignore-scripts
       - run:
           name: Run linting.
-          command: npm run ci:lint
+          command: pnpm run ci:lint
       - save_cache:
           key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
           paths:
