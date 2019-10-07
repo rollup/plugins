@@ -16,7 +16,9 @@
     "ci:lint": "pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "eslint --fix --cache lib test",
+    "lint": "pnpm run lint:js && pnpm run lint:package",
+    "lint:js": "eslint --fix --cache lib test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "security": "pnpm audit",
     "test": "ava"
   },
@@ -25,15 +27,15 @@
     "README.md",
     "LICENSE"
   ],
+  "keywords": [
+    "beep",
+    "plugin",
+    "rollup"
+  ],
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
   "devDependencies": {
     "rollup": "^1.20.0"
-  },
-  "keywords": [
-    "beep",
-    "plugin",
-    "rollup"
-  ]
+  }
 }

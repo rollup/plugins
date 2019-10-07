@@ -2,6 +2,11 @@
   "name": "@rollup/plugins",
   "private": true,
   "scripts": {
+    "ci:lint": "node scripts/run-changed.js ci:lint",
+    "ci:test": "node scripts/run-changed.js ci:coverage",
+    "lint": "pnpm run lint:package && node scripts/run-changed.js lint",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "preinstall": "node scripts/disallow-npm.js",
     "test": "node scripts/run-changed.js test"
   },
   "devDependencies": {
@@ -13,6 +18,8 @@
     "nyc": "^14.1.1",
     "pnpm": "3",
     "pre-commit": "^1.2.2",
+    "prettier": "^1.18.2",
+    "prettier-plugin-package": "^0.3.1",
     "rollup": "^1.20.1",
     "tslib": "^1.10.0",
     "tslint": "^5.19.0"
