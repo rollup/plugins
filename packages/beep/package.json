@@ -19,7 +19,7 @@
     "lint": "pnpm run lint:js && pnpm run lint:package",
     "lint:js": "eslint --fix --cache lib test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
-    "security": "pnpm audit",
+    "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
   },
   "files": [
@@ -37,5 +37,13 @@
   },
   "devDependencies": {
     "rollup": "^1.20.0"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/output/**",
+      "!**/recipes/**"
+    ]
   }
 }
