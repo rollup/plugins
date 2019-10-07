@@ -7,7 +7,7 @@ unit_tests: &unit_tests
         key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
     - run:
         name: Install pnpm
-        command: npm install pnpm -g
+        command: npm install pnpm@^4.0.0 -g
     - run:
         name: Run unit tests.
         command: pnpm run ci:test
@@ -20,7 +20,7 @@ jobs:
       - checkout
       - run:
           name: Install pnpm
-          command: npm install pnpm -g
+          command: npm install pnpm@^4.0.0 -g
       - restore_cache:
           key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
       - run:
