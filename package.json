@@ -4,7 +4,8 @@
   "scripts": {
     "ci:lint": "node scripts/run-changed.js ci:lint",
     "ci:test": "node scripts/run-changed.js ci:coverage",
-    "lint": "pnpm run lint:package && node scripts/run-changed.js lint",
+    "lint": "pnpm run lint:docs && pnpm run lint:package && node scripts/run-changed.js lint",
+    "lint:docs": "prettier --write README.md",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "preinstall": "node scripts/disallow-npm.js",
     "test": "node scripts/run-changed.js test"

@@ -16,8 +16,9 @@
     "ci:lint": "pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:package",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:js": "eslint --fix --cache lib test",
+    "lint:docs": "prettier --write README.md",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
@@ -36,6 +37,7 @@
     "rollup": "^1.20.0"
   },
   "devDependencies": {
+    "eslint-config-rollup": "^0.1.0",
     "rollup": "^1.20.0"
   },
   "ava": {

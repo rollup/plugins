@@ -30,8 +30,10 @@ importers:
       tslint: ^5.19.0
   packages/beep:
     devDependencies:
+      eslint-config-rollup: 0.1.0
       rollup: 1.23.1
     specifiers:
+      eslint-config-rollup: ^0.1.0
       rollup: ^1.20.0
 lockfileVersion: 5.1
 packages:
