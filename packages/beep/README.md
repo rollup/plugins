@@ -1,9 +1,7 @@
-[tests]: 	https://img.shields.io/circleci/project/github/rollup/plugins/beep.svg
+[tests]: https://img.shields.io/circleci/project/github/rollup/plugins/beep.svg
 [tests-url]: https://circleci.com/gh/rollup/plugins/beep
-
 [cover]: https://codecov.io/gh/rollup/plugins/beep/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/rollup/plugins/beep
-
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-beep
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-beep
 
@@ -34,13 +32,13 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 
 ```js
 // rollup.config.js
-import beep from '@rollup/plugin-beep';
+import beep from "@rollup/plugin-beep";
 
 export default {
-  input: 'src/main.js',
+  input: "src/main.js",
   output: {
-    dir: 'public/js',
-    format: 'cjs'
+    dir: "public/js",
+    format: "cjs"
   },
   plugins: [beep()]
 };

@@ -14,4 +14,4 @@ const beep = (opts) => {
   };
 };
 
-export default beep;
+module.exports = beep;

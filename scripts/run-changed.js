@@ -9,7 +9,6 @@ const chalk = require('chalk');
 const execa = require('execa');
 
 const [, , task] = process.argv;
-const { stderr, stdout } = process;
 const { log } = console;
 
 (async () => {
@@ -26,10 +25,10 @@ const { log } = console;
   if (filters.length) {
     const unique = Array.from(new Set(filters));
 
-    log(chalk`{blue Executing \`${task}\`} for:\n  ${unique.join('\n  ')}`);
+    log(chalk`{blue Executing \`${task}\`} for:\n  ${unique.join('\n  ')}\n`);
 
     const args = ['recursive', 'run', task].concat(unique);
-    await execa('pnpm', args, { stdout, stderr });
+    await execa('pnpm', args, { stdio: 'inherit' });
   } else {
     log(chalk`{yellow No package changes detected, nothing run}`);
   }
