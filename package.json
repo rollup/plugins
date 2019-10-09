@@ -8,6 +8,7 @@
     "lint:docs": "prettier --write README.md",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "preinstall": "node scripts/disallow-npm.js",
+    "publish": "node scripts/publish.js",
     "test": "node scripts/run-changed.js test"
   },
   "devDependencies": {

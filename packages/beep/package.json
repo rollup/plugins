@@ -1,11 +1,14 @@
 {
   "name": "@rollup/plugin-beep",
   "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "A Rollup plugin which beeps on errors and warnings",
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "shellscape",
-  "homepage": "https://github.com/rollup/plugins",
+  "homepage": "https://github.com/rollup/plugins/packages/beep",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "lib/index.js",
   "engines": {
