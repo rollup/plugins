@@ -1,3 +1,8 @@
+[tests]: https://img.shields.io/circleci/project/github/rollup/plugins/beep.svg
+[tests-url]: https://circleci.com/gh/rollup/plugins/beep
+
+[![tests][tests]][tests-url]
+
 # Rollup Plugins
 
 🍣 The one-stop shop for official Rollup plugins
@@ -21,7 +26,7 @@ All plugin packages are kept in the `/packages` directory.
 Adding dependencies:
 
 ```console
-$ pnpm add <package> -- @rollup/plugin-<name>
+$ pnpm add <package> --filter ./packages/<name>
 ```
 
 Where `<package>` is the name of the NPM package you wish to add for a plugin package, and `<name>` is the proper name of the plugin. e.g. `@rollup/plugin-beep`.

@@ -1,11 +1,8 @@
-[tests]: https://img.shields.io/circleci/project/github/rollup/plugins/beep.svg
-[tests-url]: https://circleci.com/gh/rollup/plugins/beep
 [cover]: https://codecov.io/gh/rollup/plugins/beep/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/rollup/plugins/beep
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-beep
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-beep
 
-[![tests][tests]][tests-url]
 [![cover][cover]][cover-url]
 [![size][size]][size-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
@@ -32,9 +29,9 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 
 ```js
 // rollup.config.js
-import beep from "@rollup/plugin-beep";
+const beep = require("@rollup/plugin-beep");
 
-export default {
+module.exports = {
   input: "src/index.js",
   output: {
     dir: "output",

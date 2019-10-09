@@ -1,4 +1,4 @@
-# Snapshot report for `packages/beep/test/test.js`
+# Snapshot report for `test/test.js`
 
 The actual snapshot is saved in `test.js.snap`.
 

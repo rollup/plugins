@@ -4,7 +4,7 @@ importers:
       ava: 2.4.0
       chalk: 2.4.2
       eslint-config-rollup: 0.1.0
-      execa: 2.0.5
+      execa: 2.1.0
       lint-staged: 9.4.2
       nyc: 14.1.1
       pnpm: 3.8.1
@@ -30,10 +30,14 @@ importers:
       tslint: ^5.19.0
   packages/beep:
     devDependencies:
-      eslint-config-rollup: 0.1.0
+      ava: 2.4.0
+      execa: 2.1.0
+      nyc: 14.1.1
       rollup: 1.23.1
     specifiers:
-      eslint-config-rollup: ^0.1.0
+      ava: ^2.4.0
+      execa: ^2.1.0
+      nyc: ^14.1.1
       rollup: ^1.20.0
 lockfileVersion: 5.1
 packages:
@@ -1129,7 +1133,7 @@ packages:
     dependencies:
       lru-cache: 4.1.5
       shebang-command: 1.2.0
-      which: 1.2.14
+      which: 1.3.1
     dev: true
     resolution:
       integrity: sha1-6L0O/uWPz/b4+UUQoKVUu/ojVEk=
@@ -1145,6 +1149,16 @@ packages:
       node: '>=4.8'
     resolution:
       integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==
+  /cross-spawn/7.0.1:
+    dependencies:
+      path-key: 3.1.0
+      shebang-command: 2.0.0
+      which: 2.0.1
+    dev: true
+    engines:
+      node: '>= 8'
+    resolution:
+      integrity: sha512-u7v4o84SwFpD32Z8IIcPZ6z1/ie24O6RU3RbtL5Y316l3KuHVPx9ItBgWQ6VlfAFnRnTtMUrsQ9MUUTuEZjogg==
   /crypto-random-string/1.0.0:
     dev: true
     engines:
@@ -1634,9 +1648,9 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-lEvs00zEHuMqY6n68nrVpl/Fl3c=
-  /execa/2.0.5:
+  /execa/2.1.0:
     dependencies:
-      cross-spawn: 6.0.5
+      cross-spawn: 7.0.1
       get-stream: 5.1.0
       is-stream: 2.0.0
       merge-stream: 2.0.0
@@ -1649,7 +1663,7 @@ packages:
     engines:
       node: ^8.12.0 || >=9.7.0
     resolution:
-      integrity: sha512-SwmwZZyJjflcqLSgllk4EQlMLst2p9muyzwNugKGFlpAz6rZ7M+s2nBR97GAq4Vzjwx2y9rcMcmqzojwN+xwNA==
+      integrity: sha512-Y/URAVapfbYy2Xp/gb6A0E7iR8xeqOCXsuuaoMn7A5PzrXUK84E1gyiEfq0wQd/GHA6GsoHWwhNq8anb0mleIw==
   /external-editor/3.1.0:
     dependencies:
       chardet: 0.7.0
@@ -2517,7 +2531,7 @@ packages:
       debug: 4.1.1
       dedent: 0.7.0
       del: 5.1.0
-      execa: 2.0.5
+      execa: 2.1.0
       listr: 0.14.3_listr@0.14.3
       log-symbols: 3.0.0
       micromatch: 4.0.2
@@ -3850,12 +3864,26 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-RKrGW2lbAzmJaMOfNj/uXer98eo=
+  /shebang-command/2.0.0:
+    dependencies:
+      shebang-regex: 3.0.0
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==
   /shebang-regex/1.0.0:
     dev: true
     engines:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
+  /shebang-regex/3.0.0:
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
   /signal-exit/3.0.2:
     dev: true
     resolution:
@@ -4451,6 +4479,15 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-HxJdYWq1MTIQbJ3nw0cqssHoTNU267KlrDuGZ1WYlxDStUtKUhOaJmh112/TZmHxxUfuJqPXSOm7tDyas0OSIQ==
+  /which/2.0.1:
+    dependencies:
+      isexe: 2.0.0
+    dev: true
+    engines:
+      node: '>= 8'
+    hasBin: true
+    resolution:
+      integrity: sha512-N7GBZOTswtB9lkQBZA4+zAXrjEIWAUOB93AvzUiudRzRxhUdLURQ7D/gAIMY1gatT/LTbmbcv8SiYazy3eYB7w==
   /widest-line/2.0.1:
     dependencies:
       string-width: 2.1.1

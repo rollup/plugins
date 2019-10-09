@@ -44,7 +44,20 @@ jobs:
   node-v12-latest:
     docker:
       - image: rollupcabal/circleci-node-v12:latest
-    <<: *unit_tests
+    steps:
+    - checkout
+    - restore_cache:
+        key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
+    - run:
+        name: Install pnpm
+        command: npm install pnpm@^4.0.0 -g
+    - run:
+        name: Run unit tests.
+        command: pnpm run ci:coverage
+    - run:
+        name: Submit coverage data to codecov.
+        command: pnpm run ci:coverage:submit
+        when: on_success
 
 workflows:
   version: 2

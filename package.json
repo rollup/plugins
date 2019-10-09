@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "ci:lint": "node scripts/run-changed.js ci:lint",
-    "ci:test": "node scripts/run-changed.js ci:coverage",
+    "ci:coverage": "node scripts/run-changed.js ci:coverage",
+    "ci:coverage:submit": "node scripts/run-changed.js ci:coverage:submit",
+    "ci:test": "node scripts/run-changed.js ci:test",
     "lint": "pnpm run lint:docs && pnpm run lint:package && node scripts/run-changed.js lint",
     "lint:docs": "prettier --write README.md",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",

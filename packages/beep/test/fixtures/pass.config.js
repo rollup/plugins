@@ -1,6 +1,6 @@
-import beep from '../../lib/index';
+const beep = require('../../lib/index');
 
-export default {
+module.exports = {
   input: 'fixtures/pass.js',
   output: {
     file: 'output/bundle.js',

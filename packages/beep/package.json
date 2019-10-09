@@ -15,7 +15,8 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:coverage": "nyc npm run test -- --u && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F beep",
     "ci:lint": "pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
@@ -40,7 +41,9 @@
     "rollup": "^1.20.0"
   },
   "devDependencies": {
-    "eslint-config-rollup": "^0.1.0",
+    "ava": "^2.4.0",
+    "execa": "^2.1.0",
+    "nyc": "^14.1.1",
     "rollup": "^1.20.0"
   },
   "ava": {
