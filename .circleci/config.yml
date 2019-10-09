@@ -67,18 +67,18 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - node-v8-latest:
-          requires:
-            - analysis
-          filters:
-            tags:
-              only: /.*/
-      - node-v10-latest:
-          requires:
-            - analysis
-          filters:
-            tags:
-              only: /.*/
+      # - node-v8-latest:
+      #     requires:
+      #       - analysis
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      # - node-v10-latest:
+      #     requires:
+      #       - analysis
+      #     filters:
+      #       tags:
+      #         only: /.*/
       - node-v12-latest:
           requires:
             - analysis

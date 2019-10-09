@@ -10,10 +10,12 @@ const execa = require('execa');
 
 const [, , task] = process.argv;
 const { log } = console;
+const sha = process.env.CIRCLE_SHA1 || 'HEAD';
 
 (async () => {
   const rePkg = /(packages\/([\w\-_]+))\/?/;
-  const { stdout: diff } = await execa('git', ['diff', 'master...HEAD', '--name-only']);
+  log(`\nChanged: ${sha}...HEAD\n`);
+  const { stdout: diff } = await execa('git', ['diff', `master...${sha}`, '--name-only']);
   const filters = diff
     .split('\n')
     .filter((line) => rePkg.test(line) && existsSync(join(__dirname, '..', line)))
