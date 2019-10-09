@@ -28,7 +28,7 @@ npm install @rollup/plugin-beep --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-// rollup.config.js
+
 const beep = require("@rollup/plugin-beep");
 
 module.exports = {
