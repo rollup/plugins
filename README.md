@@ -26,6 +26,16 @@ $ pnpm add <package> -- @rollup/plugin-<name>
 
 Where `<package>` is the name of the NPM package you wish to add for a plugin package, and `<name>` is the proper name of the plugin. e.g. `@rollup/plugin-beep`.
 
+Publishing:
+
+```console
+$ pnpm run publish -- <name>
+```
+
+Where `<name>` is the portion of the plugin package name following `@rollup/plugin-`. e.g. `beep`. Publishing will create a new tag in the form of `<name>-v<version>` (e.g. `beep-v0.1.0`) and push the tag to the repo upon successful publish.
+
+Commits for release should be in the form of `chore(release): <name>-v<version>`.
+
 Running Tests:
 
 ```console
