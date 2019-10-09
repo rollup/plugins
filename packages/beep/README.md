@@ -35,9 +35,9 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 import beep from "@rollup/plugin-beep";
 
 export default {
-  input: "src/main.js",
+  input: "src/index.js",
   output: {
-    dir: "public/js",
+    dir: "output",
     format: "cjs"
   },
   plugins: [beep()]
