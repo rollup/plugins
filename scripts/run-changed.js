@@ -14,7 +14,8 @@ const sha = process.env.CIRCLE_SHA1 || 'HEAD';
 
 (async () => {
   const rePkg = /(packages\/([\w\-_]+))\/?/;
-  log(`\nChanged: ${sha}...HEAD\n`);
+  log(`\nChanged: master...${sha}\n\n`);
+  await execa('git', ['branch'], { stdio: 'inherit' });
   const { stdout: diff } = await execa('git', ['diff', `master...${sha}`, '--name-only']);
   const filters = diff
     .split('\n')
