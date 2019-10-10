@@ -53,5 +53,8 @@
       "!**/output/**",
       "!**/recipes/**"
     ]
+  },
+  "dependencies": {
+    "strip-ansi": "^5.2.0"
   }
 }

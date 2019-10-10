@@ -29,6 +29,8 @@ importers:
       tslib: ^1.10.0
       tslint: ^5.19.0
   packages/beep:
+    dependencies:
+      strip-ansi: 5.2.0
     devDependencies:
       ava: 2.4.0
       execa: 2.1.0
@@ -39,6 +41,7 @@ importers:
       execa: ^2.1.0
       nyc: ^14.1.1
       rollup: ^1.20.0
+      strip-ansi: ^5.2.0
 lockfileVersion: 5.1
 packages:
   /@ava/babel-plugin-throws-helper/4.0.0:
@@ -465,7 +468,6 @@ packages:
     resolution:
       integrity: sha1-7QMXwyIGT3lGbAKWa922Bas32Zg=
   /ansi-regex/4.1.0:
-    dev: true
     engines:
       node: '>=6'
     resolution:
@@ -4078,7 +4080,6 @@ packages:
   /strip-ansi/5.2.0:
     dependencies:
       ansi-regex: 4.1.0
-    dev: true
     engines:
       node: '>=6'
     resolution:

@@ -15,5 +15,3 @@ const beep = (opts) => {
 };
 
 module.exports = beep;
-
-console.log('fo');

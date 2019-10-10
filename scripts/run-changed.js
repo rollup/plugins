@@ -14,8 +14,6 @@ const sha = process.env.CIRCLE_SHA1 || 'HEAD';
 
 (async () => {
   const rePkg = /(packages\/([\w\-_]+))\/?/;
-  log(`\nChanged: master...${sha}\n\n`);
-  await execa('git', ['branch'], { stdio: 'inherit' });
   const { stdout: diff } = await execa('git', ['diff', `master...${sha}`, '--name-only']);
   const filters = diff
     .split('\n')
@@ -31,7 +29,11 @@ const sha = process.env.CIRCLE_SHA1 || 'HEAD';
     log(chalk`{blue Executing \`${task}\`} for:\n  ${unique.join('\n  ')}\n`);
 
     const args = ['recursive', 'run', task].concat(unique);
-    await execa('pnpm', args, { stdio: 'inherit' });
+    try {
+      await execa('pnpm', args, { stdio: 'inherit' });
+    } catch (e) {
+      process.exit(e.exitCode);
+    }
   } else {
     log(chalk`{yellow No package changes detected, nothing run}`);
   }
