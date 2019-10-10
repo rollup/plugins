@@ -3,6 +3,9 @@ version: 2
 unit_tests: &unit_tests
   steps:
     - checkout
+    - run:
+        name: checkout master
+        command: git branch -f master origin/master
     - restore_cache:
         key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
     - run:
@@ -18,6 +21,9 @@ jobs:
       - image: rollupcabal/circleci-node-base:latest
     steps:
       - checkout
+      - run:
+          name: checkout master
+          command: git branch -f master origin/master
       - run:
           name: Install pnpm
           command: npm install pnpm@^4.0.0 -g
@@ -46,6 +52,9 @@ jobs:
       - image: rollupcabal/circleci-node-v12:latest
     steps:
     - checkout
+    - run:
+        name: checkout master
+        command: git branch -f master origin/master
     - restore_cache:
         key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
     - run:
@@ -67,18 +76,18 @@ workflows:
           filters:
             tags:
               only: /.*/
-      # - node-v8-latest:
-      #     requires:
-      #       - analysis
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      # - node-v10-latest:
-      #     requires:
-      #       - analysis
-      #     filters:
-      #       tags:
-      #         only: /.*/
+      - node-v8-latest:
+          requires:
+            - analysis
+          filters:
+            tags:
+              only: /.*/
+      - node-v10-latest:
+          requires:
+            - analysis
+          filters:
+            tags:
+              only: /.*/
       - node-v12-latest:
           requires:
             - analysis

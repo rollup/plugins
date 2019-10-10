@@ -15,7 +15,7 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "ci:coverage": "nyc npm run test -- --u && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:coverage": "nyc npm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F beep",
     "ci:lint": "pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
