@@ -1,16 +1,37 @@
 version: 2
+aliases:
+  - &checkout_master
+    name: checkout master
+    command: |
+      if [[ $(git rev-parse --abbrev-ref HEAD) != "master" ]]; then
+        git branch -f master origin/master;
+      fi
+  - &pnpm_install
+    name: Install pnpm
+    command: npm install pnpm@^4.0.0 -g
+  - &restore_cache
+    key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
+
+coverage: &coverage
+  steps:
+    - checkout
+    - run: *checkout_master
+    - restore_cache: *restore_cache
+    - run: *pnpm_install
+    - run:
+        name: Run unit tests.
+        command: pnpm run ci:coverage
+    - run:
+        name: Submit coverage data to codecov.
+        command: pnpm run ci:coverage:submit
+        when: on_success
 
 unit_tests: &unit_tests
   steps:
     - checkout
-    - run:
-        name: checkout master
-        command: git branch -f master origin/master
-    - restore_cache:
-        key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
-    - run:
-        name: Install pnpm
-        command: npm install pnpm@^4.0.0 -g
+    - run: *checkout_master
+    - restore_cache: *restore_cache
+    - run: *pnpm_install
     - run:
         name: Run unit tests.
         command: pnpm run ci:test
@@ -21,14 +42,9 @@ jobs:
       - image: rollupcabal/circleci-node-base:latest
     steps:
       - checkout
-      - run:
-          name: checkout master
-          command: git branch -f master origin/master
-      - run:
-          name: Install pnpm
-          command: npm install pnpm@^4.0.0 -g
-      - restore_cache:
-          key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
+      - run: *checkout_master
+      - run: *pnpm_install
+      - restore_cache: *restore_cache
       - run:
           name: Install Dependencies
           command: pnpm install --ignore-scripts
@@ -50,23 +66,7 @@ jobs:
   node-v12-latest:
     docker:
       - image: rollupcabal/circleci-node-v12:latest
-    steps:
-    - checkout
-    - run:
-        name: checkout master
-        command: git branch -f master origin/master
-    - restore_cache:
-        key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
-    - run:
-        name: Install pnpm
-        command: npm install pnpm@^4.0.0 -g
-    - run:
-        name: Run unit tests.
-        command: pnpm run ci:coverage
-    - run:
-        name: Submit coverage data to codecov.
-        command: pnpm run ci:coverage:submit
-        when: on_success
+    <<: *coverage
 
 workflows:
   version: 2
