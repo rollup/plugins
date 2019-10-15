@@ -55,10 +55,6 @@ $ pnpm run lint
 
 _Note: Scripts in the repository will run the root `test` and `lint` script on those packages which have changes. This is also how the CI pipelines function. To run either on a package outside of that pipeline, use `pnpm run <script> -- @rollup/plugin-<name>`._
 
-## Publishing Packages
-
-WIP. Please stand by for more info.
-
 ## Adding Plugins
 
 While we don't have an official procedure for adding third-party plugins to this repository, we are absolutely open to the idea. If you'd like to speak about your project being a part of this repo, please reach out to [@RollupJS](https://twitter.com/RollupJS) on Twitter.
