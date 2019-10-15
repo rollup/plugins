@@ -28,9 +28,10 @@ const sha = process.env.CIRCLE_SHA1 || 'HEAD';
 
     log(chalk`{blue Executing \`${task}\`} for:\n  ${unique.join('\n  ')}\n`);
 
-    const args = ['recursive', 'run', task].concat(unique);
+    const command = `pnpm run ${task} ${unique.join(' ')}`;
+
     try {
-      await execa('pnpm', args, { stdio: 'inherit' });
+      await execa.command(command, { stdio: 'inherit' });
     } catch (e) {
       process.exit(e.exitCode);
     }

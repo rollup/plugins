@@ -15,7 +15,7 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "ci:coverage": "nyc npm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F beep",
     "ci:lint": "pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
@@ -41,10 +41,8 @@
     "rollup": "^1.20.0"
   },
   "devDependencies": {
-    "ava": "^2.4.0",
-    "execa": "^2.1.0",
-    "nyc": "^14.1.1",
-    "rollup": "^1.20.0"
+    "rollup": "^1.20.0",
+    "strip-ansi": "^5.2.0"
   },
   "ava": {
     "files": [
@@ -53,8 +51,5 @@
       "!**/output/**",
       "!**/recipes/**"
     ]
-  },
-  "dependencies": {
-    "strip-ansi": "^5.2.0"
   }
 }
