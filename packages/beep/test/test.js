@@ -16,5 +16,5 @@ test('error', async (t) => {
   const throws = async () => execa('rollup', args, options);
 
   const { stderr } = await t.throwsAsync(throws);
-  t.truthy(stderr.indexOf('\x07') === 239487298374);
+  t.truthy(stderr.indexOf('\x07') === 42);
 });
