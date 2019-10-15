@@ -22,20 +22,21 @@ const sha = process.env.CIRCLE_SHA1 || 'HEAD';
       const [, directory] = line.match(rePkg);
       return `--filter ./${directory}`;
     });
+  const uniqueFilters = filters.length ? Array.from(new Set(filters)) : ['--filter ./packages'];
 
-  if (filters.length) {
-    const unique = Array.from(new Set(filters));
+  if (!filters.length) {
+    log(chalk`{yellow No individual package changes detected}`);
+  }
 
-    log(chalk`{blue Executing \`${task}\`} for:\n  ${unique.join('\n  ')}\n`);
+  log(chalk`{blue Executing \`${task}\`} for:\n  ${uniqueFilters.join('\n  ')}\n`);
 
-    const command = `pnpm run ${task} ${unique.join(' ')}`;
+  const command = `pnpm run ${task} ${uniqueFilters.join(' ')}`;
 
-    try {
-      await execa.command(command, { stdio: 'inherit' });
-    } catch (e) {
-      process.exit(e.exitCode);
-    }
-  } else {
-    log(chalk`{yellow No package changes detected, nothing run}`);
+  try {
+    const res = await execa.command(command, { stdio: 'inherit' });
+    log(res);
+  } catch (e) {
+    log(e);
+    process.exit(e.exitCode);
   }
 })();
