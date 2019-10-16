@@ -18,6 +18,9 @@ about: Are the docs lacking or missing something? Do they need some new 🔥 hot
   👉 https://opencollective.com/rollup/donate
 -->
 
+- Rollup Plugin Name: <!-- the plugin(s) this issue is about -->
+- Rollup Plugin Version:
+
 Documentation Is:
 
 <!-- Please place an x (no spaces!) in all [ ] that apply -->
