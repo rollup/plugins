@@ -1,8 +1,10 @@
 .nyc_output/
 coverage/
+dist/
 node_modules/
 output/
 
+.DS_Store
 .eslintcache
 coverage.lcov
 pnpm-debug.log
