@@ -12,6 +12,8 @@ const [, , task] = process.argv;
 const { log } = console;
 const sha = process.env.CIRCLE_SHA1 || 'HEAD';
 
+log(process.env);
+
 (async () => {
   const rePkg = /(packages\/([\w\-_]+))\/?/;
   const { stdout: diff } = await execa('git', ['diff', `master...${sha}`, '--name-only']);

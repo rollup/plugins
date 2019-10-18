@@ -18,3 +18,5 @@ test('error', async (t) => {
   const { stderr } = await t.throwsAsync(throws);
   t.truthy(stderr.indexOf('\x07'));
 });
+
+console.log('foo');
