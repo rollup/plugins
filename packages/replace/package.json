@@ -18,7 +18,7 @@
     "lint:docs": "prettier --write README.md",
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
-    "prebuild": "echo $PWD && shx rm -rf dist/*",
+    "prebuild": "ls node_modules/.bin && del dist/*",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint && npm run test:only",
     "pretest": "npm run build",
@@ -49,10 +49,10 @@
     "typescript": "^3.4.3"
   },
   "devDependencies": {
+    "del-cli": "^3.0.0",
     "locate-character": "^2.0.5",
     "rollup": "^1.20.0",
     "rollup-plugin-buble": "^0.19.6",
-    "shx": "^0.3.2",
     "source-map": "^0.7.3"
   },
   "module": "dist/rollup-plugin-replace.es.js"
