@@ -6,3 +6,6 @@ output/
 .eslintcache
 coverage.lcov
 pnpm-debug.log
+
+dist/
+.DS_STORE
