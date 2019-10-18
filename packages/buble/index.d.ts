@@ -41,6 +41,6 @@ interface RollupBubleOptions {
 }
 
 /**
- * Replace strings in files while bundling them.
+ * Convert ES2015 with buble.
  */
 export default function buble(options?: RollupBubleOptions): Plugin;
