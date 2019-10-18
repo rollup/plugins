@@ -6,9 +6,12 @@ aliases:
       if [[ $(git rev-parse --abbrev-ref HEAD) != "master" ]]; then
         git branch -f master origin/master;
       fi
-  - &pnpm_install
+  - &install_pnpm
     name: Install pnpm
     command: npm install pnpm@^4.0.0 -g
+  - &pnpm_install
+    name: Install Dependencies
+    command: pnpm install --ignore-scripts
   - &restore_cache
     key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
 
@@ -17,6 +20,7 @@ coverage: &coverage
     - checkout
     - run: *checkout_master
     - restore_cache: *restore_cache
+    - run: *install_pnpm
     - run: *pnpm_install
     - run:
         name: Run unit tests.
@@ -31,6 +35,7 @@ unit_tests: &unit_tests
     - checkout
     - run: *checkout_master
     - restore_cache: *restore_cache
+    - run: *install_pnpm
     - run: *pnpm_install
     - run:
         name: Env Info
@@ -51,11 +56,9 @@ jobs:
     steps:
       - checkout
       - run: *checkout_master
-      - run: *pnpm_install
+      - run: *install_pnpm
       - restore_cache: *restore_cache
-      - run:
-          name: Install Dependencies
-          command: pnpm install --ignore-scripts
+      - run: *pnpm_install
       - run:
           name: Run linting.
           command: pnpm run ci:lint
