@@ -18,7 +18,7 @@
     "lint:docs": "prettier --write README.md",
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
-    "prebuild": "ls node_modules/.bin && del dist/*",
+    "prebuild": "del-cli dist",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint && npm run test:only",
     "pretest": "npm run build",
