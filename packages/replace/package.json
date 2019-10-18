@@ -1,5 +1,5 @@
 {
-  "name": "rollup-plugin-replace",
+  "name": "@rollup/plugin-replace",
   "version": "2.2.0",
   "license": "MIT",
   "repository": "rollup/plugins",
