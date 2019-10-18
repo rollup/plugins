@@ -4,7 +4,7 @@ dist/
 node_modules/
 output/
 
-.DS_STORE
+.DS_Store
 .eslintcache
 coverage.lcov
 pnpm-debug.log

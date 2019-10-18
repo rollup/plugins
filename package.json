@@ -26,13 +26,15 @@
     "prettier-plugin-package": "^0.3.1",
     "rollup": "^1.20.1",
     "tslib": "^1.10.0",
-    "tslint": "^5.19.0"
+    "tslint": "^5.19.0",
+    "typescript": "^3.4.3"
   },
   "ava": {
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
-      "!**/recipes/**"
+      "!**/recipes/**",
+      "!**/types.ts"
     ]
   },
   "lint-staged": {
