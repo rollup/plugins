@@ -20,12 +20,10 @@ const getDiff = async () => {
   if (CIRCLE_SHA1) {
     if (CIRCLE_COMPARE_URL) {
       const reCompare = /compare\/([0-9a-z]+)\.\.\.([0-9a-z]+)$/;
-      const [, from, to] = CIRCLE_COMPARE_URL.match(reCompare);
+      const [, from] = CIRCLE_COMPARE_URL.match(reCompare);
       baseRef = from || 'master';
-      sha = to || 'HEAD';
-    } else {
-      sha = CIRCLE_SHA1;
     }
+    sha = CIRCLE_SHA1;
   }
 
   if (GITHUB_SHA) {
