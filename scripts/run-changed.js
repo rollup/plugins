@@ -2,21 +2,47 @@
 
 /* eslint-disable  import/no-extraneous-dependencies */
 
-const { existsSync } = require('fs');
-const { join } = require('path');
+const { existsSync, readFileSync } = require('fs');
+const { join, sep } = require('path');
 
 const chalk = require('chalk');
 const execa = require('execa');
+const yaml = require('yaml');
 
 const [, , task] = process.argv;
 const { log } = console;
-const sha = process.env.CIRCLE_SHA1 || 'HEAD';
 
-log(process.env);
+const getDiff = async () => {
+  const { CIRCLE_SHA1, CIRCLE_COMPARE_URL, GITHUB_SHA, GITHUB_BASE_REF } = process.env;
+  let baseRef = 'master';
+  let sha = 'HEAD';
+
+  if (CIRCLE_SHA1) {
+    if (CIRCLE_COMPARE_URL) {
+      const reCompare = /compare\/([0-9a-z]+)\.\.\.([0-9a-z]+)$/;
+      const [, from, to] = CIRCLE_COMPARE_URL.match(reCompare);
+      baseRef = from || 'master';
+      sha = to || 'HEAD';
+    } else {
+      sha = CIRCLE_SHA1;
+    }
+  }
+
+  if (GITHUB_SHA) {
+    sha = GITHUB_SHA;
+    baseRef = GITHUB_BASE_REF || 'master';
+  }
+
+  const { stdout } = await execa('git', ['diff', `${baseRef}...${sha}`, '--name-only']);
+  return stdout;
+};
 
 (async () => {
-  const rePkg = /(packages\/([\w\-_]+))\/?/;
-  const { stdout: diff } = await execa('git', ['diff', `master...${sha}`, '--name-only']);
+  const workspace = readFileSync(join(__dirname, '..', 'pnpm-workspace.yaml'), 'utf-8');
+  const { packages } = yaml.parse(workspace);
+  const roots = packages.map((item) => item.split(sep)[0]).join('|');
+  const rePkg = new RegExp(`(${roots}/([\\w\\-_]+))/?`);
+  const diff = await getDiff();
   const filters = diff
     .split('\n')
     .filter((line) => rePkg.test(line) && existsSync(join(__dirname, '..', line)))
