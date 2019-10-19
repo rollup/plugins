@@ -5,14 +5,14 @@ Convert ES2015 with buble.
 ## Installation
 
 ```bash
-npm install --save-dev rollup-plugin-buble
+npm install --save-dev @rollup/plugin-buble
 ```
 
 ## Usage
 
 ```js
 import { rollup } from 'rollup';
-import buble from 'rollup-plugin-buble';
+import buble from '@rollup/plugin-buble';
 
 rollup({
   entry: 'main.js',
