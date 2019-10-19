@@ -33,6 +33,8 @@ const getDiff = async () => {
     baseRef = GITHUB_BASE_REF || 'master';
   }
 
+  log(chalk`{blue Comparing ${baseRef}...${sha}}`);
+
   const { stdout } = await execa('git', ['diff', `${baseRef}...${sha}`, '--name-only']);
   return stdout;
 };
