@@ -13,12 +13,18 @@ const [, , task] = process.argv;
 const { log } = console;
 
 const getDiff = async () => {
-  const { CIRCLE_SHA1, CIRCLE_COMPARE_URL, GITHUB_SHA, GITHUB_BASE_REF } = process.env;
+  const {
+    CIRCLE_BRANCH,
+    CIRCLE_SHA1,
+    CIRCLE_COMPARE_URL,
+    GITHUB_SHA,
+    GITHUB_BASE_REF
+  } = process.env;
   let baseRef = 'master';
   let sha = 'HEAD';
 
   if (CIRCLE_SHA1) {
-    if (CIRCLE_COMPARE_URL) {
+    if (CIRCLE_BRANCH === 'master' && CIRCLE_COMPARE_URL) {
       const reCompare = /compare\/([0-9a-z]+)\.\.\.([0-9a-z]+)$/;
       const [, from] = CIRCLE_COMPARE_URL.match(reCompare);
       baseRef = from || 'master';
