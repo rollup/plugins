@@ -27,7 +27,8 @@
     "rollup": "^1.20.1",
     "tslib": "^1.10.0",
     "tslint": "^5.19.0",
-    "typescript": "^3.4.3"
+    "typescript": "^3.4.3",
+    "yaml": "^1.7.2"
   },
   "ava": {
     "files": [
