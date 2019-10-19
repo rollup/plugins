@@ -19,4 +19,4 @@ test('error', async (t) => {
   t.truthy(stderr.indexOf('\x07'));
 });
 
-console.log('foo');
+console.log('bar');
