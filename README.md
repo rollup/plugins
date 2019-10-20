@@ -1,5 +1,5 @@
-[tests]: https://img.shields.io/circleci/project/github/rollup/plugins/beep.svg
-[tests-url]: https://circleci.com/gh/rollup/plugins/beep
+[tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
+[tests-url]: https://circleci.com/gh/rollup/plugins
 
 [![tests][tests]][tests-url]
 

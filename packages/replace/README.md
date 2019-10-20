@@ -1,104 +1,119 @@
-# rollup-plugin-replace
+[cover]: https://codecov.io/gh/rollup/plugins/replace/branch/master/graph/badge.svg
+[cover-url]: https://codecov.io/gh/rollup/plugins
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-replace
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-replace
+[tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
+[tests-url]: https://circleci.com/gh/rollup/plugins
 
-[![](https://img.shields.io/npm/v/rollup-plugin-replace.svg?style=flat)](https://www.npmjs.com/package/rollup-plugin-replace)
+[![tests][tests]][tests-url]
+[![cover][cover]][cover-url]
+[![size][size]][size-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
-Replace strings in files while bundling them.
+# @rollup/plugin-replace
 
-## Archived (Migration to Mono-Repo In-Process)
+🍣 A Rollup which replaces strings in files while bundling.
 
-This repository has been archived and is in the process of being migrated to a new monorepo. Please bear with us as we make this transition. More information to follow.
+## Requirements
 
-## Installation
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
 
-```bash
-npm install --save-dev rollup-plugin-replace
+## Install
+
+Using npm:
+
+```console
+npm install @rollup/plugin-replace --save-dev
 ```
 
 ## Usage
 
-Generally, you need to ensure that rollup-plugin-replace goes _before_ other things (like rollup-plugin-commonjs) in your `plugins` array, so that those plugins can apply any optimisations such as dead code removal.
+Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-// rollup.config.js
-import replace from "rollup-plugin-replace";
+import replace from '@rollup/plugin-replace';
 
 export default {
-  // ...
+  input: 'src/index.js',
+  output: {
+    dir: 'output',
+    format: 'cjs'
+  },
+  plugins: [replace({ __buildEnv__: 'production' })]
+};
+```
+
+Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
+
+The configuration above will replace every instance of `__buildEnv__` with `'productions'` in any file included in the build. _Note: Values should always be strings. For complex values, use `JSON.stringify`._
+
+Typically, `@rollup/plugin-replace` should be placed in `plugins` _before_ other plugins so that they may apply optimizations, such as dead code removal.
+
+## Options
+
+In addition to the properties and values specified for replacement, users may also specify the options below.
+
+### `delimiters`
+Type: `Array[String, String]`
+Default: `['\b', '\b']`
+
+Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html). See [Word Boundaries](#word-boundaries) below for more information.
+
+### `exclude`
+Type: `String` | `Array[...String]`
+Default: `null`
+
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
+
+### `include`
+Type: `String` | `Array(String)`
+Default: `null`
+
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
+
+## Word Boundaries
+
+By default, values will only match if they are surrounded by _word boundaries_.
+
+Consider the following options and build file:
+
+```js
+module.exports = {
+  ...
+  plugins: [replace({ changed: 'replaced' })]
+};
+```
+
+```js
+// file.js
+console.log('changed');
+console.log('unchanged');
+```
+
+The result would be:
+
+```js
+// file.js
+console.log('replaced');
+console.log('unchanged');
+```
+
+To ignore word boundaries and replace every instance of the string, wherever it may be, specify empty strings as delimiters:
+
+```js
+export default {
+  ...
   plugins: [
     replace({
-      ENVIRONMENT: JSON.stringify("production")
+      changed: 'replaced',
+      delimiters: ['', '']
     })
   ]
 };
 ```
 
-## Options
+## Meta
 
-```js
-{
-  // a minimatch pattern, or array of patterns, of files that
-  // should be processed by this plugin (if omitted, all files
-  // are included by default)...
-  include: 'config.js',
+[CONTRIBUTING](./.github/CONTRIBUTING.md)
 
-  // ...and those that shouldn't, if `include` is otherwise
-  // too permissive
-  exclude: 'node_modules/**',
-
-  // To replace every occurrence of `<@foo@>` instead of every
-  // occurrence of `foo`, supply delimiters
-  delimiters: ['<@', '@>'],
-
-  // All other options are treated as `string: replacement`
-  // replacers...
-  VERSION: '1.0.0',
-  ENVIRONMENT: JSON.stringify('development'),
-
-  // or `string: (id) => replacement` functions...
-  __dirname: (id) => `'${path.dirname(id)}'`,
-
-  // ...unless you want to be careful about separating
-  // values from other options, in which case you can:
-  values: {
-    VERSION: '1.0.0',
-    ENVIRONMENT: JSON.stringify('development')
-  }
-}
-```
-
-## Word boundaries
-
-By default, values will only match if they are surrounded by _word boundaries_ — i.e. with options like this...
-
-```js
-{
-  changed: "replaced";
-}
-```
-
-...and code like this...
-
-```js
-console.log("changed");
-console.log("unchanged");
-```
-
-...the result will be this:
-
-```js
-console.log("replaced");
-console.log("unchanged");
-```
-
-If that's not what you want, specify empty strings as delimiters:
-
-```js
-{
-  changed: 'replaced',
-  delimiters: ['', '']
-}
-```
-
-## License
-
-MIT
+[LICENSE (Mozilla Public License)](./LICENSE)
