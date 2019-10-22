@@ -14,7 +14,7 @@
     "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F beep",
     "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run build && ava --verbose && pnpm run test:ts",
+    "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --write README.md",
     "lint:js": "eslint --fix --cache src test",
