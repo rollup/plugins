@@ -21,7 +21,7 @@ const getDiff = async () => {
     GITHUB_BASE_REF
   } = process.env;
   let baseRef = 'master';
-  let sha = 'HEAD';
+  let range = 'HEAD';
 
   if (CIRCLE_SHA1) {
     if (CIRCLE_BRANCH === 'master' && CIRCLE_COMPARE_URL) {
@@ -29,17 +29,17 @@ const getDiff = async () => {
       const [, from] = CIRCLE_COMPARE_URL.match(reCompare);
       baseRef = from || 'master';
     }
-    sha = CIRCLE_SHA1;
+    range = `${baseRef}...${CIRCLE_SHA1}`;
   }
 
   if (GITHUB_SHA) {
-    sha = GITHUB_SHA;
     baseRef = GITHUB_BASE_REF || 'master';
+    range = `${baseRef}...${GITHUB_SHA}`;
   }
 
-  log(chalk`{blue Comparing ${baseRef}...${sha}}`);
+  log(chalk`{blue Comparing ${range}}`);
 
-  const { stdout } = await execa('git', ['diff', `${baseRef}...${sha}`, '--name-only']);
+  const { stdout } = await execa('git', ['diff', range, '--name-only']);
   return stdout;
 };
 
