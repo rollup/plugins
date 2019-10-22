@@ -4,6 +4,7 @@ const path = require('path');
 const acorn = require('acorn');
 const test = require('ava');
 
+// eslint-disable-next-line import/no-unresolved
 const strip = require('..');
 
 const compare = (t, fixture, options) => {
