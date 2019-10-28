@@ -54,18 +54,21 @@ Typically, `@rollup/plugin-replace` should be placed in `plugins` _before_ other
 In addition to the properties and values specified for replacement, users may also specify the options below.
 
 ### `delimiters`
+
 Type: `Array[String, String]`
 Default: `['\b', '\b']`
 
 Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html). See [Word Boundaries](#word-boundaries) below for more information.
 
 ### `exclude`
+
 Type: `String` | `Array[...String]`
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
 ### `include`
+
 Type: `String` | `Array(String)`
 Default: `null`
 
