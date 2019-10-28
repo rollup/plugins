@@ -116,4 +116,4 @@ export default {
 
 [CONTRIBUTING](./.github/CONTRIBUTING.md)
 
-[LICENSE (Mozilla Public License)](./LICENSE)
+[LICENSE (MIT)](./LICENSE)
