@@ -1,6 +1,9 @@
 {
   "name": "@rollup/plugin-buble",
-  "version": "0.19.8",
+  "version": "0.20.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Compile ES2015 with buble",
   "license": "MIT",
   "repository": "rollup/plugins",
@@ -16,12 +19,12 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --write README.md",
+    "lint:docs": "prettier --single-quote --write README.md",
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm run test:only",
+    "prepublishOnly": "npm run lint && npm run test && npm run test:ts",
     "pretest": "npm run build",
     "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava test/test.js",
@@ -53,6 +56,14 @@
     "del-cli": "^3.0.0",
     "rollup": "^1.20.0",
     "source-map": "^0.7.3"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
   },
   "module": "dist/rollup-plugin-buble.es.js"
 }

@@ -48,18 +48,21 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 ## Options
 
 ### `transforms`
+
 Type: `Object`
 Default: `{ modules: false }`
 
 Specifies additional [transform options](https://buble.surge.sh/guide/) for the Bublé compiler
 
 ### `exclude`
+
 Type: `String` | `Array[...String]`
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
 ### `include`
+
 Type: `String` | `Array(String)`
 Default: `null`
 
