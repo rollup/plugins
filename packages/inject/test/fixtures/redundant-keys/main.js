@@ -1,0 +1,1 @@
+Buffer.isBuffer('foo');
