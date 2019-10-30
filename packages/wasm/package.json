@@ -1,0 +1,64 @@
+{
+  "name": "@rollup/plugin-wasm",
+  "version": "3.0.0",
+  "description": "Import WebAssembly code with Rollup",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Jamen Marz <jamenmarz+gh@gmail.com>",
+  "homepage": "https://github.com/rollup/plugins/packages/wasm/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index",
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F beep",
+    "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint && npm run test:only",
+    "pretest": "npm run build",
+    "security": "echo 'pnpm needs `npm audit` support'",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "webassembly",
+    "import",
+    "wasm",
+    "wast",
+    "wat",
+    "emscripten"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "devDependencies": {
+    "del-cli": "^3.0.0",
+    "rollup": "^1.20.0",
+    "source-map": "^0.7.3"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  },
+  "contributors": [
+    "Jamen Marz <jamenmarz+gh@gmail.com>",
+    "Colin Eberhardt <colin.eberhardt@gmail.com>"
+  ]
+}

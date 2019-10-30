@@ -50,4 +50,4 @@ This plugin currently has no available options.
 
 [CONTRIBUTING](./.github/CONTRIBUTING.md)
 
-[LICENSE (Mozilla Public License)](./LICENSE)
+[LICENSE (MIT)](./LICENSE)
