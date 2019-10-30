@@ -122,6 +122,50 @@ To replace extensions with another, a pattern like the following might be used:
 
 This would replace the file extension for all imports ending with `.js` to `.wasm`.
 
+## Custom resolver instead of built-in algorithm
+
+In some situations you would like to keep preferred resolving method together with aliasing.
+It could be done with `customResolver` option.
+
+Example:
+```javascript
+// rollup.config.js
+import alias from "@rollup/plugin-alias";
+import resolve from "rollup-plugin-node-resolve";
+
+const customResolver = resolve({
+  extensions: [".mjs", ".js", ".jsx", ".json", ".sass", ".scss"]
+});
+const projectRootDir = path.resolve(__dirname);
+
+export default {
+  // ...
+  plugins: [
+    alias(
+      {
+        entries: [
+          {
+            find: "src",
+            replacement: path.resolve(projectRootDir, "src")
+            // OR place `customResolver` here. See explanation below.
+          }
+        ]
+      },
+      customResolver
+    ),
+    resolve()
+  ]
+};
+```
+
+In example below we made an alias `src` and still keep `node-resolve` algorithm for your files that are "aliased" with `src` by passing `customResolver` option.
+Also we keep `resolve()` plugin separately in plugins list for other files that are not aliased with `src`.
+
+`customResolver` option can be passed inside each entree too for granular control over resolving.
+
+`customResolver` also can be your own function, not plugin. Please refer to [Rollup docs](https://rollupjs.org/guide/en/#hooks) for more info.
+
+
 ## Meta
 
 [CONTRIBUTING](./.github/CONTRIBUTING.md)
