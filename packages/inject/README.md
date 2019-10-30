@@ -40,8 +40,8 @@ export default {
     format: 'cjs'
   },
   plugins: [
-    inject({ 
-      Promise: [ 'es6-promise', 'Promise' ]
+    inject({
+      Promise: ['es6-promise', 'Promise']
     })
   ]
 };
@@ -52,6 +52,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 This configuration above will scan all your files for global Promise usage and plugin will add import to desired module (`import { Promise } from 'es6-promise'` in this case).
 
 Examples:
+
 ```js
 {
   // import { Promise } from 'es6-promise'
