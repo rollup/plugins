@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "class-methods-use-this": "off",
+    "default-case": "off",
+    "import/prefer-default-export": "off",
+    "no-console": "off",
+    "no-debugger": "off",
+    "no-labels": "off",
+    "no-restricted-syntax": "off",
+    "no-unused-expressions": "off",
+    "no-unused-labels": "off",
+    "no-unused-vars": "off",
+    "no-undef": "off",
+    "prefer-rest-params": "off"
+  }
+}

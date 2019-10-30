@@ -25,7 +25,7 @@ function getChunksFromBundle(bundle) {
 test('transforms files', async (t) =>
   rollup
     .rollup({
-      input: 'samples/basic/main.js',
+      input: 'fixtures/basic/main.js',
       plugins: [buble()]
     })
     .then(getChunksFromBundle)

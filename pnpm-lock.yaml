@@ -23,7 +23,7 @@ importers:
       execa: ^2.0.4
       lint-staged: ^9.2.0
       nyc: ^14.1.1
-      pnpm: ^4.0.0
+      pnpm: ^4.1.5
       pre-commit: ^1.2.2
       prettier: ^1.18.2
       prettier-plugin-package: ^0.3.1
@@ -32,6 +32,16 @@ importers:
       tslint: ^5.19.0
       typescript: ^3.4.3
       yaml: ^1.7.2
+  packages/alias:
+    dependencies:
+      slash: 3.0.0
+    devDependencies:
+      del-cli: 3.0.0
+      rollup: 1.26.0
+    specifiers:
+      del-cli: ^3.0.0
+      rollup: ^1.20.0
+      slash: ^3.0.0
   packages/beep:
     devDependencies:
       rollup: 1.24.0
@@ -97,6 +107,29 @@ importers:
       rollup-pluginutils: ^2.6.0
       source-map: ^0.7.3
       typescript: ^3.4.3
+  packages/strip:
+    dependencies:
+      estree-walker: 0.6.1
+      magic-string: 0.25.4
+      rollup-pluginutils: 2.8.2
+    devDependencies:
+      acorn: 6.3.0
+      rollup: 1.26.0
+    specifiers:
+      acorn: ^6.0.2
+      estree-walker: ^0.6.0
+      magic-string: ^0.25.1
+      rollup: ^1.20.0
+      rollup-pluginutils: ^2.8.1
+  packages/wasm:
+    devDependencies:
+      del-cli: 3.0.0
+      rollup: 1.26.0
+      source-map: 0.7.3
+    specifiers:
+      del-cli: ^3.0.0
+      rollup: ^1.20.0
+      source-map: ^0.7.3
 lockfileVersion: 5.1
 packages:
   /@ava/babel-plugin-throws-helper/4.0.0:
@@ -467,6 +500,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-JNbGaHFCLwgHn/iCckiGSOZ1XYHsKFwREtzPwSGCVld1SGhOlmZw2D4ZI94HQCrBHbADzW9m4LER/8olJTRGHA==
+  /@types/node/12.12.0:
+    dev: true
+    resolution:
+      integrity: sha512-6N8Sa5AaENRtJnpKXZgvc119PKxT1Lk9VPy4kfT8JF23tIe1qDfaGkBR2DRKJFIA7NptMz+fps//C6aLi1Uoug==
   /acorn-dynamic-import/4.0.0_acorn@6.3.0:
     dependencies:
       acorn: 6.3.0
@@ -741,7 +778,7 @@ packages:
       require-precompiled: 0.1.0
       resolve-cwd: 3.0.0
       slash: 3.0.0
-      source-map-support: 0.5.15
+      source-map-support: 0.5.16
       stack-utils: 1.0.2
       strip-ansi: 5.2.0
       strip-bom-buf: 2.0.0
@@ -3935,7 +3972,7 @@ packages:
   /rollup/1.26.0:
     dependencies:
       '@types/estree': 0.0.39
-      '@types/node': 12.11.7
+      '@types/node': 12.12.0
       acorn: 7.1.0
     dev: true
     hasBin: true
@@ -4038,7 +4075,6 @@ packages:
     resolution:
       integrity: sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
   /slash/3.0.0:
-    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -4059,13 +4095,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-Qu+VC3EwYLldKa1fCxuuvULvSJOKEgk9pi8dZeCVK7TqBfUNTH4sFkk4joj8afVSfAYgJoSOetjx9QWOJ5mYoQ==
-  /source-map-support/0.5.15:
+  /source-map-support/0.5.16:
     dependencies:
       buffer-from: 1.1.1
       source-map: 0.6.1
     dev: true
     resolution:
-      integrity: sha512-wYF5aX1J0+V51BDT3Om7uXNn0ct2FWiV4bvwiGVefxkm+1S1o5jsecE5lb2U28DDblzxzxeIDbTVpXHI9D/9hA==
+      integrity: sha512-efyLRJDr68D9hBBNIPWFjhpFzURh+KJykQwvMyW5UiZzYwoF6l4YMMDIJJEyFWxWCqfyxLzz6tSfUFR+kXXsVQ==
   /source-map/0.5.7:
     dev: true
     engines:

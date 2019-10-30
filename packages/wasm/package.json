@@ -1,55 +1,67 @@
 {
-  "name": "@rollup/plugin-beep",
-  "version": "0.1.2",
+  "name": "@rollup/plugin-wasm",
+  "version": "3.0.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "A Rollup plugin which beeps on errors and warnings",
+  "description": "Import WebAssembly code with Rollup",
   "license": "MIT",
   "repository": "rollup/plugins",
-  "author": "shellscape",
-  "homepage": "https://github.com/rollup/plugins/packages/beep",
+  "author": "Jamen Marz <jamenmarz+gh@gmail.com>",
+  "homepage": "https://github.com/rollup/plugins/packages/wasm/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "lib/index.js",
-  "engines": {
-    "node": ">= 8.0.0"
-  },
+  "main": "dist/index",
   "scripts": {
+    "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F beep",
-    "ci:lint": "pnpm run lint && pnpm run security",
+    "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "ava --verbose",
+    "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache lib test",
+    "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint",
+    "pretest": "npm run build",
     "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
   },
   "files": [
-    "lib/",
+    "dist",
     "README.md",
     "LICENSE"
   ],
   "keywords": [
-    "beep",
+    "rollup",
     "plugin",
-    "rollup"
+    "webassembly",
+    "import",
+    "wasm",
+    "wast",
+    "wat",
+    "emscripten"
   ],
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
   "devDependencies": {
+    "del-cli": "^3.0.0",
     "rollup": "^1.20.0",
-    "strip-ansi": "^5.2.0"
+    "source-map": "^0.7.3"
   },
   "ava": {
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
-      "!**/output/**",
-      "!**/recipes/**"
+      "!**/recipes/**",
+      "!**/types.ts"
     ]
-  }
+  },
+  "contributors": [
+    "Jamen Marz <jamenmarz+gh@gmail.com>",
+    "Colin Eberhardt <colin.eberhardt@gmail.com>"
+  ]
 }

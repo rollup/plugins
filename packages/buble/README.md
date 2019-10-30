@@ -72,4 +72,4 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 [CONTRIBUTING](./.github/CONTRIBUTING.md)
 
-[LICENSE (Mozilla Public License)](./LICENSE)
+[LICENSE (MIT)](./LICENSE)

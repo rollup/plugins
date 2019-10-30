@@ -1,61 +1,55 @@
 {
-  "name": "@rollup/plugin-buble",
-  "version": "0.20.0",
+  "name": "@rollup/plugin-alias",
+  "version": "2.2.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Compile ES2015 with buble",
+  "description": "Resolves aliases with Rollup",
   "license": "MIT",
   "repository": "rollup/plugins",
-  "author": "Rich Harris <richard.a.harris@gmail.com>",
-  "homepage": "https://github.com/rollup/plugins/packages/buble/#readme",
+  "author": "Johannes Stein",
+  "homepage": "https://github.com/rollup/plugins",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/rollup-plugin-buble.cjs.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F beep",
+    "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F alias",
     "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
+    "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm run test && npm run test:ts",
+    "prepublishOnly": "npm run lint && npm run test",
     "pretest": "npm run build",
     "security": "echo 'pnpm needs `npm audit` support'",
-    "test": "ava",
-    "test:ts": "tsc index.d.ts test/types.ts --noEmit"
+    "test": "ava"
   },
   "files": [
     "dist",
-    "index.d.ts",
     "src",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "rollup",
     "plugin",
-    "buble",
-    "es2015",
-    "npm",
-    "modules"
+    "resolve",
+    "alias"
   ],
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
   "dependencies": {
-    "buble": "^0.19.8",
-    "rollup-pluginutils": "^2.6.0",
-    "typescript": "^3.4.3"
+    "slash": "^3.0.0"
   },
   "devDependencies": {
     "del-cli": "^3.0.0",
-    "rollup": "^1.20.0",
-    "source-map": "^0.7.3"
+    "rollup": "^1.20.0"
   },
   "ava": {
     "files": [
@@ -65,5 +59,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/rollup-plugin-buble.es.js"
+  "jsnext:main": "dist/index.es2015.js",
+  "module": "dist/index.es2015.js"
 }

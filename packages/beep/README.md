@@ -28,13 +28,13 @@ npm install @rollup/plugin-beep --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-const beep = require("@rollup/plugin-beep");
+const beep = require('@rollup/plugin-beep');
 
 module.exports = {
-  input: "src/index.js",
+  input: 'src/index.js',
   output: {
-    dir: "output",
-    format: "cjs"
+    dir: 'output',
+    format: 'cjs'
   },
   plugins: [beep()]
 };
@@ -50,4 +50,4 @@ This plugin currently has no available options.
 
 [CONTRIBUTING](./.github/CONTRIBUTING.md)
 
-[LICENSE (Mozilla Public License)](./LICENSE)
+[LICENSE (MIT)](./LICENSE)
