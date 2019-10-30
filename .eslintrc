@@ -1,3 +1,15 @@
 {
-  "extends": "rollup"
+  "extends": "rollup",
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "arrowParens": "always",
+        "printWidth": 100,
+        "singleQuote": true,
+        "trailingComma": "none",
+        "plugins": ["prettier-plugin-package"]
+      }
+    ]
+  }
 }

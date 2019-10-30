@@ -43,14 +43,30 @@ Commits for release should be in the form of `chore(release): <name>-v<version>`
 
 Running Tests:
 
+To run tests on all packages which have changes:
+
 ```console
 $ pnpm run test
 ```
 
+To run tests on a specific package:
+
+```console
+$ pnpm run test --filter ./packages/<name>
+```
+
 Linting:
+
+To lint all packages which have changes:
 
 ```console
 $ pnpm run lint
+```
+
+To lint a specific package:
+
+```console
+$ pnpm run lint --filter ./packages/<name>
 ```
 
 _Note: Scripts in the repository will run the root `test` and `lint` script on those packages which have changes. This is also how the CI pipelines function. To run either on a package outside of that pipeline, use `pnpm run <script> -- @rollup/plugin-<name>`._

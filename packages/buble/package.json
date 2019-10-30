@@ -27,7 +27,7 @@
     "prepublishOnly": "npm run lint && npm run test && npm run test:ts",
     "pretest": "npm run build",
     "security": "echo 'pnpm needs `npm audit` support'",
-    "test": "ava test/test.js",
+    "test": "ava",
     "test:ts": "tsc index.d.ts test/types.ts --noEmit"
   },
   "files": [
