@@ -124,6 +124,6 @@ This would replace the file extension for all imports ending with `.js` to `.was
 
 ## Meta
 
-[CONTRIBUTING](./.github/CONTRIBUTING.md)
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
 
-[LICENSE (MIT)](./LICENSE)
+[LICENSE (MIT)](/LICENSE)
