@@ -2,13 +2,11 @@
 
 Remove `debugger` statements and functions like `assert.equal` and `console.log` from your code.
 
-
 ## Installation
 
 ```bash
 npm install --save-dev @rollup/plugin-strip
 ```
-
 
 ## Usage
 
@@ -31,7 +29,7 @@ export default {
       debugger: true,
 
       // defaults to `[ 'console.*', 'assert.*' ]`
-      functions: [ 'console.log', 'assert.*', 'debug', 'alert' ],
+      functions: ['console.log', 'assert.*', 'debug', 'alert'],
 
       // remove one or more labeled blocks by name
       // defaults to `[]`
@@ -44,7 +42,6 @@ export default {
   ]
 };
 ```
-
 
 ## License
 

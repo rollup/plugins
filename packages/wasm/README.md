@@ -52,6 +52,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 In addition to the properties and values specified for replacement, users may also specify the options below.
 
 ### `sync`
+
 Type: `Array[String]`
 Default: `null`
 
@@ -73,8 +74,8 @@ Compile the file using `emscripten`, or the online [WasmFiddle](https://wasdk.gi
 import wasm from './sample.wasm';
 
 wasm({ ...imports }).then(({ instance }) => {
-  console.log(instance.exports.main())
-})
+  console.log(instance.exports.main());
+});
 ```
 
 The WebAssembly is inlined as a base64 encoded string. At runtime the string is decoded and a module is returned.
@@ -87,21 +88,18 @@ Small modules (< 4KB) can be compiled synchronously by specifying them in the co
 
 ```js
 wasm({
-  sync: [
-    'web/sample.wasm',
-    'web/foobar.wasm'
-  ]
-})
+  sync: ['web/sample.wasm', 'web/foobar.wasm']
+});
 ```
 
 This means that the exports can be accessed immediately.
 
 ```js
-import module from './sample.wasm'
+import module from './sample.wasm';
 
-const instance = sample({ ...imports })
+const instance = sample({ ...imports });
 
-console.log(instance.exports.main())
+console.log(instance.exports.main());
 ```
 
 ## Meta
