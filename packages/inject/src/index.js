@@ -65,12 +65,12 @@ export default function inject(options) {
 
   // Fix paths on Windows
   if (sep !== '/') {
-    modulesMap.forEach((mod, key) => {
+    for (const [key, mod] of modulesMap) {
       modulesMap.set(
         key,
         Array.isArray(mod) ? [mod[0].split(sep).join('/'), mod[1]] : mod.split(sep).join('/')
       );
-    });
+    }
   }
 
   const firstpass = new RegExp(
@@ -88,7 +88,7 @@ export default function inject(options) {
       if (!filter(id)) return null;
       if (code.search(firstpass) === -1) return null;
 
-      if (sep !== '/') id = id.split(sep).join('/');
+      if (sep !== '/') id = id.split(sep).join('/'); // eslint-disable-line no-param-reassign
 
       let ast = null;
       try {
@@ -160,7 +160,7 @@ export default function inject(options) {
           }
 
           if (node.scope) {
-            scope = node.scope;
+            scope = node.scope; // eslint-disable-line prefer-destructuring
           }
 
           // special case – shorthand properties. because node.key === node.value,
