@@ -8,3 +8,4 @@ output/
 .eslintcache
 coverage.lcov
 pnpm-debug.log
+.idea
