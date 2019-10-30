@@ -78,6 +78,27 @@ export default function alias(options = {}) {
 
       let updatedId = normalizeId(importeeId.replace(matchedEntry.find, matchedEntry.replacement));
 
+      let customResolver = null;
+      if (typeof matchedEntry.customResolver === 'function') {
+        customResolver = matchedEntry.customResolver;
+      } else if (
+        typeof matchedEntry.customResolver === 'object' &&
+        typeof matchedEntry.customResolver.resolveId === 'function'
+      ) {
+        customResolver = options.customResolver.resolveId;
+      } else if (typeof options.customResolver === 'function') {
+        customResolver = options.customResolver;
+      } else if (
+        typeof options.customResolver === 'object' &&
+        typeof options.customResolver.resolveId === 'function'
+      ) {
+        customResolver = options.customResolver.resolveId;
+      }
+
+      if (customResolver) {
+        return customResolver(updatedId, importerId);
+      }
+
       if (isFilePath(updatedId)) {
         const directory = posix.dirname(importerId);
 
