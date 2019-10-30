@@ -1,6 +1,9 @@
 {
   "name": "@rollup/plugin-alias",
   "version": "2.2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Resolves aliases with Rollup",
   "license": "MIT",
   "repository": "rollup/plugins",

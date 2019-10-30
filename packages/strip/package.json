@@ -9,7 +9,7 @@
   "repository": "rollup/@rollup/plugin-strip",
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins",
-  "bugs":"https://github.com/rollup/plugins/issues",
+  "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
