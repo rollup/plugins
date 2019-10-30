@@ -32,6 +32,16 @@ importers:
       tslint: ^5.19.0
       typescript: ^3.4.3
       yaml: ^1.7.2
+  packages/alias:
+    dependencies:
+      slash: 3.0.0
+    devDependencies:
+      del-cli: 3.0.0
+      rollup: 1.26.0
+    specifiers:
+      del-cli: ^3.0.0
+      rollup: ^1.20.0
+      slash: ^3.0.0
   packages/beep:
     devDependencies:
       rollup: 1.24.0
@@ -75,15 +85,6 @@ importers:
       rollup-pluginutils: ^2.6.0
       source-map: ^0.7.3
       typescript: ^3.4.3
-  packages/wasm:
-    devDependencies:
-      del-cli: 3.0.0
-      rollup: 1.26.0
-      source-map: 0.7.3
-    specifiers:
-      del-cli: ^3.0.0
-      rollup: ^1.20.0
-      source-map: ^0.7.3
 lockfileVersion: 5.1
 packages:
   /@ava/babel-plugin-throws-helper/4.0.0:
@@ -450,10 +451,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-TJtwsqZ39pqcljJpajeoofYRfeZ7/I/OMUQ5pR4q5wOKf2ocrUvBAZUMhWsOvKx3dVc/aaV5GluBivt0sWqA5A==
-  /@types/node/12.11.7:
+  /@types/node/12.12.0:
     dev: true
     resolution:
-      integrity: sha512-JNbGaHFCLwgHn/iCckiGSOZ1XYHsKFwREtzPwSGCVld1SGhOlmZw2D4ZI94HQCrBHbADzW9m4LER/8olJTRGHA==
+      integrity: sha512-6N8Sa5AaENRtJnpKXZgvc119PKxT1Lk9VPy4kfT8JF23tIe1qDfaGkBR2DRKJFIA7NptMz+fps//C6aLi1Uoug==
   /acorn-dynamic-import/4.0.0_acorn@6.3.0:
     dependencies:
       acorn: 6.3.0
@@ -679,7 +680,7 @@ packages:
       arrify: 2.0.1
       bluebird: 3.7.1
       chalk: 2.4.2
-      chokidar: 3.2.2
+      chokidar: 3.2.3
       chunkd: 1.0.0
       ci-parallel-vars: 1.0.0
       clean-stack: 2.2.0
@@ -728,7 +729,7 @@ packages:
       require-precompiled: 0.1.0
       resolve-cwd: 3.0.0
       slash: 3.0.0
-      source-map-support: 0.5.13
+      source-map-support: 0.5.16
       stack-utils: 1.0.2
       strip-ansi: 5.2.0
       strip-bom-buf: 2.0.0
@@ -949,7 +950,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
-  /chokidar/3.2.2:
+  /chokidar/3.2.3:
     dependencies:
       anymatch: 3.1.1
       braces: 3.0.2
@@ -960,11 +961,11 @@ packages:
       readdirp: 3.2.0
     dev: true
     engines:
-      node: '>= 8'
+      node: '>= 8.10.0'
     optionalDependencies:
       fsevents: 2.1.1
     resolution:
-      integrity: sha512-bw3pm7kZ2Wa6+jQWYP/c7bAZy3i4GwiIiMO2EeRjrE48l8vBqC/WvFhSF0xyM8fQiPEGvwMY/5bqDG7sSEOuhg==
+      integrity: sha512-GtrxGuRf6bzHQmXWRepvsGnXpkQkVU+D2/9a7dAe4a7v1NhrfZOZ2oKf76M3nOs46fFYL8D+Q8JYA4GYeJ8Cjw==
   /chunkd/1.0.0:
     dev: true
     resolution:
@@ -2052,7 +2053,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-a30VEBm4PEdx1dRB7MFK7BejejvCvBronbLjht+sHuGYj8PHs7M/5Z+rt5lw551vZ7yfTCj4Vuyy3mSJytDWRQ==
-  /handlebars/4.4.5:
+  /handlebars/4.5.1:
     dependencies:
       neo-async: 2.6.1
       optimist: 0.6.1
@@ -2062,9 +2063,9 @@ packages:
       node: '>=0.4.7'
     hasBin: true
     optionalDependencies:
-      uglify-js: 3.6.4
+      uglify-js: 3.6.5
     resolution:
-      integrity: sha512-0Ce31oWVB7YidkaTq33ZxEbN+UDxMMgThvCe8ptgQViymL5DPis9uLdTA13MiRPhgvqyxIegugrP97iK3JeBHg==
+      integrity: sha512-C29UoFzHe9yM61lOsIlCE5/mQVGrnIOrOq7maQl76L7tYPCgC1og0Ajt6uWnX4ZTxBPnjw+CUvawphwCfJgUnA==
   /has-ansi/2.0.0:
     dependencies:
       ansi-regex: 2.1.1
@@ -2544,7 +2545,7 @@ packages:
       integrity: sha512-R47KzMtDJH6X4/YW9XTx+jrLnZnscW4VpNN+1PViSYTejLVPWv7oov+Duf8YQSPyVRUvueQqz1TcsC6mooZTXw==
   /istanbul-reports/2.2.6:
     dependencies:
-      handlebars: 4.4.5
+      handlebars: 4.5.1
     dev: true
     engines:
       node: '>=6'
@@ -3933,7 +3934,7 @@ packages:
   /rollup/1.26.0:
     dependencies:
       '@types/estree': 0.0.39
-      '@types/node': 12.11.7
+      '@types/node': 12.12.0
       acorn: 7.1.0
     dev: true
     hasBin: true
@@ -4036,7 +4037,6 @@ packages:
     resolution:
       integrity: sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
   /slash/3.0.0:
-    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -4057,13 +4057,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-Qu+VC3EwYLldKa1fCxuuvULvSJOKEgk9pi8dZeCVK7TqBfUNTH4sFkk4joj8afVSfAYgJoSOetjx9QWOJ5mYoQ==
-  /source-map-support/0.5.13:
+  /source-map-support/0.5.16:
     dependencies:
       buffer-from: 1.1.1
       source-map: 0.6.1
     dev: true
     resolution:
-      integrity: sha512-SHSKFHadjVA5oR4PPqhtAVdcBWwRYVd6g6cAXnIbRiIwc2EhPrTuKUBdSLvlEKyIP3GCf89fltvcZiP9MMFA1w==
+      integrity: sha512-efyLRJDr68D9hBBNIPWFjhpFzURh+KJykQwvMyW5UiZzYwoF6l4YMMDIJJEyFWxWCqfyxLzz6tSfUFR+kXXsVQ==
   /source-map/0.5.7:
     dev: true
     engines:
@@ -4499,7 +4499,7 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-unoCll1+l+YK4i4F8f22TaNVPRHcD9PA3yCuZ8g5e0qGqlVlJ/8FSateOLLSagn+Yg5+ZwuPkL8LFUc0Jcvksg==
-  /uglify-js/3.6.4:
+  /uglify-js/3.6.5:
     dependencies:
       commander: 2.20.3
       source-map: 0.6.1
@@ -4509,7 +4509,7 @@ packages:
     hasBin: true
     optional: true
     resolution:
-      integrity: sha512-9Yc2i881pF4BPGhjteCXQNaXx1DCwm3dtOyBaG2hitHjLWOczw/ki8vD1bqyT3u6K0Ms/FpCShkmfg+FtlOfYA==
+      integrity: sha512-7L3W+Npia1OCr5Blp4/Vw83tK1mu5gnoIURtT1fUVfQ3Kf8WStWV6NJz0fdoBJZls0KlweruRTLVe6XLafmy5g==
   /uid2/0.0.3:
     dev: true
     resolution:
