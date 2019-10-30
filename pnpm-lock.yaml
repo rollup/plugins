@@ -23,7 +23,7 @@ importers:
       execa: ^2.0.4
       lint-staged: ^9.2.0
       nyc: ^14.1.1
-      pnpm: ^4.0.0
+      pnpm: ^4.1.5
       pre-commit: ^1.2.2
       prettier: ^1.18.2
       prettier-plugin-package: ^0.3.1
@@ -85,6 +85,29 @@ importers:
       rollup-pluginutils: ^2.6.0
       source-map: ^0.7.3
       typescript: ^3.4.3
+  packages/strip:
+    dependencies:
+      estree-walker: 0.6.1
+      magic-string: 0.25.4
+      rollup-pluginutils: 2.8.2
+    devDependencies:
+      acorn: 6.3.0
+      rollup: 1.26.0
+    specifiers:
+      acorn: ^6.0.2
+      estree-walker: ^0.6.0
+      magic-string: ^0.25.1
+      rollup: ^1.20.0
+      rollup-pluginutils: ^2.8.1
+  packages/wasm:
+    devDependencies:
+      del-cli: 3.0.0
+      rollup: 1.26.0
+      source-map: 0.7.3
+    specifiers:
+      del-cli: ^3.0.0
+      rollup: ^1.20.0
+      source-map: ^0.7.3
 lockfileVersion: 5.1
 packages:
   /@ava/babel-plugin-throws-helper/4.0.0:
