@@ -70,6 +70,6 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 ## Meta
 
-[CONTRIBUTING](./.github/CONTRIBUTING.md)
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
 
-[LICENSE (MIT)](./LICENSE)
+[LICENSE (MIT)](/LICENSE)

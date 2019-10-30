@@ -117,6 +117,6 @@ export default {
 
 ## Meta
 
-[CONTRIBUTING](./.github/CONTRIBUTING.md)
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
 
-[LICENSE (MIT)](./LICENSE)
+[LICENSE (MIT)](/LICENSE)

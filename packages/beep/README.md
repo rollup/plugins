@@ -48,6 +48,6 @@ This plugin currently has no available options.
 
 ## Meta
 
-[CONTRIBUTING](./.github/CONTRIBUTING.md)
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
 
-[LICENSE (MIT)](./LICENSE)
+[LICENSE (MIT)](/LICENSE)
