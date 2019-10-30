@@ -65,12 +65,12 @@ export default function inject(options) {
 
   // Fix paths on Windows
   if (sep !== '/') {
-    for (const [key, mod] of modulesMap) {
+    modulesMap.forEach((mod, key) => {
       modulesMap.set(
         key,
         Array.isArray(mod) ? [mod[0].split(sep).join('/'), mod[1]] : mod.split(sep).join('/')
       );
-    }
+    });
   }
 
   const firstpass = new RegExp(
