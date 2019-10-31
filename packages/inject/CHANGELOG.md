@@ -1,4 +1,4 @@
-# rollup-plugin-inject
+# @rollup/plugin-inject Changelog
 
 ## 3.0.2
 
