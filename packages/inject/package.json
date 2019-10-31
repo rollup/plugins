@@ -33,6 +33,7 @@
     "dist",
     "index.d.ts",
     "src",
+    "LICENSE",
     "README.md"
   ],
   "keywords": [
