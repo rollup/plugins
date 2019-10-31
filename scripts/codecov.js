@@ -16,6 +16,11 @@ const root = join(__dirname, '..');
     onlyFiles: false
   });
 
+  if (!files.length) {
+    log(chalk.cyan('No Coverage Files Found to Submit'));
+    return;
+  }
+
   log(chalk.blue('Submitting Coverage to CodeCov.io'));
   log('Found Coverage Files:');
   log(' ', chalk.grey(files.join('\n  ')), '\n');
