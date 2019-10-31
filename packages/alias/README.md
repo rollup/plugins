@@ -102,6 +102,17 @@ Specifies an array of file extensions to use when attempting to resolve an `impo
 alias({ resolve: ['.jsx', '.js'] });
 ```
 
+### `customResolver`
+
+Type: `Function | Object`<br>
+Default: `null`
+
+Specifies a different resolving algorithm instead of built-in should be used.
+`customResolver` could be any of Rollup plugins that makes module resolving.
+Or if you want to pass your custom function, please refer to [Rollup docs](https://rollupjs.org/guide/en/#hooks) for more info on `resolveId` hook.
+Please find detailed example in [Custom resolver instead of built-in algorithm](#custom-resolver-instead-of-built-in-algorithm) section below.
+
+
 ## Regular Expression Aliases
 
 Regular Expressions can be used to search in a more distinct and complex manner. e.g. To perform partial replacements via sub-pattern matching.
@@ -149,21 +160,19 @@ export default {
             replacement: path.resolve(projectRootDir, "src")
             // OR place `customResolver` here. See explanation below.
           }
-        ]
-      },
-      customResolver
+        ],
+        customResolver
+      }
     ),
     resolve()
   ]
 };
 ```
 
-In example below we made an alias `src` and still keep `node-resolve` algorithm for your files that are "aliased" with `src` by passing `customResolver` option.
+In above example we made an alias `src` and still keep `node-resolve` algorithm for your files that are "aliased" with `src` by passing `customResolver` option.
 Also we keep `resolve()` plugin separately in plugins list for other files that are not aliased with `src`.
 
-`customResolver` option can be passed inside each entree too for granular control over resolving.
-
-`customResolver` also can be your own function, not plugin. Please refer to [Rollup docs](https://rollupjs.org/guide/en/#hooks) for more info.
+`customResolver` option can be passed inside each entree too for granular control over resolving. It allows to choose preferred algorithm for each alias.
 
 
 ## Meta
