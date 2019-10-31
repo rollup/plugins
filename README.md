@@ -1,5 +1,5 @@
-[cover]: https://codecov.io/gh/rollup/plugins/beep/branch/master/graph/badge.svg
-[cover-url]: https://codecov.io/gh/rollup/plugins/beep
+[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
+[cover-url]: https://codecov.io/gh/rollup/plugins
 [tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
 [tests-url]: https://circleci.com/gh/rollup/plugins
 

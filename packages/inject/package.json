@@ -32,8 +32,8 @@
   "files": [
     "dist",
     "index.d.ts",
-    "LICENSE",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "rollup",
