@@ -68,5 +68,5 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/rollup-plugin-inject.es.js"
+  "module": "dist/index.es.js"
 }
