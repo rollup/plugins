@@ -12,7 +12,7 @@
 
 # @rollup/plugin-inject
 
-🍣 Scan modules for global variables and inject `import` statements where necessary
+🍣 A Rollup plugin which scans modules for global variables and injects `import` statements where necessary.
 
 ## Requirements
 
