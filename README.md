@@ -18,6 +18,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 - [alias](packages/alias) 🍣 A Rollup plugin for defining aliases when bundling packages.
 - [beep](packages/beep) 🍣 A Rollup plugin that beeps when a build ends with errors.
 - [buble](packages/buble) 🍣 A Rollup which converts ES2015+ code with the Bublé compiler.
+- [dsv](packages/dsv) 🍣 A Rollup plugin which converts `.csv` and `.tsv` files into JavaScript modules with [d3-dsv](https://github.com/d3/d3-dsv).
 - [replace](packages/replace) 🍣 A Rollup which replaces strings in files while bundling.
 - [strip](packages/strip) 🍣 Remove statements and other bits from your code.
 - [wasm](packages/wasm) 🍣 A Rollup which allows importing and bundling [WebAssembly modules](http://webassembly.org).
