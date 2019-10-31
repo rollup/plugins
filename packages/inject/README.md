@@ -1,7 +1,7 @@
-[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
+[cover]: https://codecov.io/gh/rollup/plugins/inject/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/rollup/plugins
-[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-buble
-[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-buble
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-inject
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-inject
 [tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
 [tests-url]: https://circleci.com/gh/rollup/plugins
 
@@ -10,9 +10,9 @@
 [![size][size]][size-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
-# @rollup/plugin-buble
+# @rollup/plugin-inject
 
-🍣 A Rollup which converts ES2015+ code with the Bublé compiler.
+🍣 A Rollup plugin which scans modules for global variables and injects `import` statements where necessary.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v
 Using npm:
 
 ```console
-npm install @rollup/plugin-buble --save-dev
+npm install @rollup/plugin-inject --save-dev
 ```
 
 ## Usage
@@ -31,7 +31,7 @@ npm install @rollup/plugin-buble --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import buble from '@rollup/plugin-buble';
+import inject from '@rollup/plugin-inject';
 
 export default {
   input: 'src/index.js',
@@ -39,20 +39,44 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [buble()]
+  plugins: [
+    inject({
+      Promise: ['es6-promise', 'Promise']
+    })
+  ]
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
+This configuration above will scan all your files for global Promise usage and plugin will add import to desired module (`import { Promise } from 'es6-promise'` in this case).
+
+Examples:
+
+```js
+{
+  // import { Promise } from 'es6-promise'
+  Promise: [ 'es6-promise', 'Promise' ],
+
+  // import { Promise as P } from 'es6-promise'
+  P: [ 'es6-promise', 'Promise' ],
+
+  // import $ from 'jquery'
+  $: 'jquery',
+
+  // import * as fs from 'fs'
+  fs: [ 'fs', '*' ],
+
+  // use a local module instead of a third-party one
+  'Object.assign': path.resolve( 'src/helpers/object-assign.js' ),
+}
+```
+
+Typically, `@rollup/plugin-inject` should be placed in `plugins` _before_ other plugins so that they may apply optimizations, such as dead code removal.
+
 ## Options
 
-### `transforms`
-
-Type: `Object`
-Default: `{ modules: false }`
-
-Specifies additional [transform options](https://buble.surge.sh/guide/) for the Bublé compiler
+In addition to the properties and values specified for injecting, users may also specify the options below.
 
 ### `exclude`
 

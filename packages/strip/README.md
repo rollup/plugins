@@ -1,6 +1,18 @@
+[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
+[cover-url]: https://codecov.io/gh/rollup/plugins
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-strip
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-strip
+[tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
+[tests-url]: https://circleci.com/gh/rollup/plugins
+
+[![tests][tests]][tests-url]
+[![cover][cover]][cover-url]
+[![size][size]][size-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
+
 # @rollup/plugin-strip
 
-Remove `debugger` statements and functions like `assert.equal` and `console.log` from your code.
+🍣 A Rollup plugin to remove `debugger` statements and functions like `assert.equal` and `console.log` from your code.
 
 ## Installation
 
