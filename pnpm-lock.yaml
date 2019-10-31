@@ -69,7 +69,21 @@ importers:
       rollup-pluginutils: ^2.6.0
       source-map: ^0.7.3
       typescript: ^3.4.3
-  packages/inject:
+  packages/dsv:
+    dependencies:
+      d3-dsv: 0.1.14
+      rollup-pluginutils: 2.8.2
+      tosource: 1.0.0
+    devDependencies:
+      del-cli: 3.0.0
+      rollup: 1.26.0
+    specifiers:
+      d3-dsv: ^0.1.14
+      del-cli: ^3.0.0
+      rollup: ^1.20.0
+      rollup-pluginutils: ^2.8.2
+      tosource: ^1.0.0
+  packages/replace:
     dependencies:
       estree-walker: 0.9.0
       magic-string: 0.25.4
@@ -505,6 +519,10 @@ packages:
     resolution:
       integrity: sha512-JNbGaHFCLwgHn/iCckiGSOZ1XYHsKFwREtzPwSGCVld1SGhOlmZw2D4ZI94HQCrBHbADzW9m4LER/8olJTRGHA==
   /@types/node/12.12.0:
+    dev: true
+    resolution:
+      integrity: sha512-6N8Sa5AaENRtJnpKXZgvc119PKxT1Lk9VPy4kfT8JF23tIe1qDfaGkBR2DRKJFIA7NptMz+fps//C6aLi1Uoug==
+  /@types/node/12.12.3:
     dev: true
     resolution:
       integrity: sha512-opgSsy+cEF9N8MgaVPnWVtdJ3o4mV2aMHvDq7thkQUFt0EuOHJon4rQpJfhjmNHB+ikl0Cd6WhWIErOyQ+f7tw==
@@ -1315,6 +1333,11 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-mI3zP+qxke95mmE2nddsF635V+o=
+  /d3-dsv/0.1.14:
+    dev: false
+    hasBin: true
+    resolution:
+      integrity: sha1-mDPNYaWj6B4DJjoc54903lah27g=
   /date-fns/1.30.1:
     dev: true
     resolution:
@@ -4435,6 +4458,12 @@ packages:
       node: '>=8.0'
     resolution:
       integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
+  /tosource/1.0.0:
+    dev: false
+    engines:
+      node: '>=0.4.0'
+    resolution:
+      integrity: sha1-QtiN0RZhi88A1hBt1URvNCeQL/E=
   /trim-newlines/2.0.0:
     dev: true
     engines:
