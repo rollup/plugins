@@ -76,7 +76,7 @@ Typically, `@rollup/plugin-inject` should be placed in `plugins` _before_ other 
 
 ## Options
 
-In addition to the properties and values specified for injectment, users may also specify the options below.
+In addition to the properties and values specified for injecting, users may also specify the options below.
 
 ### `exclude`
 
