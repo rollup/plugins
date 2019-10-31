@@ -9,7 +9,7 @@
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/packages/inject/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/rollup-plugin-inject.cjs.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
