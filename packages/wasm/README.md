@@ -1,4 +1,4 @@
-[cover]: https://codecov.io/gh/rollup/plugins/replace/branch/master/graph/badge.svg
+[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/rollup/plugins
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-wasm
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-wasm
