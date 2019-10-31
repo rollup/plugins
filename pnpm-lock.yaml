@@ -23,7 +23,7 @@ importers:
       execa: ^2.0.4
       lint-staged: ^9.2.0
       nyc: ^14.1.1
-      pnpm: ^4.0.0
+      pnpm: ^4.1.5
       pre-commit: ^1.2.2
       prettier: ^1.18.2
       prettier-plugin-package: ^0.3.1
@@ -65,6 +65,28 @@ importers:
       rollup-pluginutils: ^2.6.0
       source-map: ^0.7.3
       typescript: ^3.4.3
+  packages/inject:
+    dependencies:
+      estree-walker: 0.9.0
+      magic-string: 0.25.4
+      rollup-pluginutils: 2.8.2
+      typescript: 3.6.4
+    devDependencies:
+      del-cli: 3.0.0
+      locate-character: 2.0.5
+      rollup: 1.26.0
+      rollup-plugin-buble: 0.19.8
+      source-map: 0.7.3
+    specifiers:
+      del-cli: ^3.0.0
+      estree-walker: ^0.9.0
+      locate-character: ^2.0.5
+      magic-string: ^0.25.2
+      rollup: ^1.20.0
+      rollup-plugin-buble: ^0.19.6
+      rollup-pluginutils: ^2.6.0
+      source-map: ^0.7.3
+      typescript: ^3.4.3
   packages/replace:
     dependencies:
       magic-string: 0.25.4
@@ -85,6 +107,29 @@ importers:
       rollup-pluginutils: ^2.6.0
       source-map: ^0.7.3
       typescript: ^3.4.3
+  packages/strip:
+    dependencies:
+      estree-walker: 0.6.1
+      magic-string: 0.25.4
+      rollup-pluginutils: 2.8.2
+    devDependencies:
+      acorn: 6.3.0
+      rollup: 1.26.0
+    specifiers:
+      acorn: ^6.0.2
+      estree-walker: ^0.6.0
+      magic-string: ^0.25.1
+      rollup: ^1.20.0
+      rollup-pluginutils: ^2.8.1
+  packages/wasm:
+    devDependencies:
+      del-cli: 3.0.0
+      rollup: 1.26.0
+      source-map: 0.7.3
+    specifiers:
+      del-cli: ^3.0.0
+      rollup: ^1.20.0
+      source-map: ^0.7.3
 lockfileVersion: 5.1
 packages:
   /@ava/babel-plugin-throws-helper/4.0.0:
@@ -439,7 +484,7 @@ packages:
     dependencies:
       '@types/events': 3.0.0
       '@types/minimatch': 3.0.3
-      '@types/node': 12.11.1
+      '@types/node': 12.11.7
     dev: true
     resolution:
       integrity: sha512-1Bh06cbWJUHMC97acuD6UMG29nMt0Aqz1vF3guLfG+kHHJhy3AyohZFFxYk2f7Q1SQIrNwvncxAE0N/9s70F2w==
@@ -451,6 +496,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-TJtwsqZ39pqcljJpajeoofYRfeZ7/I/OMUQ5pR4q5wOKf2ocrUvBAZUMhWsOvKx3dVc/aaV5GluBivt0sWqA5A==
+  /@types/node/12.11.7:
+    dev: true
+    resolution:
+      integrity: sha512-JNbGaHFCLwgHn/iCckiGSOZ1XYHsKFwREtzPwSGCVld1SGhOlmZw2D4ZI94HQCrBHbADzW9m4LER/8olJTRGHA==
   /@types/node/12.12.0:
     dev: true
     resolution:
@@ -1378,7 +1427,7 @@ packages:
   /del/5.1.0:
     dependencies:
       globby: 10.0.1
-      graceful-fs: 4.2.2
+      graceful-fs: 4.2.3
       is-glob: 4.0.1
       is-path-cwd: 2.2.0
       is-path-inside: 3.0.2
@@ -1720,6 +1769,10 @@ packages:
   /estree-walker/0.6.1:
     resolution:
       integrity: sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
+  /estree-walker/0.9.0:
+    dev: false
+    resolution:
+      integrity: sha512-12U47o7XHUX329+x3FzNVjCx3SHEzMF0nkDv7r/HnBzX/xNTKxajBk6gyygaxrAFtLj39219oMfbtxv4KpaOiA==
   /esutils/2.0.3:
     dev: true
     engines:
@@ -1964,17 +2017,6 @@ packages:
       node: '>= 6'
     resolution:
       integrity: sha512-qjtRgnIVmOfnKUE3NJAQEdk+lKrxfw8t5ke7SXtfMTHcjsBfOfWXCQfdb30zfDoZQ2IRSIiidmjtbHZPZ++Ihw==
-  /glob/7.1.4:
-    dependencies:
-      fs.realpath: 1.0.0
-      inflight: 1.0.6
-      inherits: 2.0.4
-      minimatch: 3.0.4
-      once: 1.4.0
-      path-is-absolute: 1.0.1
-    dev: true
-    resolution:
-      integrity: sha512-hkLPepehmnKk41pUGm3sYxoFs/umurYfYJCerbXEyFIWcAzvpipAgVkBqqT9RBKMGjnq6kMuyYwha6csxbiM1A==
   /glob/7.1.5:
     dependencies:
       fs.realpath: 1.0.0
@@ -2006,7 +2048,7 @@ packages:
       array-union: 2.1.0
       dir-glob: 3.0.1
       fast-glob: 3.1.0
-      glob: 7.1.4
+      glob: 7.1.5
       ignore: 5.1.4
       merge2: 1.3.0
       slash: 3.0.0
@@ -2045,10 +2087,6 @@ packages:
       node: '>=8.6'
     resolution:
       integrity: sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==
-  /graceful-fs/4.2.2:
-    dev: true
-    resolution:
-      integrity: sha512-IItsdsea19BoLC7ELy13q1iJFNmd7ofZH5+X/pJr90/nRoPEX0DJo1dHDbgtYWOhJhcCgMDTOw84RZ72q6lB+Q==
   /graceful-fs/4.2.3:
     dev: true
     resolution:
@@ -2714,7 +2752,7 @@ packages:
       integrity: sha1-eUfkIUmvgNaWy/eXvKq8/h/inKg=
   /load-json-file/4.0.0:
     dependencies:
-      graceful-fs: 4.2.2
+      graceful-fs: 4.2.3
       parse-json: 4.0.0
       pify: 3.0.0
       strip-bom: 3.0.0
@@ -3759,7 +3797,7 @@ packages:
     dependencies:
       regenerate: 1.4.0
       regenerate-unicode-properties: 8.1.0
-      regjsgen: 0.5.0
+      regjsgen: 0.5.1
       regjsparser: 0.6.0
       unicode-match-property-ecmascript: 1.0.4
       unicode-match-property-value-ecmascript: 1.1.0
@@ -3784,9 +3822,9 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-8acYXXTI0AkQv6RAOjE3vOaIXZkT9wo4LOFbBKYQEEnnMNBpKqdUrI6S4NT0KPIo/WVvJ5tE/X5LF/TQUf0ekw==
-  /regjsgen/0.5.0:
+  /regjsgen/0.5.1:
     resolution:
-      integrity: sha512-RnIrLhrXCX5ow/E5/Mh2O4e/oa1/jW0eaBKTSy3LaCj+M3Bqvm97GWDp2yUtzIs4LEn65zR2yiYGFqb2ApnzDA==
+      integrity: sha512-5qxzGZjDs9w4tzT3TPhCJqWdCc3RLYwy9J2NB0nm5Lz+S273lvWcpjaTGHsT1dc6Hhfq41uSEOw8wBmxrKOuyg==
   /regjsparser/0.6.0:
     dependencies:
       jsesc: 0.5.0
@@ -3896,7 +3934,7 @@ packages:
       integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==
   /rimraf/3.0.0:
     dependencies:
-      glob: 7.1.4
+      glob: 7.1.5
     dev: true
     hasBin: true
     resolution:

@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "no-undef": "off",
+    "no-console": "off",
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
+    "func-names": "off",
+    "no-param-reassign": "off"
+  }
+}
