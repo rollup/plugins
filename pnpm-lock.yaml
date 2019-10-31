@@ -69,6 +69,28 @@ importers:
       rollup-pluginutils: ^2.6.0
       source-map: ^0.7.3
       typescript: ^3.4.3
+  packages/inject:
+    dependencies:
+      estree-walker: 0.9.0
+      magic-string: 0.25.4
+      rollup-pluginutils: 2.8.2
+      typescript: 3.6.4
+    devDependencies:
+      del-cli: 3.0.0
+      locate-character: 2.0.5
+      rollup: 1.26.0
+      rollup-plugin-buble: 0.19.8
+      source-map: 0.7.3
+    specifiers:
+      del-cli: ^3.0.0
+      estree-walker: ^0.9.0
+      locate-character: ^2.0.5
+      magic-string: ^0.25.2
+      rollup: ^1.20.0
+      rollup-plugin-buble: ^0.19.6
+      rollup-pluginutils: ^2.6.0
+      source-map: ^0.7.3
+      typescript: ^3.4.3
   packages/replace:
     dependencies:
       magic-string: 0.25.4
@@ -466,7 +488,7 @@ packages:
     dependencies:
       '@types/events': 3.0.0
       '@types/minimatch': 3.0.3
-      '@types/node': 12.12.3
+      '@types/node': 12.11.7
     dev: true
     resolution:
       integrity: sha512-1Bh06cbWJUHMC97acuD6UMG29nMt0Aqz1vF3guLfG+kHHJhy3AyohZFFxYk2f7Q1SQIrNwvncxAE0N/9s70F2w==
@@ -474,7 +496,15 @@ packages:
     dev: true
     resolution:
       integrity: sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
-  /@types/node/12.12.3:
+  /@types/node/12.11.1:
+    dev: true
+    resolution:
+      integrity: sha512-TJtwsqZ39pqcljJpajeoofYRfeZ7/I/OMUQ5pR4q5wOKf2ocrUvBAZUMhWsOvKx3dVc/aaV5GluBivt0sWqA5A==
+  /@types/node/12.11.7:
+    dev: true
+    resolution:
+      integrity: sha512-JNbGaHFCLwgHn/iCckiGSOZ1XYHsKFwREtzPwSGCVld1SGhOlmZw2D4ZI94HQCrBHbADzW9m4LER/8olJTRGHA==
+  /@types/node/12.12.0:
     dev: true
     resolution:
       integrity: sha512-opgSsy+cEF9N8MgaVPnWVtdJ3o4mV2aMHvDq7thkQUFt0EuOHJon4rQpJfhjmNHB+ikl0Cd6WhWIErOyQ+f7tw==
@@ -1752,6 +1782,10 @@ packages:
   /estree-walker/0.6.1:
     resolution:
       integrity: sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
+  /estree-walker/0.9.0:
+    dev: false
+    resolution:
+      integrity: sha512-12U47o7XHUX329+x3FzNVjCx3SHEzMF0nkDv7r/HnBzX/xNTKxajBk6gyygaxrAFtLj39219oMfbtxv4KpaOiA==
   /esutils/2.0.3:
     dev: true
     engines:
