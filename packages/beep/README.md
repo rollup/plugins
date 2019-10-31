@@ -1,5 +1,5 @@
-[cover]: https://codecov.io/gh/rollup/plugins/beep/branch/master/graph/badge.svg
-[cover-url]: https://codecov.io/gh/rollup/plugins/beep
+[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
+[cover-url]: https://codecov.io/gh/rollup/plugins
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-beep
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-beep
 
