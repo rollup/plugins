@@ -60,6 +60,13 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
+### `customResolver`
+
+Type: `Function | Object`<br>
+Default: `null`
+
+Instructs the plugin to use an alternative resolving algorithm, rather than the built-in resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#hooks) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
+
 ### `entries`
 
 Type: `Object | Array[Object]`<br>
@@ -102,17 +109,6 @@ Specifies an array of file extensions to use when attempting to resolve an `impo
 alias({ resolve: ['.jsx', '.js'] });
 ```
 
-### `customResolver`
-
-Type: `Function | Object`<br>
-Default: `null`
-
-Specifies a different resolving algorithm instead of built-in should be used.
-`customResolver` could be any of Rollup plugins that makes module resolving.
-Or if you want to pass your custom function, please refer to [Rollup docs](https://rollupjs.org/guide/en/#hooks) for more info on `resolveId` hook.
-Please find detailed example in [Custom resolver instead of built-in algorithm](#custom-resolver-instead-of-built-in-algorithm) section below.
-
-
 ## Regular Expression Aliases
 
 Regular Expressions can be used to search in a more distinct and complex manner. e.g. To perform partial replacements via sub-pattern matching.
@@ -133,10 +129,9 @@ To replace extensions with another, a pattern like the following might be used:
 
 This would replace the file extension for all imports ending with `.js` to `.wasm`.
 
-## Custom resolver instead of built-in algorithm
+## Custom Resolvers
 
-In some situations you would like to keep preferred resolving method together with aliasing.
-It could be done with `customResolver` option.
+The `customResolver` option can be leveraged to provide separate module resolution for an invidudual alias.
 
 Example:
 ```javascript
@@ -169,10 +164,7 @@ export default {
 };
 ```
 
-In above example we made an alias `src` and still keep `node-resolve` algorithm for your files that are "aliased" with `src` by passing `customResolver` option.
-Also we keep `resolve()` plugin separately in plugins list for other files that are not aliased with `src`.
-
-`customResolver` option can be passed inside each entree too for granular control over resolving. It allows to choose preferred algorithm for each alias.
+In the example above the alias `src` is used, which uses the `node-resolve` algorithm for files _aliased_ with `src`, by passing the `customResolver` option. The `resolve()` plugin is kept separate in the plugins list for other files which are not _aliased_ with `src`. The `customResolver` option can be passed inside each `entries` item for granular control over resolving allowing each alias a preferred resolver.
 
 
 ## Meta
