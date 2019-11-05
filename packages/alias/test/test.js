@@ -272,3 +272,41 @@ test('Works in rollup', (t) =>
           )
         );
     }));
+
+test('Global customResolver function', (t) => {
+  const customResult = 'customResult';
+  const result = alias({
+    entries: [
+      {
+        find: 'test',
+        replacement: path.resolve('./test/files/folder/hipster.jsx')
+      }
+    ],
+    resolve: ['.js', '.jsx'],
+    customResolver: () => customResult
+  });
+
+  const resolved = result.resolveId('test', posix.resolve(DIRNAME, './files/index.js'));
+
+  t.is(resolved, customResult);
+});
+
+test('Local customResolver function', (t) => {
+  const customResult = 'customResult';
+  const localCustomResult = 'localCustomResult';
+  const result = alias({
+    entries: [
+      {
+        find: 'test',
+        replacement: path.resolve('./test/files/folder/hipster.jsx'),
+        customResolver: () => localCustomResult
+      }
+    ],
+    resolve: ['.js', '.jsx'],
+    customResolver: () => customResult
+  });
+
+  const resolved = result.resolveId('test', posix.resolve(DIRNAME, './files/index.js'));
+
+  t.is(resolved, localCustomResult);
+});

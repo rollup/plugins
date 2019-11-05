@@ -60,6 +60,13 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
+### `customResolver`
+
+Type: `Function | Object`<br>
+Default: `null`
+
+Instructs the plugin to use an alternative resolving algorithm, rather than the built-in resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#hooks) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
+
 ### `entries`
 
 Type: `Object | Array[Object]`<br>
@@ -121,6 +128,44 @@ To replace extensions with another, a pattern like the following might be used:
 ```
 
 This would replace the file extension for all imports ending with `.js` to `.wasm`.
+
+## Custom Resolvers
+
+The `customResolver` option can be leveraged to provide separate module resolution for an invidudual alias.
+
+Example:
+```javascript
+// rollup.config.js
+import alias from "@rollup/plugin-alias";
+import resolve from "rollup-plugin-node-resolve";
+
+const customResolver = resolve({
+  extensions: [".mjs", ".js", ".jsx", ".json", ".sass", ".scss"]
+});
+const projectRootDir = path.resolve(__dirname);
+
+export default {
+  // ...
+  plugins: [
+    alias(
+      {
+        entries: [
+          {
+            find: "src",
+            replacement: path.resolve(projectRootDir, "src")
+            // OR place `customResolver` here. See explanation below.
+          }
+        ],
+        customResolver
+      }
+    ),
+    resolve()
+  ]
+};
+```
+
+In the example above the alias `src` is used, which uses the `node-resolve` algorithm for files _aliased_ with `src`, by passing the `customResolver` option. The `resolve()` plugin is kept separate in the plugins list for other files which are not _aliased_ with `src`. The `customResolver` option can be passed inside each `entries` item for granular control over resolving allowing each alias a preferred resolver.
+
 
 ## Meta
 
