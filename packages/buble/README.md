@@ -1,4 +1,4 @@
-[cover]: https://codecov.io/gh/rollup/plugins/buble/branch/master/graph/badge.svg
+[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/rollup/plugins
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-buble
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-buble
@@ -70,6 +70,6 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 ## Meta
 
-[CONTRIBUTING](./.github/CONTRIBUTING.md)
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
 
-[LICENSE (MIT)](./LICENSE)
+[LICENSE (MIT)](/LICENSE)

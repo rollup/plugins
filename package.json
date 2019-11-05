@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "ci:coverage": "node scripts/run-changed.js ci:coverage",
-    "ci:coverage:submit": "node scripts/run-changed.js ci:coverage:submit",
+    "ci:coverage:submit": "node scripts/codecov",
     "ci:lint": "node scripts/run-changed.js ci:lint",
     "ci:test": "node scripts/run-changed.js ci:test",
     "lint": "pnpm run lint:docs && pnpm run lint:package && node scripts/run-changed.js lint",
@@ -16,8 +16,10 @@
   "devDependencies": {
     "ava": "^2.2.0",
     "chalk": "^2.4.2",
+    "codecov-lite": "^0.3.1",
     "eslint-config-rollup": "^0.1.0",
     "execa": "^2.0.4",
+    "globby": "^10.0.1",
     "lint-staged": "^9.2.0",
     "nyc": "^14.1.1",
     "pnpm": "^4.1.5",

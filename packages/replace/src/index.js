@@ -51,6 +51,7 @@ export default function replace(options = {}) {
     name: 'replace',
 
     transform(code, id) {
+      if (!keys.length) return null;
       if (!filter(id)) return null;
 
       const magicString = new MagicString(code);

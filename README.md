@@ -1,13 +1,27 @@
+[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
+[cover-url]: https://codecov.io/gh/rollup/plugins
 [tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
 [tests-url]: https://circleci.com/gh/rollup/plugins
 
 [![tests][tests]][tests-url]
+[![cover][cover]][cover-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
 # Rollup Plugins
 
 🍣 The one-stop shop for official Rollup plugins
 
 This repository houses plugins that Rollup considers critical to every day use of Rollup, plugins which the organization has adopted maintenance of, and plugins that the project recommends to its users.
+
+## Plugins Found Here
+
+- [alias](packages/alias) 🍣 A Rollup plugin for defining aliases when bundling packages.
+- [beep](packages/beep) 🍣 A Rollup plugin that beeps when a build ends with errors.
+- [buble](packages/buble) 🍣 A Rollup which converts ES2015+ code with the Bublé compiler.
+- [dsv](packages/dsv) 🍣 A Rollup plugin which converts `.csv` and `.tsv` files into JavaScript modules with [d3-dsv](https://github.com/d3/d3-dsv).
+- [replace](packages/replace) 🍣 A Rollup which replaces strings in files while bundling.
+- [strip](packages/strip) 🍣 Remove statements and other bits from your code.
+- [wasm](packages/wasm) 🍣 A Rollup which allows importing and bundling [WebAssembly modules](http://webassembly.org).
 
 ## Contributing
 
