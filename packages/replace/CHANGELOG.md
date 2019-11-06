@@ -1,5 +1,9 @@
 # rollup-plugin-replace changelog
 
+## 2.2.1
+*2019-11-06*
+* Move `typescript` to `devDependencies`
+
 ## 2.2.0
 *2019-04-10*
 * Add index.d.ts typings file ([#31](https://github.com/rollup/rollup-plugin-replace/pull/31))
