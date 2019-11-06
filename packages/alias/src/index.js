@@ -85,7 +85,7 @@ export default function alias(options = {}) {
         typeof matchedEntry.customResolver === 'object' &&
         typeof matchedEntry.customResolver.resolveId === 'function'
       ) {
-        customResolver = options.customResolver.resolveId;
+        customResolver = matchedEntry.customResolver.resolveId;
       } else if (typeof options.customResolver === 'function') {
         customResolver = options.customResolver;
       } else if (

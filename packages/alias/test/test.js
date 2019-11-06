@@ -310,3 +310,41 @@ test('Local customResolver function', (t) => {
 
   t.is(resolved, localCustomResult);
 });
+
+test('Global customResolver plugin-like object', (t) => {
+  const customResult = 'customResult';
+  const result = alias({
+    entries: [
+      {
+        find: 'test',
+        replacement: path.resolve('./test/files/folder/hipster.jsx')
+      }
+    ],
+    resolve: ['.js', '.jsx'],
+    customResolver: {resolveId: () => customResult}
+  });
+
+  const resolved = result.resolveId('test', posix.resolve(DIRNAME, './files/index.js'));
+
+  t.is(resolved, customResult);
+});
+
+test('Local customResolver plugin-like object', (t) => {
+  const customResult = 'customResult';
+  const localCustomResult = 'localCustomResult';
+  const result = alias({
+    entries: [
+      {
+        find: 'test',
+        replacement: path.resolve('./test/files/folder/hipster.jsx'),
+        customResolver: {resolveId: () => localCustomResult}
+      }
+    ],
+    resolve: ['.js', '.jsx'],
+    customResolver: {resolveId: () => customResult}
+  });
+
+  const resolved = result.resolveId('test', posix.resolve(DIRNAME, './files/index.js'));
+
+  t.is(resolved, localCustomResult);
+});
