@@ -4,6 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "description": "Scan modules for global variables and injects `import` statements where necessary",
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris <richard.a.harris@gmail.com>",
@@ -13,7 +14,6 @@
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F inject",
     "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
