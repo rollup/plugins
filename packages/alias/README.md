@@ -1,9 +1,9 @@
-[cover]: https://codecov.io/gh/rollup/plugins/alias/branch/master/graph/badge.svg
-[cover-url]: https://codecov.io/gh/rollup/plugins/alias
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-alias
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-alias
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-alias
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-alias
 
-[![cover][cover]][cover-url]
+[![npm][npm]][npm-url]
 [![size][size]][size-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
@@ -124,10 +124,10 @@ This would be useful for loaders, and files that were previously transpiled via 
 To replace extensions with another, a pattern like the following might be used:
 
 ```js
-{ find:/^(.*)\.js$/, replacement: '$1.wasm' }
+{ find:/^(.*)\.js$/, replacement: '$1.alias' }
 ```
 
-This would replace the file extension for all imports ending with `.js` to `.wasm`.
+This would replace the file extension for all imports ending with `.js` to `.alias`.
 
 ## Custom Resolvers
 
