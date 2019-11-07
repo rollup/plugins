@@ -55,8 +55,6 @@ console.log(`running version ${pkg.version}`);
 
 ## Options
 
-In addition to the properties and values specified for replacement, users may also specify the options below.
-
 ### `compact`
 
 Type: `Boolean`<br>
