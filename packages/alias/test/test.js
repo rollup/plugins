@@ -62,6 +62,28 @@ test('Simple aliasing (object)', (t) => {
   t.is(resolved3, 'global');
 });
 
+test('Simple aliasing (object) (v1)', (t) => {
+  const result = alias({
+    foo: 'bar',
+    pony: 'paradise',
+    './local': 'global',
+    resolve: ['.mjs', '.js'],
+    entries: 'string'
+  });
+
+  const resolved = result.resolveId('foo', '/src/importer.js');
+  const resolved2 = result.resolveId('pony', '/src/importer.js');
+  const resolved3 = result.resolveId('./local', '/src/importer.js');
+  const resolved4 = result.resolveId('resolve', '/src/importer.js');
+  const resolved5 = result.resolveId('entries', '/src/importer.js');
+
+  t.is(resolved, 'bar');
+  t.is(resolved2, 'paradise');
+  t.is(resolved3, 'global');
+  t.is(resolved4, null);
+  t.is(resolved5, 'string');
+});
+
 test('RegExp aliasing', (t) => {
   const result = alias({
     entries: [
