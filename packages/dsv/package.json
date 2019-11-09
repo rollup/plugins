@@ -1,6 +1,9 @@
 {
   "name": "@rollup/plugin-dsv",
   "version": "2.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Convert .csv and .tsv files into JavaScript modules with d3-dsv",
   "license": "MIT",
   "repository": "rollup/plugins",
@@ -11,7 +14,6 @@
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F dsv",
     "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",

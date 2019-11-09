@@ -1,12 +1,9 @@
-[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
-[cover-url]: https://codecov.io/gh/rollup/plugins
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-strip
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-strip
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-strip
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-strip
-[tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
-[tests-url]: https://circleci.com/gh/rollup/plugins
 
-[![tests][tests]][tests-url]
-[![cover][cover]][cover-url]
+[![npm][npm]][npm-url]
 [![size][size]][size-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
@@ -14,47 +11,71 @@
 
 🍣 A Rollup plugin to remove `debugger` statements and functions like `assert.equal` and `console.log` from your code.
 
-## Installation
+## Requirements
 
-```bash
-npm install --save-dev @rollup/plugin-strip
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
+
+## Install
+
+Using npm:
+
+```console
+npm install @rollup/plugin-strip --save-dev
 ```
 
 ## Usage
 
+Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
+
 ```js
-// rollup.config.js
 import strip from '@rollup/plugin-strip';
 
 export default {
   input: 'src/index.js',
-  output: [
-    {
-      format: 'cjs',
-      file: 'dist/my-lib.js'
-    }
-  ],
-  plugins: [
-    strip({
-      // set this to `false` if you don't want to
-      // remove debugger statements
-      debugger: true,
-
-      // defaults to `[ 'console.*', 'assert.*' ]`
-      functions: ['console.log', 'assert.*', 'debug', 'alert'],
-
-      // remove one or more labeled blocks by name
-      // defaults to `[]`
-      labels: ['unittest'],
-
-      // set this to `false` if you're not using sourcemaps –
-      // defaults to `true`
-      sourceMap: true
-    })
-  ]
+  output: {
+    dir: 'output',
+    format: 'cjs'
+  },
+  plugins: [strip({
+    labels: ['unittest']
+  })]
 };
 ```
 
-## License
+Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
-MIT
+## Options
+
+### `debugger`
+
+Type: `Boolean`<br>
+Default: `true`
+
+If `true`, instructs the plugin to remove debugger statements.
+
+### `functions`
+
+Type: `Array[String]`<br>
+Default: `[ 'console.*', 'assert.*' ]`
+
+Specifies the functions that the plugin will target and remove.
+
+### `labels`
+
+Type: `Array[String]`<br>
+Default: `[]`
+
+Specifies the [labeled blocks](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/label) that the plugin will target and remove.
+
+### `sourceMap`
+
+Type: `Boolean`<br>
+Default: `true`
+
+If `true`, instructs the plugin to update source maps accordingly after removing configured targets from the bundle.
+
+## Meta
+
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
+
+[LICENSE (MIT)](/LICENSE)

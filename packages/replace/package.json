@@ -1,9 +1,10 @@
 {
   "name": "@rollup/plugin-replace",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "publishConfig": {
     "access": "public"
   },
+  "description": "Replace strings in files while bundling",
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris <richard.a.harris@gmail.com>",
@@ -13,7 +14,6 @@
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:coverage:submit": "curl -s https://codecov.io/bash | bash -s - -F replace",
     "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",

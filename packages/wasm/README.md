@@ -1,12 +1,9 @@
-[cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
-[cover-url]: https://codecov.io/gh/rollup/plugins
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-wasm
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-wasm
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-wasm
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-wasm
-[tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
-[tests-url]: https://circleci.com/gh/rollup/plugins
 
-[![tests][tests]][tests-url]
-[![cover][cover]][cover-url]
+[![npm][npm]][npm-url]
 [![size][size]][size-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
@@ -49,11 +46,9 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
-In addition to the properties and values specified for replacement, users may also specify the options below.
-
 ### `sync`
 
-Type: `Array[String]`
+Type: `Array[String]`<br>
 Default: `null`
 
 Specifies an array of strings that each represent a WebAssembly file to load synchronously. See [Synchronous Modules](#synchronous-modules) for a functional example.
