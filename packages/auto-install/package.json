@@ -18,7 +18,7 @@
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache src test",
+    "lint:js": "eslint --fix --cache lib test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
