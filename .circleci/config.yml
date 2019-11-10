@@ -9,6 +9,9 @@ aliases:
   - &install_pnpm
     name: Install pnpm
     command: npm install pnpm@^4.0.0 -g
+  - &install_yarn
+    name: Install yarn
+    command: npm install yarn
   - &pnpm_install
     name: Install Dependencies
     command: pnpm install --ignore-scripts
@@ -21,6 +24,7 @@ coverage: &coverage
     - run: *checkout_master
     - restore_cache: *restore_cache
     - run: *install_pnpm
+    - run: *install_yarn
     - run: *pnpm_install
     - run:
         name: Run unit tests.
@@ -36,6 +40,7 @@ unit_tests: &unit_tests
     - run: *checkout_master
     - restore_cache: *restore_cache
     - run: *install_pnpm
+    - run: *install_yarn
     - run: *pnpm_install
     - run:
         name: Env Info
