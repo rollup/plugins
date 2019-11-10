@@ -11,7 +11,7 @@ aliases:
     command: npm install pnpm@^4.0.0 -g
   - &install_yarn
     name: Install yarn
-    command: npm install yarn
+    command: npm install yarn -g
   - &pnpm_install
     name: Install Dependencies
     command: pnpm install --ignore-scripts
