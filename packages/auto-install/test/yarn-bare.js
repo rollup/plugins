@@ -23,7 +23,7 @@ test('yarn, bare', async (t) => {
     },
     plugins: [autoInstall({ manager: 'yarn' }), resolve()]
   });
-  const lock = readFileSync('yarn.lock', 'utf-8').replace(/(\s+)integrity(.*)(\s+)/, '\n');
+  const lock = readFileSync('yarn.lock', 'utf-8');
   t.snapshot(readFileSync('package.json', 'utf-8'));
   t.snapshot(lock);
 });
