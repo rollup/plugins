@@ -51,5 +51,8 @@
       "!**/recipes/**",
       "!**/types.ts"
     ]
+  },
+  "dependencies": {
+    "node-noop": "^1.0.0"
   }
 }

@@ -24,7 +24,8 @@ test('yarn', async (t) => {
     },
     plugins: [autoInstall(), resolve()]
   });
-  t.snapshot(readFileSync('yarn.lock', 'utf-8'));
+  const lock = readFileSync('yarn.lock', 'utf-8').replace(/integrity(.*)(\n+)/, '');
+  t.snapshot(lock);
 });
 
 test.after(async () => {

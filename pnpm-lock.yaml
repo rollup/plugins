@@ -49,12 +49,15 @@ importers:
       rollup: ^1.20.0
       slash: ^3.0.0
   packages/auto-install:
+    dependencies:
+      node-noop: 1.0.0
     devDependencies:
       del: 5.1.0
       rollup: 1.26.4
       rollup-plugin-node-resolve: 5.2.0_rollup@1.26.4
     specifiers:
       del: ^5.1.0
+      node-noop: ^1.0.0
       rollup: ^1.20.0
       rollup-plugin-node-resolve: ^5.2.0
   packages/auto-install/test/fixtures/npm:
@@ -3158,6 +3161,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
+  /node-noop/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-R6Pn2Az/qmRYNkvSLthcqzMHvnk=
   /normalize-package-data/2.5.0:
     dependencies:
       hosted-git-info: 2.8.5
