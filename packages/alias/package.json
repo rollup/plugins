@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "Resolves aliases with Rollup",
+  "description": "Define and resolve aliases for bundle dependencies",
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Johannes Stein",

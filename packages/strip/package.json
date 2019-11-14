@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "Remove debugger statements and functions like assert.equal and console.log from your code.",
+  "description": "Remove debugger statements and functions like assert.equal and console.log from your code",
   "license": "MIT",
   "repository": "rollup/@rollup/plugin-strip",
   "author": "Rich Harris",
