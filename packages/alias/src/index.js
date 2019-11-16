@@ -66,6 +66,7 @@ export default function alias(options = {}) {
   }
 
   return {
+    name: 'alias',
     resolveId(importee, importer) {
       const importeeId = normalizeId(importee);
       const importerId = normalizeId(importer);
@@ -80,14 +81,14 @@ export default function alias(options = {}) {
 
       let customResolver = null;
       if (typeof matchedEntry.customResolver === 'function') {
-        customResolver = matchedEntry.customResolver;
+        ({ customResolver } = matchedEntry);
       } else if (
         typeof matchedEntry.customResolver === 'object' &&
         typeof matchedEntry.customResolver.resolveId === 'function'
       ) {
         customResolver = matchedEntry.customResolver.resolveId;
       } else if (typeof options.customResolver === 'function') {
-        customResolver = options.customResolver;
+        ({ customResolver } = options);
       } else if (
         typeof options.customResolver === 'object' &&
         typeof options.customResolver.resolveId === 'function'
