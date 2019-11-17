@@ -1,0 +1,465 @@
+{
+  "nulls": [
+    {
+      "yaml":   "# comment",
+      "result": null
+    },
+    {
+      "yaml":   "~",
+      "result": null
+    },
+    {
+      "yaml":   "null",
+      "result": null
+    },
+    {
+      "yaml":   "Null",
+      "result": null
+    },
+    {
+      "yaml":   "NULL",
+      "result": null
+    },
+    {
+      "yaml":   "nUlL",
+      "result": "nUlL"
+    },
+    {
+      "yaml":   "!!null",
+      "result": null
+    },
+    {
+      "yaml":   "!!null \"~\"",
+      "result": null
+    },
+    {
+      "yaml":   "!!null null",
+      "result": null
+    }
+  ],
+
+  "trues": [
+    {
+      "yaml":   "true",
+      "result": true
+    },
+    {
+      "yaml":   "True",
+      "result": true
+    },
+    {
+      "yaml":   "TRUE",
+      "result": true
+    },
+    {
+      "yaml":   "tRuE",
+      "result": "tRuE"
+    }
+  ],
+
+  "falses": [
+    {
+      "yaml":   "false",
+      "result": false
+    },
+    {
+      "yaml":   "False",
+      "result": false
+    },
+    {
+      "yaml":   "FALSE",
+      "result": false
+    },
+    {
+      "yaml":   "fAlSe",
+      "result": "fAlSe"
+    }
+  ],
+
+  "integers": [
+    {
+      "yaml":   "!!int 0",
+      "result": 0
+    },
+    {
+      "yaml":   "42",
+      "result": 42
+    },
+    {
+      "yaml":   "!!int \"42\"",
+      "result": 42
+    },
+    {
+      "yaml":   "-42",
+      "result": -42
+    },
+    {
+      "yaml":   "0b1100",
+      "result": 12
+    },
+    {
+      "yaml":   "0xC",
+      "result": 12
+    },
+    {
+      "yaml":   "685230",
+      "result": 685230
+    },
+    {
+      "yaml":   "+685_230",
+      "result": 685230
+    },
+    {
+      "yaml":   "02472256",
+      "result": 685230
+    },
+    {
+      "yaml":   "0x_0A_74_AE",
+      "result": 685230
+    },
+    {
+      "yaml":   "0b1010_0111_0100_1010_1110",
+      "result": 685230
+    },
+    {
+      "yaml":   "190:20:30",
+      "result": 685230
+    }
+  ],
+
+  "floats": [
+    {
+      "yaml":   "1.23015e+3",
+      "result": 1230.15
+    },
+    {
+      "yaml":   "12.3015e+2",
+      "result": 1230.15
+    },
+    {
+      "yaml":   "1230.15",
+      "result": 1230.15
+    },
+    {
+      "yaml":   "1.",
+      "result": 1.0
+    },
+    {
+      "yaml":   ".1",
+      "result": 0.1
+    },
+    {
+      "yaml":   "!!float \"1\"",
+      "result": 1.0
+    },
+    {
+      "yaml":   "6.8523015e+5",
+      "result": 685230.15
+    },
+    {
+      "yaml":   "685.230_15e+03",
+      "result": 685230.15
+    },
+    {
+      "yaml":   "685_230.15",
+      "result": 685230.15
+    },
+    {
+      "yaml":   "190:20:30.15",
+      "result": 685230.15
+    }
+  ],
+
+  "strings": [
+    {
+      "yaml":   "Hello World",
+      "result": "Hello World"
+    },
+    {
+      "yaml":   "This [is] a {string}",
+      "result": "This [is] a {string}"
+    },
+    {
+      "yaml":   "A{s i[s this",
+      "result": "A{s i[s this"
+    },
+    {
+      "yaml":   "\"Hello World\"",
+      "result": "Hello World"
+    },
+    {
+      "yaml":   "\"Hello\nWorld\"",
+      "result": "Hello World"
+    },
+    {
+      "yaml":   "Hello \"World\"",
+      "result": "Hello \"World\""
+    },
+    {
+      "yaml":   "\"42\"",
+      "result": "42"
+    },
+    {
+      "yaml":   "!!str true",
+      "result": "true"
+    },
+    {
+      "yaml":   "\"# comment\"",
+      "result": "# comment"
+    },
+    {
+      "yaml":   "\"\\xd7\"",
+      "result": "×"
+    },
+    {
+      "yaml":   "\"\\xD7\"",
+      "result": "×"
+    },
+    {
+      "yaml":   "\"\\u00d7\"",
+      "result": "×"
+    },
+    {
+      "yaml":   "\"\\u00D7\"",
+      "result": "×"
+    },
+    {
+      "yaml":   "\"\\U000000d7\"",
+      "result": "×"
+    },
+    {
+      "yaml":   "\"\\U000000D7\"",
+      "result": "×"
+    },
+    {
+      "yaml":   "💩",
+      "result": "💩"
+    }
+  ],
+
+  "string formatting": [
+    {
+      "yaml":   "# ASCII Art\n--- |\n  \\//||\\/||\n  // ||  ||__",
+      "result": "\\//||\\/||\n// ||  ||__\n"
+    },
+    {
+      "yaml":   "--- >\n  Mark McGwire's\n  year was crippled\n  by a knee injury.",
+      "result": "Mark McGwire's year was crippled by a knee injury.\n"
+    },
+    {
+      "yaml":   ">\n Sammy Sosa completed another\n fine season with great stats.\n\n   63 Home Runs\n   0.288 Batting Average\n\n What a year!",
+      "result": "Sammy Sosa completed another fine season with great stats.\n\n  63 Home Runs\n  0.288 Batting Average\n\nWhat a year!\n"
+    }
+  ],
+
+  "directives": [
+    {
+      "yaml":   "%YAML 1.1\n---",
+      "result": null
+    },
+    {
+      "yaml":   "%YAML 1.0\n---",
+      "result": null
+    },
+    {
+      "yaml":   "%YAML 1.9\n--- # This version doesn't exist.  But that doesn't matter.",
+      "result": null
+    },
+    {
+      "yaml":   "%TAG !foo! tag:yaml.org,2002:\n--- !foo!str content",
+      "result": "content"
+    }
+  ],
+
+  "simple sequences": [
+    {
+      "yaml":   "- Mark McGwire\n- Sammy Sosa\n- Ken Griffey\n",
+      "result": ["Mark McGwire", "Sammy Sosa", "Ken Griffey"]
+    },
+    {
+      "yaml":   "[Mark McGwire, Sammy Sosa, Ken Griffey]",
+      "result": ["Mark McGwire", "Sammy Sosa", "Ken Griffey"]
+    },
+    {
+      "yaml":   "# A sequence\n---\n  - Mark McGwire\n  - Sammy Sosa\n  - Ken Griffey\n...",
+      "result": ["Mark McGwire", "Sammy Sosa", "Ken Griffey"]
+    },
+    {
+      "yaml":   "# Positions\n-\n  # First place\n  First\n-\n  # Second place\n  Second\n-\n  # Third place\n  Third",
+      "result": ["First", "Second", "Third"]
+    },
+    {
+      "yaml":   "!!seq [1,2,3]",
+      "result": [1,2,3]
+    },
+    {
+      "yaml":   "- Hello, World",
+      "result": ["Hello, World"]
+    }
+  ],
+
+  "simple mappings": [
+    {
+      "yaml":   "hr:  65    # Home Runs\navg: 0.2878 # Batting average\nrbi: 147   # Runs Batted In",
+      "result": {"hr": 65, "avg": 0.2878, "rbi": 147}
+    },
+    {
+      "yaml":   "{ hr: 65, avg: 0.2878, rbi: 147 }",
+      "result": {"hr": 65, "avg": 0.2878, "rbi": 147}
+    },
+    {
+      "yaml":   "# A mapping\n---\n  hr: 65\n  avg: 0.2878\n  rbi: 147\n...",
+      "result": {"hr": 65, "avg": 0.2878, "rbi": 147}
+    },
+    {
+      "yaml":   "# Positions\nfirst:\n  # First place\n  First\nsecond:\n  # Second place\n  Second\nthird:\n  # Third place\n  Third",
+      "result": {"first": "First", "second": "Second", "third": "Third"}
+    },
+    {
+      "yaml":   "!!map {a,b,c}",
+      "result": {"a": null, "b": null, "c": null}
+    },
+    {
+      "yaml":   "hel[l{o, w}o]rld: goodb{y[e, w]o}rld",
+      "result": {"hel[l{o, w}o]rld": "goodb{y[e, w]o}rld"}
+    }
+  ],
+
+  "anchors & aliases": [
+    {
+      "yaml":   "&str world",
+      "result": "world"
+    },
+    {
+      "yaml":   "&map { hello: world }",
+      "result": {"hello": "world"}
+    },
+    {
+      "yaml":   "&seq [ hello, world ]",
+      "result": ["hello", "world"]
+    },
+    {
+      "yaml":   "[ &str hello, *str ]",
+      "result": ["hello", "hello"]
+    },
+    {
+      "yaml":   "---\nhr:\n  - Mark McGwire\n  # Following node labeled SS\n  - &SS Sammy Sosa\nrbi:\n  - *SS # Subsequent occurrence\n  - Ken Griffey",
+      "result": {"hr": ["Mark McGwire", "Sammy Sosa"], "rbi": ["Sammy Sosa", "Ken Griffey"]}
+    }
+  ],
+
+  "merging": [
+    {
+      "yaml":   "'<<': { hello: world }",
+      "result": {"<<": {"hello": "world"}}
+    },
+    {
+      "yaml":   "<<: { hello: world }",
+      "result": {"hello": "world"}
+    },
+    {
+      "yaml":   "<<: [ { hello: world }, { hello: something else } ]",
+      "result": {"hello": "world"}
+    },
+    {
+      "yaml":   "- &map { hello: world }\n- { <<: *map }",
+      "result": [{"hello": "world"}, {"hello": "world"}]
+    },
+    {
+      "yaml":   "- &seq [ { hello: world }, { hello: something else } ]\n- { <<: *seq }",
+      "result": [[{"hello": "world"}, {"hello": "something else"}], {"hello": "world"}]
+    },
+    {
+      "yaml":   "- &map1 { hello: world }\n- &map2 { hello: something else }\n- { <<: [ *map1, *map2 ] }",
+      "result": [{"hello": "world"}, {"hello": "something else"}, {"hello": "world"}]
+    }
+  ],
+
+  "complex documents": [
+    {
+      "yaml":   "american:\n - Boston Red Sox\n - Detroit Tigers\n - New York Yankees\nnational:\n - New York Mets\n - Chicago Cubs\n - Atlanta Braves",
+      "result": {"american": ["Boston Red Sox", "Detroit Tigers", "New York Yankees"], "national": ["New York Mets", "Chicago Cubs", "Atlanta Braves"]}
+    },
+    {
+      "yaml":   "-\n  name: Mark McGwire\n  hr: 65\n  avg: 0.278\n-\n  name: Sammy Sosa\n  hr: 63\n  avg: 0.288",
+      "result": [{"name": "Mark McGwire", "hr": 65, "avg": 0.278}, {"name": "Sammy Sosa", "hr": 63, "avg": 0.288}]
+    },
+    {
+      "yaml":   "- [name        , hr, avg  ]\n- [Mark McGwire, 65, 0.278]\n- [Sammy Sosa  , 63, 0.288]",
+      "result": [["name", "hr", "avg"], ["Mark McGwire", 65, 0.278], ["Sammy Sosa", 63, 0.288]]
+    },
+    {
+      "yaml":   "Mark McGwire: {hr: 65, avg: 0.278}\nSammy Sosa: {\nhr: 63,\navg: 0.288\n}",
+      "result": {"Mark McGwire": {"hr": 65, "avg": 0.278}, "Sammy Sosa": {"hr": 63, "avg": 0.288}}
+    },
+    {
+      "yaml":   "---\n# Products purchased\n- item    : Super Hoop\n  quantity: 1\n- item    : Basketball\n  quantity: 4\n- item    : Big Shoes\n  quantity: 1",
+      "result": [{"item": "Super Hoop", "quantity": 1}, {"item": "Basketball", "quantity": 4}, {"item": "Big Shoes", "quantity": 1}]
+    },
+    {
+      "yaml":   "name: Mark McGwire\naccomplishment: >\n  Mark set a major league\n  home run record in 1998.\nstats: |\n  65 Home Runs\n  0.278 Batting Average",
+      "result": {"name": "Mark McGwire", "accomplishment": "Mark set a major league home run record in 1998.\n", "stats": "65 Home Runs\n0.278 Batting Average\n"}
+    }
+  ],
+
+  "large documents": [
+    {
+      "yaml":   "---\ninvoice: 34843\ndate   : !!str 2001-01-23\nbill-to: &id001\n    given  : Chris\n    family : Dumars\n    address:\n        lines: |\n            458 Walkman Dr.\n            Suite #292\n        city    : Royal Oak\n        state   : MI\n        postal  : 48046\nship-to: *id001\nproduct:\n    - sku         : BL394D\n      quantity    : 4\n      description : Basketball\n      price       : 450.00\n    - sku         : BL4438H\n      quantity    : 1\n      description : Super Hoop\n      price       : 2392.00\ntax  : 251.42\ntotal: 4443.52\ncomments:\n    Late afternoon is best.\n    Backup contact is Nancy\n    Billsmer @ 338-4338.",
+      "result": {
+        "invoice": 34843,
+        "date": "2001-01-23",
+        "bill-to": {
+          "given": "Chris",
+          "family": "Dumars",
+          "address": {"lines": "458 Walkman Dr.\nSuite #292\n", "city": "Royal Oak", "state": "MI", "postal": 48046}
+        },
+        "ship-to": {
+          "given": "Chris",
+          "family": "Dumars",
+          "address": {"lines": "458 Walkman Dr.\nSuite #292\n", "city": "Royal Oak", "state": "MI", "postal": 48046}
+        },
+        "product": [
+          {"sku": "BL394D", "quantity": 4, "description": "Basketball", "price": 450.0},
+          {"sku": "BL4438H", "quantity": 1, "description": "Super Hoop", "price": 2392.0}
+        ],
+        "tax": 251.42,
+        "total": 4443.52,
+        "comments": "Late afternoon is best. Backup contact is Nancy Billsmer @ 338-4338."
+      }
+    },
+    {
+      "yaml":   "- Time: !!str 2001-11-23 15:01:42 -5\n  User: ed\n  Warning:\n   This is an error message\n   for the log file\n- Time: !!str 2001-11-23 15:02:31 -5\n  User: ed\n  Warning:\n   A slightly different error\n   message.\n- Date: !!str 2001-11-23 15:03:17 -5\n  User: ed\n  Fatal:\n   Unknown variable \"bar\"\n  Stack:\n   - file: TopClass.py\n     line: 23\n     code: |\n       x = MoreObject(\"345\\n\")\n   - file: MoreClass.py\n     line: 58\n     code: |-\n       foo = bar",
+      "result": [
+        {"Time": "2001-11-23 15:01:42 -5", "User": "ed", "Warning": "This is an error message for the log file"},
+        {"Time": "2001-11-23 15:02:31 -5", "User": "ed", "Warning": "A slightly different error message."},
+        {"Date": "2001-11-23 15:03:17 -5", "User": "ed", "Fatal": "Unknown variable \"bar\"", "Stack": [
+          {"file": "TopClass.py", "line": 23, "code": "x = MoreObject(\"345\\n\")\n"},
+          {"file": "MoreClass.py", "line": 58, "code": "foo = bar"}
+        ]}
+      ]
+    },
+    {
+      "yaml":   "# grammar.preg-coffee\n---\n# Matches a character class\n- Class: [ all, [\n  [ literal, '[' ],\n  [ label, content, maybe_some, all, [\n    [ any, [\n      [ literal, \\ ],\n      [ reject, literal, ']' ]\n    ] ],\n    advance\n  ] ],\n  [ literal, ']' ]\n] ]\n\n# Matches a double indent (an indent followed by two space)\n- DOUBLE_INDENT: [ all, [\n  INDENT,\n  SPACE,\n  SPACE\n] ]\n\n# Matches a single indent (a newline followed by two space)\n- INDENT: [ all, [\n  NEWLINE,\n  SPACE,\n  SPACE\n] ]\n\n# Matches a single whitespace character (newline or space)\n- WHITESPACE: [ any, [\n  NEWLINE,\n  SPACE\n] ]\n\n# Matches a single CR/FL newline\n- NEWLINE: [ any,\n  [ all, [\n    [ literal, \"\\r\" ],\n    [ maybe, literal, \"\\n\" ]\n  ] ],\n  [ literal, \"\\n\" ]\n]\n\n# Matches a single space\n- SPACE: [ literal, ' ' ]\n...",
+      "result": [
+        {
+          "Class": ["all", [ ["literal",  "["], ["label", "content", "maybe_some", "all", [ ["any", [ ["literal",  "\\"], ["reject",  "literal",  "]"] ] ],  "advance"] ], ["literal", "]"] ] ]
+        },
+        {
+          "DOUBLE_INDENT": ["all", ["INDENT", "SPACE", "SPACE"]]
+        },
+        {
+          "INDENT": ["all", ["NEWLINE", "SPACE", "SPACE"]]
+        },
+        {
+          "WHITESPACE": ["any", ["NEWLINE", "SPACE"]]
+        },
+        {
+          "NEWLINE": ["any", ["all", [["literal", "\r"], ["maybe", "literal", "\n"]]], ["literal", "\n"]]
+        },
+        {
+          "SPACE": ["literal", " "]
+        }
+      ]
+    }
+  ]
+}

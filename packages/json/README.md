@@ -9,7 +9,7 @@
 
 # @rollup/plugin-json
 
-🍣 A Rollup which Converts .json files to ES6 modules.
+🍣 A Rollup plugin which Converts .json files to ES6 modules.
 
 ## Requirements
 

@@ -54,6 +54,7 @@ export default function alias(options = {}) {
   }
 
   return {
+    name: 'alias',
     resolveId(importee, importer) {
       const importeeId = normalizeId(importee);
       const importerId = normalizeId(importer);

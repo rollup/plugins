@@ -134,38 +134,36 @@ This would replace the file extension for all imports ending with `.js` to `.ali
 The `customResolver` option can be leveraged to provide separate module resolution for an invidudual alias.
 
 Example:
+
 ```javascript
 // rollup.config.js
-import alias from "@rollup/plugin-alias";
-import resolve from "rollup-plugin-node-resolve";
+import alias from '@rollup/plugin-alias';
+import resolve from 'rollup-plugin-node-resolve';
 
 const customResolver = resolve({
-  extensions: [".mjs", ".js", ".jsx", ".json", ".sass", ".scss"]
+  extensions: ['.mjs', '.js', '.jsx', '.json', '.sass', '.scss']
 });
 const projectRootDir = path.resolve(__dirname);
 
 export default {
   // ...
   plugins: [
-    alias(
-      {
-        entries: [
-          {
-            find: "src",
-            replacement: path.resolve(projectRootDir, "src")
-            // OR place `customResolver` here. See explanation below.
-          }
-        ],
-        customResolver
-      }
-    ),
+    alias({
+      entries: [
+        {
+          find: 'src',
+          replacement: path.resolve(projectRootDir, 'src')
+          // OR place `customResolver` here. See explanation below.
+        }
+      ],
+      customResolver
+    }),
     resolve()
   ]
 };
 ```
 
 In the example above the alias `src` is used, which uses the `node-resolve` algorithm for files _aliased_ with `src`, by passing the `customResolver` option. The `resolve()` plugin is kept separate in the plugins list for other files which are not _aliased_ with `src`. The `customResolver` option can be passed inside each `entries` item for granular control over resolving allowing each alias a preferred resolver.
-
 
 ## Meta
 
