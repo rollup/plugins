@@ -65,6 +65,9 @@ jobs:
       - restore_cache: *restore_cache
       - run: *pnpm_install
       - run:
+          name: Run Security Checks
+          command: pnpm run security
+      - run:
           name: Run linting.
           command: pnpm run ci:lint
       - save_cache:
