@@ -15,20 +15,20 @@ This repository houses plugins that Rollup considers critical to every day use o
 
 ## Plugins Found Here
 
-|                                       |   |
-|---                                    |---|
-| [alias](packages/alias)               | Define and resolve aliases for bundle dependencies |
-| [auto-install](packages/auto-install) | Automatically install dependencies that are imported by a bundle. |
-| [beep](packages/beep)                 | System beeps on errors and warnings |
-| [buble](packages/buble)               | Compile ES2015 with buble |
-| [dsv](packages/dsv)                   | Convert .csv and .tsv files into JavaScript modules with d3-dsv |
-| [inject](packages/inject)             | Scan modules for global variables and injects `import` statements where necessary |
-| [json](packages/json)                 | Convert .json files to ES6 modules |
-| [replace](packages/replace)           | Replace strings in files while bundling |
+|                                       |                                                                                           |
+| ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [alias](packages/alias)               | Define and resolve aliases for bundle dependencies                                        |
+| [auto-install](packages/auto-install) | Automatically install dependencies that are imported by a bundle.                         |
+| [beep](packages/beep)                 | System beeps on errors and warnings                                                       |
+| [buble](packages/buble)               | Compile ES2015 with buble                                                                 |
+| [dsv](packages/dsv)                   | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
+| [inject](packages/inject)             | Scan modules for global variables and injects `import` statements where necessary         |
+| [json](packages/json)                 | Convert .json files to ES6 modules                                                        |
+| [replace](packages/replace)           | Replace strings in files while bundling                                                   |
 | [strip](packages/strip)               | Remove debugger statements and functions like assert.equal and console.log from your code |
-| [wasm](packages/wasm)                 | Import WebAssembly code with Rollup |
-| [yaml](packages/yaml)                 | Convert YAML files to ES6 modules |
-|                                       |  |
+| [wasm](packages/wasm)                 | Import WebAssembly code with Rollup                                                       |
+| [yaml](packages/yaml)                 | Convert YAML files to ES6 modules                                                         |
+|                                       |                                                                                           |
 
 ## Contributing
 
