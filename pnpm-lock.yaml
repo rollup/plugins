@@ -10,7 +10,7 @@ importers:
       globby: 10.0.1
       lint-staged: 9.4.3
       nyc: 14.1.1
-      pnpm: 4.2.2
+      pnpm: 4.3.0
       pre-commit: 1.2.2
       prettier: 1.19.1
       prettier-plugin-package: 0.3.1_prettier@1.19.1
@@ -20,23 +20,23 @@ importers:
       typescript: 3.7.2
       yaml: 1.7.2
     specifiers:
-      ava: ^2.2.0
+      ava: ^2.4.0
       chalk: ^2.4.2
       codecov-lite: ^0.3.1
       del-cli: ^3.0.0
       eslint-config-rollup: ^0.1.0
-      execa: ^2.0.4
+      execa: ^2.1.0
       globby: ^10.0.1
-      lint-staged: ^9.2.0
+      lint-staged: ^9.4.3
       nyc: ^14.1.1
-      pnpm: ^4.1.5
+      pnpm: ^4.3.0
       pre-commit: ^1.2.2
-      prettier: ^1.18.2
+      prettier: ^1.19.1
       prettier-plugin-package: ^0.3.1
-      rollup: ^1.20.1
+      rollup: ^1.27.0
       tslib: ^1.10.0
-      tslint: ^5.19.0
-      typescript: ^3.4.3
+      tslint: ^5.20.1
+      typescript: ^3.7.2
       yaml: ^1.7.2
   packages/alias:
     dependencies:
@@ -4207,13 +4207,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-t1Ax8KUvV3FFII8ltczPn2tJdjqbd1sIzu6t4JL7nQ3EyeL/lTrj5PWKb06ic5/6XYDr65rQ4uzQEGN70/6X5w==
-  /pnpm/4.2.2:
+  /pnpm/4.3.0:
     dev: true
     engines:
       node: '>=10'
     hasBin: true
     resolution:
-      integrity: sha512-cgIti3UV6PlZnuLd1Il78vxjbAo+UfeTvdDxdneZphjGwmJqFbmWxw5jQK/JiiNTLn2Tnj3Oy3+/hRxhVHFQug==
+      integrity: sha512-dra2MDyO1Kj2iJSMt/ApS5q2+to/EWFwmY0/RwA12IX9U+xlOrRPx3yop2RAl4G47pZTvSGddEcXJAHCnG4BXA==
   /pre-commit/1.2.2:
     dependencies:
       cross-spawn: 5.1.0
