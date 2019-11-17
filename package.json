@@ -9,7 +9,6 @@
     "lint": "pnpm run lint:docs && pnpm run lint:package && node scripts/run-changed.js lint",
     "lint:docs": "prettier --write README.md",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
-    "lint-staged": "lint-staged",
     "preinstall": "node scripts/disallow-npm.js",
     "publish": "node scripts/publish.js",
     "security": "pnpm audit",
@@ -23,10 +22,10 @@
     "eslint-config-rollup": "^0.1.0",
     "execa": "^2.1.0",
     "globby": "^10.0.1",
+    "husky": "^3.0.9",
     "lint-staged": "^9.4.3",
     "nyc": "^14.1.1",
     "pnpm": "^4.3.0",
-    "pre-commit": "^1.2.2",
     "prettier": "^1.19.1",
     "prettier-plugin-package": "^0.3.1",
     "rollup": "^1.27.0",
@@ -43,6 +42,11 @@
       "!**/types.ts"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.js": [
       "eslint --fix",
@@ -57,6 +61,5 @@
       "lib/client*.js",
       "test/"
     ]
-  },
-  "pre-commit": "lint-staged"
+  }
 }
