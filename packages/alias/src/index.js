@@ -65,18 +65,20 @@ export default function alias(options = {}) {
         return null;
       }
 
-      let updatedId = normalizeId(importeeId.replace(matchedEntry.find, matchedEntry.replacement));
+      const updatedId = normalizeId(
+        importeeId.replace(matchedEntry.find, matchedEntry.replacement)
+      );
 
       let customResolver = null;
       if (typeof matchedEntry.customResolver === 'function') {
-        customResolver = matchedEntry.customResolver;
+        ({ customResolver } = matchedEntry);
       } else if (
         typeof matchedEntry.customResolver === 'object' &&
         typeof matchedEntry.customResolver.resolveId === 'function'
       ) {
         customResolver = matchedEntry.customResolver.resolveId;
       } else if (typeof options.customResolver === 'function') {
-        customResolver = options.customResolver;
+        ({ customResolver } = options);
       } else if (
         typeof options.customResolver === 'object' &&
         typeof options.customResolver.resolveId === 'function'
@@ -88,12 +90,13 @@ export default function alias(options = {}) {
         return customResolver(updatedId, importerId);
       }
 
-      return this.resolve(updatedId, importer, { skipSelf: true }).then(resolved => {
-        if (!resolved) {
-          resolved = {id : updatedId};
+      return this.resolve(updatedId, importer, { skipSelf: true }).then((resolved) => {
+        let finalResult = resolved;
+        if (!finalResult) {
+          finalResult = { id: updatedId };
         }
 
-        return resolved;
+        return finalResult;
       });
     }
   };
