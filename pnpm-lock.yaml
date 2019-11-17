@@ -43,7 +43,7 @@ importers:
       slash: 3.0.0
     devDependencies:
       del-cli: 3.0.0
-      rollup: 1.26.4
+      rollup: 1.27.0
     specifiers:
       del-cli: ^3.0.0
       rollup: ^1.20.0
@@ -53,8 +53,8 @@ importers:
       node-noop: 1.0.0
     devDependencies:
       del: 5.1.0
-      rollup: 1.26.4
-      rollup-plugin-node-resolve: 5.2.0_rollup@1.26.4
+      rollup: 1.27.0
+      rollup-plugin-node-resolve: 5.2.0_rollup@1.27.0
     specifiers:
       del: ^5.1.0
       node-noop: ^1.0.0
@@ -64,7 +64,7 @@ importers:
     specifiers: {}
   packages/beep:
     devDependencies:
-      rollup: 1.26.4
+      rollup: 1.27.0
       strip-ansi: 5.2.0
     specifiers:
       rollup: ^1.20.0
@@ -75,7 +75,7 @@ importers:
       rollup-pluginutils: 2.8.2
     devDependencies:
       del-cli: 3.0.0
-      rollup: 1.26.4
+      rollup: 1.27.0
       source-map: 0.7.3
       typescript: 3.7.2
     specifiers:
@@ -92,7 +92,7 @@ importers:
       tosource: 1.0.0
     devDependencies:
       del-cli: 3.0.0
-      rollup: 1.26.4
+      rollup: 1.27.0
     specifiers:
       d3-dsv: ^0.1.14
       del-cli: ^3.0.0
@@ -107,7 +107,7 @@ importers:
     devDependencies:
       del-cli: 3.0.0
       locate-character: 2.0.5
-      rollup: 1.26.4
+      rollup: 1.27.0
       rollup-plugin-buble: 0.19.8
       source-map: 0.7.3
       typescript: 3.7.2
@@ -142,7 +142,7 @@ importers:
     devDependencies:
       del-cli: 3.0.0
       locate-character: 2.0.5
-      rollup: 1.26.4
+      rollup: 1.27.0
       rollup-plugin-buble: 0.19.8
       source-map: 0.7.3
       typescript: 3.7.2
@@ -162,7 +162,7 @@ importers:
       rollup-pluginutils: 2.8.2
     devDependencies:
       acorn: 6.3.0
-      rollup: 1.26.4
+      rollup: 1.27.0
     specifiers:
       acorn: ^6.0.2
       estree-walker: ^0.6.0
@@ -172,7 +172,7 @@ importers:
   packages/wasm:
     devDependencies:
       del-cli: 3.0.0
-      rollup: 1.26.4
+      rollup: 1.27.0
       source-map: 0.7.3
     specifiers:
       del-cli: ^3.0.0
@@ -180,13 +180,13 @@ importers:
       source-map: ^0.7.3
   packages/yaml:
     dependencies:
-      '@rollup/plugin-json': 'link:../json'
       js-yaml: 3.13.1
       rollup-pluginutils: 2.8.2
       tosource: 1.0.0
     devDependencies:
       '@babel/core': 7.7.2
       '@babel/preset-env': 7.7.1_@babel+core@7.7.2
+      del-cli: 3.0.0
       rollup: 1.27.0
       rollup-plugin-babel: 4.3.3_@babel+core@7.7.2+rollup@1.27.0
       rollup-plugin-node-resolve: 5.2.0_rollup@1.27.0
@@ -194,7 +194,7 @@ importers:
     specifiers:
       '@babel/core': ^7.7.2
       '@babel/preset-env': ^7.7.1
-      '@rollup/plugin-json': ^4.0.0
+      del-cli: ^3.0.0
       js-yaml: ^3.13.1
       rollup: ^1.27.0
       rollup-plugin-babel: ^4.3.3
@@ -1026,7 +1026,7 @@ packages:
     dependencies:
       '@types/events': 3.0.0
       '@types/minimatch': 3.0.3
-      '@types/node': 12.12.7
+      '@types/node': 12.12.8
     dev: true
     resolution:
       integrity: sha512-1Bh06cbWJUHMC97acuD6UMG29nMt0Aqz1vF3guLfG+kHHJhy3AyohZFFxYk2f7Q1SQIrNwvncxAE0N/9s70F2w==
@@ -1034,13 +1034,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
-  /@types/node/12.12.7:
+  /@types/node/12.12.8:
     dev: true
     resolution:
-      integrity: sha512-E6Zn0rffhgd130zbCbAr/JdXfXkoOUFAKNs/rF8qnafSJ8KYaA/j3oz7dcwal+lYjLA7xvdd5J4wdYpCTlP8+w==
+      integrity: sha512-XLla8N+iyfjvsa0KKV+BP/iGSoTmwxsu5Ci5sM33z9TjohF72DEz95iNvD6pPmemvbQgxAv/909G73gUn8QR7w==
   /@types/resolve/0.0.8:
     dependencies:
-      '@types/node': 12.12.7
+      '@types/node': 12.12.8
     dev: true
     resolution:
       integrity: sha512-auApPaJf3NPfe18hSoJkp8EbZzer2ISk7o8mCC3M9he/a04+gbMF97NkpD2S8riMGvm4BMRI59/SZQSaLTKpsQ==
@@ -1109,14 +1109,14 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-cBhpre4ma+U0T1oM5fXg7Dy1Jw7zzwv7lt/GoCpr+hDQJoYnKVPLL4dCvSEFMmQurOQvSrwT7SL/DAlhBI97RQ==
-  /ansi-escapes/4.2.1:
+  /ansi-escapes/4.3.0:
     dependencies:
-      type-fest: 0.5.2
+      type-fest: 0.8.1
     dev: true
     engines:
       node: '>=8'
     resolution:
-      integrity: sha512-Cg3ymMAdN10wOk/VYfLV7KCQyv7EDirJ64500sU7n9UlmioEtDuU5Gd+hj73hXSU/ex7tHJSssmyftDdkMLO8Q==
+      integrity: sha512-EiYhwo0v255HUL6eDyuLrXEkTi7WwVCLAw+SeOQ7M7qdun1z1pum4DEm/nuqIVbPvi9RPPc9k9LbyBv6H0DwVg==
   /ansi-regex/2.1.1:
     dev: true
     engines:
@@ -1267,7 +1267,7 @@ packages:
       '@babel/core': 7.7.2
       '@babel/generator': 7.7.2
       '@concordance/react': 2.0.0
-      ansi-escapes: 4.2.1
+      ansi-escapes: 4.3.0
       ansi-styles: 4.2.0
       arr-flatten: 1.1.0
       array-union: 2.1.0
@@ -1801,6 +1801,7 @@ packages:
     resolution:
       integrity: sha512-YdeJI26gLc0CQJ9asLE5obEgBz2I0+CIgnoTbS2T0d5IPQw/OCgCIFR527RmpduxjrB3gSEHoGOCTq9sigOyfw==
   /core-js/2.6.10:
+    deprecated: 'core-js@<3.0 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.'
     dev: true
     requiresBuild: true
     resolution:
@@ -2130,7 +2131,7 @@ packages:
       es-to-primitive: 1.2.1
       function-bind: 1.1.1
       has: 1.0.3
-      has-symbols: 1.0.0
+      has-symbols: 1.0.1
       is-callable: 1.1.4
       is-regex: 1.0.4
       object-inspect: 1.7.0
@@ -2712,12 +2713,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
-  /has-symbols/1.0.0:
+  /has-symbols/1.0.1:
     dev: true
     engines:
       node: '>= 0.4'
     resolution:
-      integrity: sha1-uhqPGvKg/DllD1yFA2dwQSIGO0Q=
+      integrity: sha512-PLcsoqu++dmEIZB+6totNFKq/7Do+Z0u4oT0zKOJNl3lYK6vGwwu2hjHs+68OEZbTjiUE9bgOABXbP/GvrS0Kg==
   /has-yarn/2.1.0:
     dev: true
     engines:
@@ -2850,7 +2851,7 @@ packages:
       integrity: sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
   /inquirer/7.0.0:
     dependencies:
-      ansi-escapes: 4.2.1
+      ansi-escapes: 4.3.0
       chalk: 2.4.2
       cli-cursor: 3.1.0
       cli-width: 2.2.0
@@ -3094,7 +3095,7 @@ packages:
       integrity: sha512-XCoy+WlUr7d1+Z8GgSuXmpuUFC9fOhRXglJMx+dwLKTkL44Cjd4W1Z5P+BQZpr+cR93aGP4S/s7Ftw6Nd/kiEw==
   /is-symbol/1.0.2:
     dependencies:
-      has-symbols: 1.0.0
+      has-symbols: 1.0.1
     dev: true
     engines:
       node: '>= 0.4'
@@ -3807,7 +3808,7 @@ packages:
     dependencies:
       define-properties: 1.1.3
       function-bind: 1.1.1
-      has-symbols: 1.0.0
+      has-symbols: 1.0.1
       object-keys: 1.1.1
     dev: true
     engines:
@@ -4603,19 +4604,6 @@ packages:
       rollup: '>=1.11.0'
     resolution:
       integrity: sha512-jUlyaDXts7TW2CqQ4GaO5VJ4PwwaV8VUGA7+km3n6k6xtOEacf61u0VXwN80phY/evMcaS+9eIeJ9MOyDxt5Zw==
-  /rollup-plugin-node-resolve/5.2.0_rollup@1.26.4:
-    dependencies:
-      '@types/resolve': 0.0.8
-      builtin-modules: 3.1.0
-      is-module: 1.0.0
-      resolve: 1.12.0
-      rollup: 1.26.4
-      rollup-pluginutils: 2.8.2
-    dev: true
-    peerDependencies:
-      rollup: '>=1.11.0'
-    resolution:
-      integrity: sha512-jUlyaDXts7TW2CqQ4GaO5VJ4PwwaV8VUGA7+km3n6k6xtOEacf61u0VXwN80phY/evMcaS+9eIeJ9MOyDxt5Zw==
   /rollup-plugin-node-resolve/5.2.0_rollup@1.27.0:
     dependencies:
       '@types/resolve': 0.0.8
@@ -4634,19 +4622,10 @@ packages:
       estree-walker: 0.6.1
     resolution:
       integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
-  /rollup/1.26.4:
-    dependencies:
-      '@types/estree': 0.0.39
-      '@types/node': 12.12.7
-      acorn: 7.1.0
-    dev: true
-    hasBin: true
-    resolution:
-      integrity: sha512-faL58wTzZM+AH9mUSoncJEjUqvj5KSa4GpNkfn7mxdeBci5GOyT4i1K5+5+6vTfV68QGREh2xi4rW/l+0UFUAw==
   /rollup/1.27.0:
     dependencies:
       '@types/estree': 0.0.39
-      '@types/node': 12.12.7
+      '@types/node': 12.12.8
       acorn: 7.1.0
     dev: true
     hasBin: true
@@ -5196,12 +5175,6 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-cUGJnCdr4STbePCgqNFbpVNCepa+kAVohJs1sLhxzdH+gnEoOd8VhbYa7pD3zZYGiURWM2xzEII3fQcRizDkYQ==
-  /type-fest/0.5.2:
-    dev: true
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-DWkS49EQKVX//Tbupb9TFa19c7+MK1XmzkrZUR8TAktmE/DizXoaoJV6TZ/tSIPXipqNiRI6CyAe7x69Jb6RSw==
   /type-fest/0.8.1:
     dev: true
     engines:
