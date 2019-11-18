@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
-		"diagnostics": true,
+    "esModuleInterop": true,
 		"lib": ["es6", "dom"],
 		"module": "commonjs",
 		"noEmitOnError": true,
@@ -9,9 +9,9 @@
 		"noUnusedParameters": true,
 		"pretty": true,
 		"skipLibCheck": true,
+    "sourceMap": true,
 		"strict": true,
 		"target": "es2015"
 	},
-	"include": ["typings/**/*.d.ts", "src", "cli", "browser"],
-	"exclude": ["dist", "node_modules", "test/typescript"]
+	"exclude": ["dist", "node_modules", "test/types"]
 }

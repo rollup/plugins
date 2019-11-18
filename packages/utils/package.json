@@ -1,0 +1,61 @@
+{
+  "name": "rollup-pluginutils",
+  "version": "2.8.2",
+  "description": "Functionality commonly needed by Rollup plugins",
+  "license": "MIT",
+  "repository": "rollup/rollup-pluginutils",
+  "author": "Rich Harris <richard.a.harris@gmail.com>",
+  "homepage": "https://github.com/rollup/rollup-pluginutils#readme",
+  "bugs": {
+    "url": "https://github.com/rollup/rollup-pluginutils/issues"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src --ext .js,.ts",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
+    "security": "echo 'pnpm needs `npm audit` support'",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "utils"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "dependencies": {
+    "estree-walker": "^0.6.1",
+    "tslint": "^5.20.1"
+  },
+  "devDependencies": {
+    "@types/estree": "0.0.39",
+    "@types/jest": "^24.0.23",
+    "@types/micromatch": "^3.1.1",
+    "@types/node": "^12.12.8",
+    "micromatch": "^4.0.2",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "typescript": "^3.7.2"
+  },
+  "jsnext:main": "dist/index.es.js",
+  "module": "dist/index.es.js",
+  "types": "types/index.d.ts"
+}
