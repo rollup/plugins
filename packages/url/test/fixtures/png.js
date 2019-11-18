@@ -1,2 +1,3 @@
-import png from "./png.png"
-export default png
+import png from './png.png';
+
+export default png;

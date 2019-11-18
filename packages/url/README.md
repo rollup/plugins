@@ -11,21 +11,20 @@ npm i --save-dev rollup-plugin-url
 ## Usage
 
 ```js
-import {rollup} from "rollup"
-import url from "rollup-plugin-url"
+import { rollup } from "rollup";
+import url from "rollup-plugin-url";
 
-const writeoptions = {dest: "output/output.js"}
+const writeoptions = { dest: "output/output.js" };
 const plugin = url({
   limit: 10 * 1024, // inline files < 10k, copy files > 10k
   include: ["**/*.svg"], // defaults to .svg, .png, .jpg and .gif files
   emitFiles: true // defaults to true
-})
+});
 
 rollup({
   entry: "main.js",
-  plugins: [plugin],
-})
-.then(bundle => bundle.write(writeoptions))
+  plugins: [plugin]
+}).then(bundle => bundle.write(writeoptions));
 ```
 
 ## Options
@@ -79,17 +78,21 @@ Optional. Type: `string`
 
 When using the `[dirname]` replacement in `fileName`, uses this directory as the source directory to create the file path from rather than the parent directory of the imported file. For example:
 
-*src/path/to/file.js*
+_src/path/to/file.js_
+
 ```js
 import png from "./image.png";
 ```
-*rollup.config.js*
+
+_rollup.config.js_
+
 ```js
 url({
   fileName: "[dirname][hash][extname]",
   sourceDir: path.join(__dirname, "src")
-})
+});
 ```
+
 Emitted File: `path/to/image.png`
 
 ### destDir

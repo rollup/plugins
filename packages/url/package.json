@@ -1,14 +1,46 @@
 {
-  "name": "rollup-plugin-url",
+  "name": "@rollup/plugin-url",
   "version": "3.0.0",
   "description": "Inline import files as data-URIs, or copy them to output",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Arpad Borsos <arpad.borsos@googlemail.com>",
+  "homepage": "https://github.com/rollup/plugins/packages/url/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
-  "jsnext:main": "src/index.js",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "rimraf dist/*",
+    "prepublish": "npm test",
+    "pretest": "npm run build",
+    "test": "mocha --require @babel/register"
+  },
   "files": [
-    "src",
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "url",
+    "inline",
+    "copy"
+  ],
+  "peerDependencies": {
+    "rollup": ">=0.60.0"
+  },
+  "dependencies": {
+    "mime": "^2.4.4",
+    "rollup-pluginutils": "^2.8.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
@@ -18,40 +50,8 @@
     "rollup": "^1.23.1",
     "rollup-plugin-babel": "^4.3.3"
   },
-  "engines": {
-    "node": ">=10.0.0"
-  },
-  "scripts": {
-    "test": "mocha --require @babel/register",
-    "pretest": "npm run build",
-    "build": "rollup -c",
-    "prebuild": "rimraf dist/*",
-    "prepublish": "npm test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Swatinem/rollup-plugin-url.git"
-  },
-  "keywords": [
-    "rollup-plugin",
-    "url",
-    "inline",
-    "copy"
-  ],
-  "author": "Arpad Borsos <arpad.borsos@googlemail.com>",
+  "jsnext:main": "src/index.js",
   "maintainers": [
     "Poluektov Dmitriy <dmitry.a@kr.digital>"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Swatinem/rollup-plugin-url/issues"
-  },
-  "homepage": "https://github.com/Swatinem/rollup-plugin-url#readme",
-  "dependencies": {
-    "mime": "^2.4.4",
-    "rollup-pluginutils": "^2.8.2"
-  },
-  "peerDependencies": {
-    "rollup": ">=0.60.0"
-  }
+  ]
 }
