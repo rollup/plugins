@@ -9,13 +9,15 @@ const forbiddenIdentifiers = new Set<string>(`${reservedWords} ${builtins}`.spli
 forbiddenIdentifiers.add('');
 
 const makeLegalIdentifier: MakeLegalIdentifier = function makeLegalIdentifier(str) {
-  str = str.replace(/-(\w)/g, (_, letter) => letter.toUpperCase()).replace(/[^$_a-zA-Z0-9]/g, '_');
+  let identifier = str
+    .replace(/-(\w)/g, (_, letter) => letter.toUpperCase())
+    .replace(/[^$_a-zA-Z0-9]/g, '_');
 
-  if (/\d/.test(str[0]) || forbiddenIdentifiers.has(str)) {
-    str = `_${str}`;
+  if (/\d/.test(identifier[0]) || forbiddenIdentifiers.has(identifier)) {
+    identifier = `_${str}`;
   }
 
-  return str || '_';
+  return identifier || '_';
 };
 
 export { makeLegalIdentifier as default };

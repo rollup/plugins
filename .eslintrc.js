@@ -12,6 +12,14 @@ module.exports = {
     '@typescript-eslint/member-ordering': 'error',
     '@typescript-eslint/no-inferrable-types': 'error',
     '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        vars: 'local',
+        args: 'after-used',
+        ignoreRestSiblings: true
+      }
+    ],
     'import/extensions': [
       'error',
       'always',
@@ -23,6 +31,7 @@ module.exports = {
       }
     ],
     'import/no-named-export': 'off',
+    'no-unused-vars': 'off',
     'prettier/prettier': [
       'error',
       {

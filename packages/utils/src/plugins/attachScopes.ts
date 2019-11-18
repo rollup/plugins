@@ -4,7 +4,11 @@ import { AttachedScope, AttachScopes } from '../../types';
 
 import extractAssignedNames from './extractAssignedNames';
 
-const blockDeclarations = {
+interface BlockDeclaration {
+  [index: string]: boolean;
+}
+
+const blockDeclarations: BlockDeclaration = {
   const: true,
   let: true
 };

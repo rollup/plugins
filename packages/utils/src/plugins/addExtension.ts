@@ -3,8 +3,9 @@ import { extname } from 'path';
 import { AddExtension } from '../../types';
 
 const addExtension: AddExtension = function addExtension(filename, ext = '.js') {
-  if (!extname(filename)) filename += ext;
-  return filename;
+  let result = `${filename}`;
+  if (!extname(filename)) result += ext;
+  return result;
 };
 
 export { addExtension as default };

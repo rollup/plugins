@@ -43,7 +43,7 @@ function serialize(obj: any, indent: Indent, baseIndent: string): string {
   if (obj === 0 && 1 / obj === -Infinity) return '-0';
   if (obj instanceof Date) return `new Date(${obj.getTime()})`;
   if (obj instanceof RegExp) return obj.toString();
-  if (obj !== obj) return 'NaN';
+  if (obj !== obj) return 'NaN'; // eslint-disable-line no-self-compare
   if (Array.isArray(obj)) return serializeArray(obj, indent, baseIndent);
   if (obj === null) return 'null';
   if (typeof obj === 'object') return serializeObject(obj, indent, baseIndent);
@@ -65,8 +65,8 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
     data === null
   ) {
     const code = serialize(data, options.compact ? null : t, '');
-    const __ = _ || (/^[{[\-\/]/.test(code) ? '' : ' ');
-    return `export default${__}${code};`;
+    const magic = _ || (/^[{[\-\/]/.test(code) ? '' : ' '); // eslint-disable-line no-useless-escape
+    return `export default${magic}${code};`;
   }
 
   let namedExportCode = '';

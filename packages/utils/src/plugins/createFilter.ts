@@ -1,6 +1,6 @@
 import { resolve, sep } from 'path';
 
-import * as micromatch from 'micromatch';
+import micromatch from 'micromatch';
 
 import { CreateFilter } from '../../types';
 import ensureArray from '../utils/ensureArray';
@@ -30,20 +30,20 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
-  return function(id: string | any): boolean {
+  return function result(id: string | any): boolean {
     if (typeof id !== 'string') return false;
     if (/\0/.test(id)) return false;
 
-    id = id.split(sep).join('/');
+    const pathId = id.split(sep).join('/');
 
     for (let i = 0; i < excludeMatchers.length; ++i) {
       const matcher = excludeMatchers[i];
-      if (matcher.test(id)) return false;
+      if (matcher.test(pathId)) return false;
     }
 
     for (let i = 0; i < includeMatchers.length; ++i) {
       const matcher = includeMatchers[i];
-      if (matcher.test(id)) return true;
+      if (matcher.test(pathId)) return true;
     }
 
     return !includeMatchers.length;
