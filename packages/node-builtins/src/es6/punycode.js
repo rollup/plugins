@@ -1,35 +1,34 @@
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 
-
 /** Highest positive signed 32-bit float value */
-var maxInt = 2147483647; // aka. 0x7FFFFFFF or 2^31-1
+const maxInt = 2147483647; // aka. 0x7FFFFFFF or 2^31-1
 
 /** Bootstring parameters */
-var base = 36;
-var tMin = 1;
-var tMax = 26;
-var skew = 38;
-var damp = 700;
-var initialBias = 72;
-var initialN = 128; // 0x80
-var delimiter = '-'; // '\x2D'
+const base = 36;
+const tMin = 1;
+const tMax = 26;
+const skew = 38;
+const damp = 700;
+const initialBias = 72;
+const initialN = 128; // 0x80
+const delimiter = '-'; // '\x2D'
 
 /** Regular expressions */
-var regexPunycode = /^xn--/;
-var regexNonASCII = /[^\x20-\x7E]/; // unprintable ASCII chars + non-ASCII chars
-var regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g; // RFC 3490 separators
+const regexPunycode = /^xn--/;
+const regexNonASCII = /[^\x20-\x7E]/; // unprintable ASCII chars + non-ASCII chars
+const regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g; // RFC 3490 separators
 
 /** Error messages */
-var errors = {
-  'overflow': 'Overflow: input needs wider integers to process',
+const errors = {
+  overflow: 'Overflow: input needs wider integers to process',
   'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
   'invalid-input': 'Invalid input'
 };
 
 /** Convenience shortcuts */
-var baseMinusTMin = base - tMin;
-var floor = Math.floor;
-var stringFromCharCode = String.fromCharCode;
+const baseMinusTMin = base - tMin;
+const { floor } = Math;
+const stringFromCharCode = String.fromCharCode;
 
 /*--------------------------------------------------------------------------*/
 
@@ -52,8 +51,8 @@ function error(type) {
  * @returns {Array} A new array of values returned by the callback function.
  */
 function map(array, fn) {
-  var length = array.length;
-  var result = [];
+  let { length } = array;
+  const result = [];
   while (length--) {
     result[length] = fn(array[length]);
   }
@@ -71,18 +70,18 @@ function map(array, fn) {
  * function.
  */
 function mapDomain(string, fn) {
-  var parts = string.split('@');
-  var result = '';
+  const parts = string.split('@');
+  let result = '';
   if (parts.length > 1) {
     // In email addresses, only the domain name should be punycoded. Leave
     // the local part (i.e. everything up to `@`) intact.
-    result = parts[0] + '@';
+    result = `${parts[0]}@`;
     string = parts[1];
   }
   // Avoid `split(regex)` for IE8 compatibility. See #17.
   string = string.replace(regexSeparators, '\x2E');
-  var labels = string.split('.');
-  var encoded = map(labels, fn).join('.');
+  const labels = string.split('.');
+  const encoded = map(labels, fn).join('.');
   return result + encoded;
 }
 
@@ -100,18 +99,19 @@ function mapDomain(string, fn) {
  * @returns {Array} The new array of code points.
  */
 function ucs2decode(string) {
-  var output = [],
-    counter = 0,
-    length = string.length,
-    value,
-    extra;
+  const output = [];
+  let counter = 0;
+  const { length } = string;
+  let value;
+  let extra;
   while (counter < length) {
     value = string.charCodeAt(counter++);
-    if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+    if (value >= 0xd800 && value <= 0xdbff && counter < length) {
       // high surrogate, and there is a next character
       extra = string.charCodeAt(counter++);
-      if ((extra & 0xFC00) == 0xDC00) { // low surrogate
-        output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+      if ((extra & 0xfc00) == 0xdc00) {
+        // low surrogate
+        output.push(((value & 0x3ff) << 10) + (extra & 0x3ff) + 0x10000);
       } else {
         // unmatched surrogate; only append this code unit, in case the next
         // code unit is the high surrogate of a surrogate pair
@@ -134,12 +134,12 @@ function ucs2decode(string) {
  * @returns {String} The new Unicode string (UCS-2).
  */
 function ucs2encode(array) {
-  return map(array, function(value) {
-    var output = '';
-    if (value > 0xFFFF) {
+  return map(array, (value) => {
+    let output = '';
+    if (value > 0xffff) {
       value -= 0x10000;
-      output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
-      value = 0xDC00 | value & 0x3FF;
+      output += stringFromCharCode(((value >>> 10) & 0x3ff) | 0xd800);
+      value = 0xdc00 | (value & 0x3ff);
     }
     output += stringFromCharCode(value);
     return output;
@@ -191,13 +191,13 @@ function digitToBasic(digit, flag) {
  * @private
  */
 function adapt(delta, numPoints, firstTime) {
-  var k = 0;
+  let k = 0;
   delta = firstTime ? floor(delta / damp) : delta >> 1;
   delta += floor(delta / numPoints);
-  for ( /* no initialization */ ; delta > baseMinusTMin * tMax >> 1; k += base) {
+  for (; /* no initialization */ delta > (baseMinusTMin * tMax) >> 1; k += base) {
     delta = floor(delta / baseMinusTMin);
   }
-  return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+  return floor(k + ((baseMinusTMin + 1) * delta) / (delta + skew));
 }
 
 /**
@@ -209,22 +209,22 @@ function adapt(delta, numPoints, firstTime) {
  */
 export function decode(input) {
   // Don't use UCS-2
-  var output = [],
-    inputLength = input.length,
-    out,
-    i = 0,
-    n = initialN,
-    bias = initialBias,
-    basic,
-    j,
-    index,
-    oldi,
-    w,
-    k,
-    digit,
-    t,
-    /** Cached calculation results */
-    baseMinusT;
+  const output = [];
+  const inputLength = input.length;
+  let out;
+  let i = 0;
+  let n = initialN;
+  let bias = initialBias;
+  let basic;
+  let j;
+  let index;
+  let oldi;
+  let w;
+  let k;
+  let digit;
+  let t;
+  /** Cached calculation results */
+  let baseMinusT;
 
   // Handle the basic code points: let `basic` be the number of input code
   // points before the last delimiter, or `0` if there is none, then copy
@@ -246,15 +246,13 @@ export function decode(input) {
   // Main decoding loop: start just after the last delimiter if any basic code
   // points were copied; start at the beginning otherwise.
 
-  for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */ ) {
-
+  for (index = basic > 0 ? basic + 1 : 0; index < inputLength /* no final expression */; ) {
     // `index` is the index of the next character to be consumed.
     // Decode a generalized variable-length integer into `delta`,
     // which gets added to `i`. The overflow checking is easier
     // if we increase `i` as we go, then subtract off its starting
     // value at the end to obtain `delta`.
-    for (oldi = i, w = 1, k = base; /* no condition */ ; k += base) {
-
+    for (oldi = i, w = 1, k = base /* no condition */; ; k += base) {
       if (index >= inputLength) {
         error('invalid-input');
       }
@@ -266,7 +264,7 @@ export function decode(input) {
       }
 
       i += digit * w;
-      t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+      t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
 
       if (digit < t) {
         break;
@@ -278,7 +276,6 @@ export function decode(input) {
       }
 
       w *= baseMinusT;
-
     }
 
     out = output.length + 1;
@@ -295,7 +292,6 @@ export function decode(input) {
 
     // Insert `n` at position `i` of the output
     output.splice(i++, 0, n);
-
   }
 
   return ucs2encode(output);
@@ -309,24 +305,24 @@ export function decode(input) {
  * @returns {String} The resulting Punycode string of ASCII-only symbols.
  */
 export function encode(input) {
-  var n,
-    delta,
-    handledCPCount,
-    basicLength,
-    bias,
-    j,
-    m,
-    q,
-    k,
-    t,
-    currentValue,
-    output = [],
-    /** `inputLength` will hold the number of code points in `input`. */
-    inputLength,
-    /** Cached calculation results */
-    handledCPCountPlusOne,
-    baseMinusT,
-    qMinusT;
+  let n;
+  let delta;
+  let handledCPCount;
+  let basicLength;
+  let bias;
+  let j;
+  let m;
+  let q;
+  let k;
+  let t;
+  let currentValue;
+  const output = [];
+  /** `inputLength` will hold the number of code points in `input`. */
+  let inputLength;
+  /** Cached calculation results */
+  let handledCPCountPlusOne;
+  let baseMinusT;
+  let qMinusT;
 
   // Convert the input in UCS-2 to Unicode
   input = ucs2decode(input);
@@ -359,7 +355,6 @@ export function encode(input) {
 
   // Main encoding loop:
   while (handledCPCount < inputLength) {
-
     // All non-basic code points < n have been handled already. Find the next
     // larger one:
     for (m = maxInt, j = 0; j < inputLength; ++j) {
@@ -388,16 +383,14 @@ export function encode(input) {
 
       if (currentValue == n) {
         // Represent delta as a generalized variable-length integer
-        for (q = delta, k = base; /* no condition */ ; k += base) {
-          t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+        for (q = delta, k = base /* no condition */; ; k += base) {
+          t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
           if (q < t) {
             break;
           }
           qMinusT = q - t;
           baseMinusT = base - t;
-          output.push(
-            stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
-          );
+          output.push(stringFromCharCode(digitToBasic(t + (qMinusT % baseMinusT), 0)));
           q = floor(qMinusT / baseMinusT);
         }
 
@@ -410,7 +403,6 @@ export function encode(input) {
 
     ++delta;
     ++n;
-
   }
   return output.join('');
 }
@@ -427,11 +419,9 @@ export function encode(input) {
  * string.
  */
 export function toUnicode(input) {
-  return mapDomain(input, function(string) {
-    return regexPunycode.test(string) ?
-      decode(string.slice(4).toLowerCase()) :
-      string;
-  });
+  return mapDomain(input, (string) =>
+    regexPunycode.test(string) ? decode(string.slice(4).toLowerCase()) : string
+  );
 }
 
 /**
@@ -446,11 +436,9 @@ export function toUnicode(input) {
  * email address.
  */
 export function toASCII(input) {
-  return mapDomain(input, function(string) {
-    return regexNonASCII.test(string) ?
-      'xn--' + encode(string) :
-      string;
-  });
+  return mapDomain(input, (string) =>
+    regexNonASCII.test(string) ? `xn--${encode(string)}` : string
+  );
 }
 export var version = '1.4.1';
 /**
@@ -466,10 +454,10 @@ export var ucs2 = {
   encode: ucs2encode
 };
 export default {
-  version: version,
-  ucs2: ucs2,
-  toASCII: toASCII,
-  toUnicode: toUnicode,
-  encode: encode,
-  decode: decode
-}
+  version,
+  ucs2,
+  toASCII,
+  toUnicode,
+  encode,
+  decode
+};

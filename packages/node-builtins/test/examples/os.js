@@ -1,5 +1,6 @@
-import {endianness} from 'os';
-var ourE = endianness();
+import { endianness } from 'os';
+
+const ourE = endianness();
 if (endianness() === _osEndianness) {
   done();
 } else {

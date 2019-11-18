@@ -19,16 +19,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import {Transform} from 'stream';
+import { Transform } from 'stream';
+
+import { inherits } from 'util';
+
 import * as _binding from './zlib-lib/binding';
-import {inherits} from 'util';
-function assert (a, msg) {
+
+function assert(a, msg) {
   if (!a) {
     throw new Error(msg);
   }
 }
-var binding = {};
-Object.keys(_binding).forEach(function (key) {
+const binding = {};
+Object.keys(_binding).forEach((key) => {
   binding[key] = _binding[key];
 });
 // zlib doesn't provide these, so kludge them in following the same
@@ -42,7 +45,7 @@ binding.Z_DEFAULT_WINDOWBITS = 15;
 // is absurdly low.  Usually a MB or more is best.
 binding.Z_MIN_CHUNK = 64;
 binding.Z_MAX_CHUNK = Infinity;
-binding.Z_DEFAULT_CHUNK = (16 * 1024);
+binding.Z_DEFAULT_CHUNK = 16 * 1024;
 
 binding.Z_MIN_MEMLEVEL = 1;
 binding.Z_MAX_MEMLEVEL = 9;
@@ -51,7 +54,6 @@ binding.Z_DEFAULT_MEMLEVEL = 8;
 binding.Z_MIN_LEVEL = -1;
 binding.Z_MAX_LEVEL = 9;
 binding.Z_DEFAULT_LEVEL = binding.Z_DEFAULT_COMPRESSION;
-
 
 // translation table for return codes.
 export var codes = {
@@ -66,7 +68,7 @@ export var codes = {
   Z_VERSION_ERROR: binding.Z_VERSION_ERROR
 };
 
-Object.keys(codes).forEach(function(k) {
+Object.keys(codes).forEach((k) => {
   codes[codes[k]] = k;
 });
 
@@ -97,7 +99,6 @@ export function createGunzip(o) {
 export function createUnzip(o) {
   return new Unzip(o);
 }
-
 
 // Convenience methods.
 // compress/decompress a string or buffer in one step.
@@ -186,8 +187,8 @@ export function inflateRawSync(buffer, opts) {
 }
 
 function zlibBuffer(engine, buffer, callback) {
-  var buffers = [];
-  var nread = 0;
+  let buffers = [];
+  let nread = 0;
 
   engine.on('error', onError);
   engine.on('end', onEnd);
@@ -196,8 +197,8 @@ function zlibBuffer(engine, buffer, callback) {
   flow();
 
   function flow() {
-    var chunk;
-    while (null !== (chunk = engine.read())) {
+    let chunk;
+    while ((chunk = engine.read()) !== null) {
       buffers.push(chunk);
       nread += chunk.length;
     }
@@ -211,7 +212,7 @@ function zlibBuffer(engine, buffer, callback) {
   }
 
   function onEnd() {
-    var buf = Buffer.concat(buffers, nread);
+    const buf = Buffer.concat(buffers, nread);
     buffers = [];
     callback(null, buf);
     engine.close();
@@ -219,12 +220,10 @@ function zlibBuffer(engine, buffer, callback) {
 }
 
 function zlibBufferSync(engine, buffer) {
-  if (typeof buffer === 'string')
-    buffer = new Buffer(buffer);
-  if (!Buffer.isBuffer(buffer))
-    throw new TypeError('Not a string or buffer');
+  if (typeof buffer === 'string') buffer = new Buffer(buffer);
+  if (!Buffer.isBuffer(buffer)) throw new TypeError('Not a string or buffer');
 
-  var flushFlag = binding.Z_FINISH;
+  const flushFlag = binding.Z_FINISH;
 
   return engine._processChunk(buffer, flushFlag);
 }
@@ -241,8 +240,6 @@ export function Inflate(opts) {
   Zlib.call(this, opts, binding.INFLATE);
 }
 
-
-
 // gzip - bigger header, same deflate compression
 export function Gzip(opts) {
   if (!(this instanceof Gzip)) return new Gzip(opts);
@@ -253,8 +250,6 @@ export function Gunzip(opts) {
   if (!(this instanceof Gunzip)) return new Gunzip(opts);
   Zlib.call(this, opts, binding.GUNZIP);
 }
-
-
 
 // raw - no header
 export function DeflateRaw(opts) {
@@ -267,13 +262,11 @@ export function InflateRaw(opts) {
   Zlib.call(this, opts, binding.INFLATERAW);
 }
 
-
 // auto-detect header.
 export function Unzip(opts) {
   if (!(this instanceof Unzip)) return new Unzip(opts);
   Zlib.call(this, opts, binding.UNZIP);
 }
-
 
 // the Zlib class they all inherit from
 // This thing manages the queue of requests, and returns
@@ -287,52 +280,52 @@ export function Zlib(opts, mode) {
   Transform.call(this, opts);
 
   if (opts.flush) {
-    if (opts.flush !== binding.Z_NO_FLUSH &&
-        opts.flush !== binding.Z_PARTIAL_FLUSH &&
-        opts.flush !== binding.Z_SYNC_FLUSH &&
-        opts.flush !== binding.Z_FULL_FLUSH &&
-        opts.flush !== binding.Z_FINISH &&
-        opts.flush !== binding.Z_BLOCK) {
-      throw new Error('Invalid flush flag: ' + opts.flush);
+    if (
+      opts.flush !== binding.Z_NO_FLUSH &&
+      opts.flush !== binding.Z_PARTIAL_FLUSH &&
+      opts.flush !== binding.Z_SYNC_FLUSH &&
+      opts.flush !== binding.Z_FULL_FLUSH &&
+      opts.flush !== binding.Z_FINISH &&
+      opts.flush !== binding.Z_BLOCK
+    ) {
+      throw new Error(`Invalid flush flag: ${opts.flush}`);
     }
   }
   this._flushFlag = opts.flush || binding.Z_NO_FLUSH;
 
   if (opts.chunkSize) {
-    if (opts.chunkSize < binding.Z_MIN_CHUNK ||
-        opts.chunkSize > binding.Z_MAX_CHUNK) {
-      throw new Error('Invalid chunk size: ' + opts.chunkSize);
+    if (opts.chunkSize < binding.Z_MIN_CHUNK || opts.chunkSize > binding.Z_MAX_CHUNK) {
+      throw new Error(`Invalid chunk size: ${opts.chunkSize}`);
     }
   }
 
   if (opts.windowBits) {
-    if (opts.windowBits < binding.Z_MIN_WINDOWBITS ||
-        opts.windowBits > binding.Z_MAX_WINDOWBITS) {
-      throw new Error('Invalid windowBits: ' + opts.windowBits);
+    if (opts.windowBits < binding.Z_MIN_WINDOWBITS || opts.windowBits > binding.Z_MAX_WINDOWBITS) {
+      throw new Error(`Invalid windowBits: ${opts.windowBits}`);
     }
   }
 
   if (opts.level) {
-    if (opts.level < binding.Z_MIN_LEVEL ||
-        opts.level > binding.Z_MAX_LEVEL) {
-      throw new Error('Invalid compression level: ' + opts.level);
+    if (opts.level < binding.Z_MIN_LEVEL || opts.level > binding.Z_MAX_LEVEL) {
+      throw new Error(`Invalid compression level: ${opts.level}`);
     }
   }
 
   if (opts.memLevel) {
-    if (opts.memLevel < binding.Z_MIN_MEMLEVEL ||
-        opts.memLevel > binding.Z_MAX_MEMLEVEL) {
-      throw new Error('Invalid memLevel: ' + opts.memLevel);
+    if (opts.memLevel < binding.Z_MIN_MEMLEVEL || opts.memLevel > binding.Z_MAX_MEMLEVEL) {
+      throw new Error(`Invalid memLevel: ${opts.memLevel}`);
     }
   }
 
   if (opts.strategy) {
-    if (opts.strategy != binding.Z_FILTERED &&
-        opts.strategy != binding.Z_HUFFMAN_ONLY &&
-        opts.strategy != binding.Z_RLE &&
-        opts.strategy != binding.Z_FIXED &&
-        opts.strategy != binding.Z_DEFAULT_STRATEGY) {
-      throw new Error('Invalid strategy: ' + opts.strategy);
+    if (
+      opts.strategy != binding.Z_FILTERED &&
+      opts.strategy != binding.Z_HUFFMAN_ONLY &&
+      opts.strategy != binding.Z_RLE &&
+      opts.strategy != binding.Z_FIXED &&
+      opts.strategy != binding.Z_DEFAULT_STRATEGY
+    ) {
+      throw new Error(`Invalid strategy: ${opts.strategy}`);
     }
   }
 
@@ -344,7 +337,7 @@ export function Zlib(opts, mode) {
 
   this._binding = new binding.Zlib(mode);
 
-  var self = this;
+  const self = this;
   this._hadError = false;
   this._binding.onerror = function(message, errno) {
     // there is no way to cleanly recover.
@@ -352,23 +345,25 @@ export function Zlib(opts, mode) {
     self._binding = null;
     self._hadError = true;
 
-    var error = new Error(message);
+    const error = new Error(message);
     error.errno = errno;
     error.code = binding.codes[errno];
     self.emit('error', error);
   };
 
-  var level = binding.Z_DEFAULT_COMPRESSION;
+  let level = binding.Z_DEFAULT_COMPRESSION;
   if (typeof opts.level === 'number') level = opts.level;
 
-  var strategy = binding.Z_DEFAULT_STRATEGY;
+  let strategy = binding.Z_DEFAULT_STRATEGY;
   if (typeof opts.strategy === 'number') strategy = opts.strategy;
 
-  this._binding.init(opts.windowBits || binding.Z_DEFAULT_WINDOWBITS,
-                     level,
-                     opts.memLevel || binding.Z_DEFAULT_MEMLEVEL,
-                     strategy,
-                     opts.dictionary);
+  this._binding.init(
+    opts.windowBits || binding.Z_DEFAULT_WINDOWBITS,
+    level,
+    opts.memLevel || binding.Z_DEFAULT_MEMLEVEL,
+    strategy,
+    opts.dictionary
+  );
 
   this._buffer = new Buffer(this._chunkSize);
   this._offset = 0;
@@ -382,21 +377,22 @@ export function Zlib(opts, mode) {
 inherits(Zlib, Transform);
 
 Zlib.prototype.params = function(level, strategy, callback) {
-  if (level < binding.Z_MIN_LEVEL ||
-      level > binding.Z_MAX_LEVEL) {
-    throw new RangeError('Invalid compression level: ' + level);
+  if (level < binding.Z_MIN_LEVEL || level > binding.Z_MAX_LEVEL) {
+    throw new RangeError(`Invalid compression level: ${level}`);
   }
-  if (strategy != binding.Z_FILTERED &&
-      strategy != binding.Z_HUFFMAN_ONLY &&
-      strategy != binding.Z_RLE &&
-      strategy != binding.Z_FIXED &&
-      strategy != binding.Z_DEFAULT_STRATEGY) {
-    throw new TypeError('Invalid strategy: ' + strategy);
+  if (
+    strategy != binding.Z_FILTERED &&
+    strategy != binding.Z_HUFFMAN_ONLY &&
+    strategy != binding.Z_RLE &&
+    strategy != binding.Z_FIXED &&
+    strategy != binding.Z_DEFAULT_STRATEGY
+  ) {
+    throw new TypeError(`Invalid strategy: ${strategy}`);
   }
 
   if (this._level !== level || this._strategy !== strategy) {
-    var self = this;
-    this.flush(binding.Z_SYNC_FLUSH, function() {
+    const self = this;
+    this.flush(binding.Z_SYNC_FLUSH, () => {
       self._binding.params(level, strategy);
       if (!self._hadError) {
         self._level = level;
@@ -420,7 +416,7 @@ Zlib.prototype._flush = function(callback) {
 };
 
 Zlib.prototype.flush = function(kind, callback) {
-  var ws = this._writableState;
+  const ws = this._writableState;
 
   if (typeof kind === 'function' || (kind === void 0 && !callback)) {
     callback = kind;
@@ -428,14 +424,12 @@ Zlib.prototype.flush = function(kind, callback) {
   }
 
   if (ws.ended) {
-    if (callback)
-      process.nextTick(callback);
+    if (callback) process.nextTick(callback);
   } else if (ws.ending) {
-    if (callback)
-      this.once('end', callback);
+    if (callback) this.once('end', callback);
   } else if (ws.needDrain) {
-    var self = this;
-    this.once('drain', function() {
+    const self = this;
+    this.once('drain', () => {
       self.flush(callback);
     });
   } else {
@@ -445,37 +439,33 @@ Zlib.prototype.flush = function(kind, callback) {
 };
 
 Zlib.prototype.close = function(callback) {
-  if (callback)
-    process.nextTick(callback);
+  if (callback) process.nextTick(callback);
 
-  if (this._closed)
-    return;
+  if (this._closed) return;
 
   this._closed = true;
 
   this._binding.close();
 
-  var self = this;
-  process.nextTick(function() {
+  const self = this;
+  process.nextTick(() => {
     self.emit('close');
   });
 };
 
 Zlib.prototype._transform = function(chunk, encoding, cb) {
-  var flushFlag;
-  var ws = this._writableState;
-  var ending = ws.ending || ws.ended;
-  var last = ending && (!chunk || ws.length === chunk.length);
+  let flushFlag;
+  const ws = this._writableState;
+  const ending = ws.ending || ws.ended;
+  const last = ending && (!chunk || ws.length === chunk.length);
 
-  if (!chunk === null && !Buffer.isBuffer(chunk))
-    return cb(new Error('invalid input'));
+  if (!chunk === null && !Buffer.isBuffer(chunk)) return cb(new Error('invalid input'));
 
   // If it's the last chunk, or a final flush, we use the Z_FINISH flush flag.
   // If it's explicitly flushing at some other time, then we use
   // Z_FULL_FLUSH. Otherwise, use Z_NO_FLUSH for maximum compression
   // goodness.
-  if (last)
-    flushFlag = binding.Z_FINISH;
+  if (last) flushFlag = binding.Z_FINISH;
   else {
     flushFlag = this._flushFlag;
     // once we've flushed the last of the queue, stop flushing and
@@ -489,63 +479,66 @@ Zlib.prototype._transform = function(chunk, encoding, cb) {
 };
 
 Zlib.prototype._processChunk = function(chunk, flushFlag, cb) {
-  var availInBefore = chunk && chunk.length;
-  var availOutBefore = this._chunkSize - this._offset;
-  var inOff = 0;
+  let availInBefore = chunk && chunk.length;
+  let availOutBefore = this._chunkSize - this._offset;
+  let inOff = 0;
 
-  var self = this;
+  const self = this;
 
-  var async = typeof cb === 'function';
+  const async = typeof cb === 'function';
 
   if (!async) {
     var buffers = [];
     var nread = 0;
 
-    var error;
-    this.on('error', function(er) {
+    let error;
+    this.on('error', (er) => {
       error = er;
     });
 
     do {
-      var res = this._binding.writeSync(flushFlag,
-                                        chunk, // in
-                                        inOff, // in_off
-                                        availInBefore, // in_len
-                                        this._buffer, // out
-                                        this._offset, //out_off
-                                        availOutBefore); // out_len
+      var res = this._binding.writeSync(
+        flushFlag,
+        chunk, // in
+        inOff, // in_off
+        availInBefore, // in_len
+        this._buffer, // out
+        this._offset, // out_off
+        availOutBefore
+      ); // out_len
     } while (!this._hadError && callback(res[0], res[1]));
 
     if (this._hadError) {
       throw error;
     }
 
-    var buf = Buffer.concat(buffers, nread);
+    const buf = Buffer.concat(buffers, nread);
     this.close();
 
     return buf;
   }
 
-  var req = this._binding.write(flushFlag,
-                                chunk, // in
-                                inOff, // in_off
-                                availInBefore, // in_len
-                                this._buffer, // out
-                                this._offset, //out_off
-                                availOutBefore); // out_len
+  const req = this._binding.write(
+    flushFlag,
+    chunk, // in
+    inOff, // in_off
+    availInBefore, // in_len
+    this._buffer, // out
+    this._offset, // out_off
+    availOutBefore
+  ); // out_len
 
   req.buffer = chunk;
   req.callback = callback;
 
   function callback(availInAfter, availOutAfter) {
-    if (self._hadError)
-      return;
+    if (self._hadError) return;
 
-    var have = availOutBefore - availOutAfter;
+    const have = availOutBefore - availOutAfter;
     assert(have >= 0, 'have should not go down');
 
     if (have > 0) {
-      var out = self._buffer.slice(self._offset, self._offset + have);
+      const out = self._buffer.slice(self._offset, self._offset + have);
       self._offset += have;
       // serve some output to the consumer.
       if (async) {
@@ -568,26 +561,26 @@ Zlib.prototype._processChunk = function(chunk, flushFlag, cb) {
       // Also, update the availInBefore to the availInAfter value,
       // so that if we have to hit it a third (fourth, etc.) time,
       // it'll have the correct byte counts.
-      inOff += (availInBefore - availInAfter);
+      inOff += availInBefore - availInAfter;
       availInBefore = availInAfter;
 
-      if (!async)
-        return true;
+      if (!async) return true;
 
-      var newReq = self._binding.write(flushFlag,
-                                       chunk,
-                                       inOff,
-                                       availInBefore,
-                                       self._buffer,
-                                       self._offset,
-                                       self._chunkSize);
+      const newReq = self._binding.write(
+        flushFlag,
+        chunk,
+        inOff,
+        availInBefore,
+        self._buffer,
+        self._offset,
+        self._chunkSize
+      );
       newReq.callback = callback; // this same function
       newReq.buffer = chunk;
       return;
     }
 
-    if (!async)
-      return false;
+    if (!async) return false;
 
     // finished with the chunk.
     cb();
@@ -602,34 +595,34 @@ inherits(DeflateRaw, Zlib);
 inherits(InflateRaw, Zlib);
 inherits(Unzip, Zlib);
 export default {
-  codes: codes,
-  createDeflate: createDeflate,
-  createInflate: createInflate,
-  createDeflateRaw: createDeflateRaw,
-  createInflateRaw: createInflateRaw,
-  createGzip: createGzip,
-  createGunzip: createGunzip,
-  createUnzip: createUnzip,
-  deflate: deflate,
-  deflateSync: deflateSync,
-  gzip: gzip,
-  gzipSync: gzipSync,
-  deflateRaw: deflateRaw,
-  deflateRawSync: deflateRawSync,
-  unzip: unzip,
-  unzipSync: unzipSync,
-  inflate: inflate,
-  inflateSync: inflateSync,
-  gunzip: gunzip,
-  gunzipSync: gunzipSync,
-  inflateRaw: inflateRaw,
-  inflateRawSync: inflateRawSync,
-  Deflate: Deflate,
-  Inflate: Inflate,
-  Gzip: Gzip,
-  Gunzip: Gunzip,
-  DeflateRaw: DeflateRaw,
-  InflateRaw: InflateRaw,
-  Unzip: Unzip,
-  Zlib: Zlib
+  codes,
+  createDeflate,
+  createInflate,
+  createDeflateRaw,
+  createInflateRaw,
+  createGzip,
+  createGunzip,
+  createUnzip,
+  deflate,
+  deflateSync,
+  gzip,
+  gzipSync,
+  deflateRaw,
+  deflateRawSync,
+  unzip,
+  unzipSync,
+  inflate,
+  inflateSync,
+  gunzip,
+  gunzipSync,
+  inflateRaw,
+  inflateRawSync,
+  Deflate,
+  Inflate,
+  Gzip,
+  Gunzip,
+  DeflateRaw,
+  InflateRaw,
+  Unzip,
+  Zlib
 };

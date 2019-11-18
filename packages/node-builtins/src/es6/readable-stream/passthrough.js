@@ -1,7 +1,7 @@
+import { inherits } from 'util';
 
-import {Transform} from './transform';
+import { Transform } from './transform';
 
-import {inherits} from 'util';
 inherits(PassThrough, Transform);
 export default PassThrough;
 export function PassThrough(options) {
@@ -10,6 +10,6 @@ export function PassThrough(options) {
   Transform.call(this, options);
 }
 
-PassThrough.prototype._transform = function (chunk, encoding, cb) {
+PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };

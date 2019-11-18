@@ -1,15 +1,14 @@
+import { inherits } from 'util';
+import { nextTick } from 'process';
 
-import {inherits} from 'util';
-import {nextTick} from 'process';
-import {Readable} from './readable';
-import {Writable} from './writable';
-
+import { Readable } from './readable';
+import { Writable } from './writable';
 
 inherits(Duplex, Readable);
 
-var keys = Object.keys(Writable.prototype);
-for (var v = 0; v < keys.length; v++) {
-  var method = keys[v];
+const keys = Object.keys(Writable.prototype);
+for (let v = 0; v < keys.length; v++) {
+  const method = keys[v];
   if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
 }
 export default Duplex;

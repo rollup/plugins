@@ -1,7 +1,7 @@
-import {EventEmitter as EE} from 'events';
+import { EventEmitter as EE } from 'events';
 
-var e = new EE();
-e.on('it', function (foo) {
+const e = new EE();
+e.on('it', (foo) => {
   done();
 });
 e.emit('it', 'works');

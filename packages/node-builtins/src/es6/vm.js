@@ -4,24 +4,21 @@ from https://github.com/substack/vm-browserify/blob/bfd7c5f59edec856dc7efe0b77a4
 MIT license no Copyright holder mentioned
 */
 
-
 function Object_keys(obj) {
-  if (Object.keys) return Object.keys(obj)
-  else {
-    var res = [];
-    for (var key in obj) res.push(key)
-    return res;
-  }
+  if (Object.keys) return Object.keys(obj);
+
+  const res = [];
+  for (const key in obj) res.push(key);
+  return res;
 }
 
 function forEach(xs, fn) {
-  if (xs.forEach) return xs.forEach(fn)
-  else
-    for (var i = 0; i < xs.length; i++) {
-      fn(xs[i], i, xs);
-    }
+  if (xs.forEach) return xs.forEach(fn);
+  for (let i = 0; i < xs.length; i++) {
+    fn(xs[i], i, xs);
+  }
 }
-var _defineProp;
+let _defineProp;
 
 function defineProp(obj, name, value) {
   if (typeof _defineProp !== 'function') {
@@ -38,8 +35,8 @@ function createDefineProp() {
         writable: true,
         enumerable: false,
         configurable: true,
-        value: value
-      })
+        value
+      });
     };
   } catch (e) {
     return function(obj, name, value) {
@@ -48,11 +45,38 @@ function createDefineProp() {
   }
 }
 
-var globals = ['Array', 'Boolean', 'Date', 'Error', 'EvalError', 'Function',
-  'Infinity', 'JSON', 'Math', 'NaN', 'Number', 'Object', 'RangeError',
-  'ReferenceError', 'RegExp', 'String', 'SyntaxError', 'TypeError', 'URIError',
-  'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'escape',
-  'eval', 'isFinite', 'isNaN', 'parseFloat', 'parseInt', 'undefined', 'unescape'
+const globals = [
+  'Array',
+  'Boolean',
+  'Date',
+  'Error',
+  'EvalError',
+  'Function',
+  'Infinity',
+  'JSON',
+  'Math',
+  'NaN',
+  'Number',
+  'Object',
+  'RangeError',
+  'ReferenceError',
+  'RegExp',
+  'String',
+  'SyntaxError',
+  'TypeError',
+  'URIError',
+  'decodeURI',
+  'decodeURIComponent',
+  'encodeURI',
+  'encodeURIComponent',
+  'escape',
+  'eval',
+  'isFinite',
+  'isNaN',
+  'parseFloat',
+  'parseInt',
+  'undefined',
+  'unescape'
 ];
 
 function Context() {}
@@ -63,9 +87,9 @@ export function Script(code) {
   this.code = code;
 }
 function otherRunInContext(code, context) {
-  var args = Object_keys(global);
+  const args = Object_keys(global);
   args.push('with (this.__ctx__){return eval(this.__code__)}');
-  var fn = Function.apply(null, args);
+  const fn = Function.apply(null, args);
   return fn.apply({
     __code__: code,
     __ctx__: context
@@ -73,18 +97,18 @@ function otherRunInContext(code, context) {
 }
 Script.prototype.runInContext = function(context) {
   if (!(context instanceof Context)) {
-    throw new TypeError('needs a \'context\' argument.');
+    throw new TypeError("needs a 'context' argument.");
   }
   if (global.document) {
-    var iframe = global.document.createElement('iframe');
+    const iframe = global.document.createElement('iframe');
     if (!iframe.style) iframe.style = {};
     iframe.style.display = 'none';
 
     global.document.body.appendChild(iframe);
 
-    var win = iframe.contentWindow;
-    var wEval = win.eval,
-      wExecScript = win.execScript;
+    const win = iframe.contentWindow;
+    let wEval = win.eval;
+    const wExecScript = win.execScript;
 
     if (!wEval && wExecScript) {
       // win.eval() magically appears when this is called in IE:
@@ -92,20 +116,20 @@ Script.prototype.runInContext = function(context) {
       wEval = win.eval;
     }
 
-    forEach(Object_keys(context), function(key) {
+    forEach(Object_keys(context), (key) => {
       win[key] = context[key];
     });
-    forEach(globals, function(key) {
+    forEach(globals, (key) => {
       if (context[key]) {
         win[key] = context[key];
       }
     });
 
-    var winKeys = Object_keys(win);
+    const winKeys = Object_keys(win);
 
-    var res = wEval.call(win, this.code);
+    const res = wEval.call(win, this.code);
 
-    forEach(Object_keys(win), function(key) {
+    forEach(Object_keys(win), (key) => {
       // Avoid copying circular objects like `top` and `window` by only
       // updating existing context properties or new properties in the `win`
       // that was only introduced after the eval.
@@ -114,7 +138,7 @@ Script.prototype.runInContext = function(context) {
       }
     });
 
-    forEach(globals, function(key) {
+    forEach(globals, (key) => {
       if (!(key in context)) {
         defineProp(context, key, win[key]);
       }
@@ -127,22 +151,21 @@ Script.prototype.runInContext = function(context) {
 };
 
 Script.prototype.runInThisContext = function() {
-  var fn = new Function('code', 'return eval(code);');
+  const fn = new Function('code', 'return eval(code);');
   return fn.call(global, this.code); // maybe...
 };
 
 Script.prototype.runInNewContext = function(context) {
-  var ctx = createContext(context);
-  var res = this.runInContext(ctx);
+  const ctx = createContext(context);
+  const res = this.runInContext(ctx);
   if (context) {
-    forEach(Object_keys(ctx), function(key) {
+    forEach(Object_keys(ctx), (key) => {
       context[key] = ctx[key];
     });
   }
 
   return res;
 };
-
 
 export function createScript(code) {
   return new Script(code);
@@ -152,50 +175,49 @@ export function createContext(context) {
   if (isContext(context)) {
     return context;
   }
-  var copy = new Context();
+  const copy = new Context();
   if (typeof context === 'object') {
-    forEach(Object_keys(context), function(key) {
+    forEach(Object_keys(context), (key) => {
       copy[key] = context[key];
     });
   }
   return copy;
 }
 export function runInContext(code, contextifiedSandbox, options) {
-  var script = new Script(code, options);
+  const script = new Script(code, options);
   return script.runInContext(contextifiedSandbox, options);
 }
 export function runInThisContext(code, options) {
-  var script = new Script(code, options);
+  const script = new Script(code, options);
   return script.runInThisContext(options);
 }
 export function isContext(context) {
   return context instanceof Context;
 }
 export function runInNewContext(code, sandbox, options) {
-  var script = new Script(code, options);
+  const script = new Script(code, options);
   return script.runInNewContext(sandbox, options);
 }
 export default {
-  runInContext: runInContext,
-  isContext: isContext,
-  createContext: createContext,
-  createScript: createScript,
-  Script: Script,
-  runInThisContext: runInThisContext,
-  runInNewContext: runInNewContext
-}
-
+  runInContext,
+  isContext,
+  createContext,
+  createScript,
+  Script,
+  runInThisContext,
+  runInNewContext
+};
 
 /*
 from indexOf
 @ author tjholowaychuk
 @ license MIT
 */
-var _indexOf = [].indexOf;
+const _indexOf = [].indexOf;
 
-function indexOf(arr, obj){
+function indexOf(arr, obj) {
   if (_indexOf) return arr.indexOf(obj);
-  for (var i = 0; i < arr.length; ++i) {
+  for (let i = 0; i < arr.length; ++i) {
     if (arr[i] === obj) return i;
   }
   return -1;

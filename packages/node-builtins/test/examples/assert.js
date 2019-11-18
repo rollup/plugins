@@ -1,7 +1,8 @@
-import {deepEqual} from 'assert';
-var err;
+import { deepEqual } from 'assert';
+
+let err;
 try {
-  deepEqual({foo: {bar: ['baz']}}, {foo: {bar: ['bat']}}, 'something');
+  deepEqual({ foo: { bar: ['baz'] } }, { foo: { bar: ['bat'] } }, 'something');
 } catch (e) {
   err = e;
 }

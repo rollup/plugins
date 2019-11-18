@@ -1,37 +1,3 @@
-
-function compare(a, b) {
-  if (a === b) {
-    return 0;
-  }
-
-  var x = a.length;
-  var y = b.length;
-
-  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-    if (a[i] !== b[i]) {
-      x = a[i];
-      y = b[i];
-      break;
-    }
-  }
-
-  if (x < y) {
-    return -1;
-  }
-  if (y < x) {
-    return 1;
-  }
-  return 0;
-}
-var hasOwn = Object.prototype.hasOwnProperty;
-
-var objectKeys = Object.keys || function (obj) {
-  var keys = [];
-  for (var key in obj) {
-    if (hasOwn.call(obj, key)) keys.push(key);
-  }
-  return keys;
-};
 // based on node assert, original notice:
 
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
@@ -57,19 +23,64 @@ var objectKeys = Object.keys || function (obj) {
 // AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import {isBuffer} from 'buffer';
-import {isPrimitive, inherits, isError, isFunction, isRegExp, isDate, inspect as utilInspect} from 'util';
-var pSlice = Array.prototype.slice;
-var _functionsHaveNames;
+import { isBuffer } from 'buffer';
+import {
+  isPrimitive,
+  inherits,
+  isError,
+  isFunction,
+  isRegExp,
+  isDate,
+  inspect as utilInspect
+} from 'util';
+
+function compare(a, b) {
+  if (a === b) {
+    return 0;
+  }
+
+  let x = a.length;
+  let y = b.length;
+
+  for (let i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i];
+      y = b[i];
+      break;
+    }
+  }
+
+  if (x < y) {
+    return -1;
+  }
+  if (y < x) {
+    return 1;
+  }
+  return 0;
+}
+const hasOwn = Object.prototype.hasOwnProperty;
+
+const objectKeys =
+  Object.keys ||
+  function(obj) {
+    const keys = [];
+    for (const key in obj) {
+      if (hasOwn.call(obj, key)) keys.push(key);
+    }
+    return keys;
+  };
+
+const pSlice = Array.prototype.slice;
+let _functionsHaveNames;
 function functionsHaveNames() {
   if (typeof _functionsHaveNames !== 'undefined') {
     return _functionsHaveNames;
   }
-  return _functionsHaveNames = (function () {
+  return (_functionsHaveNames = (function() {
     return function foo() {}.name === 'foo';
-  }());
+  })());
 }
-function pToString (obj) {
+function pToString(obj) {
   return Object.prototype.toString.call(obj);
 }
 function isView(arrbuf) {
@@ -107,7 +118,7 @@ export default assert;
 //                             actual: actual,
 //                             expected: expected })
 
-var regex = /\s*function\s+([^\(\s]*)\s*/;
+const regex = /\s*function\s+([^\(\s]*)\s*/;
 // based on https://github.com/ljharb/function.prototype.name/blob/adeeeec8bfcc6068b187d7d9fb3d5bb1d3a30899/implementation.js
 function getName(func) {
   if (!isFunction(func)) {
@@ -116,8 +127,8 @@ function getName(func) {
   if (functionsHaveNames()) {
     return func.name;
   }
-  var str = func.toString();
-  var match = str.match(regex);
+  const str = func.toString();
+  const match = str.match(regex);
   return match && match[1];
 }
 assert.AssertionError = AssertionError;
@@ -133,22 +144,22 @@ export function AssertionError(options) {
     this.message = getMessage(this);
     this.generatedMessage = true;
   }
-  var stackStartFunction = options.stackStartFunction || fail;
+  const stackStartFunction = options.stackStartFunction || fail;
   if (Error.captureStackTrace) {
     Error.captureStackTrace(this, stackStartFunction);
   } else {
     // non v8 browsers so we can have a stacktrace
-    var err = new Error();
+    const err = new Error();
     if (err.stack) {
-      var out = err.stack;
+      let out = err.stack;
 
       // try to strip useless frames
-      var fn_name = getName(stackStartFunction);
-      var idx = out.indexOf('\n' + fn_name);
+      const fn_name = getName(stackStartFunction);
+      const idx = out.indexOf(`\n${fn_name}`);
       if (idx >= 0) {
         // once we have located the function frame
         // we need to strip out everything before it (and its line)
-        var next_line = out.indexOf('\n', idx + 1);
+        const next_line = out.indexOf('\n', idx + 1);
         out = out.substring(next_line + 1);
       }
 
@@ -163,22 +174,22 @@ inherits(AssertionError, Error);
 function truncate(s, n) {
   if (typeof s === 'string') {
     return s.length < n ? s : s.slice(0, n);
-  } else {
-    return s;
   }
+  return s;
 }
 function inspect(something) {
   if (functionsHaveNames() || !isFunction(something)) {
     return utilInspect(something);
   }
-  var rawname = getName(something);
-  var name = rawname ? ': ' + rawname : '';
-  return '[Function' +  name + ']';
+  const rawname = getName(something);
+  const name = rawname ? `: ${rawname}` : '';
+  return `[Function${name}]`;
 }
 function getMessage(self) {
-  return truncate(inspect(self.actual), 128) + ' ' +
-         self.operator + ' ' +
-         truncate(inspect(self.expected), 128);
+  return `${truncate(inspect(self.actual), 128)} ${self.operator} ${truncate(
+    inspect(self.expected),
+    128
+  )}`;
 }
 
 // At present only the three keys mentioned above are used and
@@ -194,11 +205,11 @@ function getMessage(self) {
 
 export function fail(actual, expected, message, operator, stackStartFunction) {
   throw new AssertionError({
-    message: message,
-    actual: actual,
-    expected: expected,
-    operator: operator,
-    stackStartFunction: stackStartFunction
+    message,
+    actual,
+    expected,
+    operator,
+    stackStartFunction
   });
 }
 
@@ -216,7 +227,7 @@ export function ok(value, message) {
   if (!value) fail(value, true, message, '==', ok);
 }
 assert.ok = ok;
-export {ok as assert};
+export { ok as assert };
 
 // 5. The equality assertion tests shallow, coercive equality with
 // ==.
@@ -257,63 +268,67 @@ function _deepEqual(actual, expected, strict, memos) {
   } else if (isBuffer(actual) && isBuffer(expected)) {
     return compare(actual, expected) === 0;
 
-  // 7.2. If the expected value is a Date object, the actual value is
-  // equivalent if it is also a Date object that refers to the same time.
+    // 7.2. If the expected value is a Date object, the actual value is
+    // equivalent if it is also a Date object that refers to the same time.
   } else if (isDate(actual) && isDate(expected)) {
     return actual.getTime() === expected.getTime();
 
-  // 7.3 If the expected value is a RegExp object, the actual value is
-  // equivalent if it is also a RegExp object with the same source and
-  // properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
+    // 7.3 If the expected value is a RegExp object, the actual value is
+    // equivalent if it is also a RegExp object with the same source and
+    // properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
   } else if (isRegExp(actual) && isRegExp(expected)) {
-    return actual.source === expected.source &&
-           actual.global === expected.global &&
-           actual.multiline === expected.multiline &&
-           actual.lastIndex === expected.lastIndex &&
-           actual.ignoreCase === expected.ignoreCase;
+    return (
+      actual.source === expected.source &&
+      actual.global === expected.global &&
+      actual.multiline === expected.multiline &&
+      actual.lastIndex === expected.lastIndex &&
+      actual.ignoreCase === expected.ignoreCase
+    );
 
-  // 7.4. Other pairs that do not both pass typeof value == 'object',
-  // equivalence is determined by ==.
-  } else if ((actual === null || typeof actual !== 'object') &&
-             (expected === null || typeof expected !== 'object')) {
+    // 7.4. Other pairs that do not both pass typeof value == 'object',
+    // equivalence is determined by ==.
+  } else if (
+    (actual === null || typeof actual !== 'object') &&
+    (expected === null || typeof expected !== 'object')
+  ) {
     return strict ? actual === expected : actual == expected;
 
-  // If both values are instances of typed arrays, wrap their underlying
-  // ArrayBuffers in a Buffer each to increase performance
-  // This optimization requires the arrays to have the same type as checked by
-  // Object.prototype.toString (aka pToString). Never perform binary
-  // comparisons for Float*Arrays, though, since e.g. +0 === -0 but their
-  // bit patterns are not identical.
-  } else if (isView(actual) && isView(expected) &&
-             pToString(actual) === pToString(expected) &&
-             !(actual instanceof Float32Array ||
-               actual instanceof Float64Array)) {
-    return compare(new Uint8Array(actual.buffer),
-                   new Uint8Array(expected.buffer)) === 0;
+    // If both values are instances of typed arrays, wrap their underlying
+    // ArrayBuffers in a Buffer each to increase performance
+    // This optimization requires the arrays to have the same type as checked by
+    // Object.prototype.toString (aka pToString). Never perform binary
+    // comparisons for Float*Arrays, though, since e.g. +0 === -0 but their
+    // bit patterns are not identical.
+  } else if (
+    isView(actual) &&
+    isView(expected) &&
+    pToString(actual) === pToString(expected) &&
+    !(actual instanceof Float32Array || actual instanceof Float64Array)
+  ) {
+    return compare(new Uint8Array(actual.buffer), new Uint8Array(expected.buffer)) === 0;
 
-  // 7.5 For all other Object pairs, including Array objects, equivalence is
-  // determined by having the same number of owned properties (as verified
-  // with Object.prototype.hasOwnProperty.call), the same set of keys
-  // (although not necessarily the same order), equivalent values for every
-  // corresponding key, and an identical 'prototype' property. Note: this
-  // accounts for both named and indexed properties on Arrays.
+    // 7.5 For all other Object pairs, including Array objects, equivalence is
+    // determined by having the same number of owned properties (as verified
+    // with Object.prototype.hasOwnProperty.call), the same set of keys
+    // (although not necessarily the same order), equivalent values for every
+    // corresponding key, and an identical 'prototype' property. Note: this
+    // accounts for both named and indexed properties on Arrays.
   } else if (isBuffer(actual) !== isBuffer(expected)) {
     return false;
-  } else {
-    memos = memos || {actual: [], expected: []};
-
-    var actualIndex = memos.actual.indexOf(actual);
-    if (actualIndex !== -1) {
-      if (actualIndex === memos.expected.indexOf(expected)) {
-        return true;
-      }
-    }
-
-    memos.actual.push(actual);
-    memos.expected.push(expected);
-
-    return objEquiv(actual, expected, strict, memos);
   }
+  memos = memos || { actual: [], expected: [] };
+
+  const actualIndex = memos.actual.indexOf(actual);
+  if (actualIndex !== -1) {
+    if (actualIndex === memos.expected.indexOf(expected)) {
+      return true;
+    }
+  }
+
+  memos.actual.push(actual);
+  memos.expected.push(expected);
+
+  return objEquiv(actual, expected, strict, memos);
 }
 
 function isArguments(object) {
@@ -321,43 +336,37 @@ function isArguments(object) {
 }
 
 function objEquiv(a, b, strict, actualVisitedObjects) {
-  if (a === null || a === undefined || b === null || b === undefined)
-    return false;
+  if (a === null || a === undefined || b === null || b === undefined) return false;
   // if one is a primitive, the other must be same
-  if (isPrimitive(a) || isPrimitive(b))
-    return a === b;
-  if (strict && Object.getPrototypeOf(a) !== Object.getPrototypeOf(b))
-    return false;
-  var aIsArgs = isArguments(a);
-  var bIsArgs = isArguments(b);
-  if ((aIsArgs && !bIsArgs) || (!aIsArgs && bIsArgs))
-    return false;
+  if (isPrimitive(a) || isPrimitive(b)) return a === b;
+  if (strict && Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false;
+  const aIsArgs = isArguments(a);
+  const bIsArgs = isArguments(b);
+  if ((aIsArgs && !bIsArgs) || (!aIsArgs && bIsArgs)) return false;
   if (aIsArgs) {
     a = pSlice.call(a);
     b = pSlice.call(b);
     return _deepEqual(a, b, strict);
   }
-  var ka = objectKeys(a);
-  var kb = objectKeys(b);
-  var key, i;
+  const ka = objectKeys(a);
+  const kb = objectKeys(b);
+  let key;
+  let i;
   // having the same number of owned properties (keys incorporates
   // hasOwnProperty)
-  if (ka.length !== kb.length)
-    return false;
-  //the same set of keys (although not necessarily the same order),
+  if (ka.length !== kb.length) return false;
+  // the same set of keys (although not necessarily the same order),
   ka.sort();
   kb.sort();
-  //~~~cheap key test
+  // ~~~cheap key test
   for (i = ka.length - 1; i >= 0; i--) {
-    if (ka[i] !== kb[i])
-      return false;
+    if (ka[i] !== kb[i]) return false;
   }
-  //equivalent values for every corresponding key, and
-  //~~~possibly expensive deep test
+  // equivalent values for every corresponding key, and
+  // ~~~possibly expensive deep test
   for (i = ka.length - 1; i >= 0; i--) {
     key = ka[i];
-    if (!_deepEqual(a[key], b[key], strict, actualVisitedObjects))
-      return false;
+    if (!_deepEqual(a[key], b[key], strict, actualVisitedObjects)) return false;
   }
   return true;
 }
@@ -377,7 +386,6 @@ export function notDeepStrictEqual(actual, expected, message) {
     fail(actual, expected, message, 'notDeepStrictEqual', notDeepStrictEqual);
   }
 }
-
 
 // 9. The strict equality assertion tests strict equality, as determined by ===.
 // assert.strictEqual(actual, expected, message_opt);
@@ -422,7 +430,7 @@ function expectedException(actual, expected) {
 }
 
 function _tryBlock(block) {
-  var error;
+  let error;
   try {
     block();
   } catch (e) {
@@ -432,7 +440,7 @@ function _tryBlock(block) {
 }
 
 function _throws(shouldThrow, block, expected, message) {
-  var actual;
+  let actual;
 
   if (typeof block !== 'function') {
     throw new TypeError('"block" argument must be a function');
@@ -445,26 +453,28 @@ function _throws(shouldThrow, block, expected, message) {
 
   actual = _tryBlock(block);
 
-  message = (expected && expected.name ? ' (' + expected.name + ').' : '.') +
-            (message ? ' ' + message : '.');
+  message =
+    (expected && expected.name ? ` (${expected.name}).` : '.') + (message ? ` ${message}` : '.');
 
   if (shouldThrow && !actual) {
-    fail(actual, expected, 'Missing expected exception' + message);
+    fail(actual, expected, `Missing expected exception${message}`);
   }
 
-  var userProvidedMessage = typeof message === 'string';
-  var isUnwantedException = !shouldThrow && isError(actual);
-  var isUnexpectedException = !shouldThrow && actual && !expected;
+  const userProvidedMessage = typeof message === 'string';
+  const isUnwantedException = !shouldThrow && isError(actual);
+  const isUnexpectedException = !shouldThrow && actual && !expected;
 
-  if ((isUnwantedException &&
-      userProvidedMessage &&
-      expectedException(actual, expected)) ||
-      isUnexpectedException) {
-    fail(actual, expected, 'Got unwanted exception' + message);
+  if (
+    (isUnwantedException && userProvidedMessage && expectedException(actual, expected)) ||
+    isUnexpectedException
+  ) {
+    fail(actual, expected, `Got unwanted exception${message}`);
   }
 
-  if ((shouldThrow && actual && expected &&
-      !expectedException(actual, expected)) || (!shouldThrow && actual)) {
+  if (
+    (shouldThrow && actual && expected && !expectedException(actual, expected)) ||
+    (!shouldThrow && actual)
+  ) {
     throw actual;
   }
 }
@@ -472,13 +482,13 @@ function _throws(shouldThrow, block, expected, message) {
 // 11. Expected to throw an error:
 // assert.throws(block, Error_opt, message_opt);
 assert.throws = throws;
-export function throws(block, /*optional*/error, /*optional*/message) {
+export function throws(block, /* optional*/ error, /* optional*/ message) {
   _throws(true, block, error, message);
 }
 
 // EXTENSION! This is annoying to write outside this module.
 assert.doesNotThrow = doesNotThrow;
-export function doesNotThrow(block, /*optional*/error, /*optional*/message) {
+export function doesNotThrow(block, /* optional*/ error, /* optional*/ message) {
   _throws(false, block, error, message);
 }
 

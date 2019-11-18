@@ -1,22 +1,21 @@
-'use strict';
+const TYPED_OK =
+  typeof Uint8Array !== 'undefined' &&
+  typeof Uint16Array !== 'undefined' &&
+  typeof Int32Array !== 'undefined';
 
-
-var TYPED_OK =  (typeof Uint8Array !== 'undefined') &&
-                (typeof Uint16Array !== 'undefined') &&
-                (typeof Int32Array !== 'undefined');
-
-
-export function assign(obj /*from1, from2, from3, ...*/) {
-  var sources = Array.prototype.slice.call(arguments, 1);
+export function assign(obj /* from1, from2, from3, ...*/) {
+  const sources = Array.prototype.slice.call(arguments, 1);
   while (sources.length) {
-    var source = sources.shift();
-    if (!source) { continue; }
-
-    if (typeof source !== 'object') {
-      throw new TypeError(source + 'must be non-object');
+    const source = sources.shift();
+    if (!source) {
+      continue;
     }
 
-    for (var p in source) {
+    if (typeof source !== 'object') {
+      throw new TypeError(`${source}must be non-object`);
+    }
+
+    for (const p in source) {
       if (source.hasOwnProperty(p)) {
         obj[p] = source[p];
       }
@@ -26,11 +25,14 @@ export function assign(obj /*from1, from2, from3, ...*/) {
   return obj;
 }
 
-
 // reduce buffer size, avoiding mem copy
 export function shrinkBuf(buf, size) {
-  if (buf.length === size) { return buf; }
-  if (buf.subarray) { return buf.subarray(0, size); }
+  if (buf.length === size) {
+    return buf;
+  }
+  if (buf.subarray) {
+    return buf.subarray(0, size);
+  }
   buf.length = size;
   return buf;
 }
@@ -40,12 +42,17 @@ export function arraySet(dest, src, src_offs, len, dest_offs) {
     return;
   }
   // Fallback to ordinary array
-  for (var i = 0; i < len; i++) {
+  for (let i = 0; i < len; i++) {
     dest[dest_offs + i] = src[src_offs + i];
   }
 }
 export function flattenChunks(chunks) {
-  var i, l, len, pos, chunk, result;
+  let i;
+  let l;
+  let len;
+  let pos;
+  let chunk;
+  let result;
 
   // calculate data length
   len = 0;
@@ -64,7 +71,6 @@ export function flattenChunks(chunks) {
 
   return result;
 }
-
 
 export var Buf8 = Uint8Array;
 export var Buf16 = Uint16Array;

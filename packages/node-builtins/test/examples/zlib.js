@@ -1,21 +1,20 @@
-import {deflateSync, inflateSync} from 'zlib';
+import { deflateSync, inflateSync } from 'zlib';
 
+const input = new Buffer('hello hello hello');
 
-var input = new Buffer('hello hello hello');
+const deflated = deflateSync(input);
 
-var deflated = deflateSync(input);
-
-var reinflated = inflateSync(deflated);
+const reinflated = inflateSync(deflated);
 
 if (reinflated.toString() !== 'hello hello hello') {
-  done(new Error('expected \'hello hello hello\' but got \'' + reinflated.toString() +'\''));
+  done(new Error(`expected 'hello hello hello' but got '${reinflated.toString()}'`));
 } else {
   next();
 }
 function next() {
-  var expected = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-  var deflated = Buffer.from('eJxLTCQVAADjXBLz', 'base64');
-  var reinflated = inflateSync(deflated).toString();
+  const expected = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+  const deflated = Buffer.from('eJxLTCQVAADjXBLz', 'base64');
+  const reinflated = inflateSync(deflated).toString();
   if (reinflated.toString() !== expected) {
     done(new Error(`expected '${expected}' but got '${reinflated}'`));
   } else {

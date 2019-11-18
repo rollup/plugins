@@ -1,6 +1,6 @@
-import {format} from 'url';
+import { format } from 'url';
 
-var created = format({
+const created = format({
   protocol: 'foo',
   host: 'bar',
   pathname: '/baz'

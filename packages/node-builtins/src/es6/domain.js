@@ -26,13 +26,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 /*
 modified by Calvin Metcalf to adhere to how the node one works a little better
 */
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
+
 import inherits from './inherits';
+
 inherits(Domain, EventEmitter);
 function createEmitError(d) {
   return emitError;
   function emitError(e) {
-    d.emit('error', e)
+    d.emit('error', e);
   }
 }
 
@@ -40,61 +42,61 @@ export function Domain() {
   EventEmitter.call(this);
   this.__emitError = createEmitError(this);
 }
-Domain.prototype.add = function (emitter) {
+Domain.prototype.add = function(emitter) {
   emitter.on('error', this.__emitError);
-}
+};
 Domain.prototype.remove = function(emitter) {
-  emitter.removeListener('error', this.__emitError)
-}
+  emitter.removeListener('error', this.__emitError);
+};
 Domain.prototype.bind = function(fn) {
-  var emitError = this.__emitError;
+  const emitError = this.__emitError;
   return function() {
-    var args = Array.prototype.slice.call(arguments)
+    const args = Array.prototype.slice.call(arguments);
     try {
-      fn.apply(null, args)
+      fn.apply(null, args);
     } catch (err) {
-      emitError(err)
+      emitError(err);
     }
-  }
-}
+  };
+};
 Domain.prototype.intercept = function(fn) {
-  var emitError = this.__emitError;
+  const emitError = this.__emitError;
   return function(err) {
     if (err) {
-      emitError(err)
+      emitError(err);
     } else {
-      var args = Array.prototype.slice.call(arguments, 1)
+      const args = Array.prototype.slice.call(arguments, 1);
       try {
-        fn.apply(null, args)
+        fn.apply(null, args);
       } catch (err) {
-        emitError(err)
+        emitError(err);
       }
     }
-  }
-}
+  };
+};
 Domain.prototype.run = function(fn) {
-  var emitError = this.__emitError;
+  const emitError = this.__emitError;
   try {
-    fn()
+    fn();
   } catch (err) {
-    emitError(err)
+    emitError(err);
   }
-  return this
-}
+  return this;
+};
 Domain.prototype.dispose = function() {
-  this.removeAllListeners()
-  return this
-}
+  this.removeAllListeners();
+  return this;
+};
 Domain.prototype.enter = Domain.prototype.exit = function() {
-  return this
-}
+  return this;
+};
 export function createDomain() {
   return new Domain();
 }
 export var create = createDomain;
 
 export default {
-  Domain: Domain,
-  createDomain: createDomain,
-  create: create
-}
+  Domain,
+  createDomain,
+  create
+};

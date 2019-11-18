@@ -1,11 +1,12 @@
 import EE from 'events';
-import {inherits} from 'util';
+import { inherits } from 'util';
 
-import {Duplex} from './readable-stream/duplex.js';
-import {Readable} from './readable-stream/readable.js';
-import {Writable} from './readable-stream/writable.js';
-import {Transform} from './readable-stream/transform.js';
-import {PassThrough} from './readable-stream/passthrough.js';
+import { Duplex } from './readable-stream/duplex.js';
+import { Readable } from './readable-stream/readable.js';
+import { Writable } from './readable-stream/writable.js';
+import { Transform } from './readable-stream/transform.js';
+import { PassThrough } from './readable-stream/passthrough.js';
+
 inherits(Stream, EE);
 Stream.Readable = Readable;
 Stream.Writable = Writable;
@@ -17,7 +18,7 @@ Stream.PassThrough = PassThrough;
 Stream.Stream = Stream;
 
 export default Stream;
-export {Readable,Writable,Duplex,Transform,PassThrough,Stream}
+export { Readable, Writable, Duplex, Transform, PassThrough, Stream };
 
 // old-style streams.  Note that the pipe method (the only relevant
 // part of this class) is overridden in the Readable class.
@@ -27,11 +28,11 @@ function Stream() {
 }
 
 Stream.prototype.pipe = function(dest, options) {
-  var source = this;
+  const source = this;
 
   function ondata(chunk) {
     if (dest.writable) {
-      if (false === dest.write(chunk) && source.pause) {
+      if (dest.write(chunk) === false && source.pause) {
         source.pause();
       }
     }
@@ -54,14 +55,13 @@ Stream.prototype.pipe = function(dest, options) {
     source.on('close', onclose);
   }
 
-  var didOnEnd = false;
+  let didOnEnd = false;
   function onend() {
     if (didOnEnd) return;
     didOnEnd = true;
 
     dest.end();
   }
-
 
   function onclose() {
     if (didOnEnd) return;

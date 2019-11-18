@@ -19,10 +19,26 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 import process from 'process';
-var formatRegExp = /%[sdj%]/g;
+
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * The Function.prototype.inherits from lang.js rewritten as a standalone
+ * function (not on Function.prototype). NOTE: If this file is to be loaded
+ * during bootstrapping this function needs to be rewritten using some native
+ * functions as prototype setup using normal JavaScript does not work as
+ * expected during bootstrapping (see mirror.js in r114903).
+ *
+ * @param {function} ctor Constructor function which needs to inherit the
+ *     prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+import inherits from './inherits';
+
+const formatRegExp = /%[sdj%]/g;
 export function format(f) {
   if (!isString(f)) {
-    var objects = [];
+    const objects = [];
     for (var i = 0; i < arguments.length; i++) {
       objects.push(inspect(arguments[i]));
     }
@@ -30,14 +46,16 @@ export function format(f) {
   }
 
   var i = 1;
-  var args = arguments;
-  var len = args.length;
-  var str = String(f).replace(formatRegExp, function(x) {
+  const args = arguments;
+  const len = args.length;
+  let str = String(f).replace(formatRegExp, (x) => {
     if (x === '%%') return '%';
     if (i >= len) return x;
     switch (x) {
-      case '%s': return String(args[i++]);
-      case '%d': return Number(args[i++]);
+      case '%s':
+        return String(args[i++]);
+      case '%d':
+        return Number(args[i++]);
       case '%j':
         try {
           return JSON.stringify(args[i++]);
@@ -48,16 +66,15 @@ export function format(f) {
         return x;
     }
   });
-  for (var x = args[i]; i < len; x = args[++i]) {
+  for (let x = args[i]; i < len; x = args[++i]) {
     if (isNull(x) || !isObject(x)) {
-      str += ' ' + x;
+      str += ` ${x}`;
     } else {
-      str += ' ' + inspect(x);
+      str += ` ${inspect(x)}`;
     }
   }
   return str;
-};
-
+}
 
 // Mark that a method should not be used.
 // Returns a modified function which warns once by default.
@@ -74,7 +91,7 @@ export function deprecate(fn, msg) {
     return fn;
   }
 
-  var warned = false;
+  let warned = false;
   function deprecated() {
     if (!warned) {
       if (process.throwDeprecation) {
@@ -90,20 +107,18 @@ export function deprecate(fn, msg) {
   }
 
   return deprecated;
-};
+}
 
-
-var debugs = {};
-var debugEnviron;
+let debugs = {};
+let debugEnviron;
 export function debuglog(set) {
-  if (isUndefined(debugEnviron))
-    debugEnviron = process.env.NODE_DEBUG || '';
+  if (isUndefined(debugEnviron)) debugEnviron = process.env.NODE_DEBUG || '';
   set = set.toUpperCase();
   if (!debugs[set]) {
-    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
-      var pid = 0;
+    if (new RegExp(`\\b${set}\\b`, 'i').test(debugEnviron)) {
+      const pid = 0;
       debugs[set] = function() {
-        var msg = format.apply(null, arguments);
+        const msg = format.apply(null, arguments);
         console.error('%s %d: %s', set, pid, msg);
       };
     } else {
@@ -111,8 +126,7 @@ export function debuglog(set) {
     }
   }
   return debugs[set];
-};
-
+}
 
 /**
  * Echos the value of a value. Trys to print the value out
@@ -124,7 +138,7 @@ export function debuglog(set) {
 /* legacy: obj, showHidden, depth, colors*/
 export function inspect(obj, opts) {
   // default options
-  var ctx = {
+  const ctx = {
     seen: [],
     stylize: stylizeNoColor
   };
@@ -149,74 +163,72 @@ export function inspect(obj, opts) {
 
 // http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
 inspect.colors = {
-  'bold' : [1, 22],
-  'italic' : [3, 23],
-  'underline' : [4, 24],
-  'inverse' : [7, 27],
-  'white' : [37, 39],
-  'grey' : [90, 39],
-  'black' : [30, 39],
-  'blue' : [34, 39],
-  'cyan' : [36, 39],
-  'green' : [32, 39],
-  'magenta' : [35, 39],
-  'red' : [31, 39],
-  'yellow' : [33, 39]
+  bold: [1, 22],
+  italic: [3, 23],
+  underline: [4, 24],
+  inverse: [7, 27],
+  white: [37, 39],
+  grey: [90, 39],
+  black: [30, 39],
+  blue: [34, 39],
+  cyan: [36, 39],
+  green: [32, 39],
+  magenta: [35, 39],
+  red: [31, 39],
+  yellow: [33, 39]
 };
 
 // Don't use 'blue' not visible on cmd.exe
 inspect.styles = {
-  'special': 'cyan',
-  'number': 'yellow',
-  'boolean': 'yellow',
-  'undefined': 'grey',
-  'null': 'bold',
-  'string': 'green',
-  'date': 'magenta',
+  special: 'cyan',
+  number: 'yellow',
+  boolean: 'yellow',
+  undefined: 'grey',
+  null: 'bold',
+  string: 'green',
+  date: 'magenta',
   // "name": intentionally not styling
-  'regexp': 'red'
+  regexp: 'red'
 };
 
-
 function stylizeWithColor(str, styleType) {
-  var style = inspect.styles[styleType];
+  let style = inspect.styles[styleType];
 
   if (style) {
-    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
-           '\u001b[' + inspect.colors[style][1] + 'm';
-  } else {
-    return str;
+    return `\u001b[${  inspect.colors[style][0]  }m${  str 
+           }\u001b[${  inspect.colors[style][1]  }m`;
+    );
   }
+  return str;
 }
-
 
 function stylizeNoColor(str, styleType) {
   return str;
 }
 
-
 function arrayToHash(array) {
-  var hash = {};
+  const hash = {};
 
-  array.forEach(function(val, idx) {
+  array.forEach((val, idx) => {
     hash[val] = true;
   });
 
   return hash;
 }
 
-
 function formatValue(ctx, value, recurseTimes) {
   // Provide a hook for user-specified inspect functions.
   // Check that value is an object with an inspect function on it
-  if (ctx.customInspect &&
-      value &&
-      isFunction(value.inspect) &&
-      // Filter out the util module, it's inspect function is special
-      value.inspect !== inspect &&
-      // Also filter out any prototype objects using the circular check.
-      !(value.constructor && value.constructor.prototype === value)) {
-    var ret = value.inspect(recurseTimes, ctx);
+  if (
+    ctx.customInspect &&
+    value &&
+    isFunction(value.inspect) &&
+    // Filter out the util module, it's inspect function is special
+    value.inspect !== inspect &&
+    // Also filter out any prototype objects using the circular check.
+    !(value.constructor && value.constructor.prototype === value)
+  ) {
+    let ret = value.inspect(recurseTimes, ctx);
     if (!isString(ret)) {
       ret = formatValue(ctx, ret, recurseTimes);
     }
@@ -224,14 +236,14 @@ function formatValue(ctx, value, recurseTimes) {
   }
 
   // Primitive types cannot have properties
-  var primitive = formatPrimitive(ctx, value);
+  let primitive = formatPrimitive(ctx, value);
   if (primitive) {
     return primitive;
   }
 
   // Look up the keys of the object.
-  var keys = Object.keys(value);
-  var visibleKeys = arrayToHash(keys);
+  let keys = Object.keys(value);
+  let visibleKeys = arrayToHash(keys);
 
   if (ctx.showHidden) {
     keys = Object.getOwnPropertyNames(value);
@@ -239,16 +251,15 @@ function formatValue(ctx, value, recurseTimes) {
 
   // IE doesn't make error fields non-enumerable
   // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
-  if (isError(value)
-      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+  if (isError(value) && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
     return formatError(value);
   }
 
   // Some type of object without properties can be shortcutted.
   if (keys.length === 0) {
     if (isFunction(value)) {
-      var name = value.name ? ': ' + value.name : '';
-      return ctx.stylize('[Function' + name + ']', 'special');
+      let name = value.name ? `: ${  value.name}` : '';
+      return ctx.stylize(`[Function${  name  }]`, 'special');
     }
     if (isRegExp(value)) {
       return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
@@ -261,7 +272,7 @@ function formatValue(ctx, value, recurseTimes) {
     }
   }
 
-  var base = '', array = false, braces = ['{', '}'];
+  let base = ''; var array = false; var braces = ['{', '}'];
 
   // Make Array say that they are Array
   if (isArray(value)) {
@@ -271,23 +282,23 @@ function formatValue(ctx, value, recurseTimes) {
 
   // Make functions say that they are functions
   if (isFunction(value)) {
-    var n = value.name ? ': ' + value.name : '';
-    base = ' [Function' + n + ']';
+    let n = value.name ? `: ${  value.name}` : '';
+    base = ` [Function${  n  }]`;
   }
 
   // Make RegExps say that they are RegExps
   if (isRegExp(value)) {
-    base = ' ' + RegExp.prototype.toString.call(value);
+    base = ` ${  RegExp.prototype.toString.call(value)}`;
   }
 
   // Make dates with properties first say the date
   if (isDate(value)) {
-    base = ' ' + Date.prototype.toUTCString.call(value);
+    base = ` ${  Date.prototype.toUTCString.call(value)}`;
   }
 
   // Make error with message first say the error
   if (isError(value)) {
-    base = ' ' + formatError(value);
+    base = ` ${  formatError(value)}`;
   }
 
   if (keys.length === 0 && (!array || value.length == 0)) {
@@ -297,18 +308,18 @@ function formatValue(ctx, value, recurseTimes) {
   if (recurseTimes < 0) {
     if (isRegExp(value)) {
       return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    } else {
+    } 
       return ctx.stylize('[Object]', 'special');
-    }
+    
   }
 
   ctx.seen.push(value);
 
-  var output;
+  let output;
   if (array) {
     output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
   } else {
-    output = keys.map(function(key) {
+    output = keys.map((key) => {
       return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
     });
   }
@@ -318,53 +329,49 @@ function formatValue(ctx, value, recurseTimes) {
   return reduceToSingleString(output, base, braces);
 }
 
-
 function formatPrimitive(ctx, value) {
-  if (isUndefined(value))
-    return ctx.stylize('undefined', 'undefined');
+  if (isUndefined(value)) return ctx.stylize('undefined', 'undefined');
   if (isString(value)) {
-    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-                                             .replace(/'/g, "\\'")
-                                             .replace(/\\"/g, '"') + '\'';
+    const simple =
+      `'${ 
+      JSON.stringify(value)
+        .replace(/^"|"$/g, '')
+        .replace(/'/g, "\\'")
+        .replace(/\\"/g, '"') 
+      }'`;
     return ctx.stylize(simple, 'string');
   }
-  if (isNumber(value))
-    return ctx.stylize('' + value, 'number');
-  if (isBoolean(value))
-    return ctx.stylize('' + value, 'boolean');
+  if (isNumber(value)) return ctx.stylize(`${value}`, 'number');
+  if (isBoolean(value)) return ctx.stylize(`${value}`, 'boolean');
   // For some reason typeof null is "object", so special case here.
-  if (isNull(value))
-    return ctx.stylize('null', 'null');
+  if (isNull(value)) return ctx.stylize('null', 'null');
 }
-
 
 function formatError(value) {
-  return '[' + Error.prototype.toString.call(value) + ']';
+  return `[${Error.prototype.toString.call(value)}]`;
 }
 
-
 function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
-  var output = [];
-  for (var i = 0, l = value.length; i < l; ++i) {
+  const output = [];
+  for (let i = 0, l = value.length; i < l; ++i) {
     if (hasOwnProperty(value, String(i))) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          String(i), true));
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, String(i), true));
     } else {
       output.push('');
     }
   }
-  keys.forEach(function(key) {
+  keys.forEach((key) => {
     if (!key.match(/^\d+$/)) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          key, true));
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, key, true));
     }
   });
   return output;
 }
 
-
 function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-  var name, str, desc;
+  let name;
+  var str;
+  let desc;
   desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
   if (desc.get) {
     if (desc.set) {
@@ -372,13 +379,11 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
     } else {
       str = ctx.stylize('[Getter]', 'special');
     }
-  } else {
-    if (desc.set) {
-      str = ctx.stylize('[Setter]', 'special');
-    }
+  } else if (desc.set) {
+    str = ctx.stylize('[Setter]', 'special');
   }
   if (!hasOwnProperty(visibleKeys, key)) {
-    name = '[' + key + ']';
+    name = `[${key}]`;
   }
   if (!str) {
     if (ctx.seen.indexOf(desc.value) < 0) {
@@ -389,13 +394,17 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
       }
       if (str.indexOf('\n') > -1) {
         if (array) {
-          str = str.split('\n').map(function(line) {
-            return '  ' + line;
-          }).join('\n').substr(2);
+          str = str
+            .split('\n')
+            .map((line) => '  ' + line).join('\n').substr(2);
         } else {
-          str = '\n' + str.split('\n').map(function(line) {
+          str =
+            `\n${ 
+            str
+              .split('\n')
+              .map((line) => {
             return '   ' + line;
-          }).join('\n');
+          }).join('\n')}`;
         }
       }
     } else {
@@ -406,42 +415,36 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
     if (array && key.match(/^\d+$/)) {
       return str;
     }
-    name = JSON.stringify('' + key);
+    name = JSON.stringify(`${key}`);
     if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
       name = name.substr(1, name.length - 2);
       name = ctx.stylize(name, 'name');
     } else {
-      name = name.replace(/'/g, "\\'")
-                 .replace(/\\"/g, '"')
-                 .replace(/(^"|"$)/g, "'");
+      name = name
+        .replace(/'/g, "\\'")
+        .replace(/\\"/g, '"')
+        .replace(/(^"|"$)/g, "'");
       name = ctx.stylize(name, 'string');
     }
   }
 
-  return name + ': ' + str;
+  return `${name}: ${str}`;
 }
 
-
 function reduceToSingleString(output, base, braces) {
-  var numLinesEst = 0;
-  var length = output.reduce(function(prev, cur) {
+  let numLinesEst = 0;
+  const length = output.reduce((prev, cur) => {
     numLinesEst++;
     if (cur.indexOf('\n') >= 0) numLinesEst++;
     return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
   }, 0);
 
   if (length > 60) {
-    return braces[0] +
-           (base === '' ? '' : base + '\n ') +
-           ' ' +
-           output.join(',\n  ') +
-           ' ' +
-           braces[1];
+    return `${braces[0] + (base === '' ? '' : base + '\n ')} ${output.join(',\n  ')} ${braces[1]}`;
   }
 
-  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+  return `${braces[0] + base} ${output.join(', ')} ${braces[1]}`;
 }
-
 
 // NOTE: These type checking functions intentionally don't use `instanceof`
 // because it is fragile and can be easily faked with `Object.create()`.
@@ -490,8 +493,7 @@ export function isDate(d) {
 }
 
 export function isError(e) {
-  return isObject(e) &&
-      (objectToString(e) === '[object Error]' || e instanceof Error);
+  return isObject(e) && (objectToString(e) === '[object Error]' || e instanceof Error);
 }
 
 export function isFunction(arg) {
@@ -499,12 +501,14 @@ export function isFunction(arg) {
 }
 
 export function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
+  return (
+    arg === null ||
+    typeof arg === 'boolean' ||
+    typeof arg === 'number' ||
+    typeof arg === 'string' ||
+    typeof arg === 'symbol' || // ES6 symbol
+    typeof arg === 'undefined'
+  );
 }
 
 export function isBuffer(maybeBuf) {
@@ -515,84 +519,62 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-
 function pad(n) {
-  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+  return n < 10 ? `0${n.toString(10)}` : n.toString(10);
 }
 
-
-var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-              'Oct', 'Nov', 'Dec'];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // 26 Feb 16:19:34
 function timestamp() {
-  var d = new Date();
-  var time = [pad(d.getHours()),
-              pad(d.getMinutes()),
-              pad(d.getSeconds())].join(':');
+  const d = new Date();
+  const time = [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':');
   return [d.getDate(), months[d.getMonth()], time].join(' ');
 }
-
 
 // log is just a thin wrapper to console.log that prepends a timestamp
 export function log() {
   console.log('%s - %s', timestamp(), format.apply(null, arguments));
 }
-
-
-/**
- * Inherit the prototype methods from one constructor into another.
- *
- * The Function.prototype.inherits from lang.js rewritten as a standalone
- * function (not on Function.prototype). NOTE: If this file is to be loaded
- * during bootstrapping this function needs to be rewritten using some native
- * functions as prototype setup using normal JavaScript does not work as
- * expected during bootstrapping (see mirror.js in r114903).
- *
- * @param {function} ctor Constructor function which needs to inherit the
- *     prototype.
- * @param {function} superCtor Constructor function to inherit prototype from.
- */
-import inherits from './inherits';
-export {inherits}
+export { inherits };
 
 export function _extend(origin, add) {
   // Don't do anything if add isn't an object
   if (!add || !isObject(add)) return origin;
 
-  var keys = Object.keys(add);
-  var i = keys.length;
+  const keys = Object.keys(add);
+  let i = keys.length;
   while (i--) {
     origin[keys[i]] = add[keys[i]];
   }
   return origin;
-};
+}
 
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
 export default {
-  inherits: inherits,
-  _extend: _extend,
-  log: log,
-  isBuffer: isBuffer,
-  isPrimitive: isPrimitive,
-  isFunction: isFunction,
-  isError: isError,
-  isDate: isDate,
-  isObject: isObject,
-  isRegExp: isRegExp,
-  isUndefined: isUndefined,
-  isSymbol: isSymbol,
-  isString: isString,
-  isNumber: isNumber,
-  isNullOrUndefined: isNullOrUndefined,
-  isNull: isNull,
-  isBoolean: isBoolean,
-  isArray: isArray,
-  inspect: inspect,
-  deprecate: deprecate,
-  format: format,
-  debuglog: debuglog
-}
+  inherits,
+  _extend,
+  log,
+  isBuffer,
+  isPrimitive,
+  isFunction,
+  isError,
+  isDate,
+  isObject,
+  isRegExp,
+  isUndefined,
+  isSymbol,
+  isString,
+  isNumber,
+  isNullOrUndefined,
+  isNull,
+  isBoolean,
+  isArray,
+  inspect,
+  deprecate,
+  format,
+  debuglog
+};

@@ -27,49 +27,46 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
+import { parse } from 'url';
+
 import ClientRequest from './http-lib/request';
-import {parse} from 'url';
 
 export function request(opts, cb) {
-  if (typeof opts === 'string')
-    opts = parse(opts)
-
+  if (typeof opts === 'string') opts = parse(opts);
 
   // Normally, the page is loaded from http or https, so not specifying a protocol
   // will result in a (valid) protocol-relative url. However, this won't work if
   // the protocol is something else, like 'file:'
-  var defaultProtocol = global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : ''
+  const defaultProtocol = global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : '';
 
-  var protocol = opts.protocol || defaultProtocol
-  var host = opts.hostname || opts.host
-  var port = opts.port
-  var path = opts.path || '/'
+  const protocol = opts.protocol || defaultProtocol;
+  let host = opts.hostname || opts.host;
+  const { port } = opts;
+  const path = opts.path || '/';
 
   // Necessary for IPv6 addresses
-  if (host && host.indexOf(':') !== -1)
-    host = '[' + host + ']'
+  if (host && host.indexOf(':') !== -1) host = `[${host}]`;
 
   // This may be a relative url. The browser should always be able to interpret it correctly.
-  opts.url = (host ? (protocol + '//' + host) : '') + (port ? ':' + port : '') + path
-  opts.method = (opts.method || 'GET').toUpperCase()
-  opts.headers = opts.headers || {}
+  opts.url = (host ? `${protocol}//${host}` : '') + (port ? `:${port}` : '') + path;
+  opts.method = (opts.method || 'GET').toUpperCase();
+  opts.headers = opts.headers || {};
 
   // Also valid opts.auth, opts.mode
 
-  var req = new ClientRequest(opts)
-  if (cb)
-    req.on('response', cb)
-  return req
+  const req = new ClientRequest(opts);
+  if (cb) req.on('response', cb);
+  return req;
 }
 
 export function get(opts, cb) {
-  var req = request(opts, cb)
-  req.end()
-  return req
+  const req = request(opts, cb);
+  req.end();
+  return req;
 }
 
 export function Agent() {}
-Agent.defaultMaxSockets = 4
+Agent.defaultMaxSockets = 4;
 
 export var METHODS = [
   'CHECKOUT',
@@ -98,7 +95,7 @@ export var METHODS = [
   'TRACE',
   'UNLOCK',
   'UNSUBSCRIBE'
-]
+];
 export var STATUS_CODES = {
   100: 'Continue',
   101: 'Switching Protocols',
@@ -136,7 +133,7 @@ export var STATUS_CODES = {
   415: 'Unsupported Media Type',
   416: 'Requested Range Not Satisfiable',
   417: 'Expectation Failed',
-  418: 'I\'m a teapot', // RFC 2324
+  418: "I'm a teapot", // RFC 2324
   422: 'Unprocessable Entity', // RFC 4918
   423: 'Locked', // RFC 4918
   424: 'Failed Dependency', // RFC 4918
@@ -164,4 +161,4 @@ export default {
   Agent,
   METHODS,
   STATUS_CODES
-}
+};

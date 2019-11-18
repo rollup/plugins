@@ -14,7 +14,7 @@ export function WriteStream() {
 }
 
 export default {
-  isatty: isatty,
-  ReadStream: ReadStream,
-  WriteStream: WriteStream
-}
+  isatty,
+  ReadStream,
+  WriteStream
+};

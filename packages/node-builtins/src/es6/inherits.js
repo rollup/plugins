@@ -1,9 +1,8 @@
-
-var inherits;
-if (typeof Object.create === 'function'){
+let inherits;
+if (typeof Object.create === 'function') {
   inherits = function inherits(ctor, superCtor) {
     // implementation from standard node.js 'util' module
-    ctor.super_ = superCtor
+    ctor.super_ = superCtor;
     ctor.prototype = Object.create(superCtor.prototype, {
       constructor: {
         value: ctor,
@@ -15,11 +14,11 @@ if (typeof Object.create === 'function'){
   };
 } else {
   inherits = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
+    ctor.super_ = superCtor;
+    const TempCtor = function() {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
+  };
 }
 export default inherits;

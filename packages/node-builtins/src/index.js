@@ -1,4 +1,5 @@
-import {join} from 'path';
+import { join } from 'path';
+
 const libs = new Map();
 
 // our es6 versions
@@ -19,10 +20,22 @@ libs.set('os', require.resolve(join('..', 'src', 'es6', 'os')));
 libs.set('assert', require.resolve(join('..', 'src', 'es6', 'assert')));
 libs.set('constants', require.resolve('./constants'));
 libs.set('_stream_duplex', require.resolve(join('..', 'src', 'es6', 'readable-stream', 'duplex')));
-libs.set('_stream_passthrough', require.resolve(join('..', 'src', 'es6', 'readable-stream', 'passthrough')));
-libs.set('_stream_readable', require.resolve(join('..', 'src', 'es6', 'readable-stream', 'readable')));
-libs.set('_stream_writable', require.resolve(join('..', 'src', 'es6', 'readable-stream', 'writable')));
-libs.set('_stream_transform', require.resolve(join('..', 'src', 'es6', 'readable-stream', 'transform')));
+libs.set(
+  '_stream_passthrough',
+  require.resolve(join('..', 'src', 'es6', 'readable-stream', 'passthrough'))
+);
+libs.set(
+  '_stream_readable',
+  require.resolve(join('..', 'src', 'es6', 'readable-stream', 'readable'))
+);
+libs.set(
+  '_stream_writable',
+  require.resolve(join('..', 'src', 'es6', 'readable-stream', 'writable'))
+);
+libs.set(
+  '_stream_transform',
+  require.resolve(join('..', 'src', 'es6', 'readable-stream', 'transform'))
+);
 libs.set('timers', require.resolve(join('..', 'src', 'es6', 'timers')));
 libs.set('console', require.resolve(join('..', 'src', 'es6', 'console')));
 libs.set('vm', require.resolve(join('..', 'src', 'es6', 'vm')));
@@ -45,8 +58,7 @@ libs.set('readline', EMPTY_PATH);
 libs.set('repl', EMPTY_PATH);
 libs.set('tls', EMPTY_PATH);
 
-
-export default function (opts) {
+export default function(opts) {
   opts = opts || {};
   let cryptoPath = EMPTY_PATH;
   let fsPath = EMPTY_PATH;
@@ -56,18 +68,20 @@ export default function (opts) {
   if (opts.fs) {
     fsPath = FS_PATH;
   }
-  return {resolveId(importee) {
-    if (importee && importee.slice(-1) === '/') {
-      importee === importee.slice(0, -1);
+  return {
+    resolveId(importee) {
+      if (importee && importee.slice(-1) === '/') {
+        importee === importee.slice(0, -1);
+      }
+      if (libs.has(importee)) {
+        return libs.get(importee);
+      }
+      if (importee === 'crypto') {
+        return cryptoPath;
+      }
+      if (importee === 'fs') {
+        return fsPath;
+      }
     }
-    if (libs.has(importee)) {
-      return libs.get(importee);
-    }
-    if (importee === 'crypto') {
-      return cryptoPath;
-    }
-    if (importee === 'fs') {
-      return fsPath;
-    }
-  }};
+  };
 }

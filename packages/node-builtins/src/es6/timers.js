@@ -1,22 +1,23 @@
 // License https://jryans.mit-license.org/
 
-import {setImmediate, clearImmediate} from './setimmediate';
-export {setImmediate, clearImmediate};
+import { setImmediate, clearImmediate } from './setimmediate';
+
+export { setImmediate, clearImmediate };
 // DOM APIs, for completeness
-var apply = Function.prototype.apply;
+const { apply } = Function.prototype;
 
 export function clearInterval(timeout) {
   if (typeof timeout === 'number' && typeof global.clearInterval === 'function') {
     global.clearInterval(timeout);
   } else {
-    clearFn(timeout)
+    clearFn(timeout);
   }
 }
 export function clearTimeout(timeout) {
   if (typeof timeout === 'number' && typeof global.clearTimeout === 'function') {
     global.clearTimeout(timeout);
   } else {
-    clearFn(timeout)
+    clearFn(timeout);
   }
 }
 function clearFn(timeout) {
@@ -37,7 +38,7 @@ function Timeout(id) {
 Timeout.prototype.unref = Timeout.prototype.ref = function() {};
 Timeout.prototype.close = function() {
   clearFn(this._id);
-}
+};
 
 // Does not start the time, just sets up the members needed.
 export function enroll(item, msecs) {
@@ -53,24 +54,23 @@ export var _unrefActive = active;
 export function active(item) {
   clearTimeout(item._idleTimeoutId);
 
-  var msecs = item._idleTimeout;
+  const msecs = item._idleTimeout;
   if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
+    item._idleTimeoutId = setTimeout(() => {
+      if (item._onTimeout) item._onTimeout();
     }, msecs);
   }
 }
 
 export default {
-  setImmediate: setImmediate,
-  clearImmediate: clearImmediate,
-  setTimeout: setTimeout,
-  clearTimeout: clearTimeout,
-  setInterval: setInterval,
-  clearInterval: clearInterval,
-  active: active,
-  unenroll: unenroll,
-  _unrefActive: _unrefActive,
-  enroll: enroll
+  setImmediate,
+  clearImmediate,
+  setTimeout,
+  clearTimeout,
+  setInterval,
+  clearInterval,
+  active,
+  unenroll,
+  _unrefActive,
+  enroll
 };

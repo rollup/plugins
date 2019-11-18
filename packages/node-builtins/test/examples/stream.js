@@ -1,14 +1,14 @@
-import {Transform} from 'stream';
+import { Transform } from 'stream';
 
-var total = 0;
-var ended = false;
-var t = new Transform({
+let total = 0;
+let ended = false;
+const t = new Transform({
   objectMode: true,
-  transform: function (chunk, _, next) {
+  transform(chunk, _, next) {
     total++;
     next();
   },
-  flush: function (end) {
+  flush(end) {
     if (total !== 3) {
       done(new Error('wrong number'));
       end();
@@ -18,13 +18,13 @@ var t = new Transform({
     end();
   }
 });
-t.on('finish', function () {
+t.on('finish', () => {
   if (!ended) {
     done(new Error('did not end'));
     return;
   }
   done();
-})
+});
 t.write('foo');
 t.write('bar');
 t.end('baz');
