@@ -1,19 +1,19 @@
 import { makeLegalIdentifier } from '..';
 
-describe('makeLegalIdentifier', function() {
-	it('camel-cases names', function() {
-		expect(makeLegalIdentifier('foo-bar')).toEqual('fooBar');
-	});
+describe('makeLegalIdentifier', () => {
+  it('camel-cases names', () => {
+    expect(makeLegalIdentifier('foo-bar')).toEqual('fooBar');
+  });
 
-	it('replaces keywords', function() {
-		expect(makeLegalIdentifier('typeof')).toEqual('_typeof');
-	});
+  it('replaces keywords', () => {
+    expect(makeLegalIdentifier('typeof')).toEqual('_typeof');
+  });
 
-	it('blacklists arguments (https://github.com/rollup/rollup/issues/871)', function() {
-		expect(makeLegalIdentifier('arguments')).toEqual('_arguments');
-	});
+  it('blacklists arguments (https://github.com/rollup/rollup/issues/871)', () => {
+    expect(makeLegalIdentifier('arguments')).toEqual('_arguments');
+  });
 
-	it('empty', function() {
-		expect(makeLegalIdentifier('')).toEqual('_');
-	});
+  it('empty', () => {
+    expect(makeLegalIdentifier('')).toEqual('_');
+  });
 });
