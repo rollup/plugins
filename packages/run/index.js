@@ -25,7 +25,7 @@ module.exports = (opts = {}) => {
       }
 
       if (inputs.length > 1) {
-        throw new Error(`rollup-plugin-run only works with a single entry point`);
+        throw new Error(`@rollup/plugin-run only works with a single entry point`);
       }
 
       input = path.resolve(inputs[0]);
@@ -33,7 +33,7 @@ module.exports = (opts = {}) => {
 
     generateBundle(outputOptions, bundle, isWrite) {
       if (!isWrite) {
-        this.error(`rollup-plugin-run currently only works with bundles that are written to disk`);
+        this.error(`@rollup/plugin-run currently only works with bundles that are written to disk`);
       }
 
       const dir = outputOptions.dir || path.dirname(outputOptions.file);
@@ -45,7 +45,7 @@ module.exports = (opts = {}) => {
           const chunk = bundle[fileName];
 
           if (!('isEntry' in chunk)) {
-            this.error(`rollup-plugin-run requires Rollup 0.65 or higher`);
+            this.error(`@rollup/plugin-run requires Rollup 0.65 or higher`);
           }
 
           // eslint-disable-next-line no-continue
@@ -62,7 +62,7 @@ module.exports = (opts = {}) => {
         if (proc) proc.kill();
         proc = childProcess.fork(dest, args, forkOptions);
       } else {
-        this.error(`rollup-plugin-run could not find output chunk`);
+        this.error(`@rollup/plugin-run could not find output chunk`);
       }
     }
   };

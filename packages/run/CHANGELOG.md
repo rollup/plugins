@@ -1,4 +1,4 @@
-# rollup-plugin-run changelog
+# @rollup/plugin-run Change Log
 
 ## 1.1.0
 
