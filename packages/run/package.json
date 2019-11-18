@@ -1,0 +1,24 @@
+{
+  "name": "@rollup/plugin-run",
+  "version": "1.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Run your bundle after you've built it",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Rich Harris",
+  "homepage": "https://github.com/rollup/plugins/packages/run/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "index.js",
+  "scripts": {
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache *.js",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rollup"
+  ]
+}
