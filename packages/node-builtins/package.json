@@ -1,0 +1,38 @@
+{
+  "name": "@rollup/plugin-node-builtins",
+  "version": "2.1.1",
+  "description": "use node builtins in browser with rollup",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:calvinmetcalf/rollup-plugin-node-builtins.git"
+  },
+  "author": "",
+  "main": "dist/rollup-plugin-node-builtins.cjs.js",
+  "scripts": {
+    "build": "rollup -c -f cjs -o dist/rollup-plugin-node-builtins.cjs.js && rollup -c -f es -o dist/rollup-plugin-node-builtins.es6.js && node build-constants.js",
+    "prebuild": "rm -rf dist && mkdir dist",
+    "prepublish": "npm test",
+    "pretest": "npm run build",
+    "test": "mocha"
+  },
+  "keywords": [
+    "rollup-plugin"
+  ],
+  "dependencies": {
+    "browserify-fs": "^1.0.0",
+    "buffer-es6": "^4.9.2",
+    "crypto-browserify": "^3.11.0",
+    "process-es6": "^0.11.2"
+  },
+  "devDependencies": {
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "debug": "^2.2.0",
+    "mocha": "^3.0.2",
+    "rollup": "^0.37.0",
+    "rollup-plugin-babel": "^2.4.0",
+    "rollup-plugin-node-globals": "^1.0.7",
+    "serve": "^2.0.0"
+  },
+  "jsnext:main": "dist/rollup-plugin-node-builtins.es6.js"
+}
