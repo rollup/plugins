@@ -1,0 +1,57 @@
+{
+  "name": "rollup-plugin-url",
+  "version": "3.0.0",
+  "description": "Inline import files as data-URIs, or copy them to output",
+  "main": "dist/index.js",
+  "jsnext:main": "src/index.js",
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/register": "^7.6.2",
+    "mocha": "^6.2.1",
+    "rimraf": "^2.7.1",
+    "rollup": "^1.23.1",
+    "rollup-plugin-babel": "^4.3.3"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "scripts": {
+    "test": "mocha --require @babel/register",
+    "pretest": "npm run build",
+    "build": "rollup -c",
+    "prebuild": "rimraf dist/*",
+    "prepublish": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Swatinem/rollup-plugin-url.git"
+  },
+  "keywords": [
+    "rollup-plugin",
+    "url",
+    "inline",
+    "copy"
+  ],
+  "author": "Arpad Borsos <arpad.borsos@googlemail.com>",
+  "maintainers": [
+    "Poluektov Dmitriy <dmitry.a@kr.digital>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Swatinem/rollup-plugin-url/issues"
+  },
+  "homepage": "https://github.com/Swatinem/rollup-plugin-url#readme",
+  "dependencies": {
+    "mime": "^2.4.4",
+    "rollup-pluginutils": "^2.8.2"
+  },
+  "peerDependencies": {
+    "rollup": ">=0.60.0"
+  }
+}
