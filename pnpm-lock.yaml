@@ -8,13 +8,13 @@ importers:
       eslint-config-rollup: 0.1.0
       execa: 2.1.0
       globby: 10.0.1
-      husky: 3.0.9
+      husky: 3.1.0
       lint-staged: 9.4.3
       nyc: 14.1.1
       pnpm: 4.3.0
       prettier: 1.19.1
       prettier-plugin-package: 0.3.1_prettier@1.19.1
-      rollup: 1.27.0
+      rollup: 1.27.1
       tslib: 1.10.0
       tslint: 5.20.1_typescript@3.7.2
       typescript: 3.7.2
@@ -2690,7 +2690,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-a30VEBm4PEdx1dRB7MFK7BejejvCvBronbLjht+sHuGYj8PHs7M/5Z+rt5lw551vZ7yfTCj4Vuyy3mSJytDWRQ==
-  /handlebars/4.5.2:
+  /handlebars/4.5.3:
     dependencies:
       neo-async: 2.6.1
       optimist: 0.6.1
@@ -2702,7 +2702,7 @@ packages:
     optionalDependencies:
       uglify-js: 3.6.9
     resolution:
-      integrity: sha512-29Zxv/cynYB7mkT1rVWQnV7mGX6v7H/miQ6dbEpYTKq5eJBN7PsRB+ViYJlcT6JINTSu4dVB9kOqEun78h6Exg==
+      integrity: sha512-3yPecJoJHK/4c6aZhSvxOyG4vJKDshV36VHp0iVCDVh7o9w2vwi3NSnL2MMPj3YdduqaBcu7cGbggJQM0br9xA==
   /has-ansi/2.0.0:
     dependencies:
       ansi-regex: 2.1.1
@@ -2767,7 +2767,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-TcIMG3qeVLgDr1TEd2XvHaTnMPwYQUQMIBLy+5pLSDKYFc7UIqj39w8EGzZkaxoLv/l2K8HaI0t5AVA+YYgUew==
-  /husky/3.0.9:
+  /husky/3.1.0:
     dependencies:
       chalk: 2.4.2
       ci-info: 2.0.0
@@ -2786,7 +2786,7 @@ packages:
     hasBin: true
     requiresBuild: true
     resolution:
-      integrity: sha512-Yolhupm7le2/MqC1VYLk/cNmYxsSsqKkTyBhzQHhPK1jFnC89mmmNVuGtLNabjDI6Aj8UNIr0KpRNuBkiC4+sg==
+      integrity: sha512-FJkPoHHB+6s4a+jwPqBudBDvYZsoQW5/HBuMSehC8qDiCe50kpcxeqFoDSlow+9I6wg47YxBoT3WxaURlrDIIQ==
   /iconv-lite/0.4.24:
     dependencies:
       safer-buffer: 2.1.2
@@ -3212,7 +3212,7 @@ packages:
       integrity: sha512-R47KzMtDJH6X4/YW9XTx+jrLnZnscW4VpNN+1PViSYTejLVPWv7oov+Duf8YQSPyVRUvueQqz1TcsC6mooZTXw==
   /istanbul-reports/2.2.6:
     dependencies:
-      handlebars: 4.5.2
+      handlebars: 4.5.3
     dev: true
     engines:
       node: '>=6'
@@ -4660,6 +4660,15 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-yaMna4MJ8LLEHhHl1ilgHakylf0LKeQctDxhngZLQ+W57GnXa5vtH7XKaK8zlAhNEhlWiH5YFVFt+QCDPUmNkw==
+  /rollup/1.27.1:
+    dependencies:
+      '@types/estree': 0.0.39
+      '@types/node': 12.12.8
+      acorn: 7.1.0
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha512-tRJcEYjJalj/wFiqM7GmynLeaKANS4CRPCYB8D7ylrl7Mrsmpgo6xuXE2v9K9EpX0kwFztAIwVltycA+Wr9b7Q==
   /run-async/2.3.0:
     dependencies:
       is-promise: 2.1.0

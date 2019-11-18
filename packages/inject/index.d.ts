@@ -1,4 +1,4 @@
-import { Plugin } from "rollup";
+import { Plugin } from 'rollup';
 
 type Injectment = string | [string, string];
 
@@ -23,7 +23,7 @@ interface RollupInjectOptions {
    * All other options are treated as `string: injectment` injectrs,
    * or `string: (id) => injectment` functions.
    */
-  [str: string]: Injectment | RollupInjectOptions["include"] | RollupInjectOptions["modules"];
+  [str: string]: Injectment | RollupInjectOptions['include'] | RollupInjectOptions['modules'];
 }
 
 /**

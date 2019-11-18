@@ -70,6 +70,9 @@ jobs:
       - run:
           name: Run linting.
           command: pnpm run ci:lint
+      - run:
+          name: Run prettier.
+          command: pnpm run ci:prettier
       - save_cache:
           key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
           paths:

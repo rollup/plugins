@@ -5,11 +5,13 @@
     "ci:coverage": "node scripts/run-changed.js ci:coverage",
     "ci:coverage:submit": "node scripts/codecov",
     "ci:lint": "node scripts/run-changed.js ci:lint",
+    "ci:prettier": "prettier --list-different '{packages,scripts,util}/**/*.{js,ts,md}'",
     "ci:test": "node scripts/run-changed.js ci:test",
     "lint": "pnpm run lint:docs && pnpm run lint:package && node scripts/run-changed.js lint",
     "lint:docs": "prettier --write README.md",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "preinstall": "node scripts/disallow-npm.js",
+    "prettier": "prettier --write '{packages,scripts,util}/**/*.{js,ts,md}'",
     "publish": "node scripts/publish.js",
     "security": "pnpm audit",
     "test": "node scripts/run-changed.js test"
@@ -49,7 +51,11 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts": [
+      "prettier --write",
       "git add"
     ],
     "*.md": [

@@ -39,6 +39,9 @@
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
+  "dependencies": {
+    "node-noop": "^1.0.0"
+  },
   "devDependencies": {
     "del": "^5.1.0",
     "rollup": "^1.20.0",
@@ -51,8 +54,5 @@
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "dependencies": {
-    "node-noop": "^1.0.0"
   }
 }

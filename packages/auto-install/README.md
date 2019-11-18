@@ -37,10 +37,7 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [
-    auto(),
-    resolve()
-  ]
+  plugins: [auto(), resolve()]
 };
 ```
 

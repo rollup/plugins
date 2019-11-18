@@ -78,7 +78,7 @@ A function which can optionally mutate parsed YAML. The function should return t
 yaml({
   transform(data) {
     if (Array.isArray(data)) {
-      return data.filter(character => !character.batman);
+      return data.filter((character) => !character.batman);
     }
   }
 });
