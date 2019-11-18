@@ -21,11 +21,21 @@
     "lint:js": "eslint --fix --cache *.js",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prepublishOnly": "pnpm run lint && pnpm run test",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava"
   },
   "keywords": [
     "rollup",
     "plugin",
     "run"
-  ]
+  ],
+  "devDependencies": {
+    "del": "^5.1.0",
+    "rollup": "^1.27.2",
+    "sinon": "^7.5.0"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**"
+    ]
+  }
 }
