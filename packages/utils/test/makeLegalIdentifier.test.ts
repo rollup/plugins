@@ -1,9 +1,8 @@
 import test from 'ava';
 
-// eslint-disable-next-line
-/// <reference types="../types/index.d.ts" />
-import { plugins } from '@rollup/utils';
+import { default as utils } from '../';
 
+const { plugins } = utils;
 const { makeLegalIdentifier } = plugins;
 
 test('camel-cases names', (t) => {

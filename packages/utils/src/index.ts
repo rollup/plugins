@@ -14,4 +14,4 @@ const plugins = {
   makeLegalIdentifier
 };
 
-export default plugins;
+export default { plugins };

@@ -38,12 +38,14 @@ export const dataToEsm: DataToEsm;
 export type ExtractAssignedNames = (param: Node) => Array<string>;
 export const extractAssignedNames: ExtractAssignedNames;
 
-declare const plugins: {
-  addExtension: AddExtension;
-  attachScopes: AttachScopes;
-  createFilter: CreateFilter;
-  dataToEsm: DataToEsm;
-  extractAssignedNames: ExtractAssignedNames;
-  makeLegalIdentifier: MakeLegalIdentifier;
+declare const defaultExport: {
+  plugins: {
+    addExtension: AddExtension;
+    attachScopes: AttachScopes;
+    createFilter: CreateFilter;
+    dataToEsm: DataToEsm;
+    extractAssignedNames: ExtractAssignedNames;
+    makeLegalIdentifier: MakeLegalIdentifier;
+  };
 };
-export default plugins;
+export default defaultExport;
