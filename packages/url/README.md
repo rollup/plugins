@@ -1,18 +1,27 @@
-# rollup-plugin-url
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-url
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-url
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-url
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-url
+
+[![npm][npm]][npm-url]
+[![size][size]][size-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
+
+# @rollup/plugin-url
 
 Inline import files as data-URIs, or copy them to output
 
 ## Install
 
 ```sh
-npm i --save-dev rollup-plugin-url
+npm i --save-dev @rollup/plugin-url
 ```
 
 ## Usage
 
 ```js
 import { rollup } from "rollup";
-import url from "rollup-plugin-url";
+import url from "@rollup/plugin-url";
 
 const writeoptions = { dest: "output/output.js" };
 const plugin = url({
