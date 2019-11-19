@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { attachScopes } from '..';
+import { attachScopes } from '../';
 
 test('attaches a scope to the top level', (t) => {
   const ast = {

@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { addExtension } from '..';
+import { addExtension } from '../';
 
 test('adds .js to an ID without an extension', (t) => {
   t.is(addExtension('foo'), 'foo.js');

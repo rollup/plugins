@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { dataToEsm } from '..';
+import { dataToEsm } from '../';
 
 test('outputs treeshakeable data', (t) => {
   t.is(

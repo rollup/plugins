@@ -30,6 +30,7 @@ module.exports = {
         tsx: 'never'
       }
     ],
+    'import/no-namespace': 'off',
     'import/no-named-export': 'off',
     'no-unused-vars': 'off',
     'prettier/prettier': [

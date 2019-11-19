@@ -1,19 +1,23 @@
-import { makeLegalIdentifier } from '..';
+import test from 'ava';
 
-describe('makeLegalIdentifier', () => {
-  it('camel-cases names', () => {
-    expect(makeLegalIdentifier('foo-bar')).toEqual('fooBar');
-  });
+// eslint-disable-next-line
+/// <reference types="../types/index.d.ts" />
+import { plugins } from '@rollup/utils';
 
-  it('replaces keywords', () => {
-    expect(makeLegalIdentifier('typeof')).toEqual('_typeof');
-  });
+const { makeLegalIdentifier } = plugins;
 
-  it('blacklists arguments (https://github.com/rollup/rollup/issues/871)', () => {
-    expect(makeLegalIdentifier('arguments')).toEqual('_arguments');
-  });
+test('camel-cases names', (t) => {
+  t.is(makeLegalIdentifier('foo-bar'), 'fooBar');
+});
 
-  it('empty', () => {
-    expect(makeLegalIdentifier('')).toEqual('_');
-  });
+test('replaces keywords', (t) => {
+  t.is(makeLegalIdentifier('typeof'), '_typeof');
+});
+
+test('blacklists arguments (https://github.com/rollup/rollup/issues/871)', (t) => {
+  t.is(makeLegalIdentifier('arguments'), '_arguments');
+});
+
+test('empty', (t) => {
+  t.is(makeLegalIdentifier(''), '_');
 });

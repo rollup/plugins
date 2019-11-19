@@ -11,7 +11,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && cp types/index.d.ts dist",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
@@ -25,7 +25,7 @@
     "prepublishOnly": "pnpm run lint",
     "pretest": "pnpm run build",
     "security": "echo 'pnpm needs `npm audit` support'",
-    "test": "ava"
+    "test": "ava test/makeLegalIdentifier.test.ts"
   },
   "files": [
     "dist",
@@ -54,6 +54,22 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-typescript": "^1.0.1",
     "typescript": "^3.7.2"
+  },
+  "ava": {
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register",
+      "tsconfig-paths/register"
+    ],
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
   },
   "jsnext:main": "dist/index.es.js",
   "module": "dist/index.es.js",

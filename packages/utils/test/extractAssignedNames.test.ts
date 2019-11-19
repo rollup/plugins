@@ -1,4 +1,4 @@
-import { extractAssignedNames } from '..';
+import { extractAssignedNames } from '../';
 
 describe('extractAssignedNames', () => {
   it('extracts an Identifier', () => {

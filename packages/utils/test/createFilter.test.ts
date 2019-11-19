@@ -2,7 +2,7 @@ import { resolve } from 'path';
 
 import test from 'ava';
 
-import { createFilter } from '..';
+import { createFilter } from '../';
 
 test('includes by default', (t) => {
   const filter = createFilter();

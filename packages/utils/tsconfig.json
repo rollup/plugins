@@ -1,9 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./src",
-    "resolveJsonModule": true
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "paths": {
+      "@rollup/utils": ["dist/index.js"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "types/*.d.ts"]
 }

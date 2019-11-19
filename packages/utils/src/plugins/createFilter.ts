@@ -1,6 +1,6 @@
 import { resolve, sep } from 'path';
 
-import micromatch from 'micromatch';
+import * as micromatch from 'micromatch';
 
 import { CreateFilter } from '../../types';
 import ensureArray from '../utils/ensureArray';
