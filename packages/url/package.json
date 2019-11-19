@@ -50,6 +50,20 @@
     "rollup": "^1.23.1",
     "rollup-plugin-babel": "^4.3.3"
   },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ],
+    "babel": {
+      "extensions": [
+        "png",
+        "svg"
+      ]
+    }
+  },
   "jsnext:main": "src/index.js",
   "maintainers": [
     "Poluektov Dmitriy <dmitry.a@kr.digital>"
