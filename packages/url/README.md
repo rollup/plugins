@@ -9,31 +9,45 @@
 
 # @rollup/plugin-url
 
-Inline import files as data-URIs, or copy them to output
+🍣 A Rollup plugin which imports files as data-URIs or to ES6 modules.
+
+## Requirements
+
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
 
 ## Install
 
-```sh
-npm i --save-dev @rollup/plugin-url
+Using npm:
+
+```console
+npm install @rollup/plugin-url --save-dev
 ```
 
 ## Usage
 
+Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
+
 ```js
-import { rollup } from "rollup";
 import url from "@rollup/plugin-url";
 
-const writeoptions = { dest: "output/output.js" };
-const plugin = url({
-  limit: 10 * 1024, // inline files < 10k, copy files > 10k
-  include: ["**/*.svg"], // defaults to .svg, .png, .jpg and .gif files
-  emitFiles: true // defaults to true
-});
+export default {
+  input: "src/index.js",
+  output: {
+    dir: "output",
+    format: "cjs"
+  },
+  plugins: [url()]
+};
+```
 
-rollup({
-  entry: "main.js",
-  plugins: [plugin]
-}).then(bundle => bundle.write(writeoptions));
+Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
+
+With an accompanying file `src/index.js`, the local `image.svg` file would now be importable as seen below:
+
+```js
+// src/index.js
+import svg from "./image.svg";
+console.log(`svg contents: ${svg}`);
 ```
 
 ## Options
