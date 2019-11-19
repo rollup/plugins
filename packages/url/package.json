@@ -1,6 +1,9 @@
 {
   "name": "@rollup/plugin-url",
   "version": "3.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Inline import files as data-URIs, or copy them to output",
   "license": "MIT",
   "repository": "rollup/plugins",
@@ -30,9 +33,7 @@
   "keywords": [
     "rollup",
     "plugin",
-    "url",
-    "inline",
-    "copy"
+    "url"
   ],
   "peerDependencies": {
     "rollup": ">=0.60.0"

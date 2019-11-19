@@ -109,3 +109,9 @@ Emitted File: `path/to/image.png`
 Optional. Type: `string`
 
 The destination dir to copy assets, usually used to rebase the assets according to HTML files.
+
+## Meta
+
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
+
+[LICENSE (MIT)](/LICENSE)
