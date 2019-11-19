@@ -68,5 +68,6 @@
   "jsnext:main": "src/index.js",
   "maintainers": [
     "Poluektov Dmitriy <dmitry.a@kr.digital>"
-  ]
+  ],
+  "module": "dist/index.es.js"
 }

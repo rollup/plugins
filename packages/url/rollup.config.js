@@ -1,24 +1,28 @@
-import babel from "rollup-plugin-babel"
+import babel from 'rollup-plugin-babel';
 
-const external = [
-  "rollup-pluginutils",
-  "mime",
-  "crypto",
-  "path",
-  "fs",
-  "mkpath"
-]
+import pkg from './package.json';
+
+const external = Object.keys(pkg.dependencies).concat(['crypto', 'path', 'fs', 'mkpath']);
 
 export default {
-  input: "src/index.js",
-  external,
+  input: 'src/index.js',
   plugins: [
     babel({
-      babelrc: true
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            targets: {
+              node: 10
+            }
+          }
+        ]
+      ]
     })
   ],
-  output: {
-    format: "cjs",
-    file: "dist/index.js",
-  },
-}
+  external,
+  output: [
+    { file: pkg.main, format: 'cjs', sourcemap: true },
+    { file: pkg.module, format: 'es', sourcemap: true }
+  ]
+};
