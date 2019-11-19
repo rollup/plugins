@@ -1,6 +1,9 @@
 import test from 'ava';
 
-import { dataToEsm } from '../';
+import { default as utils } from '../';
+
+const { plugins } = utils;
+const { dataToEsm } = plugins;
 
 test('outputs treeshakeable data', (t) => {
   t.is(

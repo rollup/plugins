@@ -1,9 +1,11 @@
 import { resolve, sep } from 'path';
 
-import * as micromatch from 'micromatch';
+import mm from 'micromatch';
 
 import { CreateFilter } from '../../types';
 import ensureArray from '../utils/ensureArray';
+
+console.log(mm);
 
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
   if (resolutionBase === false) {
@@ -19,7 +21,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
     id instanceof RegExp
       ? id
       : {
-          test: micromatch.matcher(
+          test: mm.matcher(
             getMatcherString(id, resolutionBase)
               .split(sep)
               .join('/'),
