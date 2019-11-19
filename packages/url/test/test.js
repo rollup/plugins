@@ -23,7 +23,7 @@ const asserts = {
   pngExport: `var png = "${pnghash}";\nexport default png;`
 };
 
-describe('rollup-plugin-url', () => {
+describe('@rollup/plugin-url', () => {
   after(() => promise(rimraf, 'output/'));
 
   it('should inline text files', () =>
