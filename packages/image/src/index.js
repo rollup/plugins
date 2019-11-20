@@ -3,6 +3,12 @@ import { extname } from 'path';
 
 import { createFilter } from 'rollup-pluginutils';
 
+const defaults = {
+  dom: false,
+  exclude: null,
+  include: null
+};
+
 const mimeTypes = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -12,31 +18,31 @@ const mimeTypes = {
   '.webp': 'image/webp'
 };
 
-export default function image(options = {}) {
+export default function image(opts = {}) {
+  const options = Object.assign({}, defaults, opts);
   const filter = createFilter(options.include, options.exclude);
 
   return {
     name: 'image',
 
     load(id) {
-      if (!filter(id)) return null;
+      if (!filter(id)) {
+        return null;
+      }
 
       const mime = mimeTypes[extname(id)];
-      // not an image
-      if (!mime) return null;
+      if (!mime) {
+        // not an image
+        return null;
+      }
 
-      const data = readFileSync(id, 'base64');
-      const code = `var img = new Image(); img.src = 'data:${mime};base64,${data}'; export default img;`;
+      const source = readFileSync(id, 'base64');
+      const data = `'data:${mime};base64,${source}'`;
+      const code = options.dom
+        ? `var img = new Image(); img.src = ${data}; export default img;`
+        : `const img = ${data}; export default img;`;
 
-      const ast = {
-        type: 'Program',
-        sourceType: 'module',
-        start: 0,
-        end: null,
-        body: []
-      };
-
-      return { ast, code, map: { mappings: '' } };
+      return code;
     }
   };
 }
