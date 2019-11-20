@@ -22,7 +22,7 @@ This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v
 Using npm:
 
 ```console
-npm install @rollup/plugin-dsv --save-dev
+npm install @rollup/plugin-image --save-dev
 ```
 
 ## Usage
