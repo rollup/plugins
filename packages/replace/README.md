@@ -9,7 +9,7 @@
 
 # @rollup/plugin-replace
 
-🍣 A Rollup which replaces strings in files while bundling.
+🍣 A Rollup plugin which replaces strings in files while bundling.
 
 ## Requirements
 
