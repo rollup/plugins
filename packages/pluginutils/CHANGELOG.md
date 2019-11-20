@@ -1,4 +1,4 @@
-# rollup-pluginutils changelog
+# @rollup/pluginutils changelog
 
 ## 2.8.2
 

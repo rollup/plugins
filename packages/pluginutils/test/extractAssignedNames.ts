@@ -1,9 +1,6 @@
 import test from 'ava';
 
-import { default as utils } from '../';
-
-const { plugins } = utils;
-const { extractAssignedNames } = plugins;
+import { extractAssignedNames } from '../';
 
 test('extracts an Identifier', (t) => {
   const node = {

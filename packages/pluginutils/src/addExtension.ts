@@ -1,6 +1,6 @@
 import { extname } from 'path';
 
-import { AddExtension } from '../../types';
+import { AddExtension } from '../types';
 
 const addExtension: AddExtension = function addExtension(filename, ext = '.js') {
   let result = `${filename}`;

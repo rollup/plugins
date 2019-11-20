@@ -39,13 +39,11 @@ export type ExtractAssignedNames = (param: Node) => Array<string>;
 export const extractAssignedNames: ExtractAssignedNames;
 
 declare const defaultExport: {
-  plugins: {
-    addExtension: AddExtension;
-    attachScopes: AttachScopes;
-    createFilter: CreateFilter;
-    dataToEsm: DataToEsm;
-    extractAssignedNames: ExtractAssignedNames;
-    makeLegalIdentifier: MakeLegalIdentifier;
-  };
+  addExtension: AddExtension;
+  attachScopes: AttachScopes;
+  createFilter: CreateFilter;
+  dataToEsm: DataToEsm;
+  extractAssignedNames: ExtractAssignedNames;
+  makeLegalIdentifier: MakeLegalIdentifier;
 };
 export default defaultExport;

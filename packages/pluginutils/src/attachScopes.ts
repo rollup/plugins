@@ -1,6 +1,6 @@
 import { Node, walk } from 'estree-walker';
 
-import { AttachedScope, AttachScopes } from '../../types';
+import { AttachedScope, AttachScopes } from '../types';
 
 import extractAssignedNames from './extractAssignedNames';
 

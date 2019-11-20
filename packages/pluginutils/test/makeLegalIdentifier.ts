@@ -1,9 +1,6 @@
 import test from 'ava';
 
-import { default as utils } from '../';
-
-const { plugins } = utils;
-const { makeLegalIdentifier } = plugins;
+import { makeLegalIdentifier } from '../';
 
 test('camel-cases names', (t) => {
   t.is(makeLegalIdentifier('foo-bar'), 'fooBar');

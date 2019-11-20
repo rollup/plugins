@@ -2,10 +2,9 @@ import { resolve, sep } from 'path';
 
 import mm from 'micromatch';
 
-import { CreateFilter } from '../../types';
-import ensureArray from '../utils/ensureArray';
+import { CreateFilter } from '../types';
 
-console.log(mm);
+import ensureArray from './utils/ensureArray';
 
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
   if (resolutionBase === false) {
