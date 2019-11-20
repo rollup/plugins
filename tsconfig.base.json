@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
 		"lib": ["es6", "dom"],
 		"module": "commonjs",
+    "moduleResolution": "node",
 		"noEmitOnError": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,

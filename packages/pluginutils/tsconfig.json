@@ -1,11 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
     "lib": ["es6"],
-    "sourceMap": true,
-    "strict": true,
     "esModuleInterop": true
   }
 }
