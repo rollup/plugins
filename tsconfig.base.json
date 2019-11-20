@@ -1,17 +1,17 @@
 {
-	"compilerOptions": {
-		"allowSyntheticDefaultImports": true,
-		"lib": ["es6", "dom"],
-		"module": "commonjs",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "lib": ["es6", "dom"],
+    "module": "commonjs",
     "moduleResolution": "node",
-		"noEmitOnError": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"pretty": true,
-		"skipLibCheck": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "skipLibCheck": true,
     "sourceMap": true,
-		"strict": true,
-		"target": "es2015"
-	},
-	"exclude": ["dist", "node_modules", "test/types"]
+    "strict": true,
+    "target": "es2015"
+  },
+  "exclude": ["dist", "node_modules", "test/types"]
 }
