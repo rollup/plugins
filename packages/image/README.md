@@ -1,3 +1,12 @@
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-image
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-image
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-image
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-image
+
+[![npm][npm]][npm-url]
+[![size][size]][size-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
+
 # @rollup/plugin-image
 
 🍣 A Rollup plugin which imports JPG, PNG, GIF, SVG, and WebP files.
@@ -21,7 +30,7 @@ npm install @rollup/plugin-dsv --save-dev
 Assuming a `src/index.js` exists and contains code like the following:
 
 ```js
-import logo from "./rollup.png";
+import logo from './rollup.png';
 
 console.log(logo);
 ```
@@ -29,13 +38,13 @@ console.log(logo);
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import image from "@rollup/plugin-image";
+import image from '@rollup/plugin-image';
 
 export default {
-  input: "src/index.js",
+  input: 'src/index.js',
   output: {
-    dir: "output",
-    format: "cjs"
+    dir: 'output',
+    format: 'cjs'
   },
   plugins: [image()]
 };
@@ -57,7 +66,7 @@ If `true`, instructs the plugin to generate an ES Module which exports a DOM `Im
 Using this option set to `true`, the export can be used as such:
 
 ```js
-import logo from "./rollup.png";
+import logo from './rollup.png';
 document.body.appendChild(logo);
 ```
 
