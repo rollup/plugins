@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 
+import makeDir from 'make-dir';
 import mime from 'mime';
 import { createFilter } from 'rollup-pluginutils';
 
@@ -72,7 +73,7 @@ export default function url(options = {}) {
 
       const base = options.destDir || outputOptions.dir || path.dirname(outputOptions.file);
 
-      await promise(mkpath, base);
+      await makeDir(base);
 
       Promise.all(
         Object.keys(copies).map(async (name) => {
@@ -80,7 +81,7 @@ export default function url(options = {}) {
           // Create a nested directory if the fileName pattern contains
           // a directory structure
           const outputDirectory = path.join(base, path.dirname(output));
-          await promise(mkpath, outputDirectory);
+          await makeDir(outputDirectory);
           return copy(name, path.join(base, output));
         })
       );
@@ -123,9 +124,4 @@ function encodeSVG(buffer) {
       .replace(/\(/g, '%28')
       .replace(/\)/g, '%29')
   );
-}
-
-// use fs.mkdir to instead of mkpath package, see https://github.com/jrajav/mkpath/issues/6
-function mkpath(pathToMake, err) {
-  return fs.mkdir(pathToMake, { recursive: true }, err);
 }
