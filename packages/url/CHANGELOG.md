@@ -1,82 +1,120 @@
-# Changelog
+# @rollup/plugin-url Change Log
 
-3.0.0 / 2019-10-08
-=================
-* drop node 8 support as it's maintenance will be closed in [December](https://github.com/nodejs/Release#release-schedule)
-* migrate to MIT License 
+## 4.0.0
 
-2.2.4 / 2019-10-08
-=================
-* fallback to `mkdirp` to keep working on node <= 8
+_Date TBD_
 
-2.2.3 / 2019-10-08
-=================
-* remove `mkpath` from dependencies ([#24](https://github.com/rollup/rollup-plugin-url/pull/24))
-* update dev dependencies
+### Breaking Changes
 
-2.2.2 / 2019-06-13
-=================
-* dependencies update
+- Version 4.0.0 requires Rollup v1.20.0 or higher
 
-2.2.1 / 2019-04-10
-=================
-* Fix `dirname` substitution on Windows ([#21](https://github.com/rollup/rollup-plugin-url/pull/21))
+## 3.0.0
 
-2.2.0 / 2019-01-29
-=================
-* add `destDir` option ([#19](https://github.com/rollup/rollup-plugin-url/pull/19))
-* update dependencies
+_2019-10-08_
 
-2.1.0 / 2018-12-02
-==================
-* add `fileName` option ([#17](https://github.com/rollup/rollup-plugin-url/pull/17))
+- Drop node 8 support as its maintenance will be closed in [December](https://github.com/nodejs/Release#release-schedule)
+- Migrate to MIT License
 
-2.0.1 / 2018-10-09
-==================
-* ensure destination folder exist while `generateBundle` hook performs
+## 2.2.4
 
-2.0.0 / 2018-10-01
-==================
-* **Breaking:** version 2.0.0 requires rollup@0.60 and higher – deprecated `onwrite` hook replaced with new `generateBundle` hook, so plugin will not work with earlier versions of rollup.  
-Use version 1.4 with rollup<0.60
+_2019-10-08_
 
-1.4.0 / 2018-04-17
-==================
- * add support for `output.dir` option
- * update dependencies
+- Fallback to `mkdirp` to keep working on node <= 8
 
-1.3.0 / 2017-09-17
-==================
- * internal update: it builds now with rollup@0.50 
+## 2.2.3
 
-1.2.0 / 2017-06-09
-==================
+_2019-10-08_
 
- * add ability to prevent emitting any files with the `emitFiles=false` option.
+- Remove `mkpath` from dependencies ([#24](https://github.com/rollup/rollup-plugin-url/pull/24))
+- Update dev dependencies
 
-1.1.0 / 2017-04-12
-==================
+## 2.2.2
 
- * set default limit to 14kb
+_2019-06-13_
 
-1.0.0 / 2017-04-10
-==================
+- Dependencies update
 
- * Migrate to newer rollup API (#5).
- * Minimal `rollup` version is `0.32.4`
- * Braking: `write` method was removed
+## 2.2.1
 
-0.1.2 / 2016-08-30
-==================
+_2019-04-10_
 
-  * Add public path option (#1)
+- Fix `dirname` substitution on Windows ([#21](https://github.com/rollup/rollup-plugin-url/pull/21))
 
-0.1.1 / 2016-02-08
-==================
+## 2.2.0
 
-  * drop charset, its not needed
+_2019-01-29_
 
-0.1.0 / 2016-02-08
-==================
+- Add `destDir` option ([#19](https://github.com/rollup/rollup-plugin-url/pull/19))
+- Update dependencies
 
-  * Initial release
+## 2.1.0
+
+_2018-12-02_
+
+- Add `fileName` option ([#17](https://github.com/rollup/rollup-plugin-url/pull/17))
+
+## 2.0.1
+
+_2018-10-09_
+
+- Ensure destination folder exists while `generateBundle` hook performs
+
+## 2.0.0
+
+_2018-10-01_
+
+### Breaking Changes
+
+- Version 2.0.0 requires rollup@0.60 and higher – deprecated `onwrite` hook replaced with new `generateBundle` hook, so plugin will not work with earlier versions of Rollup.  
+  Use version 1.4 with rollup<0.60
+
+## 1.4.0
+
+_2018-04-17_
+
+- Add support for `output.dir` option
+- Update dependencies
+
+## 1.3.0
+
+_2017-09-17_
+
+- Internal update: it builds now with rollup@0.50
+
+## 1.2.0
+
+_2017-06-09_
+
+- Add ability to prevent emitting any files with the `emitFiles=false` option.
+
+## 1.1.0
+
+_2017-04-12_
+
+- Set default limit to 14kb
+
+## 1.0.0
+
+_2017-04-10_
+
+- Migrate to newer Rollup API (#5).
+- Minimal `rollup` version is `0.32.4`
+- Braking: `write` method was removed
+
+## 0.1.2
+
+_2016-08-30_
+
+- Add public path option (#1)
+
+## 0.1.1
+
+_2016-02-08_
+
+- Drop charset, it's not needed
+
+## 0.1.0
+
+_2016-02-08_
+
+- Initial release
