@@ -78,7 +78,7 @@ The feature is usually intended for development use, you may prefer to only incl
 
 ```diff
 // rollup.config.js
-import run from 'rollup-plugin-run';
+import run from '@rollup/plugin-run';
 
 +const dev = process.env.ROLLUP_WATCH === 'true';
 
