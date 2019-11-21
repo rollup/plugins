@@ -53,7 +53,7 @@
       "git add"
     ],
     "*.md": [
-      "prettier --write",
+      "prettier --single-quote --write",
       "git add"
     ],
     "*package.json": [
