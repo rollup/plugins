@@ -52,54 +52,59 @@ console.log(`svg contents: ${svg}`);
 
 ## Options
 
-### limit
+### `exclude`
 
-Optional. Type: `number`.
+Type: `String` | `Array[...String]`<br>
+Default: `null`
 
-This is the file size limit to inline files. If files exceed this limit, they
-will be copied instead to the destination folder and the hashed filename will
-be given instead. If value set to `0` all files will be copied.
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
-Defaults to 14336 (14kb).
+### `include`
 
-### include / exclude
+Type: `String` | `Array(String)`<br>
+Default: `['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif']`
 
-Optional. Type: a minimatch pattern, or array of minimatch patterns
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default .svg, .png, .jpg, and .gif files are targeted.
 
-These patterns determine which files are inlined. Defaults to .svg, .png, .jpg
-and .gif files.
+### `limit`
 
-### publicPath
+Type: `Number`<br>
+Default: `14336` (14kb)
 
-Optional. Type: `string`
+The file size limit for inline files. If a file exceeds this limit, it will be copied to the destination folder and the hashed filename will be provided instead. If `limit` is set to `0` all files will be copied.
 
-The `publicPath` will be added in front of file names when they are not inlined
-but copied.
+### `publicPath`
 
-### emitFiles
+Type: `String`<br>
+Default: (empty string)
 
-Optional. Type: `boolean`
+A string which will be added in front of filenames when they are not inlined but are copied.
 
-The `emitFiles` option is used to run the plugin as you normally would but prevents any files being emitted. This is useful for when you are using rollup to emit both a client side and server side bundle.
+### `emitFiles`
 
-### fileName
+Type: `Boolean`<br>
+Default: `true`
 
-Optional. Type: `string`
+If `false`, will prevent files being emitted by this plugin. This is useful for when you are using Rollup to emit both a client-side and server-side bundle.
 
-When `emitFiles` is `true`, the `fileName` option can be used to rename the emitted files. It accepts the following string replacements:
+### `fileName`
+
+Type: `String`<br>
+Default: `'[hash][extname]'`
+
+If `emitFiles` is `true`, this option can be used to rename the emitted files. It accepts the following string replacements:
 
 - `[hash]` - The hash value of the file's contents
-- `[name]` - The name of the imported file, without it's file extension
-- `[extname]` - The extension of the imported file, including the leading `.`
-- `[dirname]` - The parent directory name of the imported file, including trailing `/`
-
-Defaults to: `"[hash][extname]"`
+- `[name]` - The name of the imported file (without its file extension)
+- `[extname]` - The extension of the imported file (including the leading `.`)
+- `[dirname]` - The parent directory name of the imported file (including trailing `/`)
 
 ### sourceDir
 
-Optional. Type: `string`
+Type: `String`<br>
+Default: (empty string)
 
-When using the `[dirname]` replacement in `fileName`, uses this directory as the source directory to create the file path from rather than the parent directory of the imported file. For example:
+When using the `[dirname]` replacement in `fileName`, use this directory as the source directory from which to create the file path rather than the parent directory of the imported file. For example:
 
 _src/path/to/file.js_
 
@@ -118,9 +123,10 @@ url({
 
 Emitted File: `path/to/image.png`
 
-### destDir
+### `destDir`
 
-Optional. Type: `string`
+Type: `String`<br>
+Default: (empty string)
 
 The destination dir to copy assets, usually used to rebase the assets according to HTML files.
 
