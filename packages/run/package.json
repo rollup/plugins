@@ -10,7 +10,7 @@
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/packages/run/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm run lint && pnpm run security",
@@ -18,12 +18,15 @@
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache *.js",
+    "lint:js": "eslint --fix --cache lib test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prepublishOnly": "pnpm run lint && pnpm run test",
     "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
   },
+  "files": [
+    "lib"
+  ],
   "keywords": [
     "rollup",
     "plugin",

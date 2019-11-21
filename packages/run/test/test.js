@@ -5,14 +5,14 @@ const { join } = require('path');
 
 const childProcess = require('child_process');
 
+const writeFile = require('util').promisify(fs.writeFile);
+
 const del = require('del');
 const { rollup } = require('rollup');
 const test = require('ava');
 const sinon = require('sinon');
 
-const writeFile = require('util').promisify(fs.writeFile);
-
-const run = require('..');
+const run = require('../lib/');
 
 const cwd = join(__dirname, 'fixtures/');
 const file = join(cwd, 'output/bundle.js');
@@ -70,13 +70,14 @@ test('throws an error when bundle is not written to disk', async (t) => {
 });
 
 test('detects changes - forks a new child process and kills older process', async (t) => {
+  // eslint-disable-next-line no-shadow
   const input = join(cwd, 'change-detect-input.js');
   const bundle = await rollup({
     input,
     plugins: [run()]
   });
   await bundle.write(outputOptions);
-  await writeFile(input, 'export const Greeting = () => "Hola"');
+  await writeFile(input, "export const Greeting = () => 'Hola';  // eslint-disable-line");
   await bundle.write(outputOptions);
   t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
   t.is(mockChildProcess().kill.callCount, 1);
