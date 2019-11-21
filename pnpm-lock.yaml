@@ -158,11 +158,11 @@ importers:
   packages/run:
     devDependencies:
       del: 5.1.0
-      rollup: 1.27.2
+      rollup: 1.27.3
       sinon: 7.5.0
     specifiers:
       del: ^5.1.0
-      rollup: ^1.27.2
+      rollup: ^1.20.0
       sinon: ^7.5.0
   packages/strip:
     dependencies:
@@ -1068,6 +1068,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
+  /@types/node/12.12.11:
+    dev: true
+    resolution:
+      integrity: sha512-O+x6uIpa6oMNTkPuHDa9MhMMehlxLAd5QcOvKRjAFsBVpeFWTOPnXbDvILvFgFFZfQ1xh1EZi1FbXxUix+zpsQ==
   /@types/node/12.12.8:
     dev: true
     resolution:
@@ -4736,15 +4740,15 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-yaMna4MJ8LLEHhHl1ilgHakylf0LKeQctDxhngZLQ+W57GnXa5vtH7XKaK8zlAhNEhlWiH5YFVFt+QCDPUmNkw==
-  /rollup/1.27.2:
+  /rollup/1.27.3:
     dependencies:
       '@types/estree': 0.0.39
-      '@types/node': 12.12.8
+      '@types/node': 12.12.11
       acorn: 7.1.0
     dev: true
     hasBin: true
     resolution:
-      integrity: sha512-sD3iyd0zlvgK1S3MmICi6F/Y+R/QWY5XxzsTGN4pAd+nCasDUizmAhgq2hdh1t2eLux974NHU2TW41fhuGPv+Q==
+      integrity: sha512-79AEh4m5NPCz97GTuIoXpSFIMPyk2AiqVQp040baSRPXk/I4YMGt5/CR9GX5oEYEkxwBZoWLheaS1/w/FidfJw==
   /run-async/2.3.0:
     dependencies:
       is-promise: 2.1.0
