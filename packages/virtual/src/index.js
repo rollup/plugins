@@ -17,6 +17,7 @@ export default function virtual(modules) {
       if (id in modules) return PREFIX + id;
 
       if (importer) {
+        // eslint-disable-next-line no-param-reassign
         if (importer.startsWith(PREFIX)) importer = importer.slice(PREFIX.length);
         const resolved = path.resolve(path.dirname(importer), id);
         if (resolvedIds.has(resolved)) return PREFIX + resolved;
@@ -25,6 +26,7 @@ export default function virtual(modules) {
 
     load(id) {
       if (id.startsWith(PREFIX)) {
+        // eslint-disable-next-line no-param-reassign
         id = id.slice(PREFIX.length);
 
         return id in modules ? modules[id] : resolvedIds.get(id);

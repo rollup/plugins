@@ -1,33 +1,61 @@
 {
   "name": "rollup-plugin-virtual",
-  "version": "1.0.1",
-  "description": "Load modules from memory",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rollup/rollup-plugin-virtual.git"
+  "version": "2.0.0",
+  "publishConfig": {
+    "access": "public"
   },
+  "description": "Load virtual modules from memory",
+  "license": "MIT",
+  "repository": "rollup/plugins",
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/rollup-plugin-virtual#readme",
-  "bugs": {
-    "url": "https://github.com/rollup/rollup-plugin-virtual/issues"
-  },
+  "bugs": "https://github.com/rollup/rollup-plugin-virtual/issues",
   "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
-    "lint": "eslint src",
-    "pretest": "npm run build",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
+    "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
-    "rollup"
+    "rollup",
+    "plugin",
+    "memory",
+    "module",
+    "modules",
+    "virtual"
   ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
   "devDependencies": {
     "rollup": "^1.20.0",
     "rollup-plugin-node-resolve": "^5.2.0"
   },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  },
+  "jsnext:main": "dist/index.es.js",
   "module": "dist/index.es.js"
 }
