@@ -29,6 +29,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [strip](packages/strip)               | Remove debugger statements and functions like assert.equal and console.log from your code |
 | [wasm](packages/wasm)                 | Import WebAssembly code with Rollup                                                       |
 | [yaml](packages/yaml)                 | Convert YAML files to ES6 modules                                                         |
+| [virtual](packages/virtual)           | Load virtual modules from memory                                                          |
 |                                       |                                                                                           |
 
 ## Contributing
