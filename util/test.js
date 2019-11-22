@@ -1,3 +1,10 @@
+const getCode = async (bundle) => {
+  const { output } = await bundle.generate({ format: 'cjs' });
+  const [{ code }] = output;
+
+  return code;
+};
+
 const testBundle = async (t, bundle, args = {}) => {
   const { output } = await bundle.generate({ format: 'cjs' });
   const [{ code }] = output;
@@ -9,5 +16,6 @@ const testBundle = async (t, bundle, args = {}) => {
 };
 
 module.exports = {
+  getCode,
   testBundle
 };
