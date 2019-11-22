@@ -42,7 +42,7 @@ export default {
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
-The configuration above will replace every instance of `__buildEnv__` with `'productions'` in any file included in the build. _Note: Values should always be strings. For complex values, use `JSON.stringify`._
+The configuration above will replace every instance of `__buildEnv__` with `'production'` in any file included in the build. _Note: Values should always be strings. For complex values, use `JSON.stringify`._
 
 Typically, `@rollup/plugin-replace` should be placed in `plugins` _before_ other plugins so that they may apply optimizations, such as dead code removal.
 
