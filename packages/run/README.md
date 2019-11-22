@@ -26,13 +26,13 @@ npm install @rollup/plugin-run --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import run from "@rollup/plugin-run";
+import run from '@rollup/plugin-run';
 
 export default {
-  input: "src/index.js",
+  input: 'src/index.js',
   output: {
-    file: "dist/index.js",
-    format: "cjs"
+    file: 'dist/index.js',
+    format: 'cjs'
   },
   plugins: [run()]
 };
