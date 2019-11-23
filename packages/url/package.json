@@ -22,8 +22,7 @@
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "rimraf dist/*",
     "prepublish": "npm test",
-    "pretest": "npm run build",
-    "test": "mocha --require @babel/register"
+    "test": "ava"
   },
   "files": [
     "dist",
@@ -58,13 +57,7 @@
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
-    ],
-    "babel": {
-      "extensions": [
-        "png",
-        "svg"
-      ]
-    }
+    ]
   },
   "jsnext:main": "src/index.js",
   "maintainers": [
