@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-url",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -60,8 +60,5 @@
     ]
   },
   "jsnext:main": "src/index.js",
-  "maintainers": [
-    "Poluektov Dmitriy <dmitry.a@kr.digital>"
-  ],
   "module": "dist/index.es.js"
 }
