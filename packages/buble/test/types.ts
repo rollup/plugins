@@ -1,5 +1,5 @@
 // @ts-check
-import buble from '..';
+import buble, { RollupBubleOptions } from '..';
 
 /** @type {import("rollup").RollupOptions} */
 const config = {

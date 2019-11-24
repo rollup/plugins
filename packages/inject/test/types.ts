@@ -1,7 +1,7 @@
 // @ts-check
 import { dirname } from "path";
 
-import inject from "..";
+import inject, { RollupInjectOptions } from "..";
 
 /** @type {import("rollup").RollupOptions} */
 const config = {
