@@ -54,7 +54,14 @@ module.exports = {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [alias()]
+  plugins: [
+    alias({
+      entries: [
+        { find: 'utils', replacement: '../../../utils' },
+        { find: 'batman-1.0.0', replacement: './joker-1.5.0' }
+      ]
+    })
+  ]
 };
 ```
 

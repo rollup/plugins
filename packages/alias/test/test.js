@@ -5,14 +5,23 @@ import { rollup } from 'rollup';
 import slash from 'slash';
 
 // eslint-disable-next-line import/no-unresolved, import/extensions
+import nodeResolvePlugin from 'rollup-plugin-node-resolve';
+
 import alias from '../dist';
 
 const normalizePath = (pathToNormalize) => slash(pathToNormalize.replace(/^([A-Z]:)/, ''));
 const DIRNAME = normalizePath(__dirname);
 
-// "plugins" is an array of plugins for Rollup, they should include "alias"
-// "tests" is an array of pairs [importee, importer]
+/**
+ * Helper function to test configuration with Rollup
+ * @param plugins is an array of plugins for Rollup, they should include "alias"
+ * @param tests is an array of pairs [source, importer]
+ * @returns {Promise<unknown>}
+ */
 function resolveWithRollup(plugins, tests) {
+  if (!plugins.find((p) => p.name === 'alias')) {
+    throw new Error('`plugins` should include the alias plugin.');
+  }
   return new Promise((resolve, reject) => {
     rollup({
       input: 'dummy-input',
@@ -24,8 +33,8 @@ function resolveWithRollup(plugins, tests) {
               // The buildStart hook is the first to have access to this.resolve
               // We map the tests to an array of resulting ids
               Promise.all(
-                tests.map(([importee, importer]) =>
-                  this.resolve(importee, importer).then((result) => (result ? result.id : null))
+                tests.map(({ source, importer }) =>
+                  this.resolve(source, importer).then((result) => (result ? result.id : null))
                 )
               )
             );
@@ -46,7 +55,12 @@ function resolveWithRollup(plugins, tests) {
   });
 }
 
-// convenience function for just injecting the alias plugin
+/**
+ * Helper function to test configuration with Rollup and injected alias plugin
+ * @param aliasOptions is a configuration for alias plugin
+ * @param tests is an array of pairs [source, importer]
+ * @returns {Promise<unknown>}
+ */
 function resolveAliasWithRollup(aliasOptions, tests) {
   return resolveWithRollup([alias(aliasOptions)], tests);
 }
@@ -76,7 +90,11 @@ test('Simple aliasing (array)', (t) =>
         { find: './local', replacement: 'global' }
       ]
     },
-    [['foo', '/src/importer.js'], ['pony', '/src/importer.js'], ['./local', '/src/importer.js']]
+    [
+      { source: 'foo', importer: '/src/importer.js' },
+      { source: 'pony', importer: '/src/importer.js' },
+      { source: './local', importer: '/src/importer.js' }
+    ]
   ).then((result) => t.deepEqual(result, ['bar', 'paradise', 'global'])));
 
 test('Simple aliasing (object)', (t) =>
@@ -88,7 +106,11 @@ test('Simple aliasing (object)', (t) =>
         './local': 'global'
       }
     },
-    [['foo', '/src/importer.js'], ['pony', '/src/importer.js'], ['./local', '/src/importer.js']]
+    [
+      { source: 'foo', importer: '/src/importer.js' },
+      { source: 'pony', importer: '/src/importer.js' },
+      { source: './local', importer: '/src/importer.js' }
+    ]
   ).then((result) => t.deepEqual(result, ['bar', 'paradise', 'global'])));
 
 test('RegExp aliasing', (t) =>
@@ -101,11 +123,11 @@ test('RegExp aliasing', (t) =>
       ]
     },
     [
-      ['fooooooooobar', '/src/importer.js'],
-      ['im/a/little/pony/yes', '/src/importer.js'],
-      ['./test', '/src/importer.js'],
-      ['test', '/src/importer.js'],
-      ['test/', '/src/importer.js']
+      { source: 'fooooooooobar', importer: '/src/importer.js' },
+      { source: 'im/a/little/pony/yes', importer: '/src/importer.js' },
+      { source: './test', importer: '/src/importer.js' },
+      { source: 'test', importer: '/src/importer.js' },
+      { source: 'test/', importer: '/src/importer.js' }
     ]
   ).then((result) =>
     t.deepEqual(result, ['fooooooooobar2019', 'i/am/a/barbie/girl', null, null, 'this/is/strict'])
@@ -117,9 +139,9 @@ test('Will not confuse modules with similar names', (t) =>
       entries: [{ find: 'foo', replacement: 'bar' }, { find: './foo', replacement: 'bar' }]
     },
     [
-      ['foo2', '/src/importer.js'],
-      ['./fooze/bar', '/src/importer.js'],
-      ['./someFile.foo', '/src/importer.js']
+      { source: 'foo2', importer: '/src/importer.js' },
+      { source: './fooze/bar', importer: '/src/importer.js' },
+      { source: './someFile.foo', importer: '/src/importer.js' }
     ]
   ).then((result) => t.deepEqual(result, [null, null, null])));
 
@@ -129,7 +151,7 @@ test('Leaves entry file untouched if matches alias', (t) =>
       entries: [{ find: 'abacaxi', replacement: './abacaxi' }]
     },
     // eslint-disable-next-line no-undefined
-    [['abacaxi/entry.js', undefined]]
+    [{ source: 'abacaxi/entry.js' }]
   ).then((result) => t.deepEqual(result, [null])));
 
 test('i/am/a/file', (t) =>
@@ -137,7 +159,7 @@ test('i/am/a/file', (t) =>
     {
       entries: [{ find: 'resolve', replacement: 'i/am/a/file' }]
     },
-    [['resolve', '/src/import.js']]
+    [{ source: 'resolve', importer: '/src/import.js' }]
   ).then((result) => t.deepEqual(result, ['i/am/a/file'])));
 
 test('Windows absolute path aliasing', (t) =>
@@ -150,11 +172,16 @@ test('Windows absolute path aliasing', (t) =>
         }
       ]
     },
-    [['resolve', posix.resolve(DIRNAME, './fixtures/index.js')]]
+    [{ source: 'resolve', importer: posix.resolve(DIRNAME, './fixtures/index.js') }]
   ).then((result) =>
     t.deepEqual(result, [normalizePath('E:\\react\\node_modules\\fbjs\\lib\\warning')])
   ));
 
+/**
+ * Helper function to get moduleIDs from final Rollup bundle
+ * @param bundle Rollup bundle
+ * @returns {PromiseLike<T>|Promise<unknown>}
+ */
 const getModuleIdsFromBundle = (bundle) => {
   if (bundle.modules) {
     return Promise.resolve(bundle.modules.map((module) => module.id));
@@ -222,7 +249,7 @@ test('Global customResolver function', (t) => {
       ],
       customResolver: () => customResult
     },
-    [['test', posix.resolve(DIRNAME, './files/index.js')]]
+    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
   ).then((result) => t.deepEqual(result, [customResult]));
 });
 
@@ -241,7 +268,7 @@ test('Local customResolver function', (t) => {
       ],
       customResolver: () => customResult
     },
-    [['test', posix.resolve(DIRNAME, './files/index.js')]]
+    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
   ).then((result) => t.deepEqual(result, [localCustomResult]));
 });
 
@@ -258,7 +285,7 @@ test('Global customResolver plugin-like object', (t) => {
       ],
       customResolver: { resolveId: () => customResult }
     },
-    [['test', posix.resolve(DIRNAME, './files/index.js')]]
+    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
   ).then((result) => t.deepEqual(result, [customResult]));
 });
 
@@ -277,46 +304,48 @@ test('Local customResolver plugin-like object', (t) => {
       ],
       customResolver: { resolveId: () => customResult }
     },
-    [['test', posix.resolve(DIRNAME, './files/index.js')]]
+    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
   ).then((result) => t.deepEqual(result, [localCustomResult]));
 });
 
 /** @TODO
- *  Needs to be modified with smth like rollup-plugin-node-resolve
- *  after such plugin would became a part of rollup-plugins monorepo
+ *  Needs to be modified after rollup-plugin-node-resolve would became a part of rollup-plugins monorepo
  */
-
-// test('Local aliasing', (t) => {
-//   const result = alias({
-//     entries: [{ find: 'foo', replacement: './bar' }, { find: 'pony', replacement: './par/a/di/se' }]
-//   });
-//
-//   const resolved = result.resolveId('foo', '/src/importer.js');
-//   const resolved2 = result.resolveId('foo/baz', '/src/importer.js');
-//   const resolved3 = result.resolveId('foo/baz.js', '/src/importer.js');
-//   const resolved4 = result.resolveId('pony', '/src/highly/nested/importer.js');
-//
-//   t.is(resolved, '/src/bar.js');
-//   t.is(resolved2, '/src/bar/baz.js');
-//   t.is(resolved3, '/src/bar/baz.js');
-//   t.is(resolved4, '/src/highly/nested/par/a/di/se.js');
-// });
-//
-// test('Absolute local aliasing', (t) => {
-//   const result = alias({
-//     entries: [
-//       { find: 'foo', replacement: '/bar' },
-//       { find: 'pony', replacement: '/par/a/di/se.js' }
-//     ]
-//   });
-//
-//   const resolved = result.resolveId('foo', '/src/importer.js');
-//   const resolved2 = result.resolveId('foo/baz', '/src/importer.js');
-//   const resolved3 = result.resolveId('foo/baz.js', '/src/importer.js');
-//   const resolved4 = result.resolveId('pony', '/src/highly/nested/importer.js');
-//
-//   t.is(resolved, '/bar.js');
-//   t.is(resolved2, '/bar/baz.js');
-//   t.is(resolved3, '/bar/baz.js');
-//   t.is(resolved4, '/par/a/di/se.js');
-// });
+test('Alias + rollup-plugin-node-resolve', (t) =>
+  rollup({
+    input: './test/fixtures/index.js',
+    plugins: [
+      alias({
+        entries: [
+          { find: 'fancyNumber', replacement: './aliasMe' },
+          { find: './anotherFancyNumber', replacement: './localAliasMe' },
+          { find: 'numberFolder/anotherNumber', replacement: './folder' },
+          { find: './numberFolder', replacement: './folder' },
+          { find: 'superdeep', replacement: './deep/deep2' }
+        ]
+      }),
+      nodeResolvePlugin()
+    ]
+  })
+    .then(getModuleIdsFromBundle)
+    .then((moduleIds) => {
+      const normalizedIds = moduleIds.map((id) => path.resolve(id)).sort();
+      t.is(normalizedIds.length, 7);
+      [
+        '/fixtures/aliasMe.js',
+        '/fixtures/folder/anotherNumber.js',
+        '/fixtures/folder/deep/deep2/index.js',
+        '/fixtures/folder/index.js',
+        '/fixtures/index.js',
+        '/fixtures/localAliasMe.js',
+        '/fixtures/nonAliased.js'
+      ]
+        .map((id) => path.normalize(id))
+        .forEach((expectedId, index) =>
+          t.is(
+            normalizedIds[index].endsWith(expectedId),
+            true,
+            `expected ${normalizedIds[index]} to end with ${expectedId}`
+          )
+        );
+    }));
