@@ -1,6 +1,6 @@
 import { Plugin } from 'rollup';
 
-interface RollupJsonOptions {
+export interface RollupJsonOptions {
 	/**
 	 * All JSON files will be parsed by default,
 	 * but you can also specifically include files
