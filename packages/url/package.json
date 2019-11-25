@@ -50,9 +50,10 @@
     "rollup-pluginutils": "^2.8.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@babel/preset-env": "^7.7.1",
-    "@babel/register": "^7.7.0",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/register": "^7.7.4",
+    "del": "^5.1.0",
     "globby": "^10.0.1",
     "rollup": "^1.27.4",
     "rollup-plugin-babel": "^4.3.3"

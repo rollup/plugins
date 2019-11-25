@@ -9,7 +9,7 @@
 
 # @rollup/plugin-url
 
-🍣 A Rollup plugin which imports files as data-URIs or to ES6 modules.
+🍣 A Rollup plugin which imports files as data-URIs or ES Modules.
 
 ## Requirements
 
@@ -28,13 +28,13 @@ npm install @rollup/plugin-url --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import url from "@rollup/plugin-url";
+import url from '@rollup/plugin-url';
 
 export default {
-  input: "src/index.js",
+  input: 'src/index.js',
   output: {
-    dir: "output",
-    format: "cjs"
+    dir: 'output',
+    format: 'cjs'
   },
   plugins: [url()]
 };
@@ -46,7 +46,7 @@ With an accompanying file `src/index.js`, the local `image.svg` file would now b
 
 ```js
 // src/index.js
-import svg from "./image.svg";
+import svg from './image.svg';
 console.log(`svg contents: ${svg}`);
 ```
 
@@ -109,15 +109,15 @@ When using the `[dirname]` replacement in `fileName`, use this directory as the 
 _src/path/to/file.js_
 
 ```js
-import png from "./image.png";
+import png from './image.png';
 ```
 
 _rollup.config.js_
 
 ```js
 url({
-  fileName: "[dirname][hash][extname]",
-  sourceDir: path.join(__dirname, "src")
+  fileName: '[dirname][hash][extname]',
+  sourceDir: path.join(__dirname, 'src')
 });
 ```
 

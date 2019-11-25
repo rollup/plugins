@@ -1,4 +1,9 @@
+const { readFileSync } = require('fs');
+const { join } = require('path');
+
 const test = require('ava');
+const del = require('del');
+const globby = require('globby');
 const { rollup } = require('rollup');
 
 const url = require('..');
@@ -7,93 +12,87 @@ require('source-map-support').install();
 
 process.chdir(__dirname);
 
-const defaultOptions = {
-  emitFiles: false
+const outputFile = 'output/bundle.js';
+const outputDir = 'output/';
+
+const run = async (t, type, opts) => {
+  const defaults = { emitFiles: false, publicPath: '' };
+  const options = { ...defaults, ...opts };
+  const bundle = await rollup({
+    input: `fixtures/${type}.js`,
+    plugins: [url(options)]
+  });
+  await bundle.write({ format: 'es', file: outputFile });
+  const code = readFileSync(outputFile, 'utf-8');
+  const glob = join(outputDir, `**/*.${type}`);
+
+  t.snapshot(code);
+  t.snapshot(await globby(glob));
 };
 
-test('should inline text files', () =>
-  run('./fixtures/svg.js', 10 * 1024).then(() =>
-    Promise.all([assertOutput(asserts.svgInline), assertExists(`output/${svghash}`, false)])
-  ));
+test.beforeEach(() => del(outputDir));
 
-test('should not copy files when limit is 0 and emitFiles is off', () =>
-  run('./fixtures/svg.js', { limit: 0, publicPath: '', emitFiles: false }).then(() =>
-    Promise.all([assertOutput(asserts.svgExport), assertExists(`output/${svghash}`, false)])
-  ));
+test.serial('inline binary files', async (t) => {
+  await run(t, 'png', { limit: 10 * 1024 });
+});
 
-test('should copy files when limit is 0', () =>
-  run('./fixtures/svg.js', { limit: 0 }).then(() =>
-    Promise.all([assertOutput(asserts.svgExport), assertExists(`output/${svghash}`)])
-  ));
+test.serial('inline text files', async (t) => {
+  await run(t, 'svg', { limit: 10 * 1024 });
+});
 
-test('should inline binary files', () =>
-  run('./fixtures/png.js', { limit: 10 * 1024 }).then(() =>
-    Promise.all([assertOutput(asserts.pngInline), assertExists(`output/${pnghash}`, false)])
-  ));
+test.serial('inline "large" files', async (t) => {
+  await run(t, 'svg', { limit: 10 });
+});
 
-test('should copy large text files', () =>
-  run('./fixtures/svg.js', { limit: 10 }).then(() =>
-    Promise.all([assertOutput(asserts.svgExport), assertExists(`output/${svghash}`)])
-  ));
+test.serial('limit: 0, emitFiles: false, publicPath: empty', async (t) => {
+  await run(t, 'svg', { limit: 0, publicPath: '', emitFiles: false });
+});
 
-test('should copy large binary files', () =>
-  run('./fixtures/png.js', { limit: 10 }).then(() =>
-    Promise.all([assertOutput(asserts.pngExport), assertExists(`output/${pnghash}`)])
-  ));
+test.serial('copy files, limit: 0', async (t) => {
+  await run(t, 'svg', { limit: 0, emitFiles: true });
+});
 
-test('should use publicPath', () =>
-  run('./fixtures/png.js', { limit: 10, publicPath: '/foo/bar/' }).then(() =>
-    Promise.all([assertOutput(`var png = "/foo/bar/${pnghash}";\nexport default png;`)])
-  ));
+test.serial('copy "large" binary files, limit: 10', async (t) => {
+  await run(t, 'svg', { limit: 10, emitFiles: true });
+});
 
-test('should create a nested directory for the output, if required', () =>
-  run('./fixtures/png.js', { limit: 10, fileName: 'subdirectory/[hash][extname]' }).then(() =>
-    Promise.all([assertExists(`output/subdirectory/${pnghash}`)])
-  ));
+test.serial('use publicPath', async (t) => {
+  await run(t, 'png', { limit: 10, publicPath: '/batman/' });
+});
 
-test('should create a file with the name and extension of the file', () =>
-  run('./fixtures/png.js', { limit: 10, fileName: '[name][extname]' }).then(() =>
-    Promise.all([assertExists(`output/${pngname}`)])
-  ));
+test.serial('create a nested directory for the output, if required', async (t) => {
+  await run(t, 'png', { limit: 10, emitFiles: true, fileName: 'joker/[hash][extname]' });
+});
 
-test('should create a file with the name, hash and extension of the file', () =>
-  run('./fixtures/png.js', { limit: 10, fileName: '[name]-[hash][extname]' }).then(() =>
-    Promise.all([assertExists(`output/png-${pnghash}`)])
-  ));
+test.serial('create a file with the name and extension of the file', async (t) => {
+  await run(t, 'png', { limit: 10, emitFiles: true, fileName: '[name][extname]' });
+});
 
-test('should prefix the file with the parent directory of the source file', () =>
-  run('./fixtures/png.js', { limit: 10, fileName: '[dirname][hash][extname]' }).then(() =>
-    Promise.all([assertExists(`output/fixtures/${pnghash}`)])
-  ));
+test.serial('create a file with the name, hash and extension of the file', async (t) => {
+  await run(t, 'png', { limit: 10, emitFiles: true, fileName: '[name]-[hash][extname]' });
+});
 
-test('should prefix the file with the parent directory of the source file, relative to the sourceDir option', () =>
-  run('./fixtures/png.js', {
+test.serial('prefix the file with the parent directory of the source file', async (t) => {
+  await run(t, 'png', { limit: 10, emitFiles: true, fileName: '[dirname][hash][extname]' });
+});
+
+test.serial(
+  'prefix the file with the parent directory of the source file, relative to the sourceDir option',
+  async (t) => {
+    await run(t, 'png', {
+      limit: 10,
+      emitFiles: true,
+      fileName: '[dirname][hash][extname]',
+      sourceDir: join(__dirname, '../')
+    });
+  }
+);
+
+test.serial('copy the file according to destDir option', async (t) => {
+  await run(t, 'png', {
     limit: 10,
+    emitFiles: true,
     fileName: '[dirname][hash][extname]',
-    sourceDir: path.join(__dirname, '../')
-  }).then(() => Promise.all([assertExists(`output/test/fixtures/${pnghash}`)])));
-
-test('should copy the file according to destDir option', () =>
-  run('./fixtures/png.js', {
-    limit: 10,
-    fileName: '[dirname][hash][extname]',
-    destDir: path.join(__dirname, 'output/dest')
-  }).then(() => Promise.all([assertExists(`output/dest/fixtures/${pnghash}`)])));
-
-test('should create multiple modules and inline files', async (t) =>
-  run(['./fixtures/svg.js', './fixtures/png.js'], {}, true).then(() =>
-    Promise.all([
-      assertOutput(asserts.pngInline, `${dir}/png.js`),
-      assertOutput(asserts.svgInline, `${dir}/svg.js`)
-    ])
-  ));
-
-test('should create multiple modules and copy files', async (t) =>
-  run(['./fixtures/svg.js', './fixtures/png.js'], { limit: 0 }, true).then(() =>
-    Promise.all([
-      assertOutput(asserts.pngExport, `${dir}/png.js`),
-      assertOutput(asserts.svgExport, `${dir}/svg.js`),
-      assertExists(`${dir}/${svghash}`),
-      assertExists(`${dir}/${pnghash}`)
-    ])
-  ));
+    destDir: join(__dirname, 'output/dest')
+  });
+});
