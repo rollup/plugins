@@ -1,0 +1,72 @@
+{
+  "name": "@rollup/plugin-url",
+  "version": "4.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Import files as data-URIs or ES Modules",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Arpad Borsos <arpad.borsos@googlemail.com>",
+  "homepage": "https://github.com/rollup/plugins/packages/url/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
+    "security": "echo 'pnpm needs `npm audit` support'",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "url"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "dependencies": {
+    "make-dir": "^3.0.0",
+    "mime": "^2.4.4",
+    "rollup-pluginutils": "^2.8.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/register": "^7.7.4",
+    "del": "^5.1.0",
+    "globby": "^10.0.1",
+    "rollup": "^1.27.4",
+    "rollup-plugin-babel": "^4.3.3"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/output/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  },
+  "jsnext:main": "src/index.js",
+  "module": "dist/index.es.js"
+}
