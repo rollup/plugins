@@ -47,11 +47,11 @@
     "rollup": "^1.20.0"
   },
   "dependencies": {
+    "@types/buble": "^0.19.2",
     "buble": "^0.19.8",
     "rollup-pluginutils": "^2.8.2"
   },
   "devDependencies": {
-    "@types/buble": "^0.19.2",
     "del-cli": "^3.0.0",
     "rollup": "^1.27.0",
     "source-map": "^0.7.3",

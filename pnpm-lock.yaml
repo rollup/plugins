@@ -71,10 +71,10 @@ importers:
       strip-ansi: ^5.2.0
   packages/buble:
     dependencies:
+      '@types/buble': 0.19.2
       buble: 0.19.8
       rollup-pluginutils: 2.8.2
     devDependencies:
-      '@types/buble': 0.19.2
       del-cli: 3.0.0
       rollup: 1.27.0
       source-map: 0.7.3
@@ -1066,7 +1066,7 @@ packages:
   /@types/buble/0.19.2:
     dependencies:
       magic-string: 0.25.4
-    dev: true
+    dev: false
     resolution:
       integrity: sha512-uUD8zIfXMKThmFkahTXDGI3CthFH1kMg2dOm3KLi4GlC5cbARA64bEcUMbbWdWdE73eoc/iBB9PiTMqH0dNS2Q==
   /@types/color-name/1.1.1:
