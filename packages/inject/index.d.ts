@@ -2,7 +2,7 @@ import { Plugin } from "rollup";
 
 type Injectment = string | [string, string];
 
-interface RollupInjectOptions {
+export interface RollupInjectOptions {
   /**
    * A minimatch pattern, or array of patterns, of files that should be
    * processed by this plugin (if omitted, all files are included by default)

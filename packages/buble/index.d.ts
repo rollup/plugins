@@ -24,7 +24,7 @@ interface TransformOptions {
   unicodeRegExp?: boolean;
 }
 
-interface RollupBubleOptions {
+export interface RollupBubleOptions {
   /**
    * A minimatch pattern, or array of patterns, of files that should be
    * processed by this plugin (if omitted, all files are included by default)

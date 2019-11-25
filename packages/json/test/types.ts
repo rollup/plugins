@@ -1,5 +1,5 @@
 // @ts-check
-import json from '..';
+import json, { RollupJsonOptions } from '..';
 
 /** @type {import("rollup").RollupOptions} */
 const config = {

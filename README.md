@@ -22,10 +22,12 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [beep](packages/beep)                 | System beeps on errors and warnings                                                       |
 | [buble](packages/buble)               | Compile ES2015 with buble                                                                 |
 | [dsv](packages/dsv)                   | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
+| [image](packages/image)               | Import JPG, PNG, GIF, SVG, and WebP files                                                 |
 | [inject](packages/inject)             | Scan modules for global variables and injects `import` statements where necessary         |
 | [json](packages/json)                 | Convert .json files to ES6 modules                                                        |
 | [replace](packages/replace)           | Replace strings in files while bundling                                                   |
 | [strip](packages/strip)               | Remove debugger statements and functions like assert.equal and console.log from your code |
+| [virtual](packages/virtual)           | Load virtual modules from memory                                                          |
 | [wasm](packages/wasm)                 | Import WebAssembly code with Rollup                                                       |
 | [yaml](packages/yaml)                 | Convert YAML files to ES6 modules                                                         |
 |                                       |                                                                                           |
