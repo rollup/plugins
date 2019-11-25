@@ -1,7 +1,7 @@
 // @ts-check
 import { dirname } from 'path';
 
-import replace from '..';
+import replace, { RollupReplaceOptions } from '..';
 
 /** @type {import("rollup").RollupOptions} */
 const config = {
