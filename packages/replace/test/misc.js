@@ -111,3 +111,37 @@ test('does not generate sourcemaps if disabled', async (t) => {
   await bundle.generate({ format: 'es', sourcemap: true });
   t.truthy(warned);
 });
+
+test('can be configured with output plugins', async (t) => {
+  const bundle = await rollup({
+    input: 'main.js',
+    plugins: [
+      {
+        resolveId(id) {
+          return id;
+        },
+        load(importee) {
+          if (importee === 'main.js') {
+            return 'log("environment", process.env.NODE_ENV);';
+          }
+        }
+      }
+    ]
+  });
+
+  const { code, map } = getOutputFromGenerated(
+    await bundle.generate({
+      format: 'es',
+      sourcemap: true,
+      plugins: [
+        replace({
+          'process.env.NODE_ENV': JSON.stringify('production'),
+          delimiters: ['', '']
+        })
+      ]
+    })
+  );
+
+  t.is(code.trim(), 'log("environment", "production");');
+  t.truthy(map);
+});

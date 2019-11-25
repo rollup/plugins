@@ -80,10 +80,10 @@ export default function replace(options = {}) {
     name: 'replace',
 
     renderChunk(code, chunk) {
-      if (!filter(chunk.fileName)) {
-        return null;
-      }
-      return executeReplacement(code, chunk.fileName);
+      const id = chunk.fileName;
+      if (!keys.length) return null;
+      if (!filter(id)) return null;
+      return executeReplacement(code, id);
     },
 
     transform(code, id) {
