@@ -42,39 +42,9 @@ export default function replace(options = {}) {
   const keys = Object.keys(functionValues)
     .sort(longest)
     .map(escape);
-
   const pattern = delimiters
     ? new RegExp(`${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}`, 'g')
     : new RegExp(`\\b(${keys.join('|')})\\b`, 'g');
-
-  function executeReplacement(code, id) {
-    const magicString = new MagicString(code);
-
-    let hasReplacements = false;
-    let match;
-    let start;
-    let end;
-    let replacement;
-
-    // eslint-disable-next-line no-cond-assign
-    while ((match = pattern.exec(code))) {
-      hasReplacements = true;
-
-      start = match.index;
-      end = start + match[0].length;
-      replacement = String(functionValues[match[1]](id));
-
-      magicString.overwrite(start, end, replacement);
-    }
-
-    if (!hasReplacements) return null;
-
-    const result = { code: magicString.toString() };
-    if (options.sourceMap !== false && options.sourcemap !== false)
-      result.map = magicString.generateMap({ hires: true });
-
-    return result;
-  }
 
   return {
     name: 'replace',
@@ -92,4 +62,37 @@ export default function replace(options = {}) {
       return executeReplacement(code, id);
     }
   };
+
+  function executeReplacement(code, id) {
+    const magicString = new MagicString(code);
+    if (!codeHasReplacements(code, id, magicString)) {
+      return null;
+    }
+
+    const result = { code: magicString.toString() };
+    if (isSourceMapEnabled()) {
+      result.map = magicString.generateMap({ hires: true });
+    }
+    return result;
+  }
+
+  function codeHasReplacements(code, id, magicString) {
+    let result = false;
+    let match;
+
+    // eslint-disable-next-line no-cond-assign
+    while ((match = pattern.exec(code))) {
+      result = true;
+
+      const start = match.index;
+      const end = start + match[0].length;
+      const replacement = String(functionValues[match[1]](id));
+      magicString.overwrite(start, end, replacement);
+    }
+    return result;
+  }
+
+  function isSourceMapEnabled() {
+    return options.sourceMap !== false && options.sourcemap !== false;
+  }
 }
