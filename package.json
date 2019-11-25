@@ -8,28 +8,34 @@
     "ci:test": "node scripts/run-changed.js ci:test",
     "lint": "pnpm run lint:docs && pnpm run lint:package && node scripts/run-changed.js lint",
     "lint:docs": "prettier --write README.md",
+    "lint:js": "eslint scripts util",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "preinstall": "node scripts/disallow-npm.js",
     "publish": "node scripts/publish.js",
+    "security": "pnpm audit",
     "test": "node scripts/run-changed.js test"
   },
   "devDependencies": {
-    "ava": "^2.2.0",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
+    "ava": "^2.4.0",
     "chalk": "^2.4.2",
     "codecov-lite": "^0.3.1",
+    "del-cli": "^3.0.0",
     "eslint-config-rollup": "^0.1.0",
-    "execa": "^2.0.4",
+    "execa": "^2.1.0",
     "globby": "^10.0.1",
-    "lint-staged": "^9.2.0",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.4.3",
     "nyc": "^14.1.1",
-    "pnpm": "^4.1.5",
-    "pre-commit": "^1.2.2",
-    "prettier": "^1.18.2",
+    "pnpm": "^4.3.0",
+    "prettier": "^1.19.1",
     "prettier-plugin-package": "^0.3.1",
-    "rollup": "^1.20.1",
+    "rollup": "^1.27.2",
+    "ts-node": "^8.5.2",
+    "tsconfig-paths": "^3.9.0",
     "tslib": "^1.10.0",
-    "tslint": "^5.19.0",
-    "typescript": "^3.4.3",
+    "typescript": "^3.7.2",
     "yaml": "^1.7.2"
   },
   "ava": {
@@ -40,9 +46,22 @@
       "!**/types.ts"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
-    "*.js": [
+    "*.js,*.ts": [
       "eslint --fix",
+      "git add"
+    ],
+    "*.md": [
+      "prettier --single-quote --write",
+      "git add"
+    ],
+    "*package.json": [
+      "prettier --write --plugin=prettier-plugin-package",
       "git add"
     ]
   },
@@ -54,6 +73,5 @@
       "lib/client*.js",
       "test/"
     ]
-  },
-  "pre-commit": "lint-staged"
+  }
 }
