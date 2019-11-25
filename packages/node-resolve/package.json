@@ -13,6 +13,7 @@
   "main": "dist/rollup-plugin-node-resolve.cjs.js",
   "module": "dist/rollup-plugin-node-resolve.es.js",
   "jsnext:main": "dist/rollup-plugin-node-resolve.es.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -31,9 +32,10 @@
     "test": "ava"
   },
   "files": [
-    "src",
     "dist",
-    "index.d.ts"
+    "types",
+    "LICENSE",
+    "README.md"
   ],
   "keywords": [
     "rollup",
