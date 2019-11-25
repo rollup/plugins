@@ -61,6 +61,7 @@
   "ava": {
     "files": [
       "!**/fixtures/**",
+      "!**/output/**",
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
