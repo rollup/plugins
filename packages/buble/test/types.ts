@@ -12,7 +12,8 @@ const config = {
     buble({
       exclude: 'node_modules/**',
       include: 'config.js',
-      transforms: { modules: true }
+      transforms: { modules: true },
+      objectAssign: true,
     })
   ]
 };
