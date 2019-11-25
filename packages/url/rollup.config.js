@@ -2,7 +2,7 @@ import babel from 'rollup-plugin-babel';
 
 import pkg from './package.json';
 
-const external = Object.keys(pkg.dependencies).concat(['crypto', 'path', 'fs', 'mkpath']);
+const external = Object.keys(pkg.dependencies).concat(['crypto', 'path', 'fs', 'util']);
 
 export default {
   input: 'src/index.js',

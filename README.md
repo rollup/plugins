@@ -30,7 +30,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [virtual](packages/virtual)           | Load virtual modules from memory                                                          |
 | [wasm](packages/wasm)                 | Import WebAssembly code with Rollup                                                       |
 | [yaml](packages/yaml)                 | Convert YAML files to ES6 modules                                                         |
-|                                       |                                                                                           |
+| [url](packages/url)                   | Import files as data-URIs or ES Modules                                                   |
 
 ## Contributing
 
