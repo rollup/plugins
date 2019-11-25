@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [
+    ".eslintrc.js",
+    "./**/rollup.config.js",
+    "./**/fixtures",
+    "./**/lib",
+    "./**/src",
+    "./**/test",
+    "./**/types/**/*.d.ts",
+    "scripts",
+    "util"
+  ]
+}
