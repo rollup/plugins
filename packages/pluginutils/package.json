@@ -1,6 +1,6 @@
 {
   "name": "@rollup/pluginutils",
-  "version": "2.8.2",
+  "version": "3.0.0",
   "description": "A set of utility functions commonly used by Rollup plugins",
   "license": "MIT",
   "repository": "rollup/plugins",

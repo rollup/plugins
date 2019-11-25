@@ -33,6 +33,13 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [yaml](packages/yaml)                 | Convert YAML files to ES6 modules                                                         |
 |                                       |                                                                                           |
 
+## Other Packages Found Here
+
+|                                     |                                                            |
+| ----------------------------------- | ---------------------------------------------------------- |
+| [pluginutils](packages/pluginutils) | A set of utility functions commonly used by Rollup plugins |
+|                                     |                                                            |
+
 ## Contributing
 
 This repository is a [monorepo](https://en.wikipedia.org/wiki/Monorepo) which leverages [pnpm](https://pnpm.js.org/) for dependency management.

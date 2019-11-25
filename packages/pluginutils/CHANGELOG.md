@@ -1,5 +1,13 @@
 # @rollup/pluginutils changelog
 
+## 3.0.0
+
+_2019-11-25_
+
+- **Breaking:** Minimum compatible Rollup version is 1.2.0
+- **Breaking:** Minimum supported Node version is 8.0.0
+- Published as @rollup/plugins-image
+
 ## 2.8.2
 
 _2019-09-13_
