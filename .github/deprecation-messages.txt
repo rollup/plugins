@@ -1,7 +1,7 @@
-"This module has moved and is now available at @rollup/plugin-. Please update your dependencies. This version is no longer maintained."
+"This module has been deprecated and is no longer maintained. Please use @rollup/plugin-."
 
 # Moved
 
-This module has moved and is now available at []@rollup/plugin-](https://github.com/rollup/plugins). Please update your dependencies. This repository is no longer maintained.
+This module has moved and is now available at [@rollup/plugin-](https://github.com/rollup/plugins). Please update your dependencies. This repository is no longer maintained.
 
 This module has moved and is now available at @rollup/plugin- / https://github.com/rollup/plugins

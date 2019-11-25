@@ -62,6 +62,28 @@ test('Simple aliasing (object)', (t) => {
   t.is(resolved3, 'global');
 });
 
+test('Simple aliasing (object) (v1)', (t) => {
+  const result = alias({
+    foo: 'bar',
+    pony: 'paradise',
+    './local': 'global',
+    resolve: ['.mjs', '.js'],
+    entries: 'string'
+  });
+
+  const resolved = result.resolveId('foo', '/src/importer.js');
+  const resolved2 = result.resolveId('pony', '/src/importer.js');
+  const resolved3 = result.resolveId('./local', '/src/importer.js');
+  const resolved4 = result.resolveId('resolve', '/src/importer.js');
+  const resolved5 = result.resolveId('entries', '/src/importer.js');
+
+  t.is(resolved, 'bar');
+  t.is(resolved2, 'paradise');
+  t.is(resolved3, 'global');
+  t.is(resolved4, null);
+  t.is(resolved5, 'string');
+});
+
 test('RegExp aliasing', (t) => {
   const result = alias({
     entries: [
@@ -86,7 +108,10 @@ test('RegExp aliasing', (t) => {
 
 test('Will not confuse modules with similar names', (t) => {
   const result = alias({
-    entries: [{ find: 'foo', replacement: 'bar' }, { find: './foo', replacement: 'bar' }]
+    entries: [
+      { find: 'foo', replacement: 'bar' },
+      { find: './foo', replacement: 'bar' }
+    ]
   });
 
   const resolved = result.resolveId('foo2', '/src/importer.js');
@@ -100,7 +125,10 @@ test('Will not confuse modules with similar names', (t) => {
 
 test('Local aliasing', (t) => {
   const result = alias({
-    entries: [{ find: 'foo', replacement: './bar' }, { find: 'pony', replacement: './par/a/di/se' }]
+    entries: [
+      { find: 'foo', replacement: './bar' },
+      { find: 'pony', replacement: './par/a/di/se' }
+    ]
   });
 
   const resolved = result.resolveId('foo', '/src/importer.js');
@@ -321,7 +349,7 @@ test('Global customResolver plugin-like object', (t) => {
       }
     ],
     resolve: ['.js', '.jsx'],
-    customResolver: {resolveId: () => customResult}
+    customResolver: { resolveId: () => customResult }
   });
 
   const resolved = result.resolveId('test', posix.resolve(DIRNAME, './files/index.js'));
@@ -337,11 +365,11 @@ test('Local customResolver plugin-like object', (t) => {
       {
         find: 'test',
         replacement: path.resolve('./test/files/folder/hipster.jsx'),
-        customResolver: {resolveId: () => localCustomResult}
+        customResolver: { resolveId: () => localCustomResult }
       }
     ],
     resolve: ['.js', '.jsx'],
-    customResolver: {resolveId: () => customResult}
+    customResolver: { resolveId: () => customResult }
   });
 
   const resolved = result.resolveId('test', posix.resolve(DIRNAME, './files/index.js'));

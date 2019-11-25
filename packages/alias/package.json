@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "Resolves aliases with Rollup",
+  "description": "Define and resolve aliases for bundle dependencies",
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Johannes Stein",
@@ -22,9 +22,9 @@
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm run test",
-    "pretest": "npm run build",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint && pnpm run test",
+    "pretest": "pnpm run build",
     "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
   },

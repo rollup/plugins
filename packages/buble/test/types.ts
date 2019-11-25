@@ -1,5 +1,5 @@
 // @ts-check
-import buble from '..';
+import buble, { RollupBubleOptions } from '..';
 
 /** @type {import("rollup").RollupOptions} */
 const config = {
@@ -12,7 +12,8 @@ const config = {
     buble({
       exclude: 'node_modules/**',
       include: 'config.js',
-      transforms: { modules: true }
+      transforms: { modules: true },
+      objectAssign: true,
     })
   ]
 };

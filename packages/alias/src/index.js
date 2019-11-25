@@ -40,18 +40,19 @@ const normalizeId = (id) => {
   return id;
 };
 
-const getEntries = ({ entries }) => {
-  if (!entries) {
-    return [];
-  }
-
+const getEntries = (options) => {
+  let { entries } = options;
   if (Array.isArray(entries)) {
     return entries;
   }
 
-  return Object.keys(entries).map((key) => {
-    return { find: key, replacement: entries[key] };
-  });
+  // entries might contain the "resolve" property, so filter out array values
+  entries = (typeof entries === 'object' && entries) || options;
+  return Object.keys(entries)
+    .map((key) => {
+      return { find: key, replacement: entries[key] };
+    })
+    .filter((entry) => !Array.isArray(entry.replacement));
 };
 
 export default function alias(options = {}) {
@@ -66,6 +67,7 @@ export default function alias(options = {}) {
   }
 
   return {
+    name: 'alias',
     resolveId(importee, importer) {
       const importeeId = normalizeId(importee);
       const importerId = normalizeId(importer);
@@ -80,14 +82,14 @@ export default function alias(options = {}) {
 
       let customResolver = null;
       if (typeof matchedEntry.customResolver === 'function') {
-        customResolver = matchedEntry.customResolver;
+        ({ customResolver } = matchedEntry);
       } else if (
         typeof matchedEntry.customResolver === 'object' &&
         typeof matchedEntry.customResolver.resolveId === 'function'
       ) {
         customResolver = matchedEntry.customResolver.resolveId;
       } else if (typeof options.customResolver === 'function') {
-        customResolver = options.customResolver;
+        ({ customResolver } = options);
       } else if (
         typeof options.customResolver === 'object' &&
         typeof options.customResolver.resolveId === 'function'

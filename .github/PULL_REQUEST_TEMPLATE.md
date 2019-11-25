@@ -13,9 +13,12 @@
   Please place an x (no spaces - [x]) in all [ ] that apply.
 -->
 
-- Rollup Plugin Name: <!-- the plugin(s) this PR is for -->
+<!-- the plugin(s) this PR is for -->
+
+## Rollup Plugin Name: `{name}`
 
 This PR contains:
+
 - [ ] bugfix
 - [ ] feature
 - [ ] refactor
@@ -23,11 +26,13 @@ This PR contains:
 - [ ] other
 
 Are tests included?
-- [ ] yes (*bugfixes and features will not be merged without tests*)
+
+- [ ] yes (_bugfixes and features will not be merged without tests_)
 - [ ] no
 
 Breaking Changes?
-- [ ] yes (*breaking changes will not be merged unless absolutely necessary*)
+
+- [ ] yes (_breaking changes will not be merged unless absolutely necessary_)
 - [ ] no
 
 List any relevant issue numbers:
