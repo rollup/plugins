@@ -8,11 +8,23 @@ const getCode = async (bundle) => {
 const testBundle = async (t, bundle, args = {}) => {
   const { output } = await bundle.generate({ format: 'cjs' });
   const [{ code }] = output;
-  const params = Object.keys(args).concat('t', `let result;\n\n${code}\n\nreturn result;`);
+  const module = { exports: {} };
+  const params = ['module', 'exports', 'require', 't', ...Object.keys(args)].concat(
+    `process.chdir('${process.cwd()}'); let result;\n\n${code}\n\nreturn result;`
+  );
+
   // eslint-disable-next-line no-new-func
   const func = new Function(...params);
+  let error;
+  let result;
 
-  return { code, result: func(...[t, ...Object.values(args)]) };
+  try {
+    result = func(...[module, module.exports, require, t, ...Object.values(args)]);
+  } catch (e) {
+    error = e;
+  }
+
+  return { code, error, module, result };
 };
 
 module.exports = {

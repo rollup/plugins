@@ -9,3 +9,5 @@ output/
 coverage.lcov
 pnpm-debug.log
 .idea
+
+!packages/node-resolve/test/fixtures/node_modules

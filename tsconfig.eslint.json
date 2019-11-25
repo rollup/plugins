@@ -3,10 +3,10 @@
   "include": [
     ".eslintrc.js",
     "./**/rollup.config.js",
-    "./**/fixtures",
+    "./**/fixtures/**/*",
     "./**/lib",
     "./**/src",
-    "./**/test",
+    "./**/test/**/*",
     "./**/types/**/*.d.ts",
     "scripts",
     "util"
