@@ -16,13 +16,20 @@
   },
   "scripts": {
     "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint && pnpm run security",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
-    "prebuild": "rimraf dist/*",
-    "prepublish": "npm test",
-    "test": "ava"
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
+    "security": "echo 'pnpm needs `npm audit` support'",
+    "test": "ava test/test.js --verbose --u"
   },
   "files": [
     "dist",
@@ -35,7 +42,7 @@
     "url"
   ],
   "peerDependencies": {
-    "rollup": ">=1.20.0"
+    "rollup": "^1.20.0"
   },
   "dependencies": {
     "make-dir": "^3.0.0",
@@ -46,9 +53,8 @@
     "@babel/core": "^7.7.2",
     "@babel/preset-env": "^7.7.1",
     "@babel/register": "^7.7.0",
-    "mocha": "^6.2.2",
-    "rimraf": "^2.7.1",
-    "rollup": "^1.27.3",
+    "globby": "^10.0.1",
+    "rollup": "^1.27.4",
     "rollup-plugin-babel": "^4.3.3"
   },
   "ava": {
