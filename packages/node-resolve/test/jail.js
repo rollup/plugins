@@ -9,7 +9,7 @@ const nodeResolve = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
 
-test('mark as external to module outside the jail', async (t) => {
+test('mark module outside the jail as external', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'jail.js',
@@ -17,7 +17,7 @@ test('mark as external to module outside the jail', async (t) => {
     plugins: [
       nodeResolve({
         // changed to /fixtures above
-        jail: process.cwd()
+        jail: join(__dirname, 'snapshots')
       })
     ]
   });
