@@ -11,7 +11,7 @@ process.chdir(join(__dirname, 'fixtures'));
 
 test('options.jsnext still works with correct priority', async (t) => {
   const bundle = await rollup({
-    input: 'jsnext/main.js',
+    input: 'jsnext.js',
     plugins: [nodeResolve({ jsnext: true, main: true })]
   });
   const { module } = await testBundle(t, bundle);
@@ -20,54 +20,50 @@ test('options.jsnext still works with correct priority', async (t) => {
 
 test('options.module still works with correct priority', async (t) => {
   const bundle = await rollup({
-    input: 'module/main.js',
+    input: 'module.js',
     plugins: [nodeResolve({ module: true, main: true, preferBuiltins: false })]
   });
   const { module } = await testBundle(t, bundle);
   t.is(module.exports, 'MODULE');
 });
 
-it('should support enabling "jsnext" field resolution', () =>
-  rollup
-    .rollup({
-      input: 'samples/prefer-module/main.js',
-      plugins: [nodeResolve({ main: false, module: false, jsnext: true })]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'JSNEXT-ENTRY');
-    }));
+test('should support enabling "jsnext" field resolution', async (t) => {
+  const bundle = await rollup({
+    input: 'prefer-module.js',
+    plugins: [nodeResolve({ main: false, module: false, jsnext: true })]
+  });
+  const { module } = await testBundle(t, bundle);
 
-it('should support disabling "module" field resolution', () =>
-  rollup
-    .rollup({
-      input: 'samples/prefer-main/main.js',
-      plugins: [nodeResolve({ module: false })]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'MAIN-ENTRY');
-    }));
+  t.is(module.exports, 'JSNEXT-ENTRY');
+});
 
-it('should support disabling "main" field resolution', () =>
-  rollup
-    .rollup({
-      input: 'samples/prefer-module/main.js',
-      plugins: [nodeResolve({ main: false })]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'MODULE-ENTRY');
-    }));
+test('should support disabling "module" field resolution', async (t) => {
+  const bundle = await rollup({
+    input: 'prefer-main.js',
+    plugins: [nodeResolve({ module: false })]
+  });
+  const { module } = await testBundle(t, bundle);
 
-it('finds a module with module field', () =>
-  rollup
-    .rollup({
-      input: 'samples/module/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [nodeResolve({ preferBuiltins: false })]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'MODULE');
-    }));
+  t.is(module.exports, 'MAIN-ENTRY');
+});
+
+test('should support disabling "main" field resolution', async (t) => {
+  const bundle = await rollup({
+    input: 'prefer-module.js',
+    plugins: [nodeResolve({ main: false })]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'MODULE-ENTRY');
+});
+
+test('finds a module with module field', async (t) => {
+  const bundle = await rollup({
+    input: 'module.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ preferBuiltins: false })]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'MODULE');
+});

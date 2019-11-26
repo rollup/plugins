@@ -6,9 +6,11 @@ import HTTPTrackerWithSubPath from 'isomorphic-object-with-false/lib/subpath/foo
 import ES6_BROWSER_EMPTY from '\0node-resolve:empty.js';
 
 // do some assert
+const clientWs = new Client('ws:');
+const clientHttp = new Client('http:');
 
-t.deepEqual(new Client('ws:'), { name: 'websocket-tracker' });
-t.deepEqual(new Client('http:'), { name: 'NULL' });
+t.is(clientWs.name, 'websocket-tracker');
+t.is(clientHttp.name, 'NULL');
 t.is(HTTPTracker, ES6_BROWSER_EMPTY);
 t.is(HTTPTrackerWithSubPath, ES6_BROWSER_EMPTY);
 

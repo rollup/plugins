@@ -1,59 +1,65 @@
-describe('symlinks', () => {
-  function createMissingDirectories() {
-    createDirectory('./samples/symlinked/first/node_modules');
-    createDirectory('./samples/symlinked/second/node_modules');
-    createDirectory('./samples/symlinked/third/node_modules');
-  }
+const fs = require('fs');
+const { join } = require('path');
 
-  function createDirectory(pathToDir) {
-    if (!fs.existsSync(pathToDir)) {
-      fs.mkdirSync(pathToDir);
-    }
-  }
+const test = require('ava');
+const { rollup } = require('rollup');
 
-  function linkDirectories() {
-    fs.symlinkSync('../../second', './samples/symlinked/first/node_modules/second', 'dir');
-    fs.symlinkSync('../../third', './samples/symlinked/first/node_modules/third', 'dir');
-    fs.symlinkSync('../../third', './samples/symlinked/second/node_modules/third', 'dir');
-  }
+const { testBundle } = require('../../../util/test');
 
-  function unlinkDirectories() {
-    fs.unlinkSync('./samples/symlinked/first/node_modules/second');
-    fs.unlinkSync('./samples/symlinked/first/node_modules/third');
-    fs.unlinkSync('./samples/symlinked/second/node_modules/third');
-  }
+const nodeResolve = require('..');
 
-  beforeEach(() => {
-    createMissingDirectories();
-    linkDirectories();
+process.chdir(join(__dirname, 'fixtures'));
+
+function createMissingDirectories() {
+  createDirectory('symlinked/first/node_modules');
+  createDirectory('symlinked/second/node_modules');
+  createDirectory('symlinked/third/node_modules');
+}
+
+function createDirectory(pathToDir) {
+  if (!fs.existsSync(pathToDir)) {
+    fs.mkdirSync(pathToDir);
+  }
+}
+
+function linkDirectories() {
+  fs.symlinkSync('../../second', 'symlinked/first/node_modules/second', 'dir');
+  fs.symlinkSync('../../third', 'symlinked/first/node_modules/third', 'dir');
+  fs.symlinkSync('../../third', 'symlinked/second/node_modules/third', 'dir');
+}
+
+function unlinkDirectories() {
+  fs.unlinkSync('symlinked/first/node_modules/second');
+  fs.unlinkSync('symlinked/first/node_modules/third');
+  fs.unlinkSync('symlinked/second/node_modules/third');
+}
+
+beforeEach(() => {
+  createMissingDirectories();
+  linkDirectories();
+});
+
+afterEach(() => {
+  unlinkDirectories();
+});
+
+test('resolves symlinked packages', async (t) => {
+  const bundle = await rollup({
+    input: 'symlinked/first/index.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve()]
   });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports.number1, module.exports.number2);
+});
 
-  afterEach(() => {
-    unlinkDirectories();
+test('preserves symlinks if `preserveSymlinks` is true', async (t) => {
+  const bundle = await rollup({
+    input: 'symlinked/first/index.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve()],
+    preserveSymlinks: true
   });
-
-  it('resolves symlinked packages', () =>
-    rollup
-      .rollup({
-        input: 'samples/symlinked/first/index.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve()]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports.number1, module.exports.number2);
-      }));
-
-  it('preserves symlinks if `preserveSymlinks` is true', () =>
-    rollup
-      .rollup({
-        input: 'samples/symlinked/first/index.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve()],
-        preserveSymlinks: true
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.notEqual(module.exports.number1, module.exports.number2);
-      }));
+  const { module } = await testBundle(t, bundle);
+  t.not(module.exports.number1, module.exports.number2);
 });

@@ -1,337 +1,201 @@
-it('disregards top-level browser field', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [nodeResolve()]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'node');
-    }));
+const { join } = require('path');
 
-it('allows use of the top-level browser field', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'browser');
-    }));
+const test = require('ava');
+const { rollup } = require('rollup');
+const commonjs = require('rollup-plugin-commonjs');
 
-it('disregards object browser field', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [nodeResolve()]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'node');
-      assert.equal(module.exports.dep, 'node-dep');
-      assert.equal(module.exports.test, 42);
-    }));
+const { testBundle } = require('../../../util/test');
 
-it('allows use of the object browser field', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'browser');
-      assert.equal(module.exports.dep, 'browser-dep');
-      assert.equal(module.exports.test, 43);
-    }));
+const nodeResolve = require('..');
 
-it('allows use of object browser field, resolving `main`', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object-main/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'browser');
-      assert.equal(module.exports.dep, 'browser-dep');
-      assert.equal(module.exports.test, 43);
-    }));
+process.chdir(join(__dirname, 'fixtures'));
 
-it('options.browser = true still works', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object-main/main.js',
-      plugins: [
-        nodeResolve({
-          browser: true
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'browser');
-      assert.equal(module.exports.dep, 'browser-dep');
-      assert.equal(module.exports.test, 43);
-    }));
+test('disregards top-level browser field', async (t) => {
+  const bundle = await rollup({
+    input: 'browser.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
 
-it('allows use of object browser field, resolving implicit `main`', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object/main-implicit.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'browser');
-    }));
+  t.is(module.exports, 'node');
+});
 
-it('allows use of object browser field, resolving replaced builtins', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object-builtin/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'browser-fs');
-    }));
+test('allows use of the top-level browser field', async (t) => {
+  const bundle = await rollup({
+    input: 'browser.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
 
-it('allows use of object browser field, resolving nested directories', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object-nested/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'browser');
-      assert.equal(module.exports.dep, 'browser-dep');
-      assert.equal(module.exports.test, 43);
-    }));
+  t.is(module.exports, 'browser');
+});
 
-it('allows use of object browser field, resolving `main`', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object-main/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'browser');
-      assert.equal(module.exports.dep, 'browser-dep');
-      assert.equal(module.exports.test, 43);
-    }));
+test('disregards object browser field', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
 
-it('allows use of object browser field, resolving implicit `main`', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object/main-implicit.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports.env, 'browser');
-    }));
+  t.is(module.exports.env, 'node');
+  t.is(module.exports.dep, 'node-dep');
+  t.is(module.exports.test, 42);
+});
 
-it('allows use of object browser field, resolving replaced builtins', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-object-builtin/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'browser-fs');
-    }));
+test('allows use of the object browser field', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
 
-it('respects local browser field', () =>
-  rollup
-    .rollup({
-      input: 'samples/browser-local/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({
-          mainFields: ['browser', 'main']
-        })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'component-type');
-    }));
+  t.is(module.exports.env, 'browser');
+  t.is(module.exports.dep, 'browser-dep');
+  t.is(module.exports.test, 43);
+});
 
-    it('allows use of object browser field, resolving nested directories', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser-object-nested/main.js',
-          onwarn: expectNoWarnings,
-          plugins: [
-            nodeResolve({
-              mainFields: ['browser', 'main']
-            })
-          ]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports.env, 'browser');
-          assert.equal(module.exports.dep, 'browser-dep');
-          assert.equal(module.exports.test, 43);
-        }));
+test('allows use of object browser field, resolving `main`', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object-main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
 
-    it('allows use of object browser field, resolving `main`', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser-object-main/main.js',
-          onwarn: expectNoWarnings,
-          plugins: [
-            nodeResolve({
-              mainFields: ['browser', 'main']
-            })
-          ]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports.env, 'browser');
-          assert.equal(module.exports.dep, 'browser-dep');
-          assert.equal(module.exports.test, 43);
-        }));
+  t.is(module.exports.env, 'browser');
+  t.is(module.exports.dep, 'browser-dep');
+  t.is(module.exports.test, 43);
+});
 
-    it('allows use of object browser field, resolving implicit `main`', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser-object/main-implicit.js',
-          onwarn: expectNoWarnings,
-          plugins: [
-            nodeResolve({
-              mainFields: ['browser', 'main']
-            })
-          ]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports.env, 'browser');
-        }));
+test('options.browser = true still works', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object-main.js',
+    plugins: [
+      nodeResolve({
+        browser: true
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
 
-    it('allows use of object browser field, resolving replaced builtins', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser-object-builtin/main.js',
-          onwarn: expectNoWarnings,
-          plugins: [
-            nodeResolve({
-              mainFields: ['browser', 'main']
-            })
-          ]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports, 'browser-fs');
-        }));
+  t.is(module.exports.env, 'browser');
+  t.is(module.exports.dep, 'browser-dep');
+  t.is(module.exports.test, 43);
+});
 
-    it('allows use of object browser field, resolving nested directories', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser-object-nested/main.js',
-          onwarn: expectNoWarnings,
-          plugins: [
-            nodeResolve({
-              mainFields: ['browser', 'main']
-            })
-          ]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports.env, 'browser');
-          assert.equal(module.exports.dep, 'browser-dep');
-          assert.equal(module.exports.test, 43);
-        }));
+test('allows use of object browser field, resolving implicit `main`', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object-implicit.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
 
-    it('allows use of object browser field, resolving to nested node_modules', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser-entry-points-to-node-module/index.js',
-          onwarn: expectNoWarnings,
-          plugins: [
-            nodeResolve({
-              main: true,
-              browser: true
-            })
-          ]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports, 'component-type');
-        }));
+  t.is(module.exports.env, 'browser');
+});
 
-    it('supports `false` in browser field', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser-false/main.js',
-          onwarn: expectNoWarnings,
-          plugins: [
-            nodeResolve({
-              mainFields: ['browser', 'main']
-            })
-          ]
-        })
-        .then(executeBundle));
+test('allows use of object browser field, resolving replaced builtins', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object-builtin.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
 
-        it('pkg.browser with mapping to prevent bundle by specifying a value of false', () =>
-          rollup
-            .rollup({
-              input: 'samples/browser-object-with-false/main.js',
-              plugins: [nodeResolve({ browser: true }), commonjs()]
-            })
-            .then(executeBundle)
-            .then((module) => {
-              assert.equal(module.exports, 'ok');
-            }));
+  t.is(module.exports, 'browser-fs');
+});
+
+test('allows use of object browser field, resolving nested directories', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object-nested.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports.env, 'browser');
+  t.is(module.exports.dep, 'browser-dep');
+  t.is(module.exports.test, 43);
+});
+
+test('respects local browser field', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-local.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'component-type');
+});
+
+test('allows use of object browser field, resolving to nested node_modules', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-entry-points-to-node-module.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        main: true,
+        browser: true
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'component-type');
+});
+
+test('supports `false` in browser field', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-false.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  await testBundle(t, bundle);
+});
+
+test('pkg.browser with mapping to prevent bundle by specifying a value of false', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-object-with-false.js',
+    plugins: [nodeResolve({ browser: true }), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'ok');
+});

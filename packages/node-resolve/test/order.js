@@ -1,48 +1,49 @@
-it('respects order if given module,jsnext:main,main', () =>
-  rollup
-    .rollup({
-      input: 'samples/prefer-module/main.js',
-      onwarn: expectNoWarnings,
-      plugins: [
-        nodeResolve({ mainFields: ['module', 'jsnext:main', 'main'], preferBuiltins: false })
-      ]
-    })
-    .then(executeBundle)
-    .then((module) => {
-      assert.equal(module.exports, 'MODULE-ENTRY');
-    }));
+const { join } = require('path');
 
-    it('finds and uses a dual-distributed .js & .mjs module', () =>
-      rollup
-        .rollup({
-          input: 'samples/dual-cjs-mjs/main.js',
-          onwarn: expectNoWarnings,
-          plugins: [nodeResolve({ preferBuiltins: false })]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports, 'DUAL-MJS');
-        }));
+const test = require('ava');
+const { rollup } = require('rollup');
 
-    it('keeps the order of [browser, module, jsnext, main] with all enabled', () =>
-      rollup
-        .rollup({
-          input: 'samples/browser/main.js',
-          plugins: [nodeResolve({ main: true, browser: true, jsnext: true, module: true })]
-        })
-        .then(executeBundle)
-        .then((module) => {
-          assert.equal(module.exports, 'browser');
-        }));
+const { testBundle } = require('../../../util/test');
 
-        it('respects order if given jsnext:main, main', () =>
-          rollup
-            .rollup({
-              input: 'samples/prefer-jsnext/main.js',
-              onwarn: expectNoWarnings,
-              plugins: [nodeResolve({ mainFields: ['jsnext:main', 'main'], preferBuiltins: false })]
-            })
-            .then(executeBundle)
-            .then((module) => {
-              assert.equal(module.exports, 'JSNEXT-ENTRY');
-            }));
+const nodeResolve = require('..');
+
+process.chdir(join(__dirname, 'fixtures'));
+
+test('respects order if given module,jsnext:main,main', async (t) => {
+  const bundle = await rollup({
+    input: 'prefer-module.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ mainFields: ['module', 'jsnext:main', 'main'], preferBuiltins: false })]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'MODULE-ENTRY');
+});
+
+test('finds and uses a dual-distributed .js & .mjs module', async (t) => {
+  const bundle = await rollup({
+    input: 'dual-cjs-mjs.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ preferBuiltins: false })]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'DUAL-MJS');
+});
+
+test('keeps the order of [browser, module, jsnext, main] with all enabled', async (t) => {
+  const bundle = await rollup({
+    input: 'browser.js',
+    plugins: [nodeResolve({ main: true, browser: true, jsnext: true, module: true })]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'browser');
+});
+
+test('respects order if given jsnext:main, main', async (t) => {
+  const bundle = await rollup({
+    input: 'prefer-jsnext.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ mainFields: ['jsnext:main', 'main'], preferBuiltins: false })]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'JSNEXT-ENTRY');
+});

@@ -5,6 +5,15 @@ const getCode = async (bundle) => {
   return code;
 };
 
+const getImports = async (bundle) => {
+  if (bundle.imports) {
+    return bundle.imports;
+  }
+  const { output } = await bundle.generate({ format: 'esm' });
+  const [{ imports }] = output;
+  return imports;
+};
+
 const testBundle = async (t, bundle, args = {}) => {
   const { output } = await bundle.generate({ format: 'cjs' });
   const [{ code }] = output;
@@ -29,5 +38,6 @@ const testBundle = async (t, bundle, args = {}) => {
 
 module.exports = {
   getCode,
+  getImports,
   testBundle
 };
