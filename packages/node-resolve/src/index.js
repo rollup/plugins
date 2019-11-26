@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign, no-shadow, no-undefined */
 import { dirname, extname, join, normalize, resolve, sep } from 'path';
 
 import fs, { realpathSync } from 'fs';
@@ -72,7 +73,7 @@ function getMainFields(options) {
         `node-resolve: do not use deprecated 'module', 'main', 'jsnext' options with 'mainFields'`
       );
     }
-    mainFields = options.mainFields;
+    ({ mainFields } = options);
   } else {
     mainFields = [];
     [
@@ -151,6 +152,7 @@ export default function nodeResolve(options = {}) {
       )
     : null;
   const browserMapCache = new Map();
+  let preserveSymlinks;
 
   if (options.skip) {
     throw new Error(
@@ -241,6 +243,7 @@ export default function nodeResolve(options = {}) {
     if (
       useBrowserOverrides &&
       typeof pkg.browser === 'object' &&
+      // eslint-disable-next-line no-prototype-builtins
       browserMap.hasOwnProperty(pkg.main)
     ) {
       packageInfo.resolvedEntryPoint = browserMap[pkg.main];
@@ -264,13 +267,11 @@ export default function nodeResolve(options = {}) {
     return internalPackageInfo;
   }
 
-  let preserveSymlinks;
-
   return {
     name: 'node-resolve',
 
     buildStart(options) {
-      preserveSymlinks = options.preserveSymlinks;
+      ({ preserveSymlinks } = options);
       const [major, minor] = this.meta.rollupVersion.split('.').map(Number);
       const minVersion = peerDependencies.rollup.slice(2);
       const [minMajor, minMinor] = minVersion.split('.').map(Number);
@@ -291,8 +292,8 @@ export default function nodeResolve(options = {}) {
       if (importee === ES6_BROWSER_EMPTY) {
         return importee;
       }
-
-      if (/\0/.test(importee)) return null; // ignore IDs with null character, these belong to other plugins
+      // ignore IDs with null character, these belong to other plugins
+      if (/\0/.test(importee)) return null;
 
       const basedir = importer ? dirname(importer) : process.cwd();
 
