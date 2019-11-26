@@ -9,9 +9,7 @@
 
 # @rollup/plugin-node-resolve
 
-🍣 Locate modules using the [Node resolution algorithm](https://nodejs.org/api/modules.html#modules_all_together), for using third party modules in `node_modules`
-
-*This plugin used to be called rollup-plugin-npm*
+🍣 A Rollup plugin which locates modules using the [Node resolution algorithm](https://nodejs.org/api/modules.html#modules_all_together), for using third party modules in `node_modules`
 
 ## Requirements
 
@@ -90,7 +88,7 @@ Type: `Array[String]`<br>
 Default: `['.mjs', '.js', '.json', '.node']`
 
 Resolve extensions other than .js in the order specified.
-  
+
 ### `preferBuiltins`
 
 Type: `Boolean`<br>
@@ -125,6 +123,7 @@ Type: `Array[String]`<br>
 Default: `[]`
 
 Force resolving for these modules to root's node_modules that helps to prevent bundling the same package multiple times if package is imported from dependencies.
+
 ```
 dedupe: [ 'react', 'react-dom' ]
 ```
@@ -135,6 +134,7 @@ Type: `Boolean`<br>
 Default: `null`
 
 Any additional options that should be passed through to node-resolve.
+
 ```
 customResolveOptions: {
   moduleDirectory: 'js_modules'
@@ -157,10 +157,7 @@ export default {
     format: 'iife',
     name: 'MyModule'
   },
-  plugins: [
-    resolve(),
-    commonjs()
-  ]
+  plugins: [resolve(), commonjs()]
 };
 ```
 

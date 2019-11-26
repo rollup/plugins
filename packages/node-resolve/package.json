@@ -1,10 +1,10 @@
 {
   "name": "@rollup/plugin-node-resolve",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Bundle third-party dependencies in node_modules",
+  "description": "Locate and bundle third-party dependencies in node_modules",
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris <richard.a.harris@gmail.com>",
