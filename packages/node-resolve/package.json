@@ -27,7 +27,7 @@
     "pretest": "pnpm run build",
     "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava",
-    "test:ts": "tsc index.d.ts test/types.ts --noEmit"
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
     "dist",
