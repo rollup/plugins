@@ -34,16 +34,16 @@ function unlinkDirectories() {
   fs.unlinkSync('symlinked/second/node_modules/third');
 }
 
-beforeEach(() => {
+test.beforeEach(() => {
   createMissingDirectories();
   linkDirectories();
 });
 
-afterEach(() => {
+test.afterEach(() => {
   unlinkDirectories();
 });
 
-test('resolves symlinked packages', async (t) => {
+test.serial('resolves symlinked packages', async (t) => {
   const bundle = await rollup({
     input: 'symlinked/first/index.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -53,7 +53,7 @@ test('resolves symlinked packages', async (t) => {
   t.is(module.exports.number1, module.exports.number2);
 });
 
-test('preserves symlinks if `preserveSymlinks` is true', async (t) => {
+test.serial('preserves symlinks if `preserveSymlinks` is true', async (t) => {
   const bundle = await rollup({
     input: 'symlinked/first/index.js',
     onwarn: () => t.fail('No warnings were expected'),

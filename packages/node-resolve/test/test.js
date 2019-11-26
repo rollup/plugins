@@ -1,244 +1,222 @@
-describe('rollup-plugin-node-resolve', () => {
-  it('finds a module with jsnext:main', () =>
-    rollup
-      .rollup({
-        input: 'samples/jsnext/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve({ mainFields: ['jsnext:main', 'module', 'main'] })]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports, 'JSNEXT');
-      }));
+const { join, resolve } = require('path');
 
-  it('finds and converts a basic CommonJS module', () =>
-    rollup
-      .rollup({
-        input: 'samples/commonjs/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve({ mainFields: ['main'] }), commonjs()]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports, 'It works!');
-      }));
+const test = require('ava');
+const { rollup } = require('rollup');
+const babel = require('rollup-plugin-babel');
+const commonjs = require('rollup-plugin-commonjs');
 
-  it('handles a trailing slash', () =>
-    rollup
-      .rollup({
-        input: 'samples/trailing-slash/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve({ mainFields: ['main'] }), commonjs()]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports, 'It works!');
-      }));
+const { getCode, getImports, testBundle } = require('../../../util/test');
 
-  it('finds a file inside a package directory', () =>
-    rollup
-      .rollup({
-        input: 'samples/granular/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [
-          nodeResolve(),
-          babel({
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  targets: {
-                    node: 6
-                  }
-                }
-              ]
-            ]
-          })
-        ]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports, 'FOO');
-      }));
+const nodeResolve = require('..');
 
-  it('loads local directories by finding index.js within them', () =>
-    rollup
-      .rollup({
-        input: 'samples/local-index/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve()]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports, 42);
-      }));
+process.chdir(join(__dirname, 'fixtures'));
 
-  it('loads package directories by finding index.js within them', () =>
-    rollup
-      .rollup({
-        input: 'samples/package-index/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve()]
-      })
-      .then((bundle) =>
-        bundle.generate({
-          format: 'cjs'
-        })
-      )
-      .then((generated) => {
-        assert.ok(~generated.output[0].code.indexOf('setPrototypeOf'));
-      }));
-
-  it('supports non-standard extensions', () =>
-    rollup
-      .rollup({
-        input: 'samples/extensions/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [
-          nodeResolve({
-            extensions: ['.js', '.wut']
-          })
-        ]
-      })
-      .then(executeBundle));
-
-  it('ignores IDs with null character', () =>
-    Promise.resolve(nodeResolve().resolveId('\0someid', 'test.js')).then((result) => {
-      assert.equal(result, null);
-    }));
-
-  it('finds and uses an .mjs module', () =>
-    rollup
-      .rollup({
-        input: 'samples/module-mjs/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve({ preferBuiltins: false })]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports, 'MODULE-MJS');
-      }));
-
-  it('supports ./ in entry filename', () =>
-    rollup
-      .rollup({
-        input: './samples/jsnext/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve({})]
-      })
-      .then(executeBundle)
-      .then((module) => {
-        assert.equal(module.exports, 'MAIN');
-      }));
-
-  it('throws error if local id is not resolved', () => {
-    const input = path.join('samples', 'unresolved-local', 'main.js');
-    return rollup
-      .rollup({
-        input,
-        onwarn: expectNoWarnings,
-        plugins: [nodeResolve()]
-      })
-      .then(
-        () => {
-          throw Error('test should fail');
-        },
-        (err) => {
-          assert.equal(err.message, `Could not resolve './foo' from ${input}`);
-        }
-      );
+test('finds a module with jsnext:main', async (t) => {
+  const bundle = await rollup({
+    input: 'jsnext.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ mainFields: ['jsnext:main', 'module', 'main'] })]
   });
+  const { module } = await testBundle(t, bundle);
 
-  it('allows custom options', () =>
-    rollup
-      .rollup({
-        input: 'samples/custom-resolve-options/main.js',
-        onwarn: expectNoWarnings,
-        plugins: [
-          nodeResolve({
-            customResolveOptions: {
-              moduleDirectory: 'js_modules'
+  t.is(module.exports, 'JSNEXT');
+});
+
+test('finds and converts a basic CommonJS module', async (t) => {
+  const bundle = await rollup({
+    input: 'commonjs.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ mainFields: ['main'] }), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'It works!');
+});
+
+test('handles a trailing slash', async (t) => {
+  const bundle = await rollup({
+    input: 'trailing-slash.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ mainFields: ['main'] }), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'It works!');
+});
+
+test('finds a file inside a package directory', async (t) => {
+  const bundle = await rollup({
+    input: 'granular.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      babel({
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              targets: {
+                node: 6
+              }
             }
-          })
+          ]
         ]
       })
-      .then((bundle) => {
-        assert.equal(
-          bundle.cache.modules[0].id,
-          path.resolve(__dirname, 'samples/custom-resolve-options/js_modules/foo.js')
-        );
-      }));
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
 
-  it('ignores deep-import non-modules', () =>
-    rollup
-      .rollup({
-        input: 'samples/deep-import-non-module/main.js',
-        onwarn: expectWarnings([
-          {
-            code: 'UNRESOLVED_IMPORT',
-            source: 'foo/deep'
-          }
-        ]),
-        plugins: [
-          nodeResolve({
-            modulesOnly: true
-          })
-        ]
-      })
-      .then(getBundleImports)
-      .then((imports) => assert.deepEqual(imports, ['foo/deep'])));
+  t.is(module.exports, 'FOO');
+});
 
-  it('generates manual chunks', () => {
-    const chunkName = 'mychunk';
-    return rollup
-      .rollup({
-        input: 'samples/manualchunks/main.js',
-        onwarn: expectNoWarnings,
-        manualChunks: {
-          [chunkName]: ['simple']
-        },
-        plugins: [nodeResolve()]
+test('loads local directories by finding index.js within them', async (t) => {
+  const bundle = await rollup({
+    input: 'local-index/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 42);
+});
+
+test('loads package directories by finding index.js within them', async (t) => {
+  const bundle = await rollup({
+    input: 'package-index.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve()]
+  });
+  const code = await getCode(bundle);
+
+  t.truthy(code.indexOf('setPrototypeOf'));
+});
+
+test('supports non-standard extensions', async (t) => {
+  const bundle = await rollup({
+    input: 'extensions/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.wut']
       })
-      .then((bundle) =>
-        bundle.generate({
-          format: 'esm',
-          chunkFileNames: '[name]'
-        })
-      )
-      .then((generated) => {
-        assert.ok(generated.output.find(({ fileName }) => fileName === chunkName));
-      });
+    ]
+  });
+  await testBundle(t, bundle);
+});
+
+test('ignores IDs with null character', async (t) => {
+  const result = nodeResolve().resolveId('\0someid', 'test.js');
+  t.is(result, null);
+});
+
+test('finds and uses an .mjs module', async (t) => {
+  const bundle = await rollup({
+    input: 'module-mjs.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ preferBuiltins: false })]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'MODULE-MJS');
+});
+
+test('supports ./ in entry filename', async (t) => {
+  const bundle = await rollup({
+    input: './jsnext.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({})]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'MAIN');
+});
+
+test('throws error if local id is not resolved', async (t) => {
+  t.plan(1);
+  try {
+    await rollup({
+      input: 'unresolved-local.js',
+      onwarn: () => t.fail('No warnings were expected'),
+      plugins: [nodeResolve()]
+    });
+  } catch (e) {
+    t.snapshot(e.message);
+  }
+});
+
+test('allows custom options', async (t) => {
+  const bundle = await rollup({
+    input: 'custom-resolve-options/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        customResolveOptions: {
+          moduleDirectory: 'js_modules'
+        }
+      })
+    ]
   });
 
-  it('resolves dynamic imports', () =>
-    rollup
-      .rollup({
-        input: 'samples/dynamic/main.js',
-        onwarn: expectNoWarnings,
-        inlineDynamicImports: true,
-        plugins: [nodeResolve()]
-      })
-      .then(executeBundle)
-      .then(({ exports }) => exports.then((result) => assert.equal(result.default, 42))));
+  t.is(bundle.cache.modules[0].id, resolve('custom-resolve-options/js_modules/foo.js'));
+});
 
-  it('handles package side-effects', () =>
-    rollup
-      .rollup({
-        input: 'samples/side-effects/main.js',
-        plugins: [nodeResolve()]
+test('ignores deep-import non-modules', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'deep-import-non-module.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        modulesOnly: true
       })
-      .then(executeBundle)
-      .then(() => {
-        assert.deepStrictEqual(global.sideEffects, [
-          'false-dep1',
-          'true-dep1',
-          'true-dep2',
-          'true-index',
-          'array-dep1',
-          'array-dep3',
-          'array-dep5',
-          'array-index'
-        ]);
-        delete global.sideEffects;
-      }));
+    ]
+  });
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 1);
+  t.snapshot(warnings);
+  t.deepEqual(imports, ['foo/deep']);
+});
+
+test('generates manual chunks', async (t) => {
+  const chunkName = 'mychunk';
+  const bundle = await rollup({
+    input: 'manualchunks.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    manualChunks: {
+      [chunkName]: ['simple']
+    },
+    plugins: [nodeResolve()]
+  });
+
+  const { output } = await bundle.generate({
+    format: 'esm',
+    chunkFileNames: '[name]'
+  });
+
+  t.truthy(output.find(({ fileName }) => fileName === chunkName));
+});
+
+test('resolves dynamic imports', async (t) => {
+  const bundle = await rollup({
+    input: 'dynamic.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    inlineDynamicImports: true,
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+  const result = await module.exports;
+  t.is(result.default, 42);
+});
+
+test('handles package side-effects', async (t) => {
+  const bundle = await rollup({
+    input: 'side-effects.js',
+    plugins: [nodeResolve()]
+  });
+  await testBundle(t, bundle);
+
+  t.snapshot(global.sideEffects);
+
+  delete global.sideEffects;
 });
