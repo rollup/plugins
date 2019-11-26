@@ -20,10 +20,7 @@ test('single module version is bundle if dedupe is set', async (t) => {
   });
   const { module } = await testBundle(t, bundle);
 
-  t.deepEqual(module.exports, {
-    React: 'react:root',
-    ReactConsumer: 'react-consumer:react:root'
-  });
+  t.snapshot(module.exports);
 });
 
 test('single module version is bundle if dedupe is set as a function', async (t) => {
@@ -37,10 +34,7 @@ test('single module version is bundle if dedupe is set as a function', async (t)
   });
   const { module } = await testBundle(t, bundle);
 
-  t.deepEqual(module.exports, {
-    React: 'react:root',
-    ReactConsumer: 'react-consumer:react:root'
-  });
+  t.snapshot(module.exports);
 });
 
 test('multiple module versions are bundled if dedupe is not set', async (t) => {
@@ -50,8 +44,5 @@ test('multiple module versions are bundled if dedupe is not set', async (t) => {
   });
   const { module } = await testBundle(t, bundle);
 
-  t.deepEqual(module.exports, {
-    React: 'react:root',
-    ReactConsumer: 'react-consumer:react:child'
-  });
+  t.snapshot(module.exports);
 });
