@@ -9,7 +9,9 @@
 
 # @rollup/plugin-html
 
-🍣 A Rollup plugin which creates HTML files to serve Rollup bundles
+🍣 A Rollup plugin which creates HTML files to serve Rollup bundles.
+
+Please see [Supported Output Formats](#supported-output-formats) for information about using this plugin with output formats other than `esm` (`es`), `iife`, and `umd`.
 
 ## Requirements
 
@@ -52,6 +54,8 @@ Type: `Object`<br>
 Default: `{ html: { lang: 'en' }, link: null, script: null }`
 
 Specifies additional attributes for `html`, `link`, and `script` elements. For each property, provide an object with key-value pairs that represent an HTML element attribute name and value. By default, the `html` element is rendered with an attribute of `lang="en"`.
+
+_Note: If using the `es` / `esm` output format, `{ type: 'module'}` is automatically added to `attributes.script`._
 
 ### `fileName`
 
@@ -124,6 +128,18 @@ const { makeHtmlAttributes } = require('@rollup/plugin-html');
 makeHtmlAttributes({ lang: 'en', 'data-batcave': 'secret' });
 // -> 'lang="en" data-batcave="secret"'
 ```
+
+## Supported Output Formats
+
+By default, this plugin supports the `esm` (`es`), `iife`, and `umd` [output formats](https://rollupjs.org/guide/en/#outputformat), as those are most commonly used as browser bundles. Other formats can be used, but will require using the [`template`](#template) option to specify a custom template function which renders the unique requirements of other formats.
+
+### `amd`
+
+Will likely require use of RequireJS semantics, which allows only for a single entry `<script>` tag. If more entry chunks are emitted, these need to be loaded via a proxy file. RequireJS would also need to be a dependency and added to the build: https://requirejs.org/docs/start.html.
+
+### `system`
+
+Would require a separate `<script>` tag first that adds the `s.js` minimal loader. Loading modules might then resemble: `<script>System.import('./batman.js')</script>`.
 
 ## Attribution
 

@@ -50,6 +50,8 @@ const defaultTemplate = async ({ attributes, files, publicPath, title }) => {
 </html>`;
 };
 
+const supportedFormats = ['es', 'esm', 'iife', 'umd'];
+
 const defaults = {
   attributes: {
     link: null,
@@ -62,12 +64,26 @@ const defaults = {
   title: 'Rollup Bundle'
 };
 
-const html = (opts) => {
+const html = (opts = {}) => {
   const { attributes, fileName, publicPath, template, title } = Object.assign({}, defaults, opts);
   return {
     name: 'html',
 
     async generateBundle(output, bundle) {
+      if (!supportedFormats.includes(output.format) && !opts.template) {
+        this.warn(
+          `plugin-html: The output format '${
+            output.format
+          }' is not directly supported. A custom \`template\` is probably required. Supported formats include: ${supportedFormats.join(
+            ', '
+          )}`
+        );
+      }
+
+      if (output.format === 'esm' || output.format === 'es') {
+        attributes.script = Object.assign({}, attributes.script, { type: 'module' });
+      }
+
       const files = getFiles(bundle);
       const source = await template({ attributes, files, publicPath, title });
 

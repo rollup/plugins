@@ -10,7 +10,7 @@ const html = require('..');
 
 const read = (file = 'index.html') => readFileSync(join('output/', file), 'utf-8');
 
-const output = { dir: 'output', format: 'cjs' };
+const output = { dir: 'output', format: 'umd' };
 
 process.chdir(join(__dirname, 'fixtures'));
 
@@ -38,6 +38,36 @@ test.serial('options', async (t) => {
   });
   await bundle.write(output);
   t.snapshot(read('batman.html'));
+});
+
+test.serial('iife', async (t) => {
+  const bundle = await rollup({
+    input: 'batman.js',
+    plugins: [html()]
+  });
+  await bundle.write({ dir: 'output', format: 'iife' });
+  t.snapshot(read());
+});
+
+test.serial('esm', async (t) => {
+  const bundle = await rollup({
+    input: 'batman.js',
+    plugins: [html()]
+  });
+  await bundle.write({ dir: 'output', format: 'esm' });
+  t.snapshot(read());
+});
+
+test.serial('unsupported output format', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'batman.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [html()]
+  });
+  await bundle.write({ dir: 'output', format: 'cjs' });
+  t.snapshot(read());
+  t.snapshot(warnings);
 });
 
 test.serial('css', async (t) => {
