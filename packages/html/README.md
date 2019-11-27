@@ -73,7 +73,7 @@ Specifies a path to prepend to all bundle assets (files) in the HTML output.
 
 ### `template`
 
-Type: `Fumction`<br>
+Type: `Function`<br>
 Default: `internal function`
 Returns: `String`
 
@@ -143,7 +143,7 @@ Would require a separate `<script>` tag first that adds the `s.js` minimal loade
 
 ## Attribution
 
-This plugin was inspired by and is based upon [mini-html-webpack-plugin](https://github.com/styleguidist/mini-html-webpack-plugin) by Juho Vepsalainen, with permission.
+This plugin was inspired by and is based upon [mini-html-webpack-plugin](https://github.com/styleguidist/mini-html-webpack-plugin) by Juho Vepsäläinen and Artem Sapegin, with permission.
 
 ## Meta
 
