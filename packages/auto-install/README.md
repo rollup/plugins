@@ -28,14 +28,14 @@ npm install @rollup/plugin-inject --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import auto from "@rollup/plugin-auto-install";
-import resolve from "rollup-plugin-node-resolve";
+import auto from '@rollup/plugin-auto-install';
+import resolve from 'rollup-plugin-node-resolve';
 
 export default {
-  input: "src/index.js",
+  input: 'src/index.js',
   output: {
-    dir: "output",
-    format: "cjs"
+    dir: 'output',
+    format: 'cjs'
   },
   plugins: [auto(), resolve()]
 };
