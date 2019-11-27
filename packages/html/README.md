@@ -125,6 +125,10 @@ makeHtmlAttributes({ lang: 'en', 'data-batcave': 'secret' });
 // -> 'lang="en" data-batcave="secret"'
 ```
 
+## Attribution
+
+This plugin was inspired by and is based upon [mini-html-webpack-plugin](https://github.com/styleguidist/mini-html-webpack-plugin) by Juho Vepsalainen, with permission.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
