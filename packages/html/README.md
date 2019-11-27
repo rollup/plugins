@@ -69,7 +69,7 @@ Specifies a path to prepend to all bundle assets (files) in the HTML output.
 
 ### `template`
 
-Type: `Fumction`<br>
+Type: `Function `<br>
 Default: `internal function`
 Returns: `String`
 
