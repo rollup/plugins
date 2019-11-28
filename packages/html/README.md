@@ -66,7 +66,7 @@ Specifies the name of the HTML to emit.
 
 ### `publicPath`
 
-Type: `String`<br>
+Type: `String`<bri3ty3
 Default: `''`
 
 Specifies a path to prepend to all bundle assets (files) in the HTML output.
@@ -80,13 +80,14 @@ Returns: `String`
 Specifies a function that provides the rendered source for the HTML output. The function should be in the form of:
 
 ```js
-const template = ({ attributes, files, publicPath, title }) => { ... }
+const template = ({ attributes, bundle, files, publicPath, title }) => { ... }
 ```
 
-- `attributes`: corresponds to the `attributes` option passed to the plugin
-- `files`: An `Array` of `String` containing the assets (files) in the bundle that will be emitted
-- `publicPath`: corresponds to the `publicPath` option passed to the plugin
-- `title`: corresponds to the `title` option passed to the plugin
+- `attributes`: Corresponds to the `attributes` option passed to the plugin
+- `bundle`: An `Object` containing key-value pairs of [`AssetInfo` or `ChunkInfo`](https://rollupjs.org/guide/en/#generatebundle)
+- `files`: An `Array` of `AssetInfo` or `ChunkInfo` containing any entry (`isEntry: true`) files, and any asset (`isAsset: true`) files in the bundle that will be emitted
+- `publicPath`: Corresponds to the `publicPath` option passed to the plugin
+- `title`: Corresponds to the `title` option passed to the plugin
 
 By default this is handled internally and produces HTML in the following format:
 

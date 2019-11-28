@@ -1,31 +1,29 @@
-const { readFileSync } = require('fs');
 const { join } = require('path');
 
 const test = require('ava');
-const del = require('del');
 const { rollup } = require('rollup');
 const css = require('rollup-plugin-postcss');
 
+const { getCode } = require('../../../util/test');
+
 const html = require('..');
 
-const read = (file = 'index.html') => readFileSync(join('output/', file), 'utf-8');
+// const read = (file = 'index.html') => readFileSync(join('output/', file), 'utf-8');
 
 const output = { dir: 'output', format: 'umd' };
 
 process.chdir(join(__dirname, 'fixtures'));
 
-test.afterEach(() => del('output'));
-
-test.serial('default options', async (t) => {
+test('default options', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [html()]
   });
-  await bundle.write(output);
-  t.snapshot(read());
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
 });
 
-test.serial('options', async (t) => {
+test('options', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [
@@ -36,50 +34,50 @@ test.serial('options', async (t) => {
       })
     ]
   });
-  await bundle.write(output);
-  t.snapshot(read('batman.html'));
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
 });
 
-test.serial('iife', async (t) => {
+test('iife', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [html()]
   });
-  await bundle.write({ dir: 'output', format: 'iife' });
-  t.snapshot(read());
+  const code = await getCode(bundle, { dir: 'output', format: 'iife' }, true);
+  t.snapshot(code);
 });
 
-test.serial('esm', async (t) => {
+test('esm', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [html()]
   });
-  await bundle.write({ dir: 'output', format: 'esm' });
-  t.snapshot(read());
+  const code = await getCode(bundle, { dir: 'output', format: 'esm' }, true);
+  t.snapshot(code);
 });
 
-test.serial('unsupported output format', async (t) => {
+test('unsupported output format', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'batman.js',
     onwarn: (warning) => warnings.push(warning),
     plugins: [html()]
   });
-  await bundle.write({ dir: 'output', format: 'cjs' });
-  t.snapshot(read());
+  const code = await getCode(bundle, { dir: 'output', format: 'cjs' }, true);
+  t.snapshot(code);
   t.snapshot(warnings);
 });
 
-test.serial('css', async (t) => {
+test('css', async (t) => {
   const bundle = await rollup({
     input: 'joker.js',
     plugins: [css({ extract: true }), html()]
   });
-  await bundle.write(output);
-  t.snapshot(read());
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
 });
 
-test.serial('attributes', async (t) => {
+test('attributes', async (t) => {
   const bundle = await rollup({
     input: 'joker.js',
     plugins: [
@@ -93,20 +91,20 @@ test.serial('attributes', async (t) => {
       })
     ]
   });
-  await bundle.write(output);
-  t.snapshot(read());
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
 });
 
-test.serial('imports', async (t) => {
+test('imports', async (t) => {
   const bundle = await rollup({
     input: 'robin.js',
     plugins: [html()]
   });
-  await bundle.write(output);
-  t.snapshot(read());
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
 });
 
-test.serial('template', async (t) => {
+test('template', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [
@@ -115,6 +113,6 @@ test.serial('template', async (t) => {
       })
     ]
   });
-  await bundle.write(output);
-  t.snapshot(read());
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
 });

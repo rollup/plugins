@@ -1,14 +1,17 @@
 const { extname } = require('path');
 
 const getFiles = (bundle) => {
-  const fileNames = Object.values(bundle).map(({ fileName }) => fileName);
-  const files = {};
-  for (const fileName of fileNames) {
+  const files = Object.values(bundle).filter(
+    (file) => file.isEntry || file.type === 'asset' || file.isAsset
+  );
+  const result = {};
+  for (const file of files) {
+    const { fileName } = file;
     const extension = extname(fileName).substring(1);
-    files[extension] = (files[extension] || []).concat(fileName);
+    result[extension] = (result[extension] || []).concat(file);
   }
 
-  return files;
+  return result;
 };
 
 const makeHtmlAttributes = (attributes) => {
@@ -23,14 +26,14 @@ const makeHtmlAttributes = (attributes) => {
 
 const defaultTemplate = async ({ attributes, files, publicPath, title }) => {
   const scripts = (files.js || [])
-    .map((fileName) => {
+    .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
       return `<script src="${publicPath}${fileName}"${attrs}></script>`;
     })
     .join('\n');
 
   const links = (files.css || [])
-    .map((fileName) => {
+    .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.link);
       return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`;
     })
@@ -85,7 +88,7 @@ const html = (opts = {}) => {
       }
 
       const files = getFiles(bundle);
-      const source = await template({ attributes, files, publicPath, title });
+      const source = await template({ attributes, bundle, files, publicPath, title });
 
       const htmlFile = {
         type: 'asset',
