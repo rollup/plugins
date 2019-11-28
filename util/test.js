@@ -1,3 +1,7 @@
+/**
+ * @param {import('rollup').RollupBuild} bundle
+ * @param {import('rollup').OutputOptions} outputOptions
+ */
 const getCode = async (bundle, outputOptions, allFiles = false) => {
   const { output } = await bundle.generate(outputOptions || { format: 'cjs' });
 
@@ -19,6 +23,11 @@ const getImports = async (bundle) => {
   return imports;
 };
 
+/**
+ * @param {import('ava').Assertions} t
+ * @param {import('rollup').RollupBuild} bundle
+ * @param {object} args
+ */
 const testBundle = async (t, bundle, args = {}) => {
   const { output } = await bundle.generate({ format: 'cjs' });
   const [{ code }] = output;
