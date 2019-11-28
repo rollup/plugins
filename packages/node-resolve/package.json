@@ -11,6 +11,9 @@
   "homepage": "https://github.com/rollup/plugins/packages/node-resolve/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
+  "engines": {
+    "node": ">= 8.0.0"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",

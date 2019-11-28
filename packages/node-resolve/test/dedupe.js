@@ -9,7 +9,7 @@ const nodeResolve = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
 
-test('single module version is bundle if dedupe is set', async (t) => {
+test('single module version is bundled if dedupe is set', async (t) => {
   const bundle = await rollup({
     input: 'react-app.js',
     plugins: [
@@ -23,7 +23,7 @@ test('single module version is bundle if dedupe is set', async (t) => {
   t.snapshot(module.exports);
 });
 
-test('single module version is bundle if dedupe is set as a function', async (t) => {
+test('single module version is bundled if dedupe is set as a function', async (t) => {
   const bundle = await rollup({
     input: 'react-app.js',
     plugins: [
