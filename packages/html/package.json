@@ -25,7 +25,7 @@
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prepublishOnly": "pnpm run lint",
     "security": "echo 'pnpm needs `npm audit` support'",
-    "test": "ava --u"
+    "test": "ava"
   },
   "files": [
     "lib",
