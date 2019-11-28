@@ -36,7 +36,7 @@ import { rollup } from 'rollup';
 import babel from 'rollup-plugin-babel';
 
 rollup({
-  entry: 'main.js',
+  input: 'main.js',
   plugins: [
     babel({
       exclude: 'node_modules/**'
@@ -53,6 +53,8 @@ All options are as per the [Babel documentation](https://babeljs.io/), plus the 
 - `options.extensions`: an array of file extensions that Babel should transpile (by default the Babel defaults of .js, .jsx, .es6, .es, .mjs. are used)
 
 Babel will respect `.babelrc` files – this is generally the best place to put your configuration.
+
+You can also run Babel on the generated chunks instead of the input files. Even though this is slower, it is the only way to transpile Rollup's auto-generated wrapper code to lower compatibility targets than ES5 (or most likely ES6 when Rollup 2 will be released), see [Running Babel on the generated code](#running-babel-on-the-generated-code) for details.
 
 ### External dependencies
 
@@ -111,6 +113,158 @@ plugins: [
 	}),
 ];
 ```
+
+## Running Babel on the generated code
+
+You can run rollup-plugin-babel on the output files instead of the input files by using `babel.generated(...)`. This can be used to perform code transformations on the resulting chunks and is the only way to transform Rollup's auto-generated code. By default, the plugin will be applied to all outputs:
+
+```js
+// rollup.config.js
+import babel from 'rollup-plugin-babel';
+export default {
+	input: 'main.js',
+	plugins: [
+		babel.generated({
+			presets: ['@babel/env'],
+		}),
+	],
+	output: [
+		{ file: 'bundle.cjs.js', format: 'cjs' },
+		{ file: 'bundle.esm.js', format: 'esm' },
+	],
+};
+```
+
+If you only want to apply it to specific outputs, you can use it as an output plugin (requires at least Rollup v1.27.0):
+
+```js
+// rollup.config.js
+import babel from 'rollup-plugin-babel';
+export default {
+	input: 'main.js',
+	output: [
+		{ file: 'bundle.js', format: 'esm' },
+		{
+			file: 'bundle.es5.js',
+			format: 'esm',
+			plugins: [babel.generated({ presets: ['@babel/env'] })],
+		},
+	],
+};
+```
+
+The `include`, `exclude` and `extensions` options are ignored when the when using `.generated()` will produce warnings, and there are a few more points to note that users should be aware of.
+
+You can also run the plugin twice on the code, once when processing the input files to transpile special syntax to JavaScript and once on the output to transpile to a lower compatibility target:
+
+```js
+// rollup.config.js
+import babel from 'rollup-plugin-babel';
+export default {
+	input: 'main.js',
+	plugins: [babel({ presets: ['@babel/preset-react'] })],
+	output: [
+		{
+			file: 'bundle.js',
+			format: 'esm',
+			plugins: [babel.generated({ presets: ['@babel/env'] })],
+		},
+	],
+};
+```
+
+### Babel configuration files
+
+Unlike the regular `babel` plugin, `babel.generated(...)` will **not** automatically search for [Babel configuration files](https://babeljs.io/docs/en/config-files). Besides passing in Babel options directly, however, you can specify a configuration file manually via Babel's [`configFile`](https://babeljs.io/docs/en/options#configfile) option:
+
+```js
+babel.generated({ configFile: path.resolve(__dirname, 'babel.config.js') });
+```
+
+### Using formats other than ES modules or CommonJS
+
+As `babel.generated(...)` will run _after_ Rollup has done all its transformations, it needs to make sure it preserves the semantics of Rollup's output format. This is especially important for Babel plugins that add, modify or remove imports or exports, but also for other transformations that add new variables as they can accidentally become global variables depending on the format. Therefore it is recommended that for formats other than `esm` or `cjs`, you set Rollup to use the `esm` output format and let Babel handle the transformation to another format, e.g. via
+
+```
+presets: [['@babel/env', { modules: 'umd' }], ...]
+```
+
+to create a UMD/IIFE compatible output. If you want to use `babel.generated(...)` with other formats, you need to specify `allowAllFormats: true` as plugin option:
+
+```js
+rollup.rollup({...})
+.then(bundle => bundle.generate({
+  format: 'iife',
+  plugins: [babel.generated({
+    allowAllFormats: true,
+    ...
+  })]
+}))
+```
+
+### Injected helpers
+
+By default, helpers e.g. when transpiling classes will be inserted at the top of each chunk. In contrast to when applying this plugin on the input files, helpers will not be deduplicated across chunks.
+
+Alternatively, you can use imported runtime helpers by adding the `@babel/transform-runtime` plugin. This will make `@babel/runtime` an external dependency of your project, see [@babel/plugin-transform-runtime](https://babeljs.io/docs/en/babel-plugin-transform-runtime) for details.
+
+Note that this will only work for `esm` and `cjs` formats, and you need to make sure to set the `useESModules` option of `@babel/plugin-transform-runtime` to `true` if you create ESM output:
+
+```js
+rollup.rollup({...})
+.then(bundle => bundle.generate({
+  format: 'esm',
+  plugins: [babel.generated({
+    presets: ['@babel/env'],
+    plugins: [['@babel/transform-runtime', { useESModules: true }]]
+  })]
+}))
+```
+
+```js
+// input
+export default class Foo {}
+
+// output
+import _classCallCheck from '@babel/runtime/helpers/esm/classCallCheck';
+
+var Foo = function Foo() {
+	_classCallCheck(this, Foo);
+};
+
+export default Foo;
+```
+
+And for CommonJS:
+
+```js
+rollup.rollup({...})
+.then(bundle => bundle.generate({
+  format: 'cjs',
+  plugins: [babel.generated({
+    presets: ['@babel/env'],
+    plugins: [['@babel/transform-runtime', { useESModules: false }]]
+  })]
+}))
+```
+
+```js
+// input
+export default class Foo {}
+
+// output
+('use strict');
+
+var _classCallCheck = require('@babel/runtime/helpers/classCallCheck');
+
+var Foo = function Foo() {
+	_classCallCheck(this, Foo);
+};
+
+module.exports = Foo;
+```
+
+Another option is to use `@babel/plugin-external-helpers`, which will reference the global `babelHelpers` object. It is your responsibility to make sure this global variable exists.
 
 ## Configuring Babel 6
 
