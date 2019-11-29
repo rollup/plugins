@@ -1,4 +1,4 @@
-/* eslint-disable consistent-return, global-require, import/no-dynamic-require */
+/* eslint-disable consistent-return */
 
 const test = require('ava');
 const { rollup } = require('rollup');
