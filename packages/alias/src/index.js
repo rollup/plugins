@@ -40,19 +40,18 @@ const normalizeId = (id) => {
   return id;
 };
 
-const getEntries = (options) => {
-  let { entries } = options;
+const getEntries = ({ entries }) => {
+  if (!entries) {
+    return [];
+  }
+
   if (Array.isArray(entries)) {
     return entries;
   }
 
-  // entries might contain the "resolve" property, so filter out array values
-  entries = (typeof entries === 'object' && entries) || options;
-  return Object.keys(entries)
-    .map((key) => {
-      return { find: key, replacement: entries[key] };
-    })
-    .filter((entry) => !Array.isArray(entry.replacement));
+  return Object.keys(entries).map((key) => {
+    return { find: key, replacement: entries[key] };
+  });
 };
 
 export default function alias(options = {}) {
