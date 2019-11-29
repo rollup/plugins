@@ -6,7 +6,7 @@ import fs, { realpathSync } from 'fs';
 import builtinList from 'builtin-modules';
 import resolveId from 'resolve';
 import isModule from 'is-module';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 
 import { peerDependencies } from '../package.json';
 
