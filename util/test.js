@@ -1,7 +1,12 @@
-const getCode = async (bundle) => {
-  const { output } = await bundle.generate({ format: 'cjs' });
-  const [{ code }] = output;
+const getCode = async (bundle, outputOptions, allFiles = false) => {
+  const { output } = await bundle.generate(outputOptions || { format: 'cjs' });
 
+  if (allFiles) {
+    return output.map(({ code, fileName, source }) => {
+      return { code, fileName, source };
+    });
+  }
+  const [{ code }] = output;
   return code;
 };
 

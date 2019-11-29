@@ -36,9 +36,11 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [strip({
-    labels: ['unittest']
-  })]
+  plugins: [
+    strip({
+      labels: ['unittest']
+    })
+  ]
 };
 ```
 

@@ -2,7 +2,7 @@ import { rollup } from 'rollup';
 import test from 'ava';
 
 // eslint-disable-next-line no-unused-vars, import/no-unresolved, import/extensions
-import wasm, { wabt, emscripten } from '../dist/index';
+import wasm from '../dist/index';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
