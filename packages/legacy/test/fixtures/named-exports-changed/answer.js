@@ -1,3 +1,3 @@
-/* eslint-disable no-var, no-unused-vars */
+/* eslint-disable */
 
 var answerToLifeTheUniverseAndEverything = 42;

@@ -1,4 +1,4 @@
-/* eslint-disable no-var, no-unused-vars */
+/* eslint-disable */
 
 var obj = {
   answer: 42
