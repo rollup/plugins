@@ -5,11 +5,7 @@ import { createFilter } from 'rollup-pluginutils';
 import resolveId from 'resolve';
 
 import endsWith from './string';
-import {
-  getDefaultOptions,
-  getCompilerOptionsFromTsConfig,
-  adjustCompilerOptions
-} from './options';
+import { getDefaultOptions, readTsConfig, adjustCompilerOptions } from './options';
 import resolveHost from './resolveHost';
 
 const TSLIB_ID = '\0tslib';
@@ -26,7 +22,7 @@ export default function typescript(options = {}) {
   delete opts.exclude;
 
   // Allow users to override the TypeScript version used for transpilation and tslib version used for helpers.
-  const typescriptRuntime = opts.typescript || ts;
+  const tsRuntime = opts.typescript || ts;
   const tslib =
     opts.tslib ||
     fs.readFileSync(resolveId.sync('tslib/tslib.es6.js', { basedir: __dirname }), 'utf-8');
@@ -35,17 +31,19 @@ export default function typescript(options = {}) {
   delete opts.tslib;
 
   // Load options from `tsconfig.json` unless explicitly asked not to.
-  let tsconfig =
-    opts.tsconfig === false ? {} : getCompilerOptionsFromTsConfig(typescriptRuntime, opts.tsconfig);
+  const tsConfig =
+    opts.tsconfig === false
+      ? { compilerOptions: {} }
+      : readTsConfig(tsRuntime, opts.tsconfig);
 
   delete opts.tsconfig;
 
   // Since the CompilerOptions aren't designed for the Rollup
   // use case, we'll adjust them for use with Rollup.
-  tsconfig = adjustCompilerOptions(typescriptRuntime, tsconfig);
-  opts = adjustCompilerOptions(typescriptRuntime, opts);
+  tsConfig.compilerOptions = adjustCompilerOptions(tsRuntime, tsConfig.compilerOptions);
+  opts = adjustCompilerOptions(tsRuntime, opts);
 
-  opts = Object.assign(tsconfig, getDefaultOptions(), opts);
+  opts = Object.assign(tsConfig.compilerOptions, getDefaultOptions(), opts);
 
   // Verify that we're targeting ES2015 modules.
   const moduleType = opts.module.toUpperCase();
@@ -60,18 +58,32 @@ export default function typescript(options = {}) {
     );
   }
 
-  const parsed = typescriptRuntime.convertCompilerOptionsFromJson(opts, process.cwd());
+  const parsed = tsRuntime.convertCompilerOptionsFromJson(opts, process.cwd());
 
   if (parsed.errors.length) {
-    parsed.errors.forEach((error) => {
+    parsed.errors.forEach((error) =>
       // eslint-disable-next-line
-      console.error(`rollup-plugin-typescript: ${error.messageText}`);
-    });
+      console.error(`rollup-plugin-typescript: ${error.messageText}`)
+    );
 
     throw new Error(`rollup-plugin-typescript: Couldn't process compiler options`);
   }
 
-  const compilerOptions = parsed.options;
+  // let typescript load inheritance chain if there are base configs
+  const extendedConfig = tsConfig.extends
+    ? tsRuntime.parseJsonConfigFileContent(tsConfig, tsRuntime.sys, process.cwd(), parsed.options)
+    : null;
+
+  if (extendedConfig && extendedConfig.errors.length) {
+    extendedConfig.errors.forEach((error) =>
+      // eslint-disable-next-line
+      console.error(`rollup-plugin-typescript: ${error.messageText}`)
+    );
+
+    throw new Error(`rollup-plugin-typescript: Couldn't process compiler options`);
+  }
+
+  const compilerOptions = extendedConfig ? extendedConfig.options : parsed.options;
 
   return {
     name: 'typescript',
@@ -84,7 +96,7 @@ export default function typescript(options = {}) {
       if (!importer) return null;
       const containingFile = importer.split('\\').join('/');
 
-      const result = typescriptRuntime.nodeModuleNameResolver(
+      const result = tsRuntime.nodeModuleNameResolver(
         importee,
         containingFile,
         compilerOptions,
@@ -112,7 +124,7 @@ export default function typescript(options = {}) {
     transform(code, id) {
       if (!filter(id)) return null;
 
-      const transformed = typescriptRuntime.transpileModule(code, {
+      const transformed = tsRuntime.transpileModule(code, {
         fileName: id,
         reportDiagnostics: true,
         compilerOptions
@@ -126,7 +138,7 @@ export default function typescript(options = {}) {
       let fatalError = false;
 
       diagnostics.forEach((diagnostic) => {
-        const message = typescriptRuntime.flattenDiagnosticMessageText(
+        const message = tsRuntime.flattenDiagnosticMessageText(
           diagnostic.messageText,
           '\n'
         );

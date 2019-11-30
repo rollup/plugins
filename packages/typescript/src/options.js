@@ -33,7 +33,7 @@ function findFile(cwd, filename) {
   return null;
 }
 
-export function getCompilerOptionsFromTsConfig(typescript, tsconfigPath) {
+export function readTsConfig(typescript, tsconfigPath) {
   if (tsconfigPath && !existsSync(tsconfigPath)) {
     throw new Error(`Could not find specified tsconfig.json at ${tsconfigPath}`);
   }
@@ -45,8 +45,8 @@ export function getCompilerOptionsFromTsConfig(typescript, tsconfigPath) {
     readFileSync(path, 'utf8')
   );
 
-  if (!tsconfig.config || !tsconfig.config.compilerOptions) return {};
-  return tsconfig.config.compilerOptions;
+  if (!tsconfig.config || !tsconfig.config.compilerOptions) return { compilerOptions: {} };
+  return tsconfig.config;
 }
 
 export function adjustCompilerOptions(typescript, options) {

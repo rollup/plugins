@@ -229,6 +229,19 @@ test.serial('automatically loads tsconfig.json from the current directory', asyn
   t.not(usage, -1, 'should contain usage');
 });
 
+test.serial('should support extends property in tsconfig', async (t) => {
+  process.chdir('fixtures/tsconfig-extends');
+
+  const bundle = await rollup({
+    input: 'main.tsx',
+    plugins: [typescript()]
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
+  t.not(usage, -1, 'should contain usage');
+});
+
 test('allows specifying a path for tsconfig.json', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/tsconfig-jsx/main.tsx',
