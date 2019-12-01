@@ -280,7 +280,7 @@ test('should throw on bad options', (t) => {
         input: 'does-not-matter.ts',
         plugins: [typescript({ foo: 'bar' })]
       }),
-    "rollup-plugin-typescript: Couldn't process compiler options"
+    "@rollup/plugin-typescript: Couldn't process compiler options"
   );
 });
 

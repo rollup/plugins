@@ -54,7 +54,7 @@ export default function typescript(options = {}) {
     moduleType !== 'COMMONJS'
   ) {
     throw new Error(
-      `rollup-plugin-typescript: The module kind should be 'ES2015' or 'ESNext, found: '${opts.module}'`
+      `@rollup/plugin-typescript: The module kind should be 'ES2015' or 'ESNext, found: '${opts.module}'`
     );
   }
 
@@ -63,10 +63,10 @@ export default function typescript(options = {}) {
   if (parsed.errors.length) {
     parsed.errors.forEach((error) =>
       // eslint-disable-next-line
-      console.error(`rollup-plugin-typescript: ${error.messageText}`)
+      console.error(`@rollup/plugin-typescript: ${error.messageText}`)
     );
 
-    throw new Error(`rollup-plugin-typescript: Couldn't process compiler options`);
+    throw new Error(`@rollup/plugin-typescript: Couldn't process compiler options`);
   }
 
   // let typescript load inheritance chain if there are base configs
@@ -77,10 +77,10 @@ export default function typescript(options = {}) {
   if (extendedConfig && extendedConfig.errors.length) {
     extendedConfig.errors.forEach((error) =>
       // eslint-disable-next-line
-      console.error(`rollup-plugin-typescript: ${error.messageText}`)
+      console.error(`@rollup/plugin-typescript: ${error.messageText}`)
     );
 
-    throw new Error(`rollup-plugin-typescript: Couldn't process compiler options`);
+    throw new Error(`@rollup/plugin-typescript: Couldn't process compiler options`);
   }
 
   const compilerOptions = extendedConfig ? extendedConfig.options : parsed.options;

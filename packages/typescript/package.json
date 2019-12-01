@@ -49,15 +49,14 @@
     "typescript": ">=2.1.0"
   },
   "dependencies": {
-    "resolve": "^1.10.0",
-    "@rollup/pluginutils": "^3.0.0"
+    "@rollup/pluginutils": "^3.0.0",
+    "resolve": "^1.12.2"
   },
   "devDependencies": {
-    "buble": "^0.19.8",
-    "mocha": "^6.1.4",
-    "rollup": "^1.27.5",
     "@rollup/plugin-buble": "^0.20.0",
-    "rollup-plugin-commonjs": "^9.2.1",
+    "buble": "^0.19.8",
+    "rollup": "^1.27.5",
+    "rollup-plugin-commonjs": "^9.3.4",
     "tslib": "^1.10.0",
     "typescript": "^3.7.2"
   },

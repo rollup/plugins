@@ -1,35 +1,55 @@
-# rollup-plugin-typescript
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-typescript
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-typescript
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-typescript
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-typescript
 
-[![Build Status](https://travis-ci.org/rollup/rollup-plugin-typescript.svg?branch=master)](https://travis-ci.org/rollup/rollup-plugin-typescript)
-![npm-version](https://img.shields.io/npm/v/rollup-plugin-typescript.svg?maxAge=2592000)
-![npm-monthly-downloads](https://img.shields.io/npm/dm/rollup-plugin-typescript.svg?maxAge=2592000)
-![npm-dependencies](https://img.shields.io/david/rollup/rollup-plugin-typescript.svg?maxAge=2592000)
+[![npm][npm]][npm-url]
+[![size][size]][size-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
-Seamless integration between Rollup and Typescript.
+# @rollup/plugin-typescript
+
+🍣 A Rollup plugin for seamless integration between Rollup and Typescript.
+
+## Requirements
+
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+. Due to the use of `tslib` to inject helpers, this plugin requires at least [TypeScript 2.1](https://github.com/Microsoft/TypeScript/wiki/Roadmap#21-december-2016). See also [here](https://blog.mariusschulz.com/2016/12/16/typescript-2-1-external-helpers-library#the-importhelpers-flag-and-tslib).
+
+## Install
+
+Using npm:
+
+```console
+npm install @rollup/plugin-typescript --save-dev
+```
+
+Note that both `typescript` and `tslib` are peer dependencies of this plugin that need to be installed separately.
 
 ## Why?
 
 See [rollup-plugin-babel](https://github.com/rollup/rollup-plugin-babel).
 
-## Installation
-
-```bash
-npm install --save-dev rollup-plugin-typescript typescript tslib
-```
-
-Note that both `typescript` and `tslib` are peer dependencies of this plugin that need to be installed separately.
-
 ## Usage
+
+Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
 // rollup.config.js
-import typescript from 'rollup-plugin-typescript';
+import typescript from '@rollup/plugin-typescript';
 
 export default {
-  input: './main.ts',
+  input: 'src/index.ts',
+  output: {
+    dir: 'output',
+    format: 'cjs'
+  },
   plugins: [typescript()]
 };
 ```
+
+Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
+
+## Options
 
 The plugin loads any [`compilerOptions`](http://www.typescriptlang.org/docs/handbook/compiler-options.html) from the `tsconfig.json` file by default. Passing options to the plugin directly overrides those options:
 
@@ -45,28 +65,52 @@ export default {
 
 The following options are unique to `rollup-plugin-typescript`:
 
-- `options.include` and `options.exclude` (each a minimatch pattern, or array of minimatch patterns), which determine which files are transpiled by Typescript (all `.ts` and `.tsx` files by default).
+### `exclude`
 
-- `tsconfig` when set to false, ignores any options specified in the config file. If set to a string that corresponds to a file path, the specified file will be used as config file.
+Type: `String` | `Array[...String]`
+Default: `null`
 
-- `typescript` overrides TypeScript used for transpilation:
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
-  ```js
-  typescript({
-    typescript: require('some-fork-of-typescript')
-  });
-  ```
+### `include`
 
-- `tslib` overrides the injected TypeScript helpers with a custom version
-  ```js
-  typescript({
-    tslib: require('some-fork-of-tslib')
-  });
-  ```
+Type: `String` | `Array(String)`
+Default: `null`
 
-### TypeScript version
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted.
 
-Due to the use of `tslib` to inject helpers, this plugin requires at least [TypeScript 2.1](https://github.com/Microsoft/TypeScript/wiki/Roadmap#21-december-2016). See also [here](https://blog.mariusschulz.com/2016/12/16/typescript-2-1-external-helpers-library#the-importhelpers-flag-and-tslib).
+### `tsconfig`
+
+Type: `String` | `Boolean`
+Default: `true`
+
+When set to false, ignores any options specified in the config file. If set to a string that corresponds to a file path, the specified file will be used as config file.
+
+### `typescript`
+
+Type: `import('typescript')`
+Default: _peer dependency_
+
+Overrides the TypeScript module used for transpilation.
+
+```js
+typescript({
+  typescript: require('some-fork-of-typescript')
+});
+```
+
+### `tslib`
+
+Type: `import('tslib')`
+Default: _peer dependency_
+
+Overrides the injected TypeScript helpers with a custom version
+
+```js
+typescript({
+  tslib: require('some-fork-of-tslib')
+});
+```
 
 ### Importing CommonJS
 
@@ -92,4 +136,10 @@ Note that this will often result in less optimal output.
 
 This plugin will currently **not warn for any type violations**. This plugin relies on TypeScript's [transpileModule](https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API#a-simple-transform-function) function which basically transpiles TypeScript to JavaScript by stripping any type information on a per-file basis. While this is faster than using the language service, no cross-file type checks are possible with this approach.
 
-This also causes issues with emit-less types, see [#28](https://github.com/rollup/rollup-plugin-typescript/issues/28).
+This also causes issues with emit-less types, see [rollup/rollup-plugin-typescript#28](https://github.com/rollup/rollup-plugin-typescript/issues/28).
+
+## Meta
+
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
+
+[LICENSE (MIT)](/LICENSE)
