@@ -160,6 +160,15 @@ importers:
       source-map-support: ^0.5.11
   packages/json/test/fixtures/named:
     specifiers: {}
+  packages/legacy:
+    devDependencies:
+      '@rollup/plugin-buble': 0.20.0_rollup@1.27.5
+      del-cli: 3.0.0
+      rollup: 1.27.5
+    specifiers:
+      '@rollup/plugin-buble': ^0.20.0
+      del-cli: ^3.0.0
+      rollup: ^1.27.2
   packages/pluginutils:
     dependencies:
       estree-walker: 0.6.1
@@ -1100,6 +1109,17 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-1V9XOY4rDW0rehzbrcqAmHnz8e7SKvX27gh8Gt2WgB0+pdzdiLV83p72kZPU+jvMbS1qU5mauP2iOvO8rhmurQ==
+  /@rollup/plugin-buble/0.20.0_rollup@1.27.5:
+    dependencies:
+      buble: 0.19.8
+      rollup: 1.27.5
+      rollup-pluginutils: 2.8.2
+      typescript: 3.7.2
+    dev: true
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-3Qkoa3n+6NjQggLkN5R6ouVL3/jveyqjJjJXxbk04HEig/97YyOwoimWYIOC5vlQ60Z+xLhnAvGd6mM0gFY2wQ==
   /@samverschueren/stream-to-observable/0.3.0:
     dependencies:
       any-observable: 0.3.0
@@ -1169,6 +1189,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
+  /@types/estree/0.0.40:
+    dev: true
+    resolution:
+      integrity: sha512-p3KZgMto/JyxosKGmnLDJ/dG5wf+qTRMUjHJcspC2oQKa4jP7mz+tv0ND56lLBu3ojHlhzY33Ol+khLyNmilkA==
   /@types/events/3.0.0:
     dev: true
     resolution:
@@ -1322,9 +1346,9 @@ packages:
         optional: true
     resolution:
       integrity: sha512-v6btSPXEWCP594eZbM+JCXuFoXWXyF/z8kaSBSdCb83DF+Y7+xItW29SsKtSULgLemqJBT+LpT+0ZqdfH7QVmA==
-  /acorn-dynamic-import/4.0.0_acorn@6.3.0:
+  /acorn-dynamic-import/4.0.0_acorn@6.4.0:
     dependencies:
-      acorn: 6.3.0
+      acorn: 6.4.0
     peerDependencies:
       acorn: ^6.0.0
     resolution:
@@ -1335,9 +1359,9 @@ packages:
     dev: true
     resolution:
       integrity: sha1-r9+UiPsezvyDSPb7IvRk4ypYs2s=
-  /acorn-jsx/5.1.0_acorn@6.3.0:
+  /acorn-jsx/5.1.0_acorn@6.4.0:
     dependencies:
-      acorn: 6.3.0
+      acorn: 6.4.0
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0
     resolution:
@@ -1364,11 +1388,18 @@ packages:
     resolution:
       integrity: sha1-ReN/s56No/JbruP/U2niu18iAXo=
   /acorn/6.3.0:
+    dev: true
     engines:
       node: '>=0.4.0'
     hasBin: true
     resolution:
       integrity: sha512-/czfa8BwS88b9gWQVhc8eknunSA2DoJpJyTQkhheIf5E48u1N0R4q/YxxsAeqRrmK9TQ/uYfgLDfZo91UlANIA==
+  /acorn/6.4.0:
+    engines:
+      node: '>=0.4.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-gac8OEcQ2Li1dxIEWGZzsp2BitJxwkwcOm0zHAJLcPJaVvm58FRnk6RkuLRpU1EujipU2ZFODv2P9DLMfnV8mw==
   /acorn/7.1.0:
     dev: true
     engines:
@@ -1747,9 +1778,9 @@ packages:
       integrity: sha1-PGjwzl+CgB/zUVGle0hw6VExBdc=
   /buble/0.19.8:
     dependencies:
-      acorn: 6.3.0
-      acorn-dynamic-import: 4.0.0_acorn@6.3.0
-      acorn-jsx: 5.1.0_acorn@6.3.0
+      acorn: 6.4.0
+      acorn-dynamic-import: 4.0.0_acorn@6.4.0
+      acorn-jsx: 5.1.0_acorn@6.4.0
       chalk: 2.4.2
       magic-string: 0.25.4
       minimist: 1.2.0
@@ -5955,8 +5986,8 @@ packages:
       integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
   /rollup/1.27.5:
     dependencies:
-      '@types/estree': 0.0.39
-      '@types/node': 12.12.12
+      '@types/estree': 0.0.40
+      '@types/node': 12.12.14
       acorn: 7.1.0
     dev: true
     hasBin: true
