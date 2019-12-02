@@ -20,7 +20,7 @@ This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v
 Using npm:
 
 ```console
-npm install @rollup/plugin-yaml --save-dev
+npm install @rollup/plugin-virtual --save-dev
 ```
 
 ## Usage
