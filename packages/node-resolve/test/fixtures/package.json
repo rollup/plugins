@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "main": "main.js",
+  "scripts": {},
+  "keywords": [],
+  "browser": {
+    "dummy-module": "component-type"
+  }
+}
