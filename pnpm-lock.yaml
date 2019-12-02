@@ -68,6 +68,10 @@ importers:
       rollup-plugin-node-resolve: ^5.2.0
   packages/auto-install/test/fixtures/npm:
     specifiers: {}
+  packages/auto-install/test/fixtures/yarn:
+    specifiers: {}
+  packages/auto-install/test/fixtures/yarn-bare:
+    specifiers: {}
   packages/beep:
     devDependencies:
       rollup: 1.27.8
@@ -270,6 +274,26 @@ importers:
       magic-string: ^0.25.1
       rollup: ^1.20.0
       rollup-pluginutils: ^2.8.1
+  packages/typescript:
+    dependencies:
+      '@rollup/pluginutils': 3.0.0_rollup@1.27.8
+      resolve: 1.13.1
+    devDependencies:
+      '@rollup/plugin-buble': 0.20.0_rollup@1.27.8
+      buble: 0.19.8
+      rollup: 1.27.8
+      rollup-plugin-commonjs: 9.3.4_rollup@1.27.8
+      tslib: 1.10.0
+      typescript: 3.7.2
+    specifiers:
+      '@rollup/plugin-buble': ^0.20.0
+      '@rollup/pluginutils': ^3.0.0
+      buble: ^0.19.8
+      resolve: ^1.12.2
+      rollup: ^1.27.5
+      rollup-plugin-commonjs: ^9.3.4
+      tslib: ^1.10.0
+      typescript: ^3.7.2
   packages/url:
     dependencies:
       make-dir: 3.0.0
@@ -5997,6 +6021,18 @@ packages:
       rollup: '>=1.12.0'
     resolution:
       integrity: sha512-jlXbjZSQg8EIeAAvepNwhJj++qJWNJw1Cl0YnOqKtP5Djx+fFGkp3WRh+W0ASCaFG5w1jhmzDxgu3SJuVxPF4Q==
+  /rollup-plugin-commonjs/9.3.4_rollup@1.27.8:
+    dependencies:
+      estree-walker: 0.6.1
+      magic-string: 0.25.4
+      resolve: 1.13.1
+      rollup: 1.27.8
+      rollup-pluginutils: 2.8.2
+    dev: true
+    peerDependencies:
+      rollup: '>=0.56.0'
+    resolution:
+      integrity: sha512-DTZOvRoiVIHHLFBCL4pFxOaJt8pagxsVldEXBOn6wl3/V21wVaj17HFfyzTsQUuou3sZL3lEJZVWKPFblJfI6w==
   /rollup-plugin-node-resolve/5.2.0:
     dependencies:
       '@types/resolve': 0.0.8

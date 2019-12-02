@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "es6"
+        ],
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strict": true,
+        "noEmit": true,
+        "allowJs": true
+    },
+    "files": [
+        "index.d.ts",
+        "typings-test.js"
+    ]
+}
