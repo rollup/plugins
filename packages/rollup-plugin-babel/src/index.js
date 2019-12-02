@@ -32,6 +32,7 @@ const unpackInputPluginOptions = options =>
 		caller: {
 			supportsStaticESM: true,
 			supportsDynamicImport: true,
+			supportsTopLevelAwait: true,
 			...options.caller,
 		},
 	});
