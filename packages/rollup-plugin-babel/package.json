@@ -25,7 +25,7 @@
     "lint": "eslint src",
     "pretest": "npm run build",
     "test": "mocha",
-    "prebuild": "rm -rf dist/*",
+    "prebuild": "rimraf dist",
     "build": "rollup -c",
     "prepare": "npm run build",
     "preversion": "npm run lint && npm test"
@@ -53,6 +53,7 @@
     "lint-staged": "^9.4.3",
     "mocha": "^6.2.2",
     "prettier": "^1.19.1",
+    "rimraf": "^2.6.3",
     "rollup": "^1.27.5",
     "rollup-plugin-buble": "^0.19.8",
     "rollup-plugin-json": "^4.0.0",
