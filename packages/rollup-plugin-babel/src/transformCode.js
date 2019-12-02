@@ -14,21 +14,25 @@ export default function(code, babelOptions, overrides, customOptions, ctx, final
 					code,
 					customOptions,
 			  }),
-	).then(transformOptions => {
-		if (finalizeOptions) {
-			transformOptions = finalizeOptions(transformOptions);
-		}
-		const result = babel.transformSync(code, transformOptions);
+	)
+		.then(transformOptions => {
+			if (finalizeOptions) {
+				transformOptions = finalizeOptions(transformOptions);
+			}
 
-		return Promise.resolve(
-			!overrides.result
-				? result
-				: overrides.result.call(ctx, result, {
-						code,
-						customOptions,
-						config,
-						transformOptions,
-				  }),
-		).then(({ code, map }) => ({ code, map }));
-	});
+			const resultP = babel.transformAsync(code, transformOptions);
+
+			if (!overrides.result) {
+				return resultP;
+			}
+			return resultP.then(result =>
+				overrides.result.call(ctx, result, {
+					code,
+					customOptions,
+					config,
+					transformOptions,
+				}),
+			);
+		})
+		.then(({ code, map }) => ({ code, map }));
 }
