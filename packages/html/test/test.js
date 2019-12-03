@@ -14,7 +14,7 @@ const output = { dir: 'output', format: 'umd' };
 
 process.chdir(join(__dirname, 'fixtures'));
 
-test('default options', async (t) => {
+test.serial('default options', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [html()]
@@ -23,7 +23,7 @@ test('default options', async (t) => {
   t.snapshot(code);
 });
 
-test('options', async (t) => {
+test.serial('options', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [
@@ -38,7 +38,7 @@ test('options', async (t) => {
   t.snapshot(code);
 });
 
-test('iife', async (t) => {
+test.serial('iife', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [html()]
@@ -47,7 +47,7 @@ test('iife', async (t) => {
   t.snapshot(code);
 });
 
-test('esm', async (t) => {
+test.serial('esm', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [html()]
@@ -56,7 +56,7 @@ test('esm', async (t) => {
   t.snapshot(code);
 });
 
-test('unsupported output format', async (t) => {
+test.serial('unsupported output format', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'batman.js',
@@ -68,7 +68,7 @@ test('unsupported output format', async (t) => {
   t.snapshot(warnings);
 });
 
-test('css', async (t) => {
+test.serial('css', async (t) => {
   const bundle = await rollup({
     input: 'joker.js',
     plugins: [css({ extract: true }), html()]
@@ -77,7 +77,7 @@ test('css', async (t) => {
   t.snapshot(code);
 });
 
-test('attributes', async (t) => {
+test.serial('attributes', async (t) => {
   const bundle = await rollup({
     input: 'joker.js',
     plugins: [
@@ -95,7 +95,7 @@ test('attributes', async (t) => {
   t.snapshot(code);
 });
 
-test('imports', async (t) => {
+test.serial('imports', async (t) => {
   const bundle = await rollup({
     input: 'robin.js',
     plugins: [html()]
@@ -104,7 +104,7 @@ test('imports', async (t) => {
   t.snapshot(code);
 });
 
-test('template', async (t) => {
+test.serial('template', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
     plugins: [
