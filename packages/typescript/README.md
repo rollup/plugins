@@ -132,6 +132,32 @@ export default {
 
 Note that this will often result in less optimal output.
 
+### Preserving JSX output
+
+Whenever choosing to preserve JSX output to be further consumed by another transform step via `tsconfig` `compilerOptions` by setting `jsx: 'preserve'` or [overriding options](#options), please bear in mind that, by itself, this plugin won't be able to preserve JSX output, usually failing with:
+
+```sh
+[!] Error: Unexpected token (Note that you need plugins to import files that are not JavaScript)
+file.tsx (1:15)
+1: export default <span>Foobar</span>
+                  ^
+```
+
+To prevent that, make sure to use the acorn plugin, namely `acorn-jsx`, which will make Rollup's parser acorn handle JSX tokens. (See https://rollupjs.org/guide/en/#acorninjectplugins)
+
+After adding `acorn-jsx` plugin, your Rollup config would look like the following, correctly preserving your JSX output.
+
+```js
+import jsx from 'acorn-jsx';
+import typescript from 'rollup-plugin-typescript';
+
+export default {
+    // … other options …
+    acornInjectPlugins: [ jsx() ],
+    plugins: [ typescript({jsx: 'preserve'}) ]
+};
+```
+
 ## Issues
 
 This plugin will currently **not warn for any type violations**. This plugin relies on TypeScript's [transpileModule](https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API#a-simple-transform-function) function which basically transpiles TypeScript to JavaScript by stripping any type information on a per-file basis. While this is faster than using the language service, no cross-file type checks are possible with this approach.
