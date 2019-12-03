@@ -99,8 +99,8 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
 			},
 
 			transform(code, filename) {
-				if (!filter(filename)) return Promise.resolve(null);
-				if (filename === HELPERS) return Promise.resolve(null);
+				if (!filter(filename)) return null;
+				if (filename === HELPERS) return null;
 
 				return transformCode(code, { ...babelOptions, filename }, overrides, customOptions, this, transformOptions => {
 					const helpers = preflightCheck(this, transformOptions);
@@ -119,6 +119,7 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
 					if (helpers !== RUNTIME && !externalHelpers) {
 						return addBabelPlugin(transformOptions, helperPlugin);
 					}
+
 					return transformOptions;
 				});
 			},

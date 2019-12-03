@@ -1,38 +1,34 @@
 import * as babel from '@babel/core';
 
-export default function(code, babelOptions, overrides, customOptions, ctx, finalizeOptions) {
+export default async function transformCode(inputCode, babelOptions, overrides, customOptions, ctx, finalizeOptions) {
 	const config = babel.loadPartialConfig(babelOptions);
 
 	if (!config) {
-		return Promise.resolve(null);
+		return null;
 	}
 
-	return Promise.resolve(
-		!overrides.config
-			? config.options
-			: overrides.config.call(this, config, {
-					code,
-					customOptions,
-			  }),
-	)
-		.then(transformOptions => {
-			if (finalizeOptions) {
-				transformOptions = finalizeOptions(transformOptions);
-			}
+	let transformOptions = !overrides.config
+		? config.options
+		: await overrides.config.call(this, config, {
+				code,
+				customOptions,
+		  });
 
-			const resultP = babel.transformAsync(code, transformOptions);
+	if (finalizeOptions) {
+		transformOptions = await finalizeOptions(transformOptions);
+	}
 
-			if (!overrides.result) {
-				return resultP;
-			}
-			return resultP.then(result =>
-				overrides.result.call(ctx, result, {
-					code,
-					customOptions,
-					config,
-					transformOptions,
-				}),
-			);
-		})
-		.then(({ code, map }) => ({ code, map }));
+	if (!overrides.result) {
+		const { code, map } = await babel.transformAsync(inputCode, transformOptions);
+		return { code, map };
+	}
+
+	const result = await babel.transformAsync(inputCode, transformOptions);
+	const { code, map } = await overrides.result.call(ctx, result, {
+		code: inputCode,
+		customOptions,
+		config,
+		transformOptions,
+	});
+	return { code, map };
 }

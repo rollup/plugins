@@ -1,4 +1,4 @@
-import { transformSync } from '@babel/core';
+import * as babel from '@babel/core';
 import { INLINE, RUNTIME, EXTERNAL } from './constants.js';
 import { addBabelPlugin } from './utils.js';
 
@@ -35,12 +35,12 @@ export default function createPreflightCheck() {
 			let helpers;
 
 			const inputCode = 'class Foo extends Bar {};\nexport default Foo;';
-			const transformed = transformSync(inputCode, options);
+			const transformed = babel.transformSync(inputCode, options);
 
 			let check = transformed.code;
 
 			if (~check.indexOf('class ')) {
-				check = transformSync(inputCode, addBabelPlugin(options, fallbackClassTransform)).code;
+				check = babel.transformSync(inputCode, addBabelPlugin(options, fallbackClassTransform)).code;
 			}
 
 			if (
