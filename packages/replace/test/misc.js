@@ -1,9 +1,7 @@
-/* eslint-disable consistent-return, global-require, import/no-dynamic-require */
+/* eslint-disable consistent-return */
 
 const test = require('ava');
 const { rollup } = require('rollup');
-const { SourceMapConsumer } = require('source-map');
-const { getLocator } = require('locate-character');
 
 const replace = require('../dist/rollup-plugin-replace.cjs.js');
 
@@ -33,24 +31,17 @@ test('does not mutate the values map properties', async (t) => {
   t.deepEqual(valuesMap, { ANSWER: '42' });
 });
 
-test('generates sourcemaps', async (t) => {
+test('can be configured with output plugins', async (t) => {
   const bundle = await rollup({
     input: 'main.js',
-    onwarn(warning) {
-      throw new Error(warning.message);
-    },
     plugins: [
-      replace({ values: { ANSWER: '42' } }),
       {
         resolveId(id) {
           return id;
         },
         load(importee) {
           if (importee === 'main.js') {
-            return 'import value from "other.js";\nlog(value);';
-          }
-          if (importee === 'other.js') {
-            return 'export default ANSWER;';
+            return 'log("environment", process.env.NODE_ENV);';
           }
         }
       }
@@ -58,53 +49,18 @@ test('generates sourcemaps', async (t) => {
   });
 
   const { code, map } = getOutputFromGenerated(
-    await bundle.generate({ format: 'es', sourcemap: true })
+    await bundle.generate({
+      format: 'es',
+      sourcemap: true,
+      plugins: [
+        replace({
+          'process.env.NODE_ENV': JSON.stringify('production'),
+          delimiters: ['', '']
+        })
+      ]
+    })
   );
 
-  await SourceMapConsumer.with(map, null, async (smc) => {
-    const locator = getLocator(code, { offsetLine: 1 });
-
-    let generatedLoc = locator('42');
-    let loc = smc.originalPositionFor(generatedLoc);
-    t.snapshot(generatedLoc);
-    t.snapshot(loc);
-
-    generatedLoc = locator('log');
-    loc = smc.originalPositionFor(generatedLoc);
-    t.snapshot(generatedLoc);
-    t.snapshot(loc);
-  });
-});
-
-test('does not generate sourcemaps if disabled', async (t) => {
-  let warned = false;
-
-  const bundle = await rollup({
-    input: 'main.js',
-    onwarn(warning) {
-      t.snapshot(warning.message);
-      warned = true;
-    },
-    plugins: [
-      replace({ values: { ANSWER: '42' }, sourcemap: false }),
-      {
-        resolveId(id) {
-          return id;
-        },
-
-        load(importee) {
-          if (importee === 'main.js') {
-            return 'import value from "other.js";\nlog(value);';
-          }
-          if (importee === 'other.js') {
-            return 'export default ANSWER;';
-          }
-        }
-      }
-    ]
-  });
-
-  t.truthy(!warned);
-  await bundle.generate({ format: 'es', sourcemap: true });
-  t.truthy(warned);
+  t.is(code.trim(), 'log("environment", "production");');
+  t.truthy(map);
 });
