@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import * as ts from 'typescript';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 import resolveId from 'resolve';
 
 import endsWith from './string';
