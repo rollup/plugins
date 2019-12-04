@@ -25,7 +25,6 @@
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run test:ts",
     "pretest": "pnpm run build",
-    "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava",
     "test:ts": "tsc index.d.ts test/types.ts --noEmit"
   },

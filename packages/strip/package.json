@@ -22,7 +22,6 @@
     "lint:js": "eslint --fix --cache src test/test.js",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "pretest": "pnpm run build",
-    "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava"
   },
   "files": [

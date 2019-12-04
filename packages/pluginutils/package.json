@@ -30,7 +30,6 @@
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint && pnpm run build",
     "pretest": "pnpm run build -- --sourcemap",
-    "security": "echo 'pnpm needs `npm audit` support'",
     "test": "ava test/*.ts"
   },
   "files": [
