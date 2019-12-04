@@ -32,9 +32,7 @@ export default function typescript(options = {}) {
 
   // Load options from `tsconfig.json` unless explicitly asked not to.
   const tsConfig =
-    opts.tsconfig === false
-      ? { compilerOptions: {} }
-      : readTsConfig(tsRuntime, opts.tsconfig);
+    opts.tsconfig === false ? { compilerOptions: {} } : readTsConfig(tsRuntime, opts.tsconfig);
 
   delete opts.tsconfig;
 
@@ -138,10 +136,7 @@ export default function typescript(options = {}) {
       let fatalError = false;
 
       diagnostics.forEach((diagnostic) => {
-        const message = tsRuntime.flattenDiagnosticMessageText(
-          diagnostic.messageText,
-          '\n'
-        );
+        const message = tsRuntime.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
 
         if (diagnostic.file) {
           const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(

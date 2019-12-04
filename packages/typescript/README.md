@@ -152,9 +152,9 @@ import jsx from 'acorn-jsx';
 import typescript from 'rollup-plugin-typescript';
 
 export default {
-    // … other options …
-    acornInjectPlugins: [ jsx() ],
-    plugins: [ typescript({jsx: 'preserve'}) ]
+  // … other options …
+  acornInjectPlugins: [jsx()],
+  plugins: [typescript({ jsx: 'preserve' })]
 };
 ```
 
