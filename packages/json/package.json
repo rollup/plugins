@@ -58,6 +58,5 @@
       "!**/types.ts"
     ]
   },
-  "jsnext:main": "dist/rollup-plugin-json.es.js",
   "module": "dist/index.es.js"
 }

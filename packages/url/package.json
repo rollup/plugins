@@ -66,6 +66,5 @@
       "!**/types.ts"
     ]
   },
-  "jsnext:main": "src/index.js",
   "module": "dist/index.es.js"
 }
