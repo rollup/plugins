@@ -1,4 +1,4 @@
-import { resolve, sep } from 'path';
+import { resolve, join, sep } from 'path';
 
 import mm from 'micromatch';
 
@@ -6,11 +6,17 @@ import { CreateFilter } from '../types';
 
 import ensureArray from './utils/ensureArray';
 
+const ESCAPE_IN_PATH = '()+@!'
+
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
   if (resolutionBase === false) {
     return id;
   }
-  return resolve(...(typeof resolutionBase === 'string' ? [resolutionBase, id] : [id]));
+  let basePath = typeof resolutionBase === 'string' ? resolve(resolutionBase) : process.cwd();
+  for (const char of ESCAPE_IN_PATH) {
+    basePath = basePath.replace(new RegExp(`\\${char}`, 'g'), `\\${char}`);
+  }
+  return join(basePath, id);
 }
 
 const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
