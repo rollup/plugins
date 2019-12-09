@@ -73,7 +73,6 @@
       "!**/types.ts"
     ]
   },
-  "jsnext:main": "dist/index.es.js",
   "module": "dist/index.es.js",
   "types": "types/index.d.ts"
 }
