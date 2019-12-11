@@ -84,7 +84,7 @@ When using `plugin-multi-entry`, input values passed as a normal `String` are [g
 ```js
 export default {
   input: 'batcave/friends/**/*.js',
-  plugins: [multiEntry()]
+  plugins: [multi()]
   // ...
 };
 ```
@@ -96,7 +96,7 @@ An `Array` of `String` can be passed as the input. Values are glob-aware and can
 ```js
 export default {
   input: ['party/supplies.js', 'batcave/friends/**/*.js'],
-  plugins: [multiEntry()]
+  plugins: [multi()]
   // ...
 };
 ```
@@ -113,7 +113,7 @@ export default {
     // except for the joker
     exclude: ['**/joker.js']
   },
-  plugins: [multiEntry()]
+  plugins: [multi()]
   // ...
 };
 ```
