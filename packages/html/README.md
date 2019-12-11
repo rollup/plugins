@@ -66,7 +66,7 @@ Specifies the name of the HTML to emit.
 
 ### `publicPath`
 
-Type: `String`<bri3ty3
+Type: `String`<br>
 Default: `''`
 
 Specifies a path to prepend to all bundle assets (files) in the HTML output.
