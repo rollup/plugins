@@ -30,6 +30,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [node-resolve](packages/node-resolve) | Locate and bundle third-party dependencies in node_modules                                |
 | [replace](packages/replace)           | Replace strings in files while bundling                                                   |
 | [strip](packages/strip)               | Remove debugger statements and functions like assert.equal and console.log from your code |
+| [typescript](packages/typescript)     | Integration between Rollup and Typescript                                                 |
 | [url](packages/url)                   | Import files as data-URIs or ES Modules                                                   |
 | [virtual](packages/virtual)           | Load virtual modules from memory                                                          |
 | [wasm](packages/wasm)                 | Import WebAssembly code with Rollup                                                       |
