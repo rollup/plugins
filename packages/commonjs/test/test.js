@@ -8,6 +8,8 @@ import { getLocator } from 'locate-character';
 import { rollup } from 'rollup';
 import resolve from '@rollup/plugin-node-resolve';
 
+import { testBundle } from '../../../util/test';
+
 import { commonjs, getCodeFromBundle, getOutputFromGenerated, executeBundle } from './helpers/util';
 
 install();
@@ -41,7 +43,7 @@ test('generates a sourcemap', async (t) => {
   generatedLoc = locator('log');
   loc = smc.originalPositionFor(generatedLoc); // log
   t.is(loc.source, 'fixtures/samples/sourcemap/main.js');
-  t.is(loc.line, 2);
+  t.is(loc.line, 3);
   t.is(loc.column, 8);
 });
 
@@ -298,12 +300,8 @@ test('identifies named exports from object literals', async (t) => {
     plugins: [commonjs()]
   });
 
-  const { code } = await bundle.generate({
-    format: 'cjs'
-  });
-
-  const fn = new Function('module', 't', code);
-  fn({}, t);
+  t.plan(3);
+  await testBundle(t, bundle);
 });
 
 test('can ignore references to `global`', async (t) => {
