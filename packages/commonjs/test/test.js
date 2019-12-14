@@ -660,6 +660,7 @@ test('produces optimized code when importing esm without a default export', asyn
 const value = "value";
 
 var esm = /*#__PURE__*/Object.freeze({
+	__proto__: null,
 	value: value
 });
 

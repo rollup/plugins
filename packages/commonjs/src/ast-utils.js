@@ -79,7 +79,7 @@ export function isTruthy(node) {
   if (node.type === 'Literal') return !!node.value;
   if (node.type === 'ParenthesizedExpression') return isTruthy(node.expression);
   if (node.operator in operators) return operators[node.operator](node);
-  return false;
+  return undefined;
 }
 
 export function isFalsy(node) {
@@ -91,8 +91,8 @@ function not(value) {
 }
 
 function equals(a, b, strict) {
-  if (a.type !== b.type) return false;
+  if (a.type !== b.type) return undefined;
   // eslint-disable-next-line eqeqeq
   if (a.type === 'Literal') return strict ? a.value === b.value : a.value == b.value;
-  return false;
+  return undefined;
 }
