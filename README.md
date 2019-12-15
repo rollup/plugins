@@ -26,7 +26,8 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [image](packages/image)               | Import JPG, PNG, GIF, SVG, and WebP files                                                 |
 | [inject](packages/inject)             | Scan modules for global variables and injects `import` statements where necessary         |
 | [json](packages/json)                 | Convert .json files to ES6 modules                                                        |
-| [legacy](packages/legacy)             | Add `export` declarations to legacy non-module scripts.                                   |
+| [legacy](packages/legacy)             | Add `export` declarations to legacy non-module scripts                                    |
+| [multi-entry](packages/multi-entry)   | Use multiple entry points for a bundle                                                    |
 | [node-resolve](packages/node-resolve) | Locate and bundle third-party dependencies in node_modules                                |
 | [replace](packages/replace)           | Replace strings in files while bundling                                                   |
 | [strip](packages/strip)               | Remove debugger statements and functions like assert.equal and console.log from your code |
