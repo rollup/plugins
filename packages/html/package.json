@@ -1,0 +1,55 @@
+{
+  "name": "@rollup/plugin-html",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Creates HTML files to serve Rollup bundles",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Andrew Powell <andrew@shellscape.org>",
+  "homepage": "https://github.com/rollup/plugins/packages/beep",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "scripts": {
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write *.md",
+    "lint:js": "eslint --fix --cache lib test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prepublishOnly": "pnpm run lint",
+    "test": "ava"
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "html",
+    "template"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "devDependencies": {
+    "rollup": "^1.27.5",
+    "rollup-plugin-postcss": "^2.0.3"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  }
+}

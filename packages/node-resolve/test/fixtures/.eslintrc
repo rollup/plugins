@@ -1,0 +1,12 @@
+{
+  "globals": {
+    "t": true
+  },
+  "rules": {
+    "import/extensions": "off",
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "line-comment-position": "off",
+    "no-console": "off"
+  }
+}

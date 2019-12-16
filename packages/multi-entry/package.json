@@ -1,0 +1,64 @@
+{
+  "name": "@rollup/plugin-multi-entry",
+  "version": "3.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Use multiple entry points for a bundle",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "rollup",
+  "homepage": "https://github.com/rollup/plugins/packages/multi-entry/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "multi",
+    "multiple",
+    "entry",
+    "entries"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "dependencies": {
+    "matched": "^1.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "rollup": "^1.20.1",
+    "rollup-plugin-babel": "^4.0.3"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  },
+  "module": "dist/index.es.js"
+}

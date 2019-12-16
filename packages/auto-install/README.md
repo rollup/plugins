@@ -1,7 +1,7 @@
-[npm]: https://img.shields.io/npm/v/@rollup/plugin-inject
-[npm-url]: https://www.npmjs.com/package/@rollup/plugin-inject
-[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-inject
-[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-inject
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-auto-install
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-auto-install
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-auto-install
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-auto-install
 
 [![npm][npm]][npm-url]
 [![size][size]][size-url]
@@ -20,7 +20,7 @@ This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v
 Using npm:
 
 ```console
-npm install @rollup/plugin-inject --save-dev
+npm install @rollup/plugin-auto-install --save-dev
 ```
 
 ## Usage
@@ -37,10 +37,7 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [
-    auto(),
-    resolve()
-  ]
+  plugins: [auto(), resolve()]
 };
 ```
 

@@ -1,0 +1,72 @@
+{
+  "name": "@rollup/plugin-typescript",
+  "version": "2.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Seamless integration between Rollup and TypeScript.",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Oskar Segersvärd",
+  "homepage": "https://github.com/rollup/plugins/packages/typescript/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "typescript",
+    "es2015"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0",
+    "tslib": "*",
+    "typescript": ">=2.1.0"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^3.0.0",
+    "resolve": "^1.12.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-buble": "^0.20.0",
+    "buble": "^0.19.8",
+    "rollup": "^1.27.5",
+    "rollup-plugin-commonjs": "^9.3.4",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.2"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/output/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  },
+  "module": "dist/index.es.js"
+}
