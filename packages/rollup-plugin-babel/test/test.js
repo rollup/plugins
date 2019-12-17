@@ -299,6 +299,26 @@ module.exports = main;
 		}
 	});
 
+	it('works with minified bundled helpers', async () => {
+		const BASE_CHAR_CODE = 'a'.charCodeAt(0);
+		let counter = 0;
+
+		await bundle('samples/class/main.js', {
+			plugins: [
+				function({ types: t }) {
+					return {
+						visitor: {
+							FunctionDeclaration(path) {
+								// super simple mangling
+								path.get('id').replaceWith(t.identifier(String.fromCharCode(BASE_CHAR_CODE + counter++)));
+							},
+						},
+					};
+				},
+			],
+		});
+	});
+
 	it('supports customizing the loader', async () => {
 		const customBabelPlugin = babelPlugin.custom(() => ({
 			config(cfg) {

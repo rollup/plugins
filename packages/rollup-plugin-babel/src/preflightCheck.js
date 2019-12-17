@@ -51,14 +51,15 @@ export default async function preflightCheck(ctx, babelHelpers, transformOptions
 		ctx.error(mismatchError(RUNTIME, babelHelpers, transformOptions.filename));
 	}
 
-	if (~check.indexOf('babelHelpers.inherits')) {
+	if (check.includes('babelHelpers.inherits')) {
 		if (babelHelpers === EXTERNAL) {
 			return;
 		}
 		ctx.error(mismatchError(EXTERNAL, babelHelpers, transformOptions.filename));
 	}
 
-	if (~check.indexOf('function _inherits')) {
+	// test unminifiable string content
+	if (check.includes('Super expression must either be null or a function')) {
 		if (babelHelpers === INLINE || babelHelpers === BUNDLED) {
 			return;
 		}
