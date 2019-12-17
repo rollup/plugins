@@ -1,4 +1,7 @@
-export const addBabelPlugin = (options, plugin) => ({ ...options, plugins: options.plugins.concat(plugin) });
+export const addBabelPlugin = (options, plugin) => ({
+	...options,
+	plugins: options.plugins.concat(plugin),
+});
 
 let warned = {};
 export function warnOnce(ctx, msg) {

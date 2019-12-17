@@ -1,8 +1,8 @@
 import * as babel from '@babel/core';
 import { createFilter } from 'rollup-pluginutils';
-import { EXTERNAL, HELPERS, RUNTIME } from './constants.js';
-import helperPlugin from './helperPlugin.js';
-import createPreflightCheck from './preflightCheck.js';
+import { RUNTIME, EXTERNAL, BUNDLED, INLINE, HELPERS } from './constants.js';
+import bundledHelpersPlugin from './bundledHelpersPlugin.js';
+import preflightCheck from './preflightCheck.js';
 import transformCode from './transformCode';
 import { addBabelPlugin, escapeRegExpCharacters, warnOnce } from './utils.js';
 
@@ -26,16 +26,29 @@ const unpackOptions = ({
 	},
 });
 
-const unpackInputPluginOptions = options =>
-	unpackOptions({
-		...options,
+const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
+	if (!rest.babelHelpers) {
+		console.warn(
+			'You should specify how do you want to bundle/import "Babel helpers" (runtime functions inserted by Babel which are used by some transformations).\n\n' +
+				`Please pass \`babelHelpers\` option to the rollup-plugin-babel with one of the following values ("${BUNDLED}" is the default):\n` +
+				`  - "${RUNTIME}" - you should use it especially when building libraries with rollup. It has to be used in combination with \`@babel/plugin-transform-runtime\` and you should also specify \`@babel/runtime\` as dependency of your package (don't forget to tell rollup to treat it is your external dependency when bundling for cjs & esm formats).\n` +
+				`  - "${BUNDLED}" - you should use it if you want your resulting bundle to contain those helpers (at most one copy of each). Useful especially if you bundle an application code.\n` +
+				`  - "${EXTERNAL}" - use it only if you know what you are doing. It will reference helpers on **global** \`babelHelpers\` object. Used most commonly in combination with \`@babel/plugin-external-helpers\`.\n` +
+				`  - "${INLINE}" - this is not recommended. Helpers will be inserted in each file using them, this can cause serious code duplication (this is default Babel behaviour)\n`,
+		);
+	}
+	return unpackOptions({
+		...rest,
+		skipPreflightCheck,
+		babelHelpers: rest.babelHelpers || BUNDLED,
 		caller: {
 			supportsStaticESM: true,
 			supportsDynamicImport: true,
 			supportsTopLevelAwait: true,
-			...options.caller,
+			...rest.caller,
 		},
 	});
+};
 
 const unpackOutputPluginOptions = (options, { format }) =>
 	unpackOptions({
@@ -75,14 +88,12 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
 		const {
 			exclude,
 			extensions,
-			externalHelpers,
-			externalHelpersWhitelist,
+			babelHelpers,
 			include,
-			runtimeHelpers,
+			skipPreflightCheck,
 			...babelOptions
 		} = unpackInputPluginOptions(pluginOptionsWithOverrides);
 
-		const preflightCheck = createPreflightCheck(true);
 		const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
 		const includeExcludeFilter = createFilter(include, exclude);
 		const filter = id => extensionRegExp.test(id) && includeExcludeFilter(id);
@@ -95,33 +106,31 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
 			},
 
 			load(id) {
-				if (id === HELPERS) return babel.buildExternalHelpers(externalHelpersWhitelist, 'module');
+				if (id === HELPERS) return babel.buildExternalHelpers(null, 'module');
 			},
 
 			transform(code, filename) {
 				if (!filter(filename)) return null;
 				if (filename === HELPERS) return null;
 
-				return transformCode(code, { ...babelOptions, filename }, overrides, customOptions, this, transformOptions => {
-					const helpers = preflightCheck(this, transformOptions);
+				return transformCode(
+					code,
+					{ ...babelOptions, filename },
+					overrides,
+					customOptions,
+					this,
+					async transformOptions => {
+						if (!skipPreflightCheck) {
+							await preflightCheck(this, babelHelpers, transformOptions);
+						}
 
-					if (helpers === EXTERNAL && !externalHelpers) {
-						warnOnce(
-							this,
-							'Using "external-helpers" plugin with rollup-plugin-babel is deprecated, as it now automatically deduplicates your Babel helpers.',
-						);
-					} else if (helpers === RUNTIME && !runtimeHelpers) {
-						this.error(
-							'Runtime helpers are not enabled. Either exclude the transform-runtime Babel plugin or pass the `runtimeHelpers: true` option. See https://github.com/rollup/rollup-plugin-babel#configuring-babel for more information',
-						);
-					}
+						if (babelHelpers === BUNDLED) {
+							transformOptions = addBabelPlugin(transformOptions, bundledHelpersPlugin);
+						}
 
-					if (helpers !== RUNTIME && !externalHelpers) {
-						return addBabelPlugin(transformOptions, helperPlugin);
-					}
-
-					return transformOptions;
-				});
+						return transformOptions;
+					},
+				);
 			},
 		};
 	};

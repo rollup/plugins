@@ -3,6 +3,7 @@ import * as babel from '@babel/core';
 export default async function transformCode(inputCode, babelOptions, overrides, customOptions, ctx, finalizeOptions) {
 	const config = babel.loadPartialConfig(babelOptions);
 
+	// file is ignored by babel
 	if (!config) {
 		return null;
 	}
@@ -20,7 +21,10 @@ export default async function transformCode(inputCode, babelOptions, overrides, 
 
 	if (!overrides.result) {
 		const { code, map } = await babel.transformAsync(inputCode, transformOptions);
-		return { code, map };
+		return {
+			code,
+			map,
+		};
 	}
 
 	const result = await babel.transformAsync(inputCode, transformOptions);
@@ -30,5 +34,8 @@ export default async function transformCode(inputCode, babelOptions, overrides, 
 		config,
 		transformOptions,
 	});
-	return { code, map };
+	return {
+		code,
+		map,
+	};
 }
