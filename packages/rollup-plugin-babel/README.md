@@ -31,6 +31,32 @@ npm install --save-dev rollup-plugin-babel@3
 
 ## Usage
 
+### Command Line (`rollup`)
+
+#### Configuration
+
+`rollup.config.js` ([docs](https://rollupjs.org/guide/en/#configuration-files)):
+
+```js
+import babel from 'rollup-plugin-babel';
+import pkg from './package.json';
+
+const config = {
+	input: 'src/index.js',
+	output: [
+		{
+			file: pkg.module,
+			format: 'esm',
+		},
+	],
+	plugins: [babel()],
+};
+
+export default config;
+```
+
+### Programmatic
+
 ```js
 import { rollup } from 'rollup';
 import babel from 'rollup-plugin-babel';
