@@ -141,14 +141,14 @@ customResolveOptions: {
 }
 ```
 
-## Using with rollup-plugin-commonjs
+## Using with @rollup/plugin-commonjs
 
-Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [rollup-plugin-commonjs](https://github.com/rollup/rollup-plugin-commonjs):
+Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [@rollup/plugin-commonjs](https://github.com/rollup/plugins/packages/commonjs):
 
 ```js
 // rollup.config.js
 import resolve from '@rollup/plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
+import commonjs from '@rollup/plugin-commonjs';
 
 export default {
   input: 'main.js',

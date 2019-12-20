@@ -11,3 +11,4 @@ pnpm-debug.log
 .idea
 
 !packages/node-resolve/test/fixtures/**/node_modules
+!packages/commonjs/test/**/node_modules
