@@ -136,6 +136,14 @@ function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
   return p;
 }
 
+function getPackageName(id) {
+  const split = id.split('/');
+  if (split[0][0] === '@') {
+    return `${split[0]}/${split[1]}`;
+  }
+  return split[0];
+}
+
 export default function nodeResolve(options = {}) {
   const mainFields = getMainFields(options);
   const useBrowserOverrides = mainFields.indexOf('browser') !== -1;
@@ -165,7 +173,9 @@ export default function nodeResolve(options = {}) {
   const idToPackageInfo = new Map();
 
   const shouldDedupe =
-    typeof dedupe === 'function' ? dedupe : (importee) => dedupe.includes(importee);
+    typeof dedupe === 'function'
+      ? dedupe
+      : (importee) => dedupe.includes(importee) || dedupe.includes(getPackageName(importee));
 
   function getCachedPackageInfo(pkg, pkgPath) {
     if (packageInfoCache.has(pkgPath)) {
