@@ -118,7 +118,7 @@ export default function commonjs(options = {}) {
       const [minMajor, minMinor] = minVersion.split('.').map(Number);
       if (major < minMajor || (major === minMajor && minor < minMinor)) {
         this.error(
-          `Insufficient Rollup version: "rollup-plugin-commonjs" requires at least rollup@${minVersion} but found rollup@${this.meta.rollupVersion}.`
+          `Insufficient Rollup version: "@rollup/plugin-commonjs" requires at least rollup@${minVersion} but found rollup@${this.meta.rollupVersion}.`
         );
       }
     },

@@ -31,7 +31,7 @@ interface RollupCommonJSOptions {
 	sourceMap?: boolean,
 	/**
 	 * explicitly specify unresolvable named exports
-	 * ([see below for more details](https://github.com/rollup/rollup-plugin-commonjs#custom-named-exports))
+	 * ([see below for more details](https://github.com/rollup/plugins/tree/master/packages/commonjs#named-exports))
 	 * @default undefined
 	 */
 	namedExports?: { [package: string]: ReadonlyArray<string> },
