@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "A rollup plugin to compile TypeScript, Flow, JSX, etc with Sucrase",
+  "description": "Compile TypeScript, Flow, JSX, etc with Sucrase",
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris",

@@ -9,7 +9,7 @@
 
 # @rollup/plugin-sucrase
 
-🍣 A rollup plugin to compile TypeScript, Flow, JSX, etc with Sucrase.
+🍣 Compile TypeScript, Flow, JSX, etc with Sucrase.
 
 ## Requirements
 
