@@ -346,13 +346,13 @@ importers:
       rollup-pluginutils: ^2.8.1
   packages/sucrase:
     dependencies:
-      rollup-pluginutils: 2.8.2
+      '@rollup/pluginutils': 3.0.1_rollup@1.27.13
       sucrase: 3.10.1
     devDependencies:
       rollup: 1.27.13
     specifiers:
+      '@rollup/pluginutils': ^3.0.1
       rollup: ^1.27.13
-      rollup-pluginutils: ^2.8.2
       sucrase: ^3.10.1
   packages/typescript:
     dependencies:
@@ -1856,6 +1856,17 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-qBbGQQaUUiId/lBU9VMeYlVLOoRNvz1fV8HWY5tiGDpI2gdPZHbmOfCjzSdXPhdq3XOfyWvXEBlIPbnM3+9ogQ==
+  /@rollup/pluginutils/3.0.1_rollup@1.27.13:
+    dependencies:
+      estree-walker: 0.6.1
+      rollup: 1.27.13
+    dev: false
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-PmNurkecagFimv7ZdKCVOfQuqKDPkrcpLFxRBcQ00LYr4HAjJwhCFxBiY2Xoletll2htTIiXBg6g0Yg21h2M3w==
   /@samverschueren/stream-to-observable/0.3.0:
     dependencies:
       any-observable: 0.3.0
@@ -1991,7 +2002,6 @@ packages:
     resolution:
       integrity: sha512-VAe+DiwpnC/g448uN+/3gRl4th0BTdrR9gSLIOHA+SUQskaYZQDOHG7xmjiE7JUhjbXnbXytf6Ih+/pA6CtMFQ==
   /@types/node/12.12.21:
-    dev: true
     resolution:
       integrity: sha512-8sRGhbpU+ck1n0PGAUgVrWrWdjSW2aqNeyC15W88GRsMpSwzv6RJGlLhE7s2RhVSOdyDmxbqlWSeThq4/7xqlA==
   /@types/normalize-package-data/2.4.0:
@@ -7731,7 +7741,6 @@ packages:
       '@types/estree': 0.0.40
       '@types/node': 12.12.21
       acorn: 7.1.0
-    dev: true
     hasBin: true
     resolution:
       integrity: sha512-hDi7M07MpmNSDE8YVwGVFA8L7n8jTLJ4lG65nMAijAyqBe//rtu4JdxjUBE7JqXfdpqxqDTbCDys9WcqdpsQvw==
