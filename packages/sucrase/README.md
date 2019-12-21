@@ -64,26 +64,17 @@ The following options are available to set the corresponding [Sucrase options](h
 
 ### `exclude`
 
-Type: `String` | `Array[...String]`<br>
+Type: `String` | `Array[...String]`
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
 ### `include`
 
-Type: `String` | `Array(String)`<br>
-Default: `['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif']`
+Type: `String` | `Array(String)`
+Default: `null`
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default .svg, .png, .jpg, and .gif files are targeted.
-
-### Sucrase options to document:
-
-transforms
-jsxPragma
-jsxFragmentPragma
-enableLegacyTypeScriptModuleInterop
-enableLegacyBabel5ModuleInterop
-production
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
 
 ## Meta
 
