@@ -136,7 +136,10 @@ test('RegExp aliasing', (t) =>
 test('Will not confuse modules with similar names', (t) =>
   resolveAliasWithRollup(
     {
-      entries: [{ find: 'foo', replacement: 'bar' }, { find: './foo', replacement: 'bar' }]
+      entries: [
+        { find: 'foo', replacement: 'bar' },
+        { find: './foo', replacement: 'bar' }
+      ]
     },
     [
       { source: 'foo2', importer: '/src/importer.js' },
