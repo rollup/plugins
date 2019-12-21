@@ -25,24 +25,42 @@ npm install @rollup/plugin-sucrase --save-dev
 
 ## Usage
 
-Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
+Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin. An example of compiling TypeScript (the node-resolve plugin is added to automatically add file extensions, since TypeScript expects not to find them):
 
 ```js
 import sucrase from '@rollup/plugin-sucrase';
+import resolve from 'rollup-plugin-node-resolve';
 
 export default {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: {
-    dir: 'output',
+    file: 'dist/bundle.js',
     format: 'cjs'
   },
-  plugins: [sucrase()]
+  plugins: [
+    resolve({
+      extensions: ['.js', '.ts']
+    }),
+    sucrase({
+      exclude: ['node_modules/**'],
+      transforms: ['typescript']
+    })
+  ]
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 ## Options
+
+The following options are available to set the corresponding [Sucrase options](https://github.com/alangpierce/sucrase#transforms):
+
+- enableLegacyBabel5ModuleInterop
+- enableLegacyTypeScriptModuleInterop
+- jsxFragmentPragma
+- jsxPragma
+- production
+- transforms
 
 ### `exclude`
 
