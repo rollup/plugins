@@ -1,5 +1,15 @@
 # rollup-plugin-buble changelog
 
+## 0.21.0
+
+_2019-12-21_
+
+- feat(buble): use types from @types/buble (#54)
+
+## 0.20.0
+
+- Republish under `@rollup` scope
+
 ## 0.19.8
 
 - Update `buble`
