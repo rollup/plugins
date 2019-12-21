@@ -7,6 +7,7 @@ _2019-12-??_
 - **Breaking:** Minimum compatible Rollup version is 1.2.0
 - **Breaking:** Minimum supported Node version is 8.0.0
 - Published as @rollup/plugin-sucrase
+- Fix: correctly pass `enableLegacyBabel5ModuleInterop` option to Sucrase
 
 ## 2.1.0
 
