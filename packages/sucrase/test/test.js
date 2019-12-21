@@ -12,9 +12,11 @@ process.chdir(__dirname);
 test('converts jsx', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/jsx/main.js',
-    plugins: [sucrase({
-      transforms: ['jsx']
-    })]
+    plugins: [
+      sucrase({
+        transforms: ['jsx']
+      })
+    ]
   });
   t.plan(1);
   return testBundle(t, bundle);
@@ -23,10 +25,12 @@ test('converts jsx', async (t) => {
 test('converts jsx with custom jsxPragma', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/jsx/main.js',
-    plugins: [sucrase({
-      transforms: ['jsx'],
-      jsxPragma: 'FakeReactCreateElement'
-    })]
+    plugins: [
+      sucrase({
+        transforms: ['jsx'],
+        jsxPragma: 'FakeReactCreateElement'
+      })
+    ]
   });
   t.plan(1);
   return testBundle(t, bundle);
@@ -35,9 +39,11 @@ test('converts jsx with custom jsxPragma', async (t) => {
 test('converts typescript', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/typescript/main.js',
-    plugins: [sucrase({
-      transforms: ['typescript']
-    })]
+    plugins: [
+      sucrase({
+        transforms: ['typescript']
+      })
+    ]
   });
   t.plan(1);
   return testBundle(t, bundle);
