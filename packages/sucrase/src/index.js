@@ -29,7 +29,7 @@ module.exports = function sucrase(opts = {}) {
         jsxPragma: opts.jsxPragma,
         jsxFragmentPragma: opts.jsxFragmentPragma,
         enableLegacyTypeScriptModuleInterop: opts.enableLegacyTypeScriptModuleInterop,
-        enableLegacyBabel5ModuleInterop: opts.enableLegacyTypeScriptModuleInterop,
+        enableLegacyBabel5ModuleInterop: opts.enableLegacyBabel5ModuleInterop,
         production: opts.production,
         filePath: id,
         sourceMapOptions: {
