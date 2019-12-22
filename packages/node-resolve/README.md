@@ -149,7 +149,8 @@ Default: `process.cwd()`
 Root directory to resolve modules from. Used when resolving entrypoint imports, and when resolving deduplicated modules. Useful when executing rollup in a package of a monorepository.
 
 ```
-rootDir: path.join(process.cwd(), '..', '..')
+// Set the root directory to be the parent folder
+rootDir: path.join(process.cwd(), '..')
 ```
 
 ## Using with @rollup/plugin-commonjs
