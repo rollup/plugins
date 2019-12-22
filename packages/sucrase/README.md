@@ -29,7 +29,7 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 
 ```js
 import sucrase from '@rollup/plugin-sucrase';
-import resolve from 'rollup-plugin-node-resolve';
+import resolve from '@rollup/plugin-node-resolve';
 
 export default {
   input: 'src/index.ts',
