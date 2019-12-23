@@ -10,12 +10,15 @@
     "url": "https://github.com/rollup/rollup-plugin-babel/issues"
   },
   "main": "dist/rollup-plugin-babel.cjs.js",
+  "engines": {
+    "node": ">=10"
+  },
   "scripts": {
     "build": "rollup -c",
     "prebuild": "rimraf dist",
     "prepare": "npm run build",
     "pretest": "npm run build",
-    "preversion": "npm run lint && npm test",
+    "preversion": "npm test",
     "test": "mocha"
   },
   "files": [
@@ -43,11 +46,9 @@
     "@babel/plugin-syntax-dynamic-import": "^7.7.4",
     "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
-    "buble": "^0.19.8",
     "mocha": "^6.2.2",
     "rimraf": "^2.6.3",
     "rollup": "^1.27.5",
-    "rollup-plugin-buble": "^0.19.8",
     "rollup-plugin-json": "^4.0.0",
     "source-map": "^0.6.1",
     "source-map-support": "^0.5.16"
