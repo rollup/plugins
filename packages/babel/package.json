@@ -16,9 +16,9 @@
   "scripts": {
     "build": "rollup -c",
     "prebuild": "rimraf dist",
-    "prepare": "npm run build",
-    "pretest": "npm run build",
-    "preversion": "npm test",
+    "prepare": "pnpm run build",
+    "pretest": "pnpm run build",
+    "preversion": "pnpm run test",
     "test": "ava"
   },
   "files": [
