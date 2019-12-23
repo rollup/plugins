@@ -1,14 +1,12 @@
 {
-  "name": "rollup-plugin-babel",
+  "name": "@rollup/plugin-babel",
   "version": "5.0.0-alpha.1",
   "description": "Seamless integration between Rollup and Babel.",
   "license": "MIT",
-  "repository": "rollup/rollup-plugin-babel",
+  "repository": "rollup/plugins",
   "author": "Rich Harris",
-  "homepage": "https://github.com/rollup/rollup-plugin-babel",
-  "bugs": {
-    "url": "https://github.com/rollup/rollup-plugin-babel/issues"
-  },
+  "homepage": "https://github.com/rollup/plugins/packages/babel",
+  "bugs": "https://github.com/rollup/plugins/issues",
   "main": "./dist/rollup-plugin-babel.cjs.js",
   "engines": {
     "node": ">=10"
