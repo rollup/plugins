@@ -46,42 +46,42 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ### `exclude`
 
-Type: `String` | `Array[...String]`
+Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default non-CommonJS modules are ignored.
 
 ### `include`
 
-Type: `String` | `Array(String)` \
+Type: `String` | `Array(String)`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default CommonJS modules are targeted.
 
 ### `extensions`
 
-Type: `Array(String)` \
+Type: `Array(String)`<br>
 Default: `['.js']`
 
 Search for extensions other than .js in the order specified.
 
 ### `ignoreGlobal`
 
-Type: `Boolean` \
+Type: `Boolean`<br>
 Default: `false`
 
 If true, uses of `global` won't be dealt with by this plugin.
 
 ### `sourceMap`
 
-Type: `Boolean` \
+Type: `Boolean`<br>
 Default: `true`
 
 If false, skips source map generation for CommonJS modules.
 
 ### `namedExports`
 
-Type: `Object` \
+Type: `Object`<br>
 Default: `null`
 
 Explicitly specify unresolvable named exports.
@@ -122,7 +122,7 @@ commonjs({
 
 ### `ignore`
 
-Type: `Array(String | (String) => Boolean)` \
+Type: `Array(String | (String) => Boolean)`<br>
 Default: `[]`
 
 Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function. Only use this option if you know what you're doing!
