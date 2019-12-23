@@ -46,10 +46,10 @@
     "@babel/plugin-syntax-dynamic-import": "^7.7.4",
     "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
+    "@rollup/plugin-json": "^4.0.0",
     "ava": "^2.4.0",
     "rimraf": "^2.6.3",
     "rollup": "^1.27.5",
-    "rollup-plugin-json": "^4.0.0",
     "source-map": "^0.6.1"
   },
   "ava": {

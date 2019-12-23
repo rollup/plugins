@@ -89,10 +89,10 @@ importers:
       '@babel/plugin-syntax-dynamic-import': 7.8.3_@babel+core@7.9.0
       '@babel/plugin-transform-runtime': 7.9.0_@babel+core@7.9.0
       '@babel/preset-env': 7.9.5_@babel+core@7.9.0
+      '@rollup/plugin-json': 4.0.2_rollup@1.32.1
       ava: 2.4.0
       rimraf: 2.7.1
       rollup: 1.32.1
-      rollup-plugin-json: 4.0.0
       source-map: 0.6.1
     specifiers:
       '@babel/core': ^7.7.4
@@ -102,10 +102,10 @@ importers:
       '@babel/plugin-syntax-dynamic-import': ^7.7.4
       '@babel/plugin-transform-runtime': ^7.7.4
       '@babel/preset-env': ^7.7.4
+      '@rollup/plugin-json': ^4.0.0
       ava: ^2.4.0
       rimraf: ^2.6.3
       rollup: ^1.27.5
-      rollup-plugin-json: ^4.0.0
       rollup-pluginutils: ^2.8.2
       source-map: ^0.6.1
   packages/beep:
@@ -609,7 +609,7 @@ packages:
   /@babel/helper-builder-binary-assignment-operator-visitor/7.8.3:
     dependencies:
       '@babel/helper-explode-assignable-expression': 7.8.3
-      '@babel/types': 7.9.5
+      '@babel/types': 7.8.3
     dev: true
     resolution:
       integrity: sha512-5eFOm2SyFPK4Rh3XMMRDjN7lBH0orh3ss0g3rTYZnBQ+r6YPj7lgDyCvPphynHvUrobJmeMignBr6Acw9mAPlw==
@@ -671,17 +671,16 @@ packages:
       '@babel/core': ^7.0.0
     resolution:
       integrity: sha512-Gcsm1OHCUr9o9TcJln57xhWHtdXbA2pgQ58S0Lxlks0WMGNXuki4+GLfX0p+L2ZkINUGZvfkz8rzoqJQSthI+Q==
-  /@babel/helper-create-regexp-features-plugin/7.8.8_@babel+core@7.8.3:
+  /@babel/helper-create-regexp-features-plugin/7.8.3_@babel+core@7.9.0:
     dependencies:
-      '@babel/core': 7.8.3
-      '@babel/helper-annotate-as-pure': 7.8.3
+      '@babel/core': 7.9.0
       '@babel/helper-regex': 7.8.3
-      regexpu-core: 4.7.0
+      regexpu-core: 4.6.0
     dev: true
     peerDependencies:
       '@babel/core': ^7.0.0
     resolution:
-      integrity: sha512-LYVPdwkrQEiX9+1R29Ld/wTrmQu1SSKYnuOk3g0CkcZMA1p0gsNxJFj/3gBdaJ7Cg0Fnek5z0DsMULePP7Lrqg==
+      integrity: sha512-Gcsm1OHCUr9o9TcJln57xhWHtdXbA2pgQ58S0Lxlks0WMGNXuki4+GLfX0p+L2ZkINUGZvfkz8rzoqJQSthI+Q==
   /@babel/helper-create-regexp-features-plugin/7.8.8_@babel+core@7.9.0:
     dependencies:
       '@babel/core': 7.9.0
@@ -703,8 +702,8 @@ packages:
       integrity: sha512-PoeBYtxoZGtct3md6xZOCWPcKuMuk3IHhgxsRRNtnNShebf4C8YonTSblsK4tvDbm+eJAw2HAPOfCr+Q/YRG/g==
   /@babel/helper-explode-assignable-expression/7.8.3:
     dependencies:
-      '@babel/traverse': 7.9.5
-      '@babel/types': 7.9.5
+      '@babel/traverse': 7.8.3
+      '@babel/types': 7.8.3
     dev: true
     resolution:
       integrity: sha512-N+8eW86/Kj147bO9G2uclsg5pwfs/fqqY5rwgIL7eTBklgXjcOJ3btzS5iM6AitJcftnY7pm2lGsrJVYLGjzIw==
@@ -790,9 +789,9 @@ packages:
     dependencies:
       '@babel/helper-annotate-as-pure': 7.8.3
       '@babel/helper-wrap-function': 7.8.3
-      '@babel/template': 7.8.6
-      '@babel/traverse': 7.9.5
-      '@babel/types': 7.9.5
+      '@babel/template': 7.8.3
+      '@babel/traverse': 7.8.3
+      '@babel/types': 7.8.3
     dev: true
     resolution:
       integrity: sha512-kgwDmw4fCg7AVgS4DukQR/roGp+jP+XluJE5hsRZwxCYGg+Rv9wSGErDWhlI90FODdYfd4xG4AQRiMDjjN0GzA==
@@ -832,10 +831,10 @@ packages:
       integrity: sha512-/8arLKUFq882w4tWGj9JYzRpAlZgiWUJ+dtteNTDqrRBz9Iguck9Rn3ykuBDoUwh2TO4tSAJlrxDUOXWklJe4g==
   /@babel/helper-wrap-function/7.8.3:
     dependencies:
-      '@babel/helper-function-name': 7.9.5
-      '@babel/template': 7.8.6
-      '@babel/traverse': 7.9.5
-      '@babel/types': 7.9.5
+      '@babel/helper-function-name': 7.8.3
+      '@babel/template': 7.8.3
+      '@babel/traverse': 7.8.3
+      '@babel/types': 7.8.3
     dev: true
     resolution:
       integrity: sha512-LACJrbUET9cQDzb6kG7EeD7+7doC3JNvUgTEQOx2qaO1fKlzE/Bf05qs9w1oXQMmXlPO65lC3Tq9S6gZpTErEQ==
@@ -1385,7 +1384,7 @@ packages:
   /@babel/plugin-transform-dotall-regex/7.8.3_@babel+core@7.8.3:
     dependencies:
       '@babel/core': 7.8.3
-      '@babel/helper-create-regexp-features-plugin': 7.8.8_@babel+core@7.8.3
+      '@babel/helper-create-regexp-features-plugin': 7.8.3_@babel+core@7.8.3
       '@babel/helper-plugin-utils': 7.8.3
     dev: true
     peerDependencies:
@@ -1395,7 +1394,7 @@ packages:
   /@babel/plugin-transform-dotall-regex/7.8.3_@babel+core@7.9.0:
     dependencies:
       '@babel/core': 7.9.0
-      '@babel/helper-create-regexp-features-plugin': 7.8.8_@babel+core@7.9.0
+      '@babel/helper-create-regexp-features-plugin': 7.8.3_@babel+core@7.9.0
       '@babel/helper-plugin-utils': 7.8.3
     dev: true
     peerDependencies:
@@ -1461,7 +1460,7 @@ packages:
   /@babel/plugin-transform-function-name/7.8.3_@babel+core@7.8.3:
     dependencies:
       '@babel/core': 7.8.3
-      '@babel/helper-function-name': 7.9.5
+      '@babel/helper-function-name': 7.8.3
       '@babel/helper-plugin-utils': 7.8.3
     dev: true
     peerDependencies:
@@ -1471,7 +1470,7 @@ packages:
   /@babel/plugin-transform-function-name/7.8.3_@babel+core@7.9.0:
     dependencies:
       '@babel/core': 7.9.0
-      '@babel/helper-function-name': 7.9.5
+      '@babel/helper-function-name': 7.8.3
       '@babel/helper-plugin-utils': 7.8.3
     dev: true
     peerDependencies:
@@ -1607,7 +1606,7 @@ packages:
   /@babel/plugin-transform-named-capturing-groups-regex/7.8.3_@babel+core@7.8.3:
     dependencies:
       '@babel/core': 7.8.3
-      '@babel/helper-create-regexp-features-plugin': 7.8.8_@babel+core@7.8.3
+      '@babel/helper-create-regexp-features-plugin': 7.8.3_@babel+core@7.8.3
     dev: true
     peerDependencies:
       '@babel/core': ^7.0.0
@@ -1616,7 +1615,7 @@ packages:
   /@babel/plugin-transform-named-capturing-groups-regex/7.8.3_@babel+core@7.9.0:
     dependencies:
       '@babel/core': 7.9.0
-      '@babel/helper-create-regexp-features-plugin': 7.8.8_@babel+core@7.9.0
+      '@babel/helper-create-regexp-features-plugin': 7.8.3_@babel+core@7.9.0
     dev: true
     peerDependencies:
       '@babel/core': ^7.0.0
@@ -1644,7 +1643,7 @@ packages:
     dependencies:
       '@babel/core': 7.8.3
       '@babel/helper-plugin-utils': 7.8.3
-      '@babel/helper-replace-supers': 7.8.6
+      '@babel/helper-replace-supers': 7.8.3
     dev: true
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -1654,7 +1653,7 @@ packages:
     dependencies:
       '@babel/core': 7.9.0
       '@babel/helper-plugin-utils': 7.8.3
-      '@babel/helper-replace-supers': 7.8.6
+      '@babel/helper-replace-supers': 7.8.3
     dev: true
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -1844,7 +1843,7 @@ packages:
   /@babel/plugin-transform-unicode-regex/7.8.3_@babel+core@7.8.3:
     dependencies:
       '@babel/core': 7.8.3
-      '@babel/helper-create-regexp-features-plugin': 7.8.8_@babel+core@7.8.3
+      '@babel/helper-create-regexp-features-plugin': 7.8.3_@babel+core@7.8.3
       '@babel/helper-plugin-utils': 7.8.3
     dev: true
     peerDependencies:
@@ -1854,7 +1853,7 @@ packages:
   /@babel/plugin-transform-unicode-regex/7.8.3_@babel+core@7.9.0:
     dependencies:
       '@babel/core': 7.9.0
-      '@babel/helper-create-regexp-features-plugin': 7.8.8_@babel+core@7.9.0
+      '@babel/helper-create-regexp-features-plugin': 7.8.3_@babel+core@7.9.0
       '@babel/helper-plugin-utils': 7.8.3
     dev: true
     peerDependencies:
@@ -2197,6 +2196,15 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-soxllkhOGgchswBAAaTe7X9G80U2tjjHvXv0sBrriLJcC/89PkP59iTrKPOfbz3SjX088mKDmMhAscuyLz8ZSg==
+  /@rollup/plugin-json/4.0.2_rollup@1.32.1:
+    dependencies:
+      '@rollup/pluginutils': 3.0.8_rollup@1.32.1
+      rollup: 1.32.1
+    dev: true
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-t4zJMc98BdH42mBuzjhQA7dKh0t4vMJlUka6Fz0c+iO5IVnWaEMiYBy1uBj9ruHZzXBW23IPDGL9oCzBkQ9Udg==
   /@rollup/plugin-node-resolve/6.1.0_rollup@2.2.0:
     dependencies:
       '@rollup/pluginutils': 3.0.8_rollup@2.2.0
@@ -2303,6 +2311,17 @@ packages:
   /@rollup/pluginutils/3.0.8:
     dependencies:
       estree-walker: 1.0.1
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-rYGeAc4sxcZ+kPG/Tw4/fwJODC3IXHYDH4qusdN/b6aLw5LPUbzpecYbEJh4sVQGPFJxd2dBU4kc1H3oy9/bnw==
+  /@rollup/pluginutils/3.0.8_rollup@1.32.1:
+    dependencies:
+      estree-walker: 1.0.1
+      rollup: 1.32.1
+    dev: true
     engines:
       node: '>= 8.0.0'
     peerDependencies:
@@ -7441,13 +7460,6 @@ packages:
       rollup: '>=1.12.0'
     resolution:
       integrity: sha512-jlXbjZSQg8EIeAAvepNwhJj++qJWNJw1Cl0YnOqKtP5Djx+fFGkp3WRh+W0ASCaFG5w1jhmzDxgu3SJuVxPF4Q==
-  /rollup-plugin-json/4.0.0:
-    dependencies:
-      rollup-pluginutils: 2.8.2
-    deprecated: This module has been deprecated and is no longer maintained. Please use @rollup/plugin-json.
-    dev: true
-    resolution:
-      integrity: sha512-hgb8N7Cgfw5SZAkb3jf0QXii6QX/FOkiIq2M7BAQIEydjHvTyxXHQiIzZaTFgx1GK0cRCHOCBHIyEkkLdWKxow==
   /rollup-plugin-postcss/2.0.3:
     dependencies:
       chalk: 2.4.2
