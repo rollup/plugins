@@ -1,4 +1,4 @@
-import Foo from './foo.js';
-import Bar from './bar.js';
+import Foo from './foo';
+import Bar from './bar';
 
 export default [new Foo(), new Bar()];

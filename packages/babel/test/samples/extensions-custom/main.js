@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/extensions
 export { default as Js } from './ext.js';
 export { default as Jsx } from './ext.jsx';
 export { default as Es6 } from './ext.es6';

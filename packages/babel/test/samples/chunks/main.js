@@ -1,1 +1,1 @@
-import('./dep.js').then(result => console.log(result));
+import('./dep.js').then((result) => console.log(result));

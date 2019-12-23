@@ -1,3 +1,3 @@
 export default function bar(a) {
-	return typeof a;
+  return typeof a;
 }

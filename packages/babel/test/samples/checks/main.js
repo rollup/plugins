@@ -1,4 +1,4 @@
-import Foo from './foo/index.js';
+import Foo from './foo/index';
 
 class Bar {}
 

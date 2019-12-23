@@ -4,10 +4,10 @@ const externalDeps = Object.keys(Object.assign({}, pkg.dependencies, pkg.peerDep
 const nodeDeps = ['path'];
 
 export default {
-	input: './src/index.js',
-	external: externalDeps.concat(nodeDeps),
-	output: [
-		{ file: pkg.main, format: 'cjs' },
-		{ file: pkg.module, format: 'esm' },
-	],
+  input: './src/index.js',
+  external: externalDeps.concat(nodeDeps),
+  output: [
+    { file: pkg.main, format: 'cjs' },
+    { file: pkg.module, format: 'esm' }
+  ]
 };
