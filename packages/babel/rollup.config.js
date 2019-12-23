@@ -7,7 +7,7 @@ export default {
   input: './src/index.js',
   external: externalDeps.concat(nodeDeps),
   output: [
-    { file: pkg.main, format: 'cjs' },
+    { file: pkg.main, format: 'cjs', exports: 'named' },
     { file: pkg.module, format: 'esm' }
   ]
 };
