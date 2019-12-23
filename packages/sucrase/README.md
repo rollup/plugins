@@ -9,7 +9,7 @@
 
 # @rollup/plugin-sucrase
 
-🍣 Compile TypeScript, Flow, JSX, etc with Sucrase.
+🍣 A Rollup plugin which compiles TypeScript, Flow, JSX, etc with Sucrase.
 
 ## Requirements
 
@@ -53,14 +53,14 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
-The following options are available to set the corresponding [Sucrase options](https://github.com/alangpierce/sucrase#transforms):
+The following [Sucrase options](https://github.com/alangpierce/sucrase#transforms) may be passed as options for this plugin:
 
-- enableLegacyBabel5ModuleInterop
-- enableLegacyTypeScriptModuleInterop
-- jsxFragmentPragma
-- jsxPragma
-- production
-- transforms
+- `enableLegacyBabel5ModuleInterop`
+- `enableLegacyTypeScriptModuleInterop`
+- `jsxFragmentPragma`
+- `jsxPragma`
+- `production`
+- `transforms`
 
 ### `exclude`
 
