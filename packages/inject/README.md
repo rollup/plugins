@@ -77,14 +77,14 @@ In addition to the properties and values specified for injecting, users may also
 
 ### `exclude`
 
-Type: `String` | `Array[...String]`
+Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
 ### `include`
 
-Type: `String` | `Array(String)`
+Type: `String` | `Array(String)`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.

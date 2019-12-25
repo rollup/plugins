@@ -1,5 +1,11 @@
 # @rollup/plugin-typescript changelog
 
+## 2.0.1
+
+_2019-12-04_
+
+- fix(typescript): import from scoped utils (#78)
+
 ## 2.0.0
 
 _2019-11-25_
