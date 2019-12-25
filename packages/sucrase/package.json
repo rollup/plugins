@@ -1,0 +1,66 @@
+{
+  "name": "@rollup/plugin-sucrase",
+  "version": "3.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Compile TypeScript, Flow, JSX, etc with Sucrase",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Rich Harris",
+  "homepage": "https://github.com/rollup/plugins/packages/sucrase/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "sucrase",
+    "typescript",
+    "flow",
+    "jsx"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^3.0.1",
+    "sucrase": "^3.10.1"
+  },
+  "devDependencies": {
+    "rollup": "^1.27.13"
+  },
+  "ava": {
+    "files": [
+      "!**/fixtures/**",
+      "!**/output/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  },
+  "module": "dist/index.es.js"
+}
