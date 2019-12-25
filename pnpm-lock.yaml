@@ -323,10 +323,12 @@ importers:
       typescript: ^3.4.3
   packages/run:
     devDependencies:
+      '@types/node': 12.12.22
       del: 5.1.0
       rollup: 1.27.8
       sinon: 7.5.0
     specifiers:
+      '@types/node': ^12.12.22
       del: ^5.1.0
       rollup: ^1.20.0
       sinon: ^7.5.0
@@ -2004,6 +2006,10 @@ packages:
   /@types/node/12.12.21:
     resolution:
       integrity: sha512-8sRGhbpU+ck1n0PGAUgVrWrWdjSW2aqNeyC15W88GRsMpSwzv6RJGlLhE7s2RhVSOdyDmxbqlWSeThq4/7xqlA==
+  /@types/node/12.12.22:
+    dev: true
+    resolution:
+      integrity: sha512-r5i93jqbPWGXYXxianGATOxTelkp6ih/U0WVnvaqAvTqM+0U6J3kw6Xk6uq/dWNRkEVw/0SLcO5ORXbVNz4FMQ==
   /@types/normalize-package-data/2.4.0:
     dev: true
     resolution:
