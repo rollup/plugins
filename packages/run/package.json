@@ -24,6 +24,7 @@
     "test": "ava"
   },
   "files": [
+    "index.d.ts",
     "lib"
   ],
   "keywords": [

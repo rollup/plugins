@@ -31,6 +31,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [multi-entry](packages/multi-entry)   | Use multiple entry points for a bundle                                                    |
 | [node-resolve](packages/node-resolve) | Locate and bundle third-party dependencies in node_modules                                |
 | [replace](packages/replace)           | Replace strings in files while bundling                                                   |
+| [run](packages/run)                   | Run your bundles in Node once they're built                                               |
 | [strip](packages/strip)               | Remove debugger statements and functions like assert.equal and console.log from your code |
 | [sucrase](packages/sucrase)           | Compile TypeScript, Flow, JSX, etc with Sucrase                                           |
 | [typescript](packages/typescript)     | Integration between Rollup and Typescript                                                 |
