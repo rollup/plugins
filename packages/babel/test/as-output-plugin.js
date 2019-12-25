@@ -13,9 +13,8 @@ function getLocation(source, charIndex) {
   const len = lines.length;
 
   let lineStart = 0;
-  let i;
 
-  for (i = 0; i < len; i += 1) {
+  for (let i = 0; i < len; i += 1) {
     const line = lines[i];
     // +1 for newline
     const lineEnd = lineStart + line.length + 1;
