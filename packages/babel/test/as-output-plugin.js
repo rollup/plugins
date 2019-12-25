@@ -291,15 +291,9 @@ test('supports customizing the loader', async (t) => {
 });
 
 test('throws when using a Rollup output format other than esm or cjs', async (t) => {
-  try {
-    await generate('fixtures/basic/main.js', {}, { format: 'iife' });
-    t.fail('Rollup did not throw');
-  } catch (error) {
-    t.is(
-      error.message,
-      `Using Babel on the generated chunks is strongly discouraged for formats other than "esm" or "cjs" as it can easily break wrapper code and lead to accidentally created global variables. Instead, you should set "output.format" to "esm" and use Babel to transform to another format, e.g. by adding "presets: [['@babel/env', { modules: 'umd' }]]" to your Babel options. If you still want to proceed, add "allowAllFormats: true" to your plugin options.`
-    );
-  }
+  await t.throwsAsync(() => generate('fixtures/basic/main.js', {}, { format: 'iife' }), {
+    message: `Using Babel on the generated chunks is strongly discouraged for formats other than "esm" or "cjs" as it can easily break wrapper code and lead to accidentally created global variables. Instead, you should set "output.format" to "esm" and use Babel to transform to another format, e.g. by adding "presets: [['@babel/env', { modules: 'umd' }]]" to your Babel options. If you still want to proceed, add "allowAllFormats: true" to your plugin options.`
+  });
 });
 
 test('allows using a Rollup output format other than esm or cjs with allowAllFormats', async (t) => {

@@ -122,11 +122,12 @@ test('generates sourcemap by default', async (t) => {
 });
 
 test('works with proposal-decorators (#18)', async (t) => {
-  await rollup({
-    input: 'fixtures/proposal-decorators/main.js',
-    plugins: [babelPlugin({ babelHelpers: 'bundled' })]
-  });
-  t.pass();
+  await t.notThrowsAsync(() =>
+    rollup({
+      input: 'fixtures/proposal-decorators/main.js',
+      plugins: [babelPlugin({ babelHelpers: 'bundled' })]
+    })
+  );
 });
 
 test('checks config per-file', async (t) => {
@@ -199,16 +200,12 @@ export default Foo;
 });
 
 test('allows transform-runtime to be used instead of bundled helpers, but throws when CommonJS is used', async (t) => {
-  try {
-    await generate('fixtures/runtime-helpers-commonjs/main.js', { babelHelpers: 'runtime' });
-    t.fail();
-  } catch (error) {
-    t.true(
-      error.message.includes(
-        'Rollup requires that your Babel configuration keeps ES6 module syntax intact.'
-      )
-    );
-  }
+  await t.throwsAsync(
+    () => generate('fixtures/runtime-helpers-commonjs/main.js', { babelHelpers: 'runtime' }),
+    {
+      message: /Rollup requires that your Babel configuration keeps ES6 module syntax intact/
+    }
+  );
 });
 
 test('allows using external-helpers plugin in combination with @babel/plugin-external-helpers', async (t) => {
@@ -242,11 +239,12 @@ test('correctly renames helpers (#22)', async (t) => {
 });
 
 test('runs preflight check correctly in absence of class transformer (#23)', async (t) => {
-  await rollup({
-    input: 'fixtures/no-class-transformer/main.js',
-    plugins: [babelPlugin({ babelHelpers: 'bundled' })]
-  });
-  t.pass();
+  await t.notThrowsAsync(() =>
+    rollup({
+      input: 'fixtures/no-class-transformer/main.js',
+      plugins: [babelPlugin({ babelHelpers: 'bundled' })]
+    })
+  );
 });
 
 test('produces valid code with typeof helper', async (t) => {
@@ -289,58 +287,56 @@ test('transpiles only files with whitelisted extensions', async (t) => {
 });
 
 test('throws when trying to add babel helper unavailable in used @babel/core version', async (t) => {
-  try {
-    await generate('fixtures/basic/main.js', {
-      plugins: [
-        function testPlugin() {
-          return {
-            visitor: {
-              Program(path, state) {
-                state.file.addHelper('__nonexistentHelper');
+  await t.throwsAsync(
+    () =>
+      generate('fixtures/basic/main.js', {
+        plugins: [
+          function testPlugin() {
+            return {
+              visitor: {
+                Program(path, state) {
+                  state.file.addHelper('__nonexistentHelper');
+                }
               }
-            }
-          };
-        }
-      ]
-    });
-    t.fail();
-  } catch (err) {
-    t.is(
-      err.message,
-      `${nodePath.resolve(
+            };
+          }
+        ]
+      }),
+    {
+      message: `${nodePath.resolve(
         __dirname,
         'fixtures',
         'basic',
         'main.js'
       )}: Unknown helper __nonexistentHelper`
-    );
-  }
+    }
+  );
 });
 
 test('works with minified bundled helpers', async (t) => {
   const BASE_CHAR_CODE = 'a'.charCodeAt(0);
   let counter = 0;
 
-  await generate('fixtures/class/main.js', {
-    plugins: [
-      function testPlugin({ types }) {
-        return {
-          visitor: {
-            FunctionDeclaration(path) {
-              // super simple mangling
-              path
-                .get('id')
-                .replaceWith(types.identifier(String.fromCharCode(BASE_CHAR_CODE + counter)));
+  await t.notThrowsAsync(() =>
+    generate('fixtures/class/main.js', {
+      plugins: [
+        function testPlugin({ types }) {
+          return {
+            visitor: {
+              FunctionDeclaration(path) {
+                // super simple mangling
+                path
+                  .get('id')
+                  .replaceWith(types.identifier(String.fromCharCode(BASE_CHAR_CODE + counter)));
 
-              counter += 1;
+                counter += 1;
+              }
             }
-          }
-        };
-      }
-    ]
-  });
-
-  t.pass();
+          };
+        }
+      ]
+    })
+  );
 });
 
 test('supports customizing the loader', async (t) => {
