@@ -5,6 +5,8 @@ import { rollup } from 'rollup';
 import { SourceMapConsumer } from 'source-map';
 import jsonPlugin from '@rollup/plugin-json';
 
+import { getCode } from '../../../util/test';
+
 import babelPlugin from '..';
 
 process.chdir(__dirname);
@@ -51,15 +53,14 @@ async function generate(input, babelOptions = {}, generateOptions = {}, rollupOp
     ...rollupOptions
   });
 
-  const {
-    output: [generated]
-  } = await bundle.generate(Object.assign({ format: 'cjs' }, generateOptions));
-
-  return generated;
+  return getCode(bundle, {
+    format: 'cjs',
+    ...generateOptions
+  });
 }
 
 test('runs code through babel', async (t) => {
-  const { code } = await generate('fixtures/basic/main.js');
+  const code = await generate('fixtures/basic/main.js');
   t.false(code.includes('const'));
   t.is(
     code,
@@ -72,17 +73,17 @@ console.log("the answer is ".concat(answer));
 });
 
 test('adds helpers', async (t) => {
-  const { code } = await generate('fixtures/class/main.js');
+  const code = await generate('fixtures/class/main.js');
   t.true(code.includes('function _classCallCheck'));
 });
 
 test('adds helpers in loose mode', async (t) => {
-  const { code } = await generate('fixtures/class-loose/main.js');
+  const code = await generate('fixtures/class-loose/main.js');
   t.true(code.includes('function _inherits'));
 });
 
 test('does not babelify excluded code', async (t) => {
-  const { code } = await generate('fixtures/exclusions/main.js', { exclude: '**/foo.js' });
+  const code = await generate('fixtures/exclusions/main.js', { exclude: '**/foo.js' });
   // eslint-disable-next-line no-template-curly-in-string
   t.false(code.includes('${foo()}'));
   t.true(code.includes('=> 42'));
@@ -98,7 +99,15 @@ console.log("the answer is ".concat(foo()));
 });
 
 test('generates sourcemap by default', async (t) => {
-  const { code, map } = await generate('fixtures/class/main.js', {}, { sourcemap: true });
+  const bundle = await rollup({
+    input: 'fixtures/class/main.js',
+    plugins: [babelPlugin({ babelHelpers: 'bundled' })]
+  });
+
+  const {
+    output: [{ code, map }]
+  } = await bundle.generate({ format: 'cjs', sourcemap: true });
+
   const target = 'log';
   const smc = new SourceMapConsumer(map);
   const loc = getLocation(code, code.indexOf(target));
@@ -121,13 +130,7 @@ test('works with proposal-decorators (#18)', async (t) => {
 });
 
 test('checks config per-file', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/checks/main.js',
-    plugins: [babelPlugin({ babelHelpers: 'bundled' })]
-  });
-  const {
-    output: [{ code }]
-  } = await bundle.generate({ output: { format: 'esm' } });
+  const code = await generate('fixtures/checks/main.js', {}, { format: 'esm' });
   t.true(code.includes('class Foo'));
   t.true(code.includes('var Bar'));
   t.false(code.includes('class Bar'));
@@ -135,7 +138,7 @@ test('checks config per-file', async (t) => {
 
 test('allows transform-runtime to be used instead of bundled helpers', async (t) => {
   const warnings = [];
-  const { code } = await generate(
+  const code = await generate(
     'fixtures/runtime-helpers/main.js',
     { babelHelpers: 'runtime' },
     {},
@@ -167,7 +170,7 @@ module.exports = Foo;
 
 test('allows transform-runtime to inject esm version of helpers', async (t) => {
   const warnings = [];
-  const { code } = await generate(
+  const code = await generate(
     'fixtures/runtime-helpers-esm/main.js',
     { babelHelpers: 'runtime' },
     {
@@ -209,7 +212,7 @@ test('allows transform-runtime to be used instead of bundled helpers, but throws
 });
 
 test('allows using external-helpers plugin in combination with @babel/plugin-external-helpers', async (t) => {
-  const { code } = await generate('fixtures/external-helpers/main.js', {
+  const code = await generate('fixtures/external-helpers/main.js', {
     babelHelpers: 'external'
   });
   t.false(code.includes('function _classCallCheck'));
@@ -234,7 +237,7 @@ module.exports = main;
 });
 
 test('correctly renames helpers (#22)', async (t) => {
-  const { code } = await generate('fixtures/named-function-helper/main.js');
+  const code = await generate('fixtures/named-function-helper/main.js');
   t.false(code.includes('babelHelpers_get get'), 'helper was incorrectly renamed');
 });
 
@@ -247,17 +250,17 @@ test('runs preflight check correctly in absence of class transformer (#23)', asy
 });
 
 test('produces valid code with typeof helper', async (t) => {
-  const { code } = await generate('fixtures/typeof/main.js');
+  const code = await generate('fixtures/typeof/main.js');
   t.false(code.includes('var typeof'));
 });
 
 test('handles babelrc with ignore option used', async (t) => {
-  const { code } = await generate('fixtures/ignored-file/main.js');
+  const code = await generate('fixtures/ignored-file/main.js');
   t.true(code.includes('class Ignored'));
 });
 
 test('transpiles only files with default extensions', async (t) => {
-  const { code } = await generate(
+  const code = await generate(
     'fixtures/extensions-default/main.js',
     {},
     {},
@@ -274,7 +277,7 @@ test('transpiles only files with default extensions', async (t) => {
 });
 
 test('transpiles only files with whitelisted extensions', async (t) => {
-  const { code } = await generate('fixtures/extensions-custom/main.js', {
+  const code = await generate('fixtures/extensions-custom/main.js', {
     extensions: ['.js', '.other']
   });
   t.true(code.includes('class Es '), 'should not transpile .es');
@@ -365,9 +368,8 @@ test('supports customizing the loader', async (t) => {
     input: 'fixtures/basic/main.js',
     plugins: [customBabelPlugin({ babelHelpers: 'bundled' })]
   });
-  const {
-    output: [{ code }]
-  } = await bundle.generate({ format: 'cjs' });
+  const code = await getCode(bundle);
+
   t.true(code.includes('// Generated by some custom loader'), 'adds the custom comment');
   t.true(code.includes('console.foobaz'), 'runs the plugin');
 });
@@ -401,9 +403,8 @@ test('supports overriding the plugin options in custom loader', async (t) => {
     input: 'fixtures/basic/main.js',
     plugins: [customBabelPlugin({ babelHelpers: 'bundled' })]
   });
-  const {
-    output: [{ code }]
-  } = await bundle.generate({ format: 'cjs' });
+  const code = await getCode(bundle);
+
   t.false(
     code.includes('// Generated by some custom loader'),
     'does not add the comment to ignored file'
@@ -412,7 +413,7 @@ test('supports overriding the plugin options in custom loader', async (t) => {
 });
 
 test('uses babel plugins passed in to the rollup plugin', async (t) => {
-  const { code } = await generate('fixtures/basic/main.js', {
+  const code = await generate('fixtures/basic/main.js', {
     plugins: [[replaceConsoleLogProperty, { replace: 'foobaz' }]]
   });
   t.true(code.includes('console.foobaz'));
@@ -427,8 +428,7 @@ test('can be used as an input plugin while transforming the output', async (t) =
       })
     ]
   });
-  const {
-    output: [{ code }]
-  } = await bundle.generate({ format: 'cjs' });
+  const code = await getCode(bundle);
+
   t.false(code.includes('const'));
 });
