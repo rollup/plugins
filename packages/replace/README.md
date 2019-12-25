@@ -52,21 +52,21 @@ In addition to the properties and values specified for replacement, users may al
 
 ### `delimiters`
 
-Type: `Array[String, String]`
+Type: `Array[String, String]`<br>
 Default: `['\b', '\b']`
 
 Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html). See [Word Boundaries](#word-boundaries) below for more information.
 
 ### `exclude`
 
-Type: `String` | `Array[...String]`
+Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
 ### `include`
 
-Type: `String` | `Array(String)`
+Type: `String` | `Array(String)`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.

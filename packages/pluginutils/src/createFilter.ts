@@ -6,7 +6,7 @@ import { CreateFilter } from '../types';
 
 import ensureArray from './utils/ensureArray';
 
-const ESCAPE_IN_PATH = '()+@!'
+const ESCAPE_IN_PATH = '()+@!';
 
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
   if (resolutionBase === false) {

@@ -1,68 +1,66 @@
 {
-  "name": "@rollup/plugin-buble",
-  "version": "0.21.0",
+  "name": "@rollup/plugin-sucrase",
+  "version": "3.0.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Compile ES2015 with buble",
+  "description": "Compile TypeScript, Flow, JSX, etc with Sucrase",
   "license": "MIT",
   "repository": "rollup/plugins",
-  "author": "Rich Harris <richard.a.harris@gmail.com>",
-  "homepage": "https://github.com/rollup/plugins/packages/buble/#readme",
+  "author": "Rich Harris",
+  "homepage": "https://github.com/rollup/plugins/packages/sucrase/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/rollup-plugin-buble.cjs.js",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
+    "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run test:ts",
+    "prepublishOnly": "pnpm run lint",
     "pretest": "pnpm run build",
-    "test": "ava",
-    "test:ts": "tsc index.d.ts test/types.ts --noEmit"
+    "test": "ava"
   },
   "files": [
     "dist",
-    "index.d.ts",
-    "src",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "rollup",
     "plugin",
-    "buble",
-    "es2015",
-    "npm",
-    "modules"
+    "sucrase",
+    "typescript",
+    "flow",
+    "jsx"
   ],
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
   "dependencies": {
-    "@types/buble": "^0.19.2",
-    "buble": "^0.19.8",
-    "rollup-pluginutils": "^2.8.2"
+    "@rollup/pluginutils": "^3.0.1",
+    "sucrase": "^3.10.1"
   },
   "devDependencies": {
-    "del-cli": "^3.0.0",
-    "rollup": "^1.27.0",
-    "source-map": "^0.7.3",
-    "typescript": "^3.7.2"
+    "rollup": "^1.27.13"
   },
   "ava": {
     "files": [
       "!**/fixtures/**",
+      "!**/output/**",
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
     ]
   },
-  "module": "dist/rollup-plugin-buble.es.js"
+  "module": "dist/index.es.js"
 }
