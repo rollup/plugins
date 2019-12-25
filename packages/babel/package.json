@@ -9,7 +9,7 @@
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "./dist/rollup-plugin-babel.cjs.js",
   "engines": {
-    "node": ">=10"
+    "node": ">=8"
   },
   "scripts": {
     "build": "rollup -c",
