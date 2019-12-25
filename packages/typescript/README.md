@@ -67,28 +67,28 @@ The following options are unique to `rollup-plugin-typescript`:
 
 ### `exclude`
 
-Type: `String` | `Array[...String]`
+Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
 ### `include`
 
-Type: `String` | `Array(String)`
+Type: `String` | `Array(String)`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted.
 
 ### `tsconfig`
 
-Type: `String` | `Boolean`
+Type: `String` | `Boolean`<br>
 Default: `true`
 
 When set to false, ignores any options specified in the config file. If set to a string that corresponds to a file path, the specified file will be used as config file.
 
 ### `typescript`
 
-Type: `import('typescript')`
+Type: `import('typescript')`<br>
 Default: _peer dependency_
 
 Overrides the TypeScript module used for transpilation.
@@ -101,7 +101,7 @@ typescript({
 
 ### `tslib`
 
-Type: `import('tslib')`
+Type: `import('tslib')`<br>
 Default: _peer dependency_
 
 Overrides the injected TypeScript helpers with a custom version
