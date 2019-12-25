@@ -1,0 +1,1 @@
+exports.someValue = 10;

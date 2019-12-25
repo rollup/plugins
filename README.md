@@ -21,6 +21,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [auto-install](packages/auto-install) | Automatically install dependencies that are imported by a bundle.                         |
 | [beep](packages/beep)                 | System beeps on errors and warnings                                                       |
 | [buble](packages/buble)               | Compile ES2015 with buble                                                                 |
+| [commonjs](packages/commonjs)         | Convert CommonJS modules to ES6                                                           |
 | [dsv](packages/dsv)                   | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
 | [html](packages/html)                 | Creates HTML files to serve Rollup bundles                                                |
 | [image](packages/image)               | Import JPG, PNG, GIF, SVG, and WebP files                                                 |
@@ -31,6 +32,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [node-resolve](packages/node-resolve) | Locate and bundle third-party dependencies in node_modules                                |
 | [replace](packages/replace)           | Replace strings in files while bundling                                                   |
 | [strip](packages/strip)               | Remove debugger statements and functions like assert.equal and console.log from your code |
+| [sucrase](packages/sucrase)           | Compile TypeScript, Flow, JSX, etc with Sucrase                                           |
 | [typescript](packages/typescript)     | Integration between Rollup and Typescript                                                 |
 | [url](packages/url)                   | Import files as data-URIs or ES Modules                                                   |
 | [virtual](packages/virtual)           | Load virtual modules from memory                                                          |

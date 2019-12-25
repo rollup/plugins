@@ -4,6 +4,8 @@ import test from 'ava';
 
 import { createFilter } from '../';
 
+test.beforeEach(() => process.chdir(__dirname));
+
 test('includes by default', (t) => {
   const filter = createFilter();
   t.truthy(filter(resolve('x')));
@@ -106,4 +108,12 @@ test('includes names starting with a "."', (t) => {
   const filter = createFilter(['**/*a']);
   t.truthy(filter(resolve('.a')));
   t.truthy(filter(resolve('.x/a')));
+});
+
+test.serial('includes names containing parenthesis', (t) => {
+  process.chdir(resolve(__dirname, 'fixtures/folder-with (parens)'));
+  const filter = createFilter(['*.ts+(|x)', '**/*.ts+(|x)'], ['*.d.ts', '**/*.d.ts']);
+  t.truthy(filter(resolve('folder (test)/src/main.tsx')));
+  t.truthy(filter(resolve('.x/(test)a.ts')));
+  t.falsy(filter(resolve('.x/(test)a.d.ts')));
 });
