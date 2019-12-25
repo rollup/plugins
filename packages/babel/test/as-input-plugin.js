@@ -3,7 +3,7 @@ import * as nodePath from 'path';
 import test from 'ava';
 import { rollup } from 'rollup';
 import { SourceMapConsumer } from 'source-map';
-import jsonPlugin from 'rollup-plugin-json';
+import jsonPlugin from '@rollup/plugin-json';
 
 import babelPlugin from '..';
 
