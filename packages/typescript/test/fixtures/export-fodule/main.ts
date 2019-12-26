@@ -1,6 +1,8 @@
+/* eslint-disable no-redeclare,import/export */
+
 export function test() {
-	return 0;
+  return 0;
 }
 export namespace test {
-	export const foo = "2"
+  export const foo = '2';
 }
