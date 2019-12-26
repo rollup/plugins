@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris <richard.a.harris@gmail.com>",
-  "homepage": "https://github.com/rollup/plugins/packages/buble/#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/buble/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/rollup-plugin-buble.cjs.js",
   "scripts": {
