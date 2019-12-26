@@ -1,4 +1,4 @@
-# rollup-plugin-babel
+# @rollup/plugin-babel
 
 Seamless integration between Rollup and Babel.
 
@@ -13,20 +13,12 @@ Both approaches have disadvantages – in the first case, on top of the addition
 
 Either way, you have to worry about a place to put the intermediate files, and getting sourcemaps to behave becomes a royal pain.
 
-Using Rollup with rollup-plugin-babel makes the process far easier.
+Using Rollup with `@rollup/plugin-babel` makes the process far easier.
 
 ## Installation
 
-> babel 7.x
-
 ```bash
-npm install --save-dev rollup-plugin-babel@latest
-```
-
-> babel 6.x
-
-```bash
-npm install --save-dev rollup-plugin-babel@3
+npm install --save-dev @rollup/plugin-babel@latest
 ```
 
 ## Usage
@@ -38,18 +30,18 @@ npm install --save-dev rollup-plugin-babel@3
 `rollup.config.js` ([docs](https://rollupjs.org/guide/en/#configuration-files)):
 
 ```js
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import pkg from './package.json';
 
 const config = {
-	input: 'src/index.js',
-	output: [
-		{
-			file: pkg.module,
-			format: 'esm',
-		},
-	],
-	plugins: [babel()],
+  input: 'src/index.js',
+  output: [
+    {
+      file: pkg.module,
+      format: 'esm'
+    }
+  ],
+  plugins: [babel()]
 };
 
 export default config;
@@ -59,7 +51,7 @@ export default config;
 
 ```js
 import { rollup } from 'rollup';
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 
 rollup({
   input: 'main.js',
@@ -133,31 +125,32 @@ However, setting `modules: false` in your `.babelrc` may conflict if you are usi
 
 ```js
 plugins: [
-	babel({
-		babelrc: false,
-		presets: [['env', { modules: false }]],
-	}),
+  babel({
+    babelrc: false,
+    presets: [['env', { modules: false }]]
+  })
 ];
 ```
 
 ## Running Babel on the generated code
 
-You can run rollup-plugin-babel on the output files instead of the input files by using `babel.generated(...)`. This can be used to perform code transformations on the resulting chunks and is the only way to transform Rollup's auto-generated code. By default, the plugin will be applied to all outputs:
+You can run `@rollup/plugin-babel` on the output files instead of the input files by using `babel.generated(...)`. This can be used to perform code transformations on the resulting chunks and is the only way to transform Rollup's auto-generated code. By default, the plugin will be applied to all outputs:
 
 ```js
 // rollup.config.js
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
+
 export default {
-	input: 'main.js',
-	plugins: [
-		babel.generated({
-			presets: ['@babel/env'],
-		}),
-	],
-	output: [
-		{ file: 'bundle.cjs.js', format: 'cjs' },
-		{ file: 'bundle.esm.js', format: 'esm' },
-	],
+  input: 'main.js',
+  plugins: [
+    babel.generated({
+      presets: ['@babel/env']
+    })
+  ],
+  output: [
+    { file: 'bundle.cjs.js', format: 'cjs' },
+    { file: 'bundle.esm.js', format: 'esm' }
+  ]
 };
 ```
 
@@ -165,17 +158,18 @@ If you only want to apply it to specific outputs, you can use it as an output pl
 
 ```js
 // rollup.config.js
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
+
 export default {
-	input: 'main.js',
-	output: [
-		{ file: 'bundle.js', format: 'esm' },
-		{
-			file: 'bundle.es5.js',
-			format: 'esm',
-			plugins: [babel.generated({ presets: ['@babel/env'] })],
-		},
-	],
+  input: 'main.js',
+  output: [
+    { file: 'bundle.js', format: 'esm' },
+    {
+      file: 'bundle.es5.js',
+      format: 'esm',
+      plugins: [babel.generated({ presets: ['@babel/env'] })]
+    }
+  ]
 };
 ```
 
@@ -185,17 +179,18 @@ You can also run the plugin twice on the code, once when processing the input fi
 
 ```js
 // rollup.config.js
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
+
 export default {
-	input: 'main.js',
-	plugins: [babel({ presets: ['@babel/preset-react'] })],
-	output: [
-		{
-			file: 'bundle.js',
-			format: 'esm',
-			plugins: [babel.generated({ presets: ['@babel/env'] })],
-		},
-	],
+  input: 'main.js',
+  plugins: [babel({ presets: ['@babel/preset-react'] })],
+  output: [
+    {
+      file: 'bundle.js',
+      format: 'esm',
+      plugins: [babel.generated({ presets: ['@babel/env'] })]
+    }
+  ]
 };
 ```
 
@@ -255,7 +250,7 @@ export default class Foo {}
 import _classCallCheck from '@babel/runtime/helpers/esm/classCallCheck';
 
 var Foo = function Foo() {
-	_classCallCheck(this, Foo);
+  _classCallCheck(this, Foo);
 };
 
 export default Foo;
@@ -284,38 +279,13 @@ export default class Foo {}
 var _classCallCheck = require('@babel/runtime/helpers/classCallCheck');
 
 var Foo = function Foo() {
-	_classCallCheck(this, Foo);
+  _classCallCheck(this, Foo);
 };
 
 module.exports = Foo;
 ```
 
 Another option is to use `@babel/plugin-external-helpers`, which will reference the global `babelHelpers` object. It is your responsibility to make sure this global variable exists.
-
-## Configuring Babel 6
-
-**The following applies to Babel 6 only. If you're using Babel 5, do `npm i -D rollup-plugin-babel@1`, as version 2 and above no longer supports Babel 5**
-
-```bash
-npm install --save-dev rollup-plugin-babel@3 babel-preset-env babel-plugin-external-helpers
-```
-
-```js
-// .babelrc
-{
-  "presets": [
-    [
-      "env",
-      {
-        "modules": false
-      }
-    ]
-  ],
-  "plugins": [
-    "external-helpers"
-  ]
-}
-```
 
 ## Custom plugin builder
 
@@ -331,48 +301,51 @@ It's main purpose is to allow other tools for configuration of transpilation wit
 import babel from 'rollup-plugin-babel';
 
 export default babel.custom(babelCore => {
-	function myPlugin() {
-		return {
-			visitor: {},
-		};
-	}
+  function myPlugin() {
+    return {
+      visitor: {}
+    };
+  }
 
-	return {
-		// Passed the plugin options.
-		options({ opt1, opt2, ...pluginOptions }) {
-			return {
-				// Pull out any custom options that the plugin might have.
-				customOptions: { opt1, opt2 },
+  return {
+    // Passed the plugin options.
+    options({ opt1, opt2, ...pluginOptions }) {
+      return {
+        // Pull out any custom options that the plugin might have.
+        customOptions: { opt1, opt2 },
 
-				// Pass the options back with the two custom options removed.
-				pluginOptions,
-			};
-		},
+        // Pass the options back with the two custom options removed.
+        pluginOptions
+      };
+    },
 
-		config(cfg /* Passed Babel's 'PartialConfig' object. */, { code, customOptions }) {
-			if (cfg.hasFilesystemConfig()) {
-				// Use the normal config
-				return cfg.options;
-			}
+    config(
+      cfg /* Passed Babel's 'PartialConfig' object. */,
+      { code, customOptions }
+    ) {
+      if (cfg.hasFilesystemConfig()) {
+        // Use the normal config
+        return cfg.options;
+      }
 
-			return {
-				...cfg.options,
-				plugins: [
-					...(cfg.options.plugins || []),
+      return {
+        ...cfg.options,
+        plugins: [
+          ...(cfg.options.plugins || []),
 
-					// Include a custom plugin in the options.
-					myPlugin,
-				],
-			};
-		},
+          // Include a custom plugin in the options.
+          myPlugin
+        ]
+      };
+    },
 
-		result(result, { code, customOptions, config, transformOptions }) {
-			return {
-				...result,
-				code: result.code + '\n// Generated by some custom plugin',
-			};
-		},
-	};
+    result(result, { code, customOptions, config, transformOptions }) {
+      return {
+        ...result,
+        code: result.code + '\n// Generated by some custom plugin'
+      };
+    }
+  };
 });
 ```
 
