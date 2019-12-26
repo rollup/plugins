@@ -151,6 +151,7 @@ export default function nodeResolve(options = {}) {
   const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
   const customResolveOptions = options.customResolveOptions || {};
+  const rootDir = options.rootDir || process.cwd();
   const { jail } = options;
   const only = Array.isArray(options.only)
     ? options.only.map((o) =>
@@ -305,10 +306,10 @@ export default function nodeResolve(options = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
-      const basedir = importer ? dirname(importer) : process.cwd();
+      const basedir = importer ? dirname(importer) : rootDir;
 
       if (shouldDedupe(importee)) {
-        importee = join(process.cwd(), 'node_modules', importee);
+        importee = join(rootDir, 'node_modules', importee);
       }
 
       // https://github.com/defunctzombie/package-browser-field-spec

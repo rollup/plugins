@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris <richard.a.harris@gmail.com>",
-  "homepage": "https://github.com/rollup/plugins/pluginutils#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/pluginutils#readme",
   "bugs": {
     "url": "https://github.com/rollup/plugins/issues"
   },

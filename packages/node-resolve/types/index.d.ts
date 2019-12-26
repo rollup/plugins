@@ -92,6 +92,14 @@ export interface Options {
    * to node-resolve
    */
   customResolveOptions?: AsyncOpts;
+
+  /**
+   * Root directory to resolve modules from. Used when resolving entrypoint imports,
+   * and when resolving deduplicated modules. Useful when executing rollup in a package
+   * of a monorepository.
+   * @default process.cwd()
+   */
+  rootDir?: string;
 }
 
 /**

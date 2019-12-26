@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "rollup",
-  "homepage": "https://github.com/rollup/plugins/packages/multi-entry/#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/multi-entry/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "scripts": {

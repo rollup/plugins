@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris",
-  "homepage": "https://github.com/rollup/plugins",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/dsv#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "scripts": {

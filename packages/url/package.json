@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Arpad Borsos <arpad.borsos@googlemail.com>",
-  "homepage": "https://github.com/rollup/plugins/packages/url/#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/url/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "engines": {
