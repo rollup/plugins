@@ -71,7 +71,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 ### `include`
 
-Type: `String` | `Array(String)`
+Type: `String` | `Array[...String]`
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.

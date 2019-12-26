@@ -104,7 +104,7 @@ Returns: `String`
 
 #### `include` and `exclude`
 
-Type: `String | Array[String|RegExp]`<br>
+Type: `String | Array[...String|RegExp]`<br>
 
 A valid [`minimatch`](https://www.npmjs.com/package/minimatch) pattern, or array of patterns. If `options.include` is omitted or has zero length, filter will return `true` by default. Otherwise, an ID must match one or more of the `minimatch` patterns, and must not match any of the `options.exclude` patterns.
 
@@ -181,7 +181,7 @@ Outputs the string ES module source:
 Extracts the names of all assignment targets based upon specified patterns.
 
 Parameters: `(param: Node)`<br>
-Returns: `Array[String]`
+Returns: `Array[...String]`
 
 #### `param`
 
