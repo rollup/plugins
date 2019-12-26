@@ -121,7 +121,7 @@ test('generates sourcemap by default', async (t) => {
   });
 });
 
-test('works with proposal-decorators (#18)', async (t) => {
+test('works with proposal-decorators (rollup/rollup-plugin-babel#18)', async (t) => {
   await t.notThrowsAsync(() =>
     rollup({
       input: 'fixtures/proposal-decorators/main.js',
@@ -233,12 +233,12 @@ module.exports = main;
   );
 });
 
-test('correctly renames helpers (#22)', async (t) => {
+test('correctly renames helpers (rollup/rollup-plugin-babel#22)', async (t) => {
   const code = await generate('fixtures/named-function-helper/main.js');
   t.false(code.includes('babelHelpers_get get'), 'helper was incorrectly renamed');
 });
 
-test('runs preflight check correctly in absence of class transformer (#23)', async (t) => {
+test('runs preflight check correctly in absence of class transformer (rollup/rollup-plugin-babel#23)', async (t) => {
   await t.notThrowsAsync(() =>
     rollup({
       input: 'fixtures/no-class-transformer/main.js',
