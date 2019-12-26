@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris",
-  "homepage": "https://github.com/rollup/plugins/packages/babel",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/babel",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "./dist/rollup-plugin-babel.cjs.js",
   "engines": {
