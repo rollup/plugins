@@ -17,12 +17,12 @@ interface RollupTypescriptOptions {
    * Determine which files are transpiled by Typescript (all `.ts` and
    * `.tsx` files by default).
    */
-  include?: string | RegExp | ReadonlyArray<string | RegExp> | null;
+  include?: string | RegExp | Array<string | RegExp> | null;
   /**
    * Determine which files are transpiled by Typescript (all `.ts` and
    * `.tsx` files by default).
    */
-  exclude?: string | RegExp | ReadonlyArray<string | RegExp> | null;
+  exclude?: string | RegExp | Array<string | RegExp> | null;
   /**
    * When set to false, ignores any options specified in the config file.
    * If set to a string that corresponds to a file path, the specified file
@@ -34,9 +34,9 @@ interface RollupTypescriptOptions {
    */
   typescript?: typeof import('typescript');
   /**
-   * Overrides the injected TypeScript helpers with a custom version
+   * Overrides the injected TypeScript helpers with a custom version.
    */
-  tslib?: typeof import('tslib');
+  tslib?: string;
 }
 
 /**

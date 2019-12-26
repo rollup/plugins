@@ -362,6 +362,7 @@ importers:
       resolve: 1.13.1
     devDependencies:
       '@rollup/plugin-buble': 0.20.0_rollup@1.27.8
+      '@rollup/plugin-typescript': 2.0.1_72333942f146f31fd99ded529571c7c0
       buble: 0.19.8
       rollup: 1.27.8
       rollup-plugin-commonjs: 9.3.4_rollup@1.27.8
@@ -369,10 +370,11 @@ importers:
       typescript: 3.7.2
     specifiers:
       '@rollup/plugin-buble': ^0.20.0
+      '@rollup/plugin-typescript': ^2.0.1
       '@rollup/pluginutils': ^3.0.0
       buble: ^0.19.8
-      resolve: ^1.12.2
-      rollup: ^1.27.5
+      resolve: ^1.13.1
+      rollup: ^1.27.8
       rollup-plugin-commonjs: ^9.3.4
       tslib: ^1.10.0
       typescript: ^3.7.2
@@ -1837,6 +1839,22 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-GqWz1CfXOsqpeVMcoM315+O7zMxpRsmhWyhJoxLFHVSp9S64/u02i7len/FnbTNbmgYs+sZyilasijH8UiuboQ==
+  /@rollup/plugin-typescript/2.0.1_72333942f146f31fd99ded529571c7c0:
+    dependencies:
+      '@rollup/pluginutils': 3.0.1_rollup@1.27.8
+      resolve: 1.14.1
+      rollup: 1.27.8
+      tslib: 1.10.0
+      typescript: 3.7.2
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+      tslib: '*'
+      typescript: '>=2.1.0'
+    resolution:
+      integrity: sha512-UA/bN/DlHN19xdOllXmp7G7pM2ac9dQMg0q2T1rg4Bogzb7oHXj2WGafpiNpEm54PivcJdzGRJvRnI6zCISW3w==
   /@rollup/pluginutils/3.0.0_rollup@1.27.11:
     dependencies:
       estree-walker: 0.6.1
@@ -1863,6 +1881,17 @@ packages:
       estree-walker: 0.6.1
       rollup: 1.27.13
     dev: false
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-PmNurkecagFimv7ZdKCVOfQuqKDPkrcpLFxRBcQ00LYr4HAjJwhCFxBiY2Xoletll2htTIiXBg6g0Yg21h2M3w==
+  /@rollup/pluginutils/3.0.1_rollup@1.27.8:
+    dependencies:
+      estree-walker: 0.6.1
+      rollup: 1.27.8
+    dev: true
     engines:
       node: '>= 8.0.0'
     peerDependencies:
@@ -7512,6 +7541,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-uviWSi5N67j3t3UKFxej1loCH0VZn5XuqdNxoLShPcYPw6cUZn74K1VRj+9myynRX03bxIBEkwlkob/ujLsJVw==
+  /resolve/1.14.1:
+    dependencies:
+      path-parse: 1.0.6
+    dev: true
+    resolution:
+      integrity: sha512-fn5Wobh4cxbLzuHaE+nphztHy43/b++4M6SsGFC2gB8uYwf0C8LcarfCz1un7UTW8OFQg9iNjZ4xpcFVGebDPg==
   /responselike/1.0.2:
     dependencies:
       lowercase-keys: 1.0.1

@@ -13,7 +13,7 @@ export function getDefaultOptions() {
 // Gratefully lifted from 'look-up', due to problems using it directly:
 //   https://github.com/jonschlinkert/look-up/blob/master/index.js
 //   MIT Licenced
-function findFile(cwd, filename) {
+function findFile(cwd: string, filename: string): string | null {
   let fp = cwd ? `${cwd}/${filename}` : filename;
 
   if (existsSync(fp)) {
@@ -33,7 +33,10 @@ function findFile(cwd, filename) {
   return null;
 }
 
-export function readTsConfig(typescript, tsconfigPath) {
+export function readTsConfig(
+  typescript: typeof import('typescript'),
+  tsconfigPath: string | undefined
+) {
   if (tsconfigPath && !existsSync(tsconfigPath)) {
     throw new Error(`Could not find specified tsconfig.json at ${tsconfigPath}`);
   }
@@ -49,7 +52,7 @@ export function readTsConfig(typescript, tsconfigPath) {
   return tsconfig.config;
 }
 
-export function adjustCompilerOptions(typescript, options) {
+export function adjustCompilerOptions(options) {
   const opts = Object.assign({}, options);
   // Set `sourceMap` to `inlineSourceMap` if it's a boolean
   // under the assumption that both are never specified simultaneously.
