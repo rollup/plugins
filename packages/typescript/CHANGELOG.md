@@ -10,7 +10,7 @@ _2019-12-04_
 
 _2019-11-25_
 
-- **Breaking:** Minimum compatible Rollup version is 1.2.0
+- **Breaking:** Minimum compatible Rollup version is 1.20.0
 - **Breaking:** Minimum supported Node version is 8.0.0
 - Published as @rollup/plugin-typescript
 
