@@ -117,20 +117,9 @@ rollup.rollup({
 
 ### Modules
 
-_This is not needed for Babel 7 - it knows automatically that Rollup understands ES modules & that it shouldn't use any module transform with it. The section below describes what needs to be done for Babel 6._
+This is not needed since Babel 7 - it knows automatically that Rollup understands ES modules & that it shouldn't use any module transform with it. Unless you forcefully include a module transform in your Babel configuration.
 
-The `env` preset includes the [transform-es2015-modules-commonjs](http://babeljs.io/docs/plugins/transform-es2015-modules-commonjs/) plugin, which converts ES6 modules to CommonJS – preventing Rollup from working. Since Babel 6.3 it's possible to deactivate module transformation with `"modules": false`. So there is no need to use the old workaround with `babel-preset-es2015-rollup`, that will work for Babel <6.13. Rollup will throw an error if this is incorrectly configured.
-
-However, setting `modules: false` in your `.babelrc` may conflict if you are using `babel-register`. To work around this, specify `babelrc: false` in your rollup config. This allows Rollup to bypass your `.babelrc` file. In order to use the `env` preset, you will also need to specify it with `modules: false` option:
-
-```js
-plugins: [
-  babel({
-    babelrc: false,
-    presets: [['env', { modules: false }]]
-  })
-];
-```
+If you have been pointed to this section by an error thrown by this plugin, please check your Babel configuration files and disable any module transforms when running Rollup builds.
 
 ## Running Babel on the generated code
 
