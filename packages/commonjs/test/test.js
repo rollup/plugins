@@ -737,3 +737,29 @@ test('normalizes paths used in the named export map', async (t) => {
 
   await t.notThrowsAsync(executeBundle(bundle, t));
 });
+
+test('can spread an object into module.exports', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/module-exports-spread/main.js',
+    plugins: [
+      commonjs()
+    ]
+  });
+  const code = await getCodeFromBundle(bundle);
+  t.is(
+    code,
+    `'use strict';
+
+const obj = {
+  a: 'b',
+  b: 'c'
+};
+
+var main = {
+  ...obj
+};
+
+module.exports = main;
+`
+  );
+});
