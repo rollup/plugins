@@ -10,11 +10,11 @@ const MODULE_ERROR =
   '\n\n' +
   "Most commonly it's a CommonJS transform added by @babel/preset-env - " +
   'in such case you should disable it by adding `modules: false` option to that preset ' +
-  '(described in more detail here - https://github.com/rollup/rollup-plugin-babel#modules ).';
+  '(described in more detail here - https://github.com/rollup/plugins/tree/master/packages/babel#modules ).';
 
 const UNEXPECTED_ERROR =
   'An unexpected situation arose. Please raise an issue at ' +
-  'https://github.com/rollup/rollup-plugin-babel/issues. Thanks!';
+  'https://github.com/rollup/plugins/issues. Thanks!';
 
 const PREFLIGHT_TEST_STRING = '__ROLLUP__PREFLIGHT_CHECK_DO_NOT_TOUCH__';
 const PREFLIGHT_INPUT = `export default "${PREFLIGHT_TEST_STRING}";`;
