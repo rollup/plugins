@@ -46,7 +46,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ### `mainFields`
 
-Type: `Array[String]`<br>
+Type: `Array[...String]`<br>
 Default: `['module', 'main']`
 
 The fields to scan in a package.json to determine the entry point if this list contains "browser", overrides specified in "pkg.browser" will be used
@@ -84,7 +84,7 @@ Some package.json files have a "browser" field which specifies alternative files
 
 ### `extensions`
 
-Type: `Array[String]`<br>
+Type: `Array[...String]`<br>
 Default: `['.mjs', '.js', '.json', '.node']`
 
 Resolve extensions other than .js in the order specified.
@@ -105,7 +105,7 @@ Lock the module search in this path (like a chroot). Modules defined outside thi
 
 ### `only`
 
-Type: `Array[String|RegExp]`<br>
+Type: `Array[...String|RegExp]`<br>
 Default: `null`
 
 Example: `only: ['some_module', /^@some_scope\/.*$/]`
@@ -119,7 +119,7 @@ If true, inspect resolved files to check that they are ES2015 modules.
 
 ### `dedupe`
 
-Type: `Array[String]`<br>
+Type: `Array[...String]`<br>
 Default: `[]`
 
 Force resolving for these modules to root's node_modules that helps to prevent bundling the same package multiple times if package is imported from dependencies.
