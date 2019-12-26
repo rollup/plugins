@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris",
-  "homepage": "https://github.com/rollup/plugins/packages/run/#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/run/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "lib/index.js",
   "scripts": {
