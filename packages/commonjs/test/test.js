@@ -746,20 +746,5 @@ test('can spread an object into module.exports', async (t) => {
     ]
   });
   const code = await getCodeFromBundle(bundle);
-  t.is(
-    code,
-    `'use strict';
-
-const obj = {
-  a: 'b',
-  b: 'c'
-};
-
-var main = {
-  ...obj
-};
-
-module.exports = main;
-`
-  );
+  t.snapshot(code);
 });
