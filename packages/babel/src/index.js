@@ -23,7 +23,7 @@ const unpackOptions = ({
     sourceMaps: sourcemap && sourcemaps && sourceMap && sourceMaps,
     ...rest,
     caller: {
-      name: 'rollup-plugin-babel',
+      name: '@rollup/plugin-babel',
       ...rest.caller
     }
   };
@@ -34,7 +34,7 @@ const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
     // eslint-disable-next-line no-console
     console.warn(
       'You should specify how do you want to bundle/import "Babel helpers" (runtime functions inserted by Babel which are used by some transformations).\n\n' +
-        `Please pass \`babelHelpers\` option to the rollup-plugin-babel with one of the following values ("${BUNDLED}" is the default):\n` +
+        `Please pass \`babelHelpers\` option to the @rollup/plugin-babel with one of the following values ("${BUNDLED}" is the default):\n` +
         `  - "${RUNTIME}" - you should use it especially when building libraries with rollup. It has to be used in combination with \`@babel/plugin-transform-runtime\` and you should also specify \`@babel/runtime\` as dependency of your package (don't forget to tell rollup to treat it is your external dependency when bundling for cjs & esm formats).\n` +
         `  - "${BUNDLED}" - you should use it if you want your resulting bundle to contain those helpers (at most one copy of each). Useful especially if you bundle an application code.\n` +
         `  - "${EXTERNAL}" - use it only if you know what you are doing. It will reference helpers on **global** \`babelHelpers\` object. Used most commonly in combination with \`@babel/plugin-external-helpers\`.\n` +
