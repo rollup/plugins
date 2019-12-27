@@ -136,11 +136,22 @@ function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
   return p;
 }
 
+// returns the imported package name for bare module imports
 function getPackageName(id) {
+  if (id.startsWith('.') || id.startsWith('/')) {
+    return null;
+  }
+
   const split = id.split('/');
+
+  // @my-scope/my-package/foo.js -> @my-scope/my-package
+  // @my-scope/my-package -> @my-scope/my-package
   if (split[0][0] === '@') {
     return `${split[0]}/${split[1]}`;
   }
+
+  // my-package/foo.js -> my-package
+  // my-package -> my-package
   return split[0];
 }
 
