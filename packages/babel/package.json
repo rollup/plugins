@@ -1,6 +1,9 @@
 {
   "name": "@rollup/plugin-babel",
   "version": "5.0.0-alpha.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Seamless integration between Rollup and Babel.",
   "license": "MIT",
   "repository": "rollup/plugins",
@@ -9,7 +12,7 @@
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "./dist/rollup-plugin-babel.cjs.js",
   "engines": {
-    "node": ">=8"
+    "node": ">= 8.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -30,7 +33,7 @@
     "es6"
   ],
   "peerDependencies": {
-    "@babel/core": "7 || ^7.0.0-rc.2",
+    "@babel/core": "^7.0.0",
     "rollup": "^1.20.0"
   },
   "dependencies": {
