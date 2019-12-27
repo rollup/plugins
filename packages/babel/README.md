@@ -1,3 +1,12 @@
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-babel
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-babel
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-babel
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-babel
+
+[![npm][npm]][npm-url]
+[![size][size]][size-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
+
 # @rollup/plugin-babel
 
 Seamless integration between Rollup and Babel.
@@ -278,7 +287,7 @@ Another option is to use `@babel/plugin-external-helpers`, which will reference 
 
 ## Custom plugin builder
 
-`rollup-plugin-babel` exposes a plugin-builder utility that allows users to add custom handling of Babel's configuration for each file that it processes.
+`@rollup/plugin-babel` exposes a plugin-builder utility that allows users to add custom handling of Babel's configuration for each file that it processes.
 
 `.custom` accepts a callback that will be called with the loader's instance of `babel` so that tooling can ensure that it using exactly the same `@babel/core` instance as the loader itself.
 
@@ -287,7 +296,7 @@ It's main purpose is to allow other tools for configuration of transpilation wit
 ### Example
 
 ```js
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 
 export default babel.custom(babelCore => {
   function myPlugin() {
