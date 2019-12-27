@@ -133,7 +133,7 @@ export default {
   input: 'main.js',
   plugins: [
     babel.generated({
-      presets: ['@babel/env']
+      presets: ['@babel/preset-env']
     })
   ],
   output: [
@@ -156,7 +156,7 @@ export default {
     {
       file: 'bundle.es5.js',
       format: 'esm',
-      plugins: [babel.generated({ presets: ['@babel/env'] })]
+      plugins: [babel.generated({ presets: ['@babel/preset-env'] })]
     }
   ]
 };
@@ -177,7 +177,7 @@ export default {
     {
       file: 'bundle.js',
       format: 'esm',
-      plugins: [babel.generated({ presets: ['@babel/env'] })]
+      plugins: [babel.generated({ presets: ['@babel/preset-env'] })]
     }
   ]
 };
@@ -196,7 +196,7 @@ babel.generated({ configFile: path.resolve(__dirname, 'babel.config.js') });
 As `babel.generated(...)` will run _after_ Rollup has done all its transformations, it needs to make sure it preserves the semantics of Rollup's output format. This is especially important for Babel plugins that add, modify or remove imports or exports, but also for other transformations that add new variables as they can accidentally become global variables depending on the format. Therefore it is recommended that for formats other than `esm` or `cjs`, you set Rollup to use the `esm` output format and let Babel handle the transformation to another format, e.g. via
 
 ```
-presets: [['@babel/env', { modules: 'umd' }], ...]
+presets: [['@babel/preset-env', { modules: 'umd' }], ...]
 ```
 
 to create a UMD/IIFE compatible output. If you want to use `babel.generated(...)` with other formats, you need to specify `allowAllFormats: true` as plugin option:
@@ -225,8 +225,8 @@ rollup.rollup({...})
 .then(bundle => bundle.generate({
   format: 'esm',
   plugins: [babel.generated({
-    presets: ['@babel/env'],
-    plugins: [['@babel/transform-runtime', { useESModules: true }]]
+    presets: ['@babel/preset-env'],
+    plugins: [['@babel/plugin-transform-runtime', { useESModules: true }]]
   })]
 }))
 ```
@@ -252,8 +252,8 @@ rollup.rollup({...})
 .then(bundle => bundle.generate({
   format: 'cjs',
   plugins: [babel.generated({
-    presets: ['@babel/env'],
-    plugins: [['@babel/transform-runtime', { useESModules: false }]]
+    presets: ['@babel/preset-env'],
+    plugins: [['@babel/plugin-transform-runtime', { useESModules: false }]]
   })]
 }))
 ```
