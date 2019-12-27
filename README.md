@@ -19,6 +19,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | ------------------------------------- | ----------------------------------------------------------------------------------------- |
 | [alias](packages/alias)               | Define and resolve aliases for bundle dependencies                                        |
 | [auto-install](packages/auto-install) | Automatically install dependencies that are imported by a bundle.                         |
+| [babel](packages/babel)               | Compile your filed with Babel                                                             |
 | [beep](packages/beep)                 | System beeps on errors and warnings                                                       |
 | [buble](packages/buble)               | Compile ES2015 with buble                                                                 |
 | [commonjs](packages/commonjs)         | Convert CommonJS modules to ES6                                                           |
