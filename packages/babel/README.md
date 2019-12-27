@@ -9,7 +9,7 @@
 
 # @rollup/plugin-babel
 
-Seamless integration between Rollup and Babel.
+🍣 Seamless integration between Rollup and Babel.
 
 ## Why?
 
@@ -24,19 +24,19 @@ Either way, you have to worry about a place to put the intermediate files, and g
 
 Using Rollup with `@rollup/plugin-babel` makes the process far easier.
 
-## Installation
+## Requirements
+
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
+
+## Install
 
 ```bash
-npm install --save-dev @rollup/plugin-babel@latest
+npm install @rollup/plugin-babel --save-dev
 ```
 
 ## Usage
 
-### Command Line (`rollup`)
-
-#### Configuration
-
-`rollup.config.js` ([docs](https://rollupjs.org/guide/en/#configuration-files)):
+Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
 import babel from '@rollup/plugin-babel';
@@ -50,38 +50,54 @@ const config = {
       format: 'esm'
     }
   ],
-  plugins: [babel()]
+  plugins: [babel({ babelHelpers: 'bundled' })]
 };
 
 export default config;
 ```
 
-### Programmatic
+Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
-```js
-import { rollup } from 'rollup';
-import babel from '@rollup/plugin-babel';
+## Options
 
-rollup({
-  input: 'main.js',
-  plugins: [
-    babel({
-      exclude: 'node_modules/**'
-    })
-  ]
-}).then(...)
-```
-
-All options are as per the [Babel documentation](https://babeljs.io/), plus the following:
-
-- `options.externalHelpers`: a boolean value indicating whether to bundle in the Babel helpers
-- `options.include` and `options.exclude`: each a minimatch pattern, or array of minimatch patterns, which determine which files are transpiled by Babel (by default, all files are transpiled)
-- `options.externalHelpersWhitelist`: an array which gives explicit control over which babelHelper functions are allowed in the bundle (by default, every helper is allowed)
-- `options.extensions`: an array of file extensions that Babel should transpile (by default the Babel defaults of .js, .jsx, .es6, .es, .mjs. are used)
-
-Babel will respect `.babelrc` files – this is generally the best place to put your configuration.
+This plugin respects Babel [configuration files](https://babeljs.io/docs/en/configuration) by default and they are generally the best place to put your configuration.
 
 You can also run Babel on the generated chunks instead of the input files. Even though this is slower, it is the only way to transpile Rollup's auto-generated wrapper code to lower compatibility targets than ES5 (or most likely ES6 when Rollup 2 will be released), see [Running Babel on the generated code](#running-babel-on-the-generated-code) for details.
+
+All options are as per the [Babel documentation](https://babeljs.io/docs/en/options), plus the following:
+
+### `exclude`
+
+Type: `String | RegExp | Array[...String|RegExp]`<br>
+
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. When relaying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
+
+### `include`
+
+Type: `String | RegExp | Array[...String|RegExp]`<br>
+
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. When relaying on Babel configuration files you cannot include files already excluded there.
+
+### `extensions`
+
+Type: `Array[...String]`<br>
+Default: `['.js', '.jsx', '.es6', '.es', '.mjs']`
+
+An array of file extensions that Babel should transpile. If you want to tranpile TypeScript files with this plugin it's essential to include `.ts` and `.tsx` in this option.
+
+### `babelHelpers`
+
+Type: `'bundled' | 'runtime' | 'inline' | 'external'`<br>
+Default: `'bundled'`
+
+TODO: write proper docs
+
+### `skipPreflightCheck`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Before transpiling your input files this plugin also transpile a short piece of code **for each** input file. This is used to validate some misconfiguration errors, but for sufficiently big projects it can slow your build times so if you are confident about your configuration then you might disable those checks with this option.
 
 ### External dependencies
 
@@ -95,30 +111,28 @@ Use `babelrc: false` to prevent Babel from using local (i.e. to your external de
 
 In some cases Babel uses _helpers_ to avoid repeating chunks of code – for example, if you use the `class` keyword, it will use a `classCallCheck` function to ensure that the class is instantiated correctly.
 
-By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. This rollup plugin automatically deduplicates those helpers, keeping only one copy of each one used in the output bundle. Rollup will combine the helpers in a single block at the top of your bundle. To achieve the same in Babel 6 you must use the `external-helpers` plugin.
+By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. This rollup plugin automatically deduplicates those helpers, keeping only one copy of each one used in the output bundle. Rollup will combine the helpers in a single block at the top of your bundle.
 
-Alternatively, if you know what you're doing, you can use the `transform-runtime` plugin. If you do this, use `runtimeHelpers: true`:
+Alternatively, if you know what you're doing, you can use the `@babel/plugin-transform-runtime` plugin. If you do this, use `babelHelpers: 'runtime'`:
 
 ```js
 rollup.rollup({
   ...,
   plugins: [
-    babel({ runtimeHelpers: true })
+    babel({ babelHelpers: 'runtime' })
   ]
 }).then(...)
 ```
 
-By default `externalHelpers` option is set to `false` so babel helpers will be included in your bundle.
-
-If you do not wish the babel helpers to be included in your bundle at all (but instead reference the global `babelHelpers` object), you may set the `externalHelpers` option to `true`:
+If you do not wish the babel helpers to be included in your bundle at all (but instead reference the global `babelHelpers` object), you may set the `babelHelpers` option to `'external'`:
 
 ```js
 rollup.rollup({
   ...,
   plugins: [
     babel({
-      plugins: ['external-helpers'],
-      externalHelpers: true
+      plugins: ['@babel/plugin-external-helpers'],
+      babelHelpers: 'external'
     })
   ]
 }).then(...)
@@ -216,7 +230,7 @@ rollup.rollup({...})
   format: 'iife',
   plugins: [babel.generated({
     allowAllFormats: true,
-    ...
+    // ...
   })]
 }))
 ```
@@ -347,6 +361,8 @@ export default babel.custom(babelCore => {
 });
 ```
 
-## License
+## Meta
 
-MIT
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
+
+[LICENSE (MIT)](/LICENSE)
