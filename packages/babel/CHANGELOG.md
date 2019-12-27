@@ -1,3 +1,11 @@
+# @rollup/plugin-babel changelog
+
+## 5.0.0
+
+- **Breaking:** Minimum compatible Rollup version is 1.2.0
+- **Breaking:** Minimum supported Node version is 8.0.0
+- Published as `@rollup/plugin-babel`
+
 ## 4.3.2
 
 - Fixed usage with `externalHelpers: true` option
