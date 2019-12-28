@@ -48,7 +48,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ### `sync`
 
-Type: `Array[String]`<br>
+Type: `Array[...String]`<br>
 Default: `null`
 
 Specifies an array of strings that each represent a WebAssembly file to load synchronously. See [Synchronous Modules](#synchronous-modules) for a functional example.

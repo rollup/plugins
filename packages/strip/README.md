@@ -57,14 +57,14 @@ If `true`, instructs the plugin to remove debugger statements.
 
 ### `functions`
 
-Type: `Array[String]`<br>
+Type: `Array[...String]`<br>
 Default: `[ 'console.*', 'assert.*' ]`
 
 Specifies the functions that the plugin will target and remove.
 
 ### `labels`
 
-Type: `Array[String]`<br>
+Type: `Array[...String]`<br>
 Default: `[]`
 
 Specifies the [labeled blocks](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/label) that the plugin will target and remove.

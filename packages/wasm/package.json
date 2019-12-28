@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Jamen Marz <jamenmarz+gh@gmail.com>",
-  "homepage": "https://github.com/rollup/plugins/packages/wasm/#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/wasm/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index",
   "scripts": {

@@ -53,14 +53,14 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 ### `include`
 
-Type: `String` | `Array(String)`<br>
+Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default CommonJS modules are targeted.
 
 ### `extensions`
 
-Type: `Array(String)`<br>
+Type: `Array[...String]`<br>
 Default: `['.js']`
 
 Search for extensions other than .js in the order specified.
@@ -122,7 +122,7 @@ commonjs({
 
 ### `ignore`
 
-Type: `Array(String | (String) => Boolean)`<br>
+Type: `Array[...String | (String) => Boolean]`<br>
 Default: `[]`
 
 Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function. Only use this option if you know what you're doing!

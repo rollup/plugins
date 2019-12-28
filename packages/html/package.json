@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Andrew Powell <andrew@shellscape.org>",
-  "homepage": "https://github.com/rollup/plugins/packages/beep",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/beep",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "lib/index.js",
   "engines": {
