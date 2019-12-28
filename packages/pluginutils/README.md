@@ -104,7 +104,7 @@ Returns: `String`
 
 #### `include` and `exclude`
 
-Type: `String | Array[...String|RegExp]`<br>
+Type: `String | RegExp | Array[...String|RegExp]`<br>
 
 A valid [`minimatch`](https://www.npmjs.com/package/minimatch) pattern, or array of patterns. If `options.include` is omitted or has zero length, filter will return `true` by default. Otherwise, an ID must match one or more of the `minimatch` patterns, and must not match any of the `options.exclude` patterns.
 
