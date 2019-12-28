@@ -76,7 +76,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. When relaying on Babel configuration files you cannot include files already excluded there.
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
 
 ### `extensions`
 
