@@ -14,7 +14,7 @@ const makeLegalIdentifier: MakeLegalIdentifier = function makeLegalIdentifier(st
     .replace(/[^$_a-zA-Z0-9]/g, '_');
 
   if (/\d/.test(identifier[0]) || forbiddenIdentifiers.has(identifier)) {
-    identifier = `_${str}`;
+    identifier = `_${identifier}`;
   }
 
   return identifier || '_';
