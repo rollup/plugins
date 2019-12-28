@@ -17,3 +17,7 @@ test('blacklists arguments (https://github.com/rollup/rollup/issues/871)', (t) =
 test('empty', (t) => {
   t.is(makeLegalIdentifier(''), '_');
 });
+
+test('handles input evaluated to blacklisted identifier', (t) => {
+  t.is(makeLegalIdentifier('parse-int'), '_parseInt');
+});
