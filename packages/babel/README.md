@@ -9,7 +9,7 @@
 
 # @rollup/plugin-babel
 
-🍣 Seamless integration between Rollup and Babel.
+🍣 A Rollup plugin for seamless integration between Rollup and Babel.
 
 ## Why?
 
