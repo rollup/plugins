@@ -78,7 +78,7 @@ Instructs the plugin to use an alternative resolving algorithm, rather than the 
 
 ### `entries`
 
-Type: `Object | Array[Object]`<br>
+Type: `Object | Array[...Object]`<br>
 Default: `null`
 
 Specifies an `Object`, or an `Array` of `Object`, which defines aliases used to replace values in `import` or `require` statements. With either format, the order of the entries is important, in that the first defined rules are applied first. This option also supports [Regular Expression Alias](#regular-expression-aliases) matching.
@@ -96,9 +96,9 @@ alias({
 });
 ```
 
-#### `Array[Object]` Format
+#### `Array[...Object]` Format
 
-The `Array[Object]` format allows specifying aliases as objects, which can be useful for complex key/value pairs.
+The `Array[...Object]` format allows specifying aliases as objects, which can be useful for complex key/value pairs.
 
 ```js
 entries: [

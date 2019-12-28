@@ -288,7 +288,7 @@ export function transformCommonjs(
 
         if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
           node.right.properties.forEach((prop) => {
-            if (prop.computed || prop.key.type !== 'Identifier') return;
+            if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
             const { name } = prop.key;
             if (name === makeLegalIdentifier(name)) namedExports[name] = true;
           });
