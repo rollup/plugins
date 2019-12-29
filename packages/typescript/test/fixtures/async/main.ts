@@ -1,9 +1,11 @@
-export default async function ( n: number ) {
-	while ( --n ) {
-		await delay( 10 );
-	}
+/* eslint-disable */
+
+export default async function(n: number) {
+  while (--n) {
+    await delay(10);
+  }
 }
 
-function delay ( interval: number ) {
-	return new Promise( resolve => setTimeout( resolve, interval ) );
+function delay(interval: number) {
+  return new Promise((resolve) => setTimeout(resolve, interval));
 }

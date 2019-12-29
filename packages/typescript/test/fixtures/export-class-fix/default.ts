@@ -1,3 +1,2 @@
 // the odd spacing is intentional
-export default
-		class A {}
+export default class A {}
