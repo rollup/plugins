@@ -1,2 +1,2 @@
-export { A } from './A';
-export { B } from './B';
+export { A } from './A';
+export { B } from './B';

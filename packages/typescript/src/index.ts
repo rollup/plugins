@@ -1,16 +1,18 @@
 import * as fs from 'fs';
 
+import { Plugin } from 'rollup';
 import * as ts from 'typescript';
 import { createFilter } from '@rollup/pluginutils';
 import resolveId from 'resolve';
 
-import endsWith from './string';
+import { RollupTypescriptOptions } from '../types';
+
 import { getDefaultOptions, readTsConfig, adjustCompilerOptions } from './options';
 import resolveHost from './resolveHost';
 
 const TSLIB_ID = '\0tslib';
 
-export default function typescript(options = {}) {
+export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   let opts = Object.assign({}, options);
 
   const filter = createFilter(
@@ -22,7 +24,7 @@ export default function typescript(options = {}) {
   delete opts.exclude;
 
   // Allow users to override the TypeScript version used for transpilation and tslib version used for helpers.
-  const tsRuntime = opts.typescript || ts;
+  const tsRuntime: typeof import('typescript') = opts.typescript || ts;
   const tslib =
     opts.tslib ||
     fs.readFileSync(resolveId.sync('tslib/tslib.es6.js', { basedir: __dirname }), 'utf-8');
@@ -38,13 +40,13 @@ export default function typescript(options = {}) {
 
   // Since the CompilerOptions aren't designed for the Rollup
   // use case, we'll adjust them for use with Rollup.
-  tsConfig.compilerOptions = adjustCompilerOptions(tsRuntime, tsConfig.compilerOptions);
-  opts = adjustCompilerOptions(tsRuntime, opts);
+  tsConfig.compilerOptions = adjustCompilerOptions(tsConfig.compilerOptions);
+  opts = adjustCompilerOptions(opts);
 
   opts = Object.assign(tsConfig.compilerOptions, getDefaultOptions(), opts);
 
   // Verify that we're targeting ES2015 modules.
-  const moduleType = opts.module.toUpperCase();
+  const moduleType = (opts.module as string).toUpperCase();
   if (
     moduleType !== 'ES2015' &&
     moduleType !== 'ES6' &&
@@ -102,7 +104,7 @@ export default function typescript(options = {}) {
       );
 
       if (result.resolvedModule && result.resolvedModule.resolvedFileName) {
-        if (endsWith(result.resolvedModule.resolvedFileName, '.d.ts')) {
+        if (result.resolvedModule.resolvedFileName.endsWith('.d.ts')) {
           return null;
         }
 
