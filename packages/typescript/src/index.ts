@@ -1,92 +1,68 @@
 import * as fs from 'fs';
 
-import { Plugin } from 'rollup';
-import * as ts from 'typescript';
 import { createFilter } from '@rollup/pluginutils';
 import resolveId from 'resolve';
+import { Plugin } from 'rollup';
+import * as defaultTs from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
-import { getDefaultOptions, readTsConfig, adjustCompilerOptions } from './options';
+import {
+  adjustCompilerOptions,
+  getDefaultOptions,
+  parseCompilerOptions,
+  readTsConfig,
+  validateModuleType
+} from './options';
 import resolveHost from './resolveHost';
 
 const TSLIB_ID = '\0tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
-  let opts = Object.assign({}, options);
+  const opts = Object.assign({}, options);
 
   const filter = createFilter(
     opts.include || ['*.ts+(|x)', '**/*.ts+(|x)'],
     opts.exclude || ['*.d.ts', '**/*.d.ts']
   );
-
   delete opts.include;
   delete opts.exclude;
 
   // Allow users to override the TypeScript version used for transpilation and tslib version used for helpers.
-  const tsRuntime: typeof import('typescript') = opts.typescript || ts;
+  const ts: typeof import('typescript') = opts.typescript || defaultTs;
+  delete opts.typescript;
+
   const tslib =
     opts.tslib ||
     fs.readFileSync(resolveId.sync('tslib/tslib.es6.js', { basedir: __dirname }), 'utf-8');
-
-  delete opts.typescript;
   delete opts.tslib;
 
   // Load options from `tsconfig.json` unless explicitly asked not to.
   const tsConfig =
-    opts.tsconfig === false ? { compilerOptions: {} } : readTsConfig(tsRuntime, opts.tsconfig);
-
+    opts.tsconfig === false ? { compilerOptions: {} } : readTsConfig(ts, opts.tsconfig);
   delete opts.tsconfig;
 
   // Since the CompilerOptions aren't designed for the Rollup
   // use case, we'll adjust them for use with Rollup.
   tsConfig.compilerOptions = adjustCompilerOptions(tsConfig.compilerOptions);
-  opts = adjustCompilerOptions(opts);
 
-  opts = Object.assign(tsConfig.compilerOptions, getDefaultOptions(), opts);
+  Object.assign(tsConfig.compilerOptions, getDefaultOptions(), adjustCompilerOptions(opts));
 
   // Verify that we're targeting ES2015 modules.
-  const moduleType = (opts.module as string).toUpperCase();
-  if (
-    moduleType !== 'ES2015' &&
-    moduleType !== 'ES6' &&
-    moduleType !== 'ESNEXT' &&
-    moduleType !== 'COMMONJS'
-  ) {
-    throw new Error(
-      `@rollup/plugin-typescript: The module kind should be 'ES2015' or 'ESNext, found: '${opts.module}'`
-    );
-  }
+  validateModuleType(tsConfig.compilerOptions.module);
 
-  const parsed = tsRuntime.convertCompilerOptionsFromJson(opts, process.cwd());
-
-  if (parsed.errors.length) {
-    parsed.errors.forEach((error) =>
-      // eslint-disable-next-line
-      console.error(`@rollup/plugin-typescript: ${error.messageText}`)
-    );
-
-    throw new Error(`@rollup/plugin-typescript: Couldn't process compiler options`);
-  }
-
-  // let typescript load inheritance chain if there are base configs
-  const extendedConfig = tsConfig.extends
-    ? tsRuntime.parseJsonConfigFileContent(tsConfig, tsRuntime.sys, process.cwd(), parsed.options)
-    : null;
-
-  if (extendedConfig && extendedConfig.errors.length) {
-    extendedConfig.errors.forEach((error) =>
-      // eslint-disable-next-line
-      console.error(`@rollup/plugin-typescript: ${error.messageText}`)
-    );
-
-    throw new Error(`@rollup/plugin-typescript: Couldn't process compiler options`);
-  }
-
-  const compilerOptions = extendedConfig ? extendedConfig.options : parsed.options;
+  const { options: compilerOptions, errors } = parseCompilerOptions(ts, tsConfig);
 
   return {
     name: 'typescript',
+
+    buildStart() {
+      if (errors.length > 0) {
+        errors.forEach((error) => this.warn(`@rollup/plugin-typescript: ${error.messageText}`));
+
+        this.error(`@rollup/plugin-typescript: Couldn't process compiler options`);
+      }
+    },
 
     resolveId(importee, importer) {
       if (importee === 'tslib') {
@@ -96,7 +72,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       if (!importer) return null;
       const containingFile = importer.split('\\').join('/');
 
-      const result = tsRuntime.nodeModuleNameResolver(
+      const result = ts.nodeModuleNameResolver(
         importee,
         containingFile,
         compilerOptions,
@@ -124,7 +100,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     transform(code, id) {
       if (!filter(id)) return null;
 
-      const transformed = tsRuntime.transpileModule(code, {
+      const transformed = ts.transpileModule(code, {
         fileName: id,
         reportDiagnostics: true,
         compilerOptions
@@ -138,7 +114,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       let fatalError = false;
 
       diagnostics.forEach((diagnostic) => {
-        const message = tsRuntime.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+        const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
 
         if (diagnostic.file) {
           const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
