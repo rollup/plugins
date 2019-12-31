@@ -1,16 +1,12 @@
-import * as fs from 'fs';
-
 import { Plugin } from 'rollup';
 import * as ts from 'typescript';
 import { createFilter } from '@rollup/pluginutils';
-import resolveId from 'resolve';
 
 import { RollupTypescriptOptions } from '../types';
 
 import { getDefaultOptions, readTsConfig, adjustCompilerOptions } from './options';
 import resolveHost from './resolveHost';
-
-const TSLIB_ID = '\0tslib';
+import { getTsLibCode, TSLIB_ID } from './tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   let opts = Object.assign({}, options);
@@ -25,9 +21,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
   // Allow users to override the TypeScript version used for transpilation and tslib version used for helpers.
   const tsRuntime: typeof import('typescript') = opts.typescript || ts;
-  const tslib =
-    opts.tslib ||
-    fs.readFileSync(resolveId.sync('tslib/tslib.es6.js', { basedir: __dirname }), 'utf-8');
+  const tslib = getTsLibCode(opts);
 
   delete opts.typescript;
   delete opts.tslib;

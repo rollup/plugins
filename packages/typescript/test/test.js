@@ -181,11 +181,25 @@ test('supports overriding the TypeScript version', async (t) => {
   t.is(result, 1337);
 });
 
-test('supports overriding tslib', async (t) => {
+test('supports overriding tslib with a string', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
     plugins: [
       typescript({ tslib: 'export const __extends = (Main, Super) => Main.myParent = Super' })
+    ]
+  });
+  const code = await evaluateBundle(bundle);
+
+  t.is(code.myParent.baseMethod(), 'base method');
+});
+
+test('supports overriding tslib with a promise', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/overriding-tslib/main.ts',
+    plugins: [
+      typescript({
+        tslib: Promise.resolve('export const __extends = (Main, Super) => Main.myParent = Super')
+      })
     ]
   });
   const code = await evaluateBundle(bundle);
