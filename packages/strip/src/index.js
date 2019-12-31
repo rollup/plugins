@@ -32,8 +32,7 @@ function flatten(node) {
 }
 
 export default function strip(options = {}) {
-  const include = options.include || '**/*.js';
-  const { exclude } = options;
+  const { include, exclude } = options;
   const filter = createFilter(include, exclude);
   const sourceMap = options.sourceMap !== false;
 
