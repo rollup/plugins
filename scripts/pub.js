@@ -3,6 +3,7 @@
 /* eslint-disable  import/no-extraneous-dependencies, import/no-dynamic-require, no-await-in-loop, global-require  */
 
 const { join } = require('path');
+const { readFileSync, writeFileSync } = require('fs');
 
 const parser = require('conventional-commits-parser');
 const chalk = require('chalk');
@@ -22,7 +23,7 @@ const commitChanges = async (cwd, pluginName, version) => {
   let params = ['add', cwd];
   await execa('git', params);
 
-  params = ['commit', '--m', `chore(${pluginName}): release v${version}`];
+  params = ['commit', '--m', `chore(release): ${pluginName} v${version}`];
   await execa('git', params);
 };
 
@@ -89,8 +90,46 @@ const tag = async (cwd, pluginName, version) => {
   await execa('git', ['tag', tagName], { cwd, stdio: 'inherit' });
 };
 
+const updateChangelog = (commits, cwd, pluginName, version) => {
+  log(chalk`{blue Updating} CHANGELOG.md`);
+  const plugin = pluginName === 'pluginutils' ? pluginName : `plugin-${pluginName}`;
+  const title = `# @rollup/${plugin} ChangeLog`;
+  const [date] = new Date().toISOString().split('T');
+  const logPath = join(cwd, 'CHANGELOG.md');
+  const logFile = readFileSync(logPath, 'utf-8');
+  const oldNotes = logFile.startsWith(title) ? logFile.slice(title.length).trim() : logFile;
+  const notes = { breaking: [], fixes: [], features: [], updates: [] };
+
+  for (const { breaking, hash, header, type } of commits) {
+    const ref = /\(#\d+\)/.test(header) ? '' : ` (${hash.substring(0, 7)})`;
+    const message = header.trim().replace(`(${pluginName})`, '') + ref;
+    if (breaking) {
+      notes.breaking.push(message);
+    } else if (type === 'fix') {
+      notes.fixes.push(message);
+    } else if (type === 'feat') {
+      notes.features.push(message);
+    } else {
+      notes.updates.push(message);
+    }
+  }
+
+  const parts = [
+    `## v${version}`,
+    `_${date}_`,
+    notes.breaking.length ? `### Breaking Changes\n\n- ${notes.breaking.join('\n- ')}`.trim() : '',
+    notes.fixes.length ? `### Bugfixes\n\n- ${notes.fixes.join('\n- ')}`.trim() : '',
+    notes.features.length ? `### Features\n\n- ${notes.features.join('\n- ')}`.trim() : '',
+    notes.updates.length ? `### Updates\n\n- ${notes.updates.join('\n- ')}`.trim() : ''
+  ].filter(Boolean);
+
+  const content = [title, parts.join('\n\n'), oldNotes].filter(Boolean).join('\n\n');
+
+  writeFileSync(logPath, content, 'utf-8');
+};
+
 const updatePackage = async (cwd, pkg, version) => {
-  log(chalk`\n{blue Updating} package.json`);
+  log(chalk`{blue Updating} package.json`);
   pkg.version = version; // eslint-disable-line no-param-reassign
   await writePackage(cwd, pkg);
 };
@@ -116,11 +155,11 @@ const updatePackage = async (cwd, pkg, version) => {
     log(chalk`{blue New Version}: ${newVersion}\n`);
 
     await updatePackage(cwd, pkg, newVersion);
-    // update Changelog
-    await commitChanges(cwd, pluginName, newVersion);
-    await publish(cwd);
-    await tag(cwd, pluginName, newVersion);
-    await push();
+    await updateChangelog(commits, cwd, pluginName, newVersion);
+    // await commitChanges(cwd, pluginName, newVersion);
+    // await publish(cwd);
+    // await tag(cwd, pluginName, newVersion);
+    // await push();
   } catch (e) {
     log(e);
   }
@@ -131,9 +170,5 @@ const updatePackage = async (cwd, pkg, version) => {
   - ignore /chore(release)/ commits
   - list breaking changes
   Update Changelog
-
-  Add package.json
-  Add Changelog.md
-  Commit: chore(release): {plugin} v{version}
 
 */
