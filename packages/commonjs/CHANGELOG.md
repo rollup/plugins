@@ -1,4 +1,4 @@
-# @rollup/plugin-commonjs changelog
+# @rollup/plugin-commonjs ChangeLog
 
 ## 11.0.0
 

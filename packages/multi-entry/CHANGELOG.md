@@ -1,4 +1,4 @@
-# @rollup/plugin-multi-entry Change Log
+# @rollup/plugin-multi-entry ChangeLog
 
 ## 3.0.0
 

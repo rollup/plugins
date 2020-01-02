@@ -1,4 +1,4 @@
-# rollup-plugin-replace changelog
+# @rollup/plugin-replace ChangeLog
 
 ## 2.3.0
 
