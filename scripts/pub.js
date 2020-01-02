@@ -156,19 +156,11 @@ const updatePackage = async (cwd, pkg, version) => {
 
     await updatePackage(cwd, pkg, newVersion);
     await updateChangelog(commits, cwd, pluginName, newVersion);
-    // await commitChanges(cwd, pluginName, newVersion);
-    // await publish(cwd);
-    // await tag(cwd, pluginName, newVersion);
-    // await push();
+    await commitChanges(cwd, pluginName, newVersion);
+    await publish(cwd);
+    await tag(cwd, pluginName, newVersion);
+    await push();
   } catch (e) {
     log(e);
   }
 })();
-/*
-
-  Create Version Changes
-  - ignore /chore(release)/ commits
-  - list breaking changes
-  Update Changelog
-
-*/
