@@ -50,7 +50,7 @@ Type: `Array[...String]`<br>
 Default: `['module', 'main']`<br>
 Valid values: `['browser', 'jsnext', 'module', 'main']`
 
-The fields to scan in a package.json to determine the entry point. Order of fields is significant, first found field would become the resolved entry point. If this list contains "browser", overrides specified in `pkg.browser` will be used.
+Specifies the properties to scan within a `package.json`, used to determine the bundle entry point. The order of property names is significant, as the first-found property is used as the resolved entry point. If the array contains `'browser'`, key/values specified in the `package.json` `browser` property will be used.
 
 ### `module`
 
