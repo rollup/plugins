@@ -1,6 +1,6 @@
 import YAML from 'js-yaml';
 import toSource from 'tosource';
-import { createFilter, makeLegalIdentifier } from 'rollup-pluginutils';
+import { createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
 
 const defaults = {
   documentMode: 'single',
