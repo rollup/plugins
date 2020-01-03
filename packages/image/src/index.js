@@ -1,7 +1,9 @@
 import { readFileSync } from 'fs';
 import { extname } from 'path';
 
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
+
+const trimNewlines = require('trim-newlines');
 
 const defaults = {
   dom: false,
@@ -36,8 +38,9 @@ export default function image(opts = {}) {
         return null;
       }
 
-      const source = readFileSync(id, 'base64');
-      const data = `'data:${mime};base64,${source}'`;
+      const format = mime.includes('svg') ? 'utf-8' : 'base64';
+      const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');
+      const data = `'data:${mime};${format},${source}'`;
       const code = options.dom
         ? `var img = new Image(); img.src = ${data}; export default img;`
         : `const img = ${data}; export default img;`;

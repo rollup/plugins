@@ -170,14 +170,14 @@ importers:
       rollup-plugin-postcss: ^2.0.3
   packages/image:
     dependencies:
-      rollup-pluginutils: 2.8.2
+      '@rollup/pluginutils': 3.0.1_rollup@1.27.8
     devDependencies:
       rollup: 1.27.8
       rollup-plugin-buble: 0.10.0
     specifiers:
-      rollup: ^1.20.0
+      '@rollup/pluginutils': ^3.0.1
+      rollup: ^1.27.8
       rollup-plugin-buble: ^0.10.0
-      rollup-pluginutils: ^2.8.2
   packages/inject:
     dependencies:
       estree-walker: 0.9.0
@@ -2014,7 +2014,6 @@ packages:
     dependencies:
       estree-walker: 0.6.1
       rollup: 1.27.8
-    dev: true
     engines:
       node: '>= 8.0.0'
     peerDependencies:
