@@ -3,8 +3,6 @@ import { extname } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 
-const trimNewlines = require('trim-newlines');
-
 const defaults = {
   dom: false,
   exclude: null,
