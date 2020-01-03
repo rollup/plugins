@@ -75,7 +75,7 @@ Use `pkg.main` field or index.js, even if it's not an ES6 module (needs to be co
 Type: `Boolean`<br>
 Default: `false`
 
-Some package.json files have a `pkg.browser` field which specifies alternative files to load for people bundling for the browser. If that's you, either use this option or add "browser" to the "mainFields" option, otherwise `pkg.browser` will be ignored. This option takes precedence over any other in "mainFields" if such are present.
+If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
 
 ### `extensions`
 
