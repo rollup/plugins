@@ -1,4 +1,4 @@
-# @rollup/plugin-typescript changelog
+# @rollup/plugin-typescript ChangeLog
 
 ## 2.0.1
 

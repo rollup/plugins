@@ -1,4 +1,4 @@
-# @rollup/plugin-legacy changelog
+# @rollup/plugin-legacy ChangeLog
 
 ## 2.0.0
 
@@ -12,4 +12,4 @@ _2019-11-24_
 
 _2016-12-28_
 
-- First release
+- First Release
