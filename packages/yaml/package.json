@@ -41,17 +41,17 @@
     "rollup": "^1.20.0"
   },
   "dependencies": {
+    "@rollup/plugin-node-resolve": "^6.0.0",
     "js-yaml": "^3.13.1",
     "rollup-pluginutils": "^2.8.2",
     "tosource": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@babel/preset-env": "^7.7.1",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
     "del-cli": "^3.0.0",
-    "rollup": "^1.27.0",
+    "rollup": "^1.27.14",
     "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-node-resolve": "^5.2.0",
     "source-map-support": "^0.5.16"
   },
   "ava": {

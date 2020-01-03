@@ -40,9 +40,6 @@ const testBundle = async (t, bundle, args = {}) => {
 
   // eslint-disable-next-line no-new-func
   const func = new Function(...params);
-  console.log('cwd', process.cwd());
-  console.log('cwd', `${process.cwd()}`);
-  console.log(func.toString());
   let error;
   let result;
 
