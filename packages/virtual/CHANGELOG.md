@@ -1,4 +1,4 @@
-# @rollup/plugin-virtual Change Log
+# @rollup/plugin-virtual ChangeLog
 
 ## 2.0.0
 

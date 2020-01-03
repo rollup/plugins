@@ -1,25 +1,25 @@
-# rollup-plugin-dsv changelog
+# @rollup/plugin-dsv ChangeLog
 
 ## 1.2.0
 
-* Pass `id` to `processRow`
+- Pass `id` to `processRow`
 
 ## 1.1.2
 
-* Return a `name`
+- Return a `name`
 
 ## 1.1.1
 
-* Add missing dependencies
+- Add missing dependencies
 
 ## 1.1.0
 
-* Support `options.processRow`
+- Support `options.processRow`
 
 ## 1.0.1
 
-* Include correct files in package
+- Include correct files in package
 
 ## 1.0.0
 
-* First release
+- First release

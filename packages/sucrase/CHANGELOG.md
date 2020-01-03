@@ -1,4 +1,4 @@
-# @rollup/plugin-sucrase Change Log
+# @rollup/plugin-sucrase ChangeLog
 
 ## 3.0.0
 

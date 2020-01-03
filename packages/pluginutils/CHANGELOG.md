@@ -1,8 +1,8 @@
-# @rollup/pluginutils changelog
+# @rollup/pluginutils ChangeLog
 
 ## 3.0.1
 
-- fix(pluginutils): Escape glob characters in folder (#84)
+- fix: Escape glob characters in folder (#84)
 
 ## 3.0.0
 

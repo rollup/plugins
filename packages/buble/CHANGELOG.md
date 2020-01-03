@@ -1,4 +1,4 @@
-# rollup-plugin-buble changelog
+# @rollup/plugin-buble ChangeLog
 
 ## 0.21.0
 

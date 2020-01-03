@@ -1,4 +1,4 @@
-# rollup-plugin-json changelog
+# @rollup/plugin-json ChangeLog
 
 ## 4.0.1
 
