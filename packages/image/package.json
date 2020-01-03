@@ -48,7 +48,7 @@
     "@rollup/pluginutils": "^3.0.1"
   },
   "devDependencies": {
-    "rollup": "^1.27.8",
+    "rollup": "^1.27.14",
     "rollup-plugin-buble": "^0.10.0"
   },
   "ava": {

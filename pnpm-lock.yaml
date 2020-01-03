@@ -177,13 +177,13 @@ importers:
       rollup-plugin-postcss: ^2.0.3
   packages/image:
     dependencies:
-      '@rollup/pluginutils': 3.0.1_rollup@1.27.8
+      '@rollup/pluginutils': 3.0.1_rollup@1.27.14
     devDependencies:
       rollup: 1.27.14
       rollup-plugin-buble: 0.10.0
     specifiers:
       '@rollup/pluginutils': ^3.0.1
-      rollup: ^1.27.8
+      rollup: ^1.27.14
       rollup-plugin-buble: ^0.10.0
   packages/inject:
     dependencies:
@@ -1300,17 +1300,6 @@ packages:
     resolution:
       integrity: sha512-UA/bN/DlHN19xdOllXmp7G7pM2ac9dQMg0q2T1rg4Bogzb7oHXj2WGafpiNpEm54PivcJdzGRJvRnI6zCISW3w==
   /@rollup/pluginutils/3.0.1_rollup@1.27.14:
-    dependencies:
-      estree-walker: 0.6.1
-      rollup: 1.27.13
-    dev: false
-    engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-    resolution:
-      integrity: sha512-PmNurkecagFimv7ZdKCVOfQuqKDPkrcpLFxRBcQ00LYr4HAjJwhCFxBiY2Xoletll2htTIiXBg6g0Yg21h2M3w==
-  /@rollup/pluginutils/3.0.1_rollup@1.27.8:
     dependencies:
       estree-walker: 0.6.1
       rollup: 1.27.14
@@ -2811,7 +2800,7 @@ packages:
       integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==
   /debug/3.2.6:
     dependencies:
-      ms: 2.1.2
+      ms: 2.1.1
     dev: true
     resolution:
       integrity: sha512-mel+jf7nrtEl5Pn1Qx46zARXKDpBbvzezse7p7LqINmdoIk8PYP5SySaxEmYv6TZ0JyEKA1hsCId6DIhgITtWQ==
