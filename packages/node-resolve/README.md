@@ -54,26 +54,17 @@ The fields to scan in a package.json to determine the entry point. Order of fiel
 
 ### `module`
 
-Type: `Boolean`<br>
-Default: `true`
-
 DEPRECATED: use "mainFields" instead
 
 Use `pkg.module` field for ES6 module if possible. This option takes precedence over both "jsnext" and "main" in the list if such are present.
 
 ### `jsnext`
 
-Type: `Boolean`<br>
-Default: `false`
-
 DEPRECATED: use "mainFields" instead
 
 Use `pkg['jsnext:main']` if possible, legacy field pointing to ES6 module in third-party libraries, deprecated in favor of `pkg.module`, see: https://github.com/rollup/rollup/wiki/pkg.module. This option takes precedence over "main" in the list if such is present.
 
 ### `main`
-
-Type: `Boolean`<br>
-Default: `true`
 
 DEPRECATED: use "mainFields" instead
 
