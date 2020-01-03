@@ -48,7 +48,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 Type: `Array[...String]`<br>
 Default: `['module', 'main']`<br>
-Possible values: Array of any values from `['browser', 'jsnext', 'module', 'main']` in any order.
+Valid values: `['browser', 'jsnext', 'module', 'main']`
 
 The fields to scan in a package.json to determine the entry point. Order of fields is significant, first found field would become the resolved entry point. If this list contains "browser", overrides specified in `pkg.browser` will be used.
 
