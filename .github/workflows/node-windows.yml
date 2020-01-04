@@ -27,7 +27,7 @@ jobs:
       run: npm install pnpm -g
     - name: pnpm install
       run: pnpm install --ignore-scripts
-    - name: run linting
-      run: pnpm run ci:lint
+    # - name: run linting
+    #   run: pnpm run ci:lint
     - name: run tests
       run: pnpm run ci:test

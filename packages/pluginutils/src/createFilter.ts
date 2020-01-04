@@ -17,8 +17,14 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
     .join('/')
     // escape all possible (posix + win) path characters that might interfere with regex
     .replace(/[-^$*+?.()|[\]{}]/g, '\\$&');
-  const result = resolve(basePath, id);
-
+  // this juggling is to join two paths:
+  // 1. the basePath which has been normalized to use /
+  // 2. the incoming glob (id) matcher, which uses /
+  // we can't use join or resolve here because Node will force backslash (\) on windows
+  const result = [...basePath.split('/'), ...id.split('/')].join('/');
+  // console.log('getMatcherString');
+  // console.log('  basePath', JSON.stringify(basePath));
+  // console.log('  result', JSON.stringify(result));
   return result;
 }
 
@@ -34,6 +40,10 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
             const pattern = getMatcherString(id, resolutionBase);
             const fn = mm.matcher(pattern, { dot: true });
             const result = fn(what);
+            // console.log('matcherFn');
+            // console.log('  pattern', JSON.stringify(pattern));
+            // console.log('  what', JSON.stringify(what));
+            // console.log('  result', result);
             return result;
           }
         };
