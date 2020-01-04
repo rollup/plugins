@@ -1,8 +1,21 @@
-# @rollup/pluginutils changelog
+# @rollup/pluginutils ChangeLog
+
+## v3.0.2
+
+_2020-01-04_
+
+### Bugfixes
+
+- fix: makeLegalIdentifier - potentially unsafe input for blacklisted identifier (#116)
+
+### Updates
+
+- docs: Fix documented type of createFilter's include/exclude (#123)
+- chore: update minor linting correction (bcbf9d2)
 
 ## 3.0.1
 
-- fix(pluginutils): Escape glob characters in folder (#84)
+- fix: Escape glob characters in folder (#84)
 
 ## 3.0.0
 

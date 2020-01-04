@@ -1,4 +1,4 @@
-# @rollup/plugin-auto-install Change Log
+# @rollup/plugin-auto-install ChangeLog
 
 ## 2.0.0
 
@@ -8,12 +8,12 @@
 
 ## 1.0.2
 
-* Ignore virtual modules
+- Ignore virtual modules
 
 ## 1.0.1
 
-* Prevent duplicate installs
+- Prevent duplicate installs
 
 ## 1.0.0
 
-* First release
+- First release

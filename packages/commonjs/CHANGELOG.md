@@ -1,4 +1,12 @@
-# @rollup/plugin-commonjs changelog
+# @rollup/plugin-commonjs ChangeLog
+
+## v11.0.1
+
+_2020-01-04_
+
+### Bugfixes
+
+- fix: module.exports object spread (#121)
 
 ## 11.0.0
 

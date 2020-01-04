@@ -40,7 +40,7 @@ console.log(batman, robin);
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import virtual from 'rollup-plugin-virtual';
+import virtual from '@rollup/plugin-virtual';
 
 export default {
   entry: 'src/entry.js',

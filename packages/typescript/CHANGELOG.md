@@ -1,4 +1,18 @@
-# @rollup/plugin-typescript changelog
+# @rollup/plugin-typescript ChangeLog
+
+## v2.0.2
+
+_2020-01-04_
+
+### Bugfixes
+
+- fix: Use this.warn for ts errors (#129)
+
+### Updates
+
+- refactor: use typescript in typescript plugin (#122)
+- chore: update changelog (b723f92)
+- chore: misc linting updates (4de10f0)
 
 ## 2.0.1
 

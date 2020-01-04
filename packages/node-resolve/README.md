@@ -47,40 +47,35 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 ### `mainFields`
 
 Type: `Array[...String]`<br>
-Default: `['module', 'main']`
+Default: `['module', 'main']`<br>
+Valid values: `['browser', 'jsnext', 'module', 'main']`
 
-The fields to scan in a package.json to determine the entry point if this list contains "browser", overrides specified in "pkg.browser" will be used
+Specifies the properties to scan within a `package.json`, used to determine the bundle entry point. The order of property names is significant, as the first-found property is used as the resolved entry point. If the array contains `'browser'`, key/values specified in the `package.json` `browser` property will be used.
 
 ### `module`
 
-Type: `Boolean`<br>
-Default: `true`
-
 DEPRECATED: use "mainFields" instead
-Use "module" field for ES6 module if possible
+
+Use `pkg.module` field for ES6 module if possible. This option takes precedence over both "jsnext" and "main" in the list if such are present.
 
 ### `jsnext`
 
-Type: `Boolean`<br>
-Default: `false`
-
 DEPRECATED: use "mainFields" instead
-Use "jsnext:main" if possible, legacy field pointing to ES6 module in third-party libraries, deprecated in favor of "pkg.module", see: https://github.com/rollup/rollup/wiki/pkg.module
+
+Use `pkg['jsnext:main']` if possible, legacy field pointing to ES6 module in third-party libraries, deprecated in favor of `pkg.module`, see: https://github.com/rollup/rollup/wiki/pkg.module. This option takes precedence over "main" in the list if such is present.
 
 ### `main`
 
-Type: `Boolean`<br>
-Default: `true`
-
 DEPRECATED: use "mainFields" instead
-Use "main" field or index.js, even if it's not an ES6 module (needs to be converted from CommonJS to ES6) – see https://github.com/rollup/rollup-plugin-commonjs
+
+Use `pkg.main` field or index.js, even if it's not an ES6 module (needs to be converted from CommonJS to ES6), see https://github.com/rollup/rollup-plugin-commonjs.
 
 ### `browser`
 
 Type: `Boolean`<br>
 Default: `false`
 
-Some package.json files have a "browser" field which specifies alternative files to load for people bundling for the browser. If that's you, either use this option or add "browser" to the "mainFields" option, otherwise pkg.browser will be ignored
+If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
 
 ### `extensions`
 

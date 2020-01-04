@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign, no-shadow, no-undefined */
-import { dirname, extname, join, normalize, resolve, sep } from 'path';
+import { dirname, extname, normalize, resolve, sep } from 'path';
 
 import fs, { realpathSync } from 'fs';
 
@@ -296,11 +296,7 @@ export default function nodeResolve(options = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
-      const basedir = importer ? dirname(importer) : rootDir;
-
-      if (shouldDedupe(importee)) {
-        importee = join(rootDir, 'node_modules', importee);
-      }
+      const basedir = !importer || shouldDedupe(importee) ? rootDir : dirname(importer);
 
       // https://github.com/defunctzombie/package-browser-field-spec
       const browser = browserMapCache.get(importer);

@@ -32,8 +32,10 @@ const testBundle = async (t, bundle, args = {}) => {
   const { output } = await bundle.generate({ format: 'cjs' });
   const [{ code }] = output;
   const module = { exports: {} };
+  // as of 1/2/2020 Github Actions + Windows has changed in a way that we must now escape backslashes
+  const cwd = process.cwd().replace(/\\/g, '\\\\');
   const params = ['module', 'exports', 'require', 't', ...Object.keys(args)].concat(
-    `process.chdir('${process.cwd()}'); let result;\n\n${code}\n\nreturn result;`
+    `process.chdir('${cwd}'); let result;\n\n${code}\n\nreturn result;`
   );
 
   // eslint-disable-next-line no-new-func

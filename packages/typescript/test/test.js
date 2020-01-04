@@ -287,15 +287,23 @@ test('throws if tsconfig cannot be found', async (t) => {
   );
 });
 
-test('should throw on bad options', (t) => {
-  t.throws(
+test('should throw on bad options', async (t) => {
+  const warnings = [];
+  await t.throwsAsync(
     () =>
       rollup({
         input: 'does-not-matter.ts',
-        plugins: [typescript({ foo: 'bar' })]
+        plugins: [typescript({ foo: 'bar' })],
+        onwarn(warning) {
+          warnings.push(warning);
+        }
       }),
     "@rollup/plugin-typescript: Couldn't process compiler options"
   );
+
+  t.is(warnings.length, 1);
+  t.is(warnings[0].plugin, 'typescript');
+  t.is(warnings[0].message, `@rollup/plugin-typescript: Unknown compiler option 'foo'.`);
 });
 
 test('prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options', async (t) => {

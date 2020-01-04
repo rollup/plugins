@@ -1,4 +1,4 @@
-# @rollup/plugin-image Change Log
+# @rollup/plugin-image ChangeLog
 
 ## 2.0.0
 
@@ -20,4 +20,4 @@
 
 ## 1.0.0
 
-- First release
+- First Release
