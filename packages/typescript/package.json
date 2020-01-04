@@ -22,7 +22,7 @@
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache src test",
+    "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
@@ -32,7 +32,7 @@
   },
   "files": [
     "dist",
-    "index.d.ts",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -49,17 +49,25 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.0.0",
-    "resolve": "^1.12.2"
+    "resolve": "^1.13.1"
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.20.0",
+    "@rollup/plugin-typescript": "^2.0.1",
     "buble": "^0.19.8",
-    "rollup": "^1.27.5",
+    "rollup": "^1.27.8",
     "rollup-plugin-commonjs": "^9.3.4",
     "tslib": "^1.10.0",
     "typescript": "^3.7.2"
   },
   "ava": {
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
     "files": [
       "!**/fixtures/**",
       "!**/output/**",
@@ -68,5 +76,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js"
+  "module": "dist/index.es.js",
+  "types": "types/index.d.ts"
 }

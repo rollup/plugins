@@ -1,2 +1,3 @@
-const answer: number = 42;
-console.log( `the answer is ${answer}` );
+const answer = 42;
+// eslint-disable-next-line no-console
+console.log(`the answer is ${answer}`);

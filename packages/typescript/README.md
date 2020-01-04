@@ -101,14 +101,14 @@ typescript({
 
 ### `tslib`
 
-Type: `import('tslib')`<br>
+Type: `String`<br>
 Default: _peer dependency_
 
-Overrides the injected TypeScript helpers with a custom version
+Overrides the injected TypeScript helpers with a custom version.
 
 ```js
 typescript({
-  tslib: require('some-fork-of-tslib')
+  tslib: fs.readFileSync(require.resolve('some-fork-of-tslib'))
 });
 ```
 

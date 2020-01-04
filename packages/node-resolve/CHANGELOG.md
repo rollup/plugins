@@ -1,4 +1,4 @@
-# @rollup/plugin-node-resolve Change Log
+# @rollup/plugin-node-resolve ChangeLog
 
 ## 6.0.0
 

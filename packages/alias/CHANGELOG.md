@@ -1,4 +1,4 @@
-# @rollup/plugin-alias Changelog
+# @rollup/plugin-alias ChangeLog
 
 ## 3.0.0
 

@@ -13,7 +13,7 @@ export function getDefaultOptions() {
 // Gratefully lifted from 'look-up', due to problems using it directly:
 //   https://github.com/jonschlinkert/look-up/blob/master/index.js
 //   MIT Licenced
-function findFile(cwd, filename) {
+function findFile(cwd: string, filename: string): string | null {
   let fp = cwd ? `${cwd}/${filename}` : filename;
 
   if (existsSync(fp)) {
@@ -33,7 +33,7 @@ function findFile(cwd, filename) {
   return null;
 }
 
-export function readTsConfig(typescript, tsconfigPath) {
+export function readTsConfig(ts: typeof import('typescript'), tsconfigPath: string | undefined) {
   if (tsconfigPath && !existsSync(tsconfigPath)) {
     throw new Error(`Could not find specified tsconfig.json at ${tsconfigPath}`);
   }
@@ -41,15 +41,13 @@ export function readTsConfig(typescript, tsconfigPath) {
   if (!existingTsConfig) {
     return {};
   }
-  const tsconfig = typescript.readConfigFile(existingTsConfig, (path) =>
-    readFileSync(path, 'utf8')
-  );
+  const tsconfig = ts.readConfigFile(existingTsConfig, (path) => readFileSync(path, 'utf8'));
 
   if (!tsconfig.config || !tsconfig.config.compilerOptions) return { compilerOptions: {} };
   return tsconfig.config;
 }
 
-export function adjustCompilerOptions(typescript, options) {
+export function adjustCompilerOptions(options: any) {
   const opts = Object.assign({}, options);
   // Set `sourceMap` to `inlineSourceMap` if it's a boolean
   // under the assumption that both are never specified simultaneously.
@@ -68,4 +66,32 @@ export function adjustCompilerOptions(typescript, options) {
   delete opts.incremental;
   delete opts.tsBuildInfoFile;
   return opts;
+}
+
+export function parseCompilerOptions(ts: typeof import('typescript'), tsConfig: any) {
+  const parsed = ts.convertCompilerOptionsFromJson(tsConfig.compilerOptions, process.cwd());
+
+  // let typescript load inheritance chain if there are base configs
+  const extendedConfig = tsConfig.extends
+    ? ts.parseJsonConfigFileContent(tsConfig, ts.sys, process.cwd(), parsed.options)
+    : null;
+
+  return {
+    options: extendedConfig?.options || parsed.options,
+    errors: parsed.errors.concat(extendedConfig?.errors || [])
+  };
+}
+
+/**
+ * Verify that we're targeting ES2015 modules.
+ * @param moduleType `tsConfig.compilerOptions.module`
+ */
+export function validateModuleType(moduleType: string) {
+  const esModuleTypes = new Set(['ES2015', 'ES6', 'ESNEXT', 'COMMONJS']);
+
+  if (!esModuleTypes.has(moduleType.toUpperCase())) {
+    throw new Error(
+      `@rollup/plugin-typescript: The module kind should be 'ES2015' or 'ESNext, found: '${moduleType}'`
+    );
+  }
 }
