@@ -36,7 +36,7 @@ export default function image(opts = {}) {
         return null;
       }
 
-      const format = mime.includes('svg') ? 'utf-8' : 'base64';
+      const format = mime === mimeTypes['.svg'] ? 'utf-8' : 'base64';
       const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');
       const data = `'data:${mime};${format},${source}'`;
       const code = options.dom
