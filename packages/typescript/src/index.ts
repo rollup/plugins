@@ -1,7 +1,4 @@
-import * as fs from 'fs';
-
 import { createFilter } from '@rollup/pluginutils';
-import resolveId from 'resolve';
 import { Plugin } from 'rollup';
 import * as defaultTs from 'typescript';
 
@@ -15,8 +12,7 @@ import {
   validateModuleType
 } from './options';
 import resolveHost from './resolveHost';
-
-const TSLIB_ID = '\0tslib';
+import { getTsLibCode, TSLIB_ID } from './tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const opts = Object.assign({}, options);
@@ -32,9 +28,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const ts: typeof import('typescript') = opts.typescript || defaultTs;
   delete opts.typescript;
 
-  const tslib =
-    opts.tslib ||
-    fs.readFileSync(resolveId.sync('tslib/tslib.es6.js', { basedir: __dirname }), 'utf-8');
+  const tslib = getTsLibCode(opts);
   delete opts.tslib;
 
   // Load options from `tsconfig.json` unless explicitly asked not to.
