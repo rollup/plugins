@@ -1,5 +1,17 @@
 # @rollup/plugin-run ChangeLog
 
+## v1.2.0
+
+_2020-01-04_
+
+### Features
+
+- feat: add typings (#115)
+
+### Updates
+
+- chore: update readme, linting (e7ff386)
+
 ## 1.1.0
 
 - Allow arguments and options to be passed to `child_process.fork`

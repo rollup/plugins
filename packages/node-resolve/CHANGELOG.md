@@ -1,5 +1,21 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v6.1.0
+
+_2020-01-04_
+
+### Bugfixes
+
+- fix: allow deduplicating custom module dirs (#101)
+
+### Features
+
+- feat: add rootDir option (#98)
+
+### Updates
+
+- docs: improve doc related to mainFields (#138)
+
 ## 6.0.0
 
 _2019-11-25_

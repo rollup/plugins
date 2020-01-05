@@ -17,8 +17,16 @@ const parserOptions = {
   noteKeywords: ['BREAKING CHANGE', 'Breaking Change']
 };
 const reBreaking = new RegExp(`(${parserOptions.noteKeywords.join(')|(')})`);
+const dryRun = process.argv.includes('--dry');
+const noPush = process.argv.includes('--no-push');
+const noTag = process.argv.includes('--no-tag');
 
 const commitChanges = async (cwd, pluginName, version) => {
+  if (dryRun) {
+    log(chalk`{yellow Skipping Git Commit}`);
+    return;
+  }
+
   log(chalk`{blue Committing} CHANGELOG.md, package.json`);
   let params = ['add', cwd];
   await execa('git', params);
@@ -75,24 +83,40 @@ const getNewVersion = (version, commits) => {
 };
 
 const publish = async (cwd) => {
+  if (dryRun) {
+    log(chalk`{yellow Skipping Publish}`);
+    return;
+  }
+
   log(chalk`\n{cyan Publishing to NPM}`);
 
   await execa('pnpm', ['publish'], { cwd, stdio: 'inherit' });
 };
 
 const push = async () => {
+  if (dryRun || noPush) {
+    log(chalk`{yellow Skipping Git Push}`);
+    return;
+  }
+
   log(chalk`{blue Pushing Release and Tags}`);
   await execa('git', ['push', '--follow-tags']);
 };
 
 const tag = async (cwd, pluginName, version) => {
+  if (dryRun || noTag) {
+    log(chalk`{yellow Skipping Git Tag}`);
+    return;
+  }
+
   const tagName = `${pluginName}-v${version}`;
   log(chalk`\n{blue Tagging} {grey ${tagName}}`);
   await execa('git', ['tag', tagName], { cwd, stdio: 'inherit' });
 };
 
 const updateChangelog = (commits, cwd, pluginName, version) => {
-  log(chalk`{blue Updating} CHANGELOG.md`);
+  log(chalk`{blue Gathering Changes}`);
+
   const plugin = pluginName === 'pluginutils' ? pluginName : `plugin-${pluginName}`;
   const title = `# @rollup/${plugin} ChangeLog`;
   const [date] = new Date().toISOString().split('T');
@@ -124,12 +148,24 @@ const updateChangelog = (commits, cwd, pluginName, version) => {
     notes.updates.length ? `### Updates\n\n- ${notes.updates.join('\n- ')}`.trim() : ''
   ].filter(Boolean);
 
-  const content = [title, parts.join('\n\n'), oldNotes].filter(Boolean).join('\n\n');
+  const newLog = parts.join('\n\n');
 
+  if (dryRun) {
+    log(chalk`{blue New ChangeLog}:\n${newLog}`);
+    return;
+  }
+
+  log(chalk`{blue Updating} CHANGELOG.md`);
+  const content = [title, newLog, oldNotes].filter(Boolean).join('\n\n');
   writeFileSync(logPath, content, 'utf-8');
 };
 
 const updatePackage = async (cwd, pkg, version) => {
+  if (dryRun) {
+    log(chalk`{yellow Skipping package.json Update}`);
+    return;
+  }
+
   log(chalk`{blue Updating} package.json`);
   pkg.version = version; // eslint-disable-line no-param-reassign
   await writePackage(cwd, pkg);
@@ -141,15 +177,20 @@ const updatePackage = async (cwd, pkg, version) => {
     const cwd = join(packagesPath, pluginName);
     const pkg = require(join(cwd, 'package.json'));
 
+    if (dryRun) {
+      log(chalk`{magenta DRY RUN}: No files will be modified`);
+    }
+
     log(chalk`{cyan Publishing \`${pluginName}\`} from {grey packages/${pluginName}}\n`);
 
     const commits = await getCommits(pluginName);
 
     if (!commits.length) {
       log(chalk`\n{red No Commits Found}. Did you mean to publish ${pluginName}?`);
-    } else {
-      log(chalk`{blue Found} {bold ${commits.length}} Commits\n`);
+      return;
     }
+
+    log(chalk`{blue Found} {bold ${commits.length}} Commits\n`);
 
     const newVersion = getNewVersion(pkg.version, commits);
 
