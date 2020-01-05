@@ -1,4 +1,4 @@
-import { resolve, join, sep } from 'path';
+import { resolve, sep } from 'path';
 
 import mm from 'micromatch';
 
@@ -6,17 +6,23 @@ import { CreateFilter } from '../types';
 
 import ensureArray from './utils/ensureArray';
 
-const ESCAPE_IN_PATH = '()+@!';
-
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
   if (resolutionBase === false) {
     return id;
   }
-  let basePath = typeof resolutionBase === 'string' ? resolve(resolutionBase) : process.cwd();
-  for (const char of ESCAPE_IN_PATH) {
-    basePath = basePath.replace(new RegExp(`\\${char}`, 'g'), `\\${char}`);
-  }
-  return join(basePath, id);
+
+  // resolve('') is valid and will default to process.cwd()
+  const basePath = resolve(resolutionBase || '')
+    .split(sep)
+    .join('/')
+    // escape all possible (posix + win) path characters that might interfere with regex
+    .replace(/[-^$*+?.()|[\]{}]/g, '\\$&');
+  // this juggling is to join two paths:
+  // 1. the basePath which has been normalized to use /
+  // 2. the incoming glob (id) matcher, which uses /
+  // we can't use join or resolve here because Node will force backslash (\) on windows
+  const result = [...basePath.split('/'), ...id.split('/')].join('/');
+  return result;
 }
 
 const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
@@ -26,12 +32,13 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
     id instanceof RegExp
       ? id
       : {
-          test: mm.matcher(
-            getMatcherString(id, resolutionBase)
-              .split(sep)
-              .join('/'),
-            { dot: true }
-          )
+          test: (what: string) => {
+            // this refactor is a tad overly verbose but makes for easy debugging
+            const pattern = getMatcherString(id, resolutionBase);
+            const fn = mm.matcher(pattern, { dot: true });
+            const result = fn(what);
+            return result;
+          }
         };
 
   const includeMatchers = ensureArray(include).map(getMatcher);
