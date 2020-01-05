@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-commonjs",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "publishConfig": {
     "access": "public"
   },
@@ -59,6 +59,8 @@
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
+    "@rollup/plugin-json": "^4.0.0",
+    "@rollup/plugin-node-resolve": "^6.0.0",
     "acorn": "^6.1.1",
     "eslint": "^6.0.1",
     "eslint-plugin-import": "^2.18.0",
@@ -70,8 +72,6 @@
     "require-relative": "^0.8.7",
     "rollup": "^1.16.2",
     "rollup-plugin-babel": "^4.3.3",
-    "@rollup/plugin-json": "^4.0.0",
-    "@rollup/plugin-node-resolve": "^6.0.0",
     "shx": "^0.3.2",
     "source-map": "^0.6.1",
     "source-map-support": "^0.5.12",
