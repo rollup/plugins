@@ -1,11 +1,11 @@
 const test = require('ava');
 const rollup = require('rollup');
-const nodeResolve = require('rollup-plugin-node-resolve');
+const nodeResolve = require('@rollup/plugin-node-resolve');
 const yamlParser = require('js-yaml');
 
 const { testBundle } = require('../../../util/test');
 
-const spec = require('./spec.json');
+const spec = require('./fixtures/spec.json');
 
 const yaml = require('..');
 
@@ -76,4 +76,38 @@ test('applies the optional transform method to parsed YAML', async (t) => {
     plugins: [yaml({ transform })]
   });
   return testBundle(t, bundle);
+});
+
+test('documentMode: multi', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/multi/main.js',
+    plugins: [yaml({ documentMode: 'multi' })]
+  });
+  return testBundle(t, bundle);
+});
+
+test('documentMode: multi, safe', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/multi/main.js',
+    plugins: [yaml({ documentMode: 'multi', safe: false })]
+  });
+  return testBundle(t, bundle);
+});
+
+test('converts yaml, safe', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/basic/main.js',
+    plugins: [yaml({ safe: false })]
+  });
+  return testBundle(t, bundle);
+});
+
+test('bad documentMode', async (t) => {
+  const exec = () =>
+    rollup.rollup({
+      input: 'fixtures/basic/main.js',
+      plugins: [yaml({ documentMode: true })]
+    });
+
+  t.throws(exec);
 });
