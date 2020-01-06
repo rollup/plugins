@@ -53,6 +53,13 @@ console.log(`na na na na ${batman}`);
 
 ## Options
 
+### `documentMode`
+
+Type: `String`<br>
+Default: `single`
+
+If `single`, specifies that the target YAML documents contain only one document in the target file(s). If more than one [document stream](https://yaml.org/spec/1.2/spec.html#id2801681) exists in the target YAML file(s), set `documentMode: 'multi'`.
+
 ### `exclude`
 
 Type: `String` | `Array[...String]`<br>
@@ -66,6 +73,13 @@ Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
+
+### `safe`
+
+Type: `Boolean`<br>
+Default: `true`
+
+If `true`, specifies that the data in the target YAML file(s) contain trusted data and should be loaded normally. If `false`, data is assumed to be untrusted and will be loaded using [safety methods](https://github.com/nodeca/js-yaml#safeload-string---options-).
 
 ### `transform`
 
