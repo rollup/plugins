@@ -103,7 +103,7 @@ importers:
   packages/commonjs:
     dependencies:
       '@rollup/pluginutils': 3.0.1_rollup@1.27.14
-      estree-walker: 0.6.1
+      estree-walker: 1.0.1
       is-reference: 1.1.4
       magic-string: 0.25.5
       resolve: 1.14.1
@@ -138,7 +138,7 @@ importers:
       acorn: ^6.1.1
       eslint: ^6.0.1
       eslint-plugin-import: ^2.18.0
-      estree-walker: ^0.6.1
+      estree-walker: ^1.0.1
       husky: ^2.4.1
       is-reference: ^1.1.2
       lint-staged: ^8.2.1
@@ -187,7 +187,7 @@ importers:
       rollup-plugin-buble: ^0.10.0
   packages/inject:
     dependencies:
-      estree-walker: 0.9.0
+      estree-walker: 1.0.1
       magic-string: 0.25.5
       rollup-pluginutils: 2.8.2
     devDependencies:
@@ -199,7 +199,7 @@ importers:
       typescript: 3.7.4
     specifiers:
       del-cli: ^3.0.0
-      estree-walker: ^0.9.0
+      estree-walker: ^1.0.1
       locate-character: ^2.0.5
       magic-string: ^0.25.2
       rollup: ^1.20.0
@@ -276,7 +276,7 @@ importers:
       string-capitalize: ^1.0.1
   packages/pluginutils:
     dependencies:
-      estree-walker: 0.6.1
+      estree-walker: 1.0.1
     devDependencies:
       '@types/estree': 0.0.39
       '@types/jest': 24.0.25
@@ -292,7 +292,7 @@ importers:
       '@types/jest': ^24.0.23
       '@types/micromatch': ^3.1.1
       '@types/node': ^12.12.11
-      estree-walker: ^0.6.1
+      estree-walker: ^1.0.1
       micromatch: ^4.0.2
       rollup-plugin-commonjs: ^10.1.0
       rollup-plugin-node-resolve: ^5.2.0
@@ -331,7 +331,7 @@ importers:
       sinon: ^7.5.0
   packages/strip:
     dependencies:
-      estree-walker: 0.6.1
+      estree-walker: 1.0.1
       magic-string: 0.25.5
       rollup-pluginutils: 2.8.2
     devDependencies:
@@ -339,7 +339,7 @@ importers:
       rollup: 1.27.14
     specifiers:
       acorn: ^6.0.2
-      estree-walker: ^0.6.0
+      estree-walker: ^1.0.1
       magic-string: ^0.25.1
       rollup: ^1.20.0
       rollup-pluginutils: ^2.8.1
@@ -3380,10 +3380,10 @@ packages:
   /estree-walker/0.6.1:
     resolution:
       integrity: sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
-  /estree-walker/0.9.0:
+  /estree-walker/1.0.1:
     dev: false
     resolution:
-      integrity: sha512-12U47o7XHUX329+x3FzNVjCx3SHEzMF0nkDv7r/HnBzX/xNTKxajBk6gyygaxrAFtLj39219oMfbtxv4KpaOiA==
+      integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==
   /esutils/2.0.3:
     dev: true
     engines:
