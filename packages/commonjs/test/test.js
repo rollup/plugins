@@ -402,7 +402,7 @@ test('does not reexport named contents', async (t) => {
   } catch (error) {
     t.is(
       error.message,
-      `'named' is not exported by fixtures/samples${path.sep}reexport${path.sep}reexport.js`
+      `'named' is not exported by fixtures${path.sep}samples${path.sep}reexport${path.sep}reexport.js`
     );
   }
 });
@@ -741,9 +741,7 @@ test('normalizes paths used in the named export map', async (t) => {
 test('can spread an object into module.exports', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/module-exports-spread/main.js',
-    plugins: [
-      commonjs()
-    ]
+    plugins: [commonjs()]
   });
   const code = await getCodeFromBundle(bundle);
   t.snapshot(code);

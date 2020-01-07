@@ -45,7 +45,8 @@ const getCommits = async (pluginName) => {
   log(chalk`{blue Last Release Tag}: ${latestTag}`);
 
   // i wanted to use '--grep', `"(${pluginName})"` here, but there's something up with execa
-  // https://github.com/sindresorhus/execa/issues/406
+  // https://github.com/sindresorhus/execa/issues/406 - FIXED
+  // TODO: const params = ['log', '--grep', '"(pluginutils)"', 'pluginutils-v3.0.1..HEAD'];
   params = ['--no-pager', 'log', `${latestTag}..HEAD`, '--format=%B%n-hash-%n%H🐒💨🙊'];
   const rePlugin = new RegExp(`^[\\w\\!]+\\(${pluginName}\\)`, 'i');
   const { stdout } = await execa('git', params);

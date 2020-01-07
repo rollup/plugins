@@ -1,5 +1,5 @@
 const { readFileSync } = require('fs');
-const { join } = require('path');
+const { join, posix, sep } = require('path');
 
 const test = require('ava');
 const del = require('del');
@@ -24,7 +24,10 @@ const run = async (t, type, opts) => {
   });
   await bundle.write({ format: 'es', file: outputFile });
   const code = readFileSync(outputFile, 'utf-8');
-  const glob = join(outputDir, `**/*.${type}`);
+  // Windows fix, glob paths must be in unix format
+  const glob = join(outputDir, `**/*.${type}`)
+    .split(sep)
+    .join(posix.sep);
 
   t.snapshot(code);
   t.snapshot(await globby(glob));
@@ -83,7 +86,7 @@ test.serial(
       limit: 10,
       emitFiles: true,
       fileName: '[dirname][hash][extname]',
-      sourceDir: join(__dirname, '../')
+      sourceDir: join(__dirname, '..')
     });
   }
 );
