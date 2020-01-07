@@ -1,5 +1,5 @@
 const { readFileSync } = require('fs');
-const { join, sep } = require('path');
+const { join, posix, sep } = require('path');
 
 const test = require('ava');
 const del = require('del');
@@ -27,7 +27,7 @@ const run = async (t, type, opts) => {
   // Windows fix, glob paths must be in unix format
   const glob = join(outputDir, `**/*.${type}`)
     .split(sep)
-    .join('/');
+    .join(posix.sep);
 
   t.snapshot(code);
   t.snapshot(await globby(glob));

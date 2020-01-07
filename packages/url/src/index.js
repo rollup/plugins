@@ -9,7 +9,7 @@ import { createFilter } from 'rollup-pluginutils';
 
 const fsStatPromise = util.promisify(fs.stat);
 const fsReadFilePromise = util.promisify(fs.readFile);
-const { sep } = path;
+const { posix, sep } = path;
 const defaultInclude = ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif'];
 
 export default function url(options = {}) {
@@ -59,7 +59,7 @@ export default function url(options = {}) {
             .replace(/\[dirname\]/g, `${relativeDir}${sep}`)
             .replace(/\[name\]/g, name);
           // Windows fix - exports must be in unix format
-          data = `${publicPath}${outputFileName.split(sep).join('/')}`;
+          data = `${publicPath}${outputFileName.split(sep).join(posix.sep)}`;
           copies[id] = outputFileName;
         } else {
           const mimetype = mime.getType(id);
