@@ -11,7 +11,6 @@ const autoInstall = require('..');
 const cwd = join(__dirname, 'fixtures/yarn');
 const file = join(cwd, 'output/bundle.js');
 const input = join(cwd, '../input.js');
-const lockFile = join(cwd, 'yarn.lock');
 
 process.chdir(cwd);
 
@@ -22,13 +21,14 @@ test('yarn', async (t) => {
       file,
       format: 'cjs'
     },
-    plugins: [autoInstall(), resolve()]
+    // mock the call to yarn here. yarn has had consistent issues in this test env
+    plugins: [autoInstall({ commands: { yarn: 'echo "yarn" > yarn.lock' } }), resolve()]
   });
-  const lock = readFileSync('yarn.lock', 'utf-8').replace(/\r\n/g, '\n');
-  t.snapshot(lock);
+  const lockFile = readFileSync('yarn.lock', 'utf-8');
+  t.snapshot(lockFile);
 });
 
 test.after(async () => {
   await del(['node_modules', 'package.json']);
-  writeFileSync(lockFile, '');
+  writeFileSync('yarn.lock', '');
 });
