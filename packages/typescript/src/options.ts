@@ -1,5 +1,4 @@
-import { sep } from 'path';
-import { existsSync, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 
 export function getDefaultOptions() {
   return {
@@ -10,34 +9,11 @@ export function getDefaultOptions() {
   };
 }
 
-// Gratefully lifted from 'look-up', due to problems using it directly:
-//   https://github.com/jonschlinkert/look-up/blob/master/index.js
-//   MIT Licenced
-function findFile(cwd: string, filename: string): string | null {
-  let fp = cwd ? `${cwd}/${filename}` : filename;
-
-  if (existsSync(fp)) {
-    return fp;
-  }
-
-  const segs = cwd.split(sep);
-
-  for (let len = segs.length; len >= 0; len--) {
-    const workingDir = segs.slice(0, len).join('/');
-    fp = `${workingDir}/${filename}`;
-    if (existsSync(fp)) {
-      return fp;
-    }
-  }
-
-  return null;
-}
-
 export function readTsConfig(ts: typeof import('typescript'), tsconfigPath: string | undefined) {
-  if (tsconfigPath && !existsSync(tsconfigPath)) {
+  if (tsconfigPath && !ts.sys.fileExists(tsconfigPath)) {
     throw new Error(`Could not find specified tsconfig.json at ${tsconfigPath}`);
   }
-  const existingTsConfig = tsconfigPath || findFile(process.cwd(), 'tsconfig.json');
+  const existingTsConfig = tsconfigPath || ts.findConfigFile(process.cwd(), ts.sys.fileExists);
   if (!existingTsConfig) {
     return {};
   }
