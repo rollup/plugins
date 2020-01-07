@@ -129,10 +129,8 @@ test('reports diagnostics and throws if errors occur during transpilation', asyn
   }
 
   t.truthy(caughtError, 'throws an error');
-  t.true(
-    caughtError.message.includes('There were TypeScript errors transpiling'),
-    `Unexpected error message: ${caughtError.message}`
-  );
+  t.is(caughtError.message, 'Error TS1110: Type expected.');
+  t.is(caughtError.pluginCode, 'TS1110');
 });
 
 test('works with named exports for abstract classes', async (t) => {
