@@ -23,6 +23,34 @@ test('single module version is bundled if dedupe is set', async (t) => {
   t.snapshot(module.exports);
 });
 
+test('dedupes deep imports by package name if dedupe is set', async (t) => {
+  const bundle = await rollup({
+    input: 'react-app-deep-import.js',
+    plugins: [
+      nodeResolve({
+        dedupe: ['react']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.snapshot(module.exports);
+});
+
+test('dedupes scoped deep imports by package name if dedupe is set', async (t) => {
+  const bundle = await rollup({
+    input: 'scoped-deep-import.js',
+    plugins: [
+      nodeResolve({
+        dedupe: ['@scoped/deduped']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.snapshot(module.exports);
+});
+
 test('single module version is bundled if dedupe is set as a function', async (t) => {
   const bundle = await rollup({
     input: 'react-app.js',

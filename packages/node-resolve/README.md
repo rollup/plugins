@@ -120,7 +120,21 @@ Default: `[]`
 Force resolving for these modules to root's node_modules that helps to prevent bundling the same package multiple times if package is imported from dependencies.
 
 ```
-dedupe: [ 'react', 'react-dom' ]
+dedupe: [ 'my-package', '@namespace/my-package' ]
+```
+
+This will deduplicate bare imports such as:
+
+```js
+import 'my-package';
+import '@namespace/my-package';
+```
+
+And it will deduplicate deep imports such as:
+
+```js
+import 'my-package/foo.js';
+import '@namespace/my-package/bar.js';
 ```
 
 ### `customResolveOptions`
