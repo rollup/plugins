@@ -22,10 +22,11 @@ test('yarn', async (t) => {
       format: 'cjs'
     },
     // mock the call to yarn here. yarn has had consistent issues in this test env
-    plugins: [autoInstall({ commands: { yarn: 'echo "yarn" > yarn.lock' } }), resolve()]
+    plugins: [autoInstall({ commands: { yarn: 'echo yarn > yarn.lock' } }), resolve()]
   });
   const lockFile = readFileSync('yarn.lock', 'utf-8');
-  t.snapshot(lockFile.replace(/\r\n/g, '\n'));
+  // snapshots for this are a nightmare cross-platform
+  t.truthy(/yarn\s+node-noop/.test(lockFile));
 });
 
 test.after(async () => {

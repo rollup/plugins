@@ -23,12 +23,13 @@ test('yarn, bare', async (t) => {
     },
     plugins: [
       // mock the call to yarn here. yarn has had consistent issues in this test env
-      autoInstall({ manager: 'yarn', commands: { yarn: 'echo "yarn.bare" > yarn.lock' } }),
+      autoInstall({ manager: 'yarn', commands: { yarn: 'echo yarn.bare > yarn.lock' } }),
       resolve()
     ]
   });
   const lockFile = readFileSync('yarn.lock', 'utf-8');
-  t.snapshot(lockFile.replace(/\r\n/g, '\n'));
+  // snapshots for this are a nightmare cross-platform
+  t.truthy(/yarn\.bare\s+node-noop/.test(lockFile));
 });
 
 test.after(async () => {
