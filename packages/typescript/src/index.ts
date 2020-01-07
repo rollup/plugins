@@ -12,6 +12,7 @@ import {
   validateModuleType
 } from './options';
 import resolveHost from './resolveHost';
+import emitDiagnostics from './diagnostics';
 import { getTsLibCode, TSLIB_ID } from './tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
@@ -100,38 +101,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         compilerOptions
       });
 
-      // All errors except `Cannot compile modules into 'es6' when targeting 'ES5' or lower.`
-      const diagnostics = transformed.diagnostics
-        ? transformed.diagnostics.filter((diagnostic) => diagnostic.code !== 1204)
-        : [];
-
-      let fatalError = false;
-
-      diagnostics.forEach((diagnostic) => {
-        const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-
-        if (diagnostic.file) {
-          const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
-            diagnostic.start
-          );
-
-          this.warn(
-            `${diagnostic.file.fileName}(${line + 1},${character + 1}): error TS${
-              diagnostic.code
-            }: ${message}`
-          );
-        } else {
-          this.warn(`Error: ${message}`);
-        }
-
-        if (diagnostic.category === ts.DiagnosticCategory.Error) {
-          fatalError = true;
-        }
-      });
-
-      if (fatalError) {
-        throw new Error(`There were TypeScript errors transpiling`);
-      }
+      emitDiagnostics(ts, this, transformed.diagnostics);
 
       return {
         code: transformed.outputText,
