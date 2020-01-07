@@ -28,7 +28,7 @@ test('yarn, bare', async (t) => {
     ]
   });
   const lockFile = readFileSync('yarn.lock', 'utf-8');
-  t.snapshot(lockFile);
+  t.snapshot(lockFile.replace(/\r\n/g, '\n'));
 });
 
 test.after(async () => {
