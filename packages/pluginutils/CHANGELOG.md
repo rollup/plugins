@@ -1,5 +1,18 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.3
+
+_2020-01-07_
+
+### Bugfixes
+
+- fix: createFilter Windows regression (#141)
+
+### Updates
+
+- test: fix windows path failure (0a0de65)
+- chore: fix test script (5eae320)
+
 ## v3.0.2
 
 _2020-01-04_

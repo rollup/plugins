@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v7.0.0
+
+_2020-01-07_
+
+### Breaking Changes
+
+- feat: dedupe by package name (#99)
+
 ## v6.1.0
 
 _2020-01-04_
