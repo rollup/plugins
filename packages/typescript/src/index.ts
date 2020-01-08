@@ -11,8 +11,7 @@ import {
   readTsConfig,
   validateModuleType
 } from './options';
-import resolveHost from './resolveHost';
-import emitDiagnostics from './diagnostics';
+import { diagnosticToWarning, emitDiagnostics } from './diagnostics';
 import { getTsLibCode, TSLIB_ID } from './tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
@@ -53,7 +52,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     buildStart() {
       if (errors.length > 0) {
-        errors.forEach((error) => this.warn(`@rollup/plugin-typescript: ${error.messageText}`));
+        errors.forEach((error) => this.warn(diagnosticToWarning(ts, error)));
 
         this.error(`@rollup/plugin-typescript: Couldn't process compiler options`);
       }
@@ -67,12 +66,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       if (!importer) return null;
       const containingFile = importer.split('\\').join('/');
 
-      const result = ts.nodeModuleNameResolver(
-        importee,
-        containingFile,
-        compilerOptions,
-        resolveHost
-      );
+      const result = ts.nodeModuleNameResolver(importee, containingFile, compilerOptions, ts.sys);
 
       if (result.resolvedModule && result.resolvedModule.resolvedFileName) {
         if (result.resolvedModule.resolvedFileName.endsWith('.d.ts')) {
