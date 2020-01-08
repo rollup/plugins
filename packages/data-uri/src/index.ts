@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 import { Plugin, RollupError } from 'rollup';
 
 import { dataToEsm } from '@rollup/pluginutils';
