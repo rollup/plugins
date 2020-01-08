@@ -1,7 +1,4 @@
-import * as fs from 'fs';
-
 import { createFilter } from '@rollup/pluginutils';
-import resolveId from 'resolve';
 import { Plugin } from 'rollup';
 import * as defaultTs from 'typescript';
 
@@ -15,8 +12,8 @@ import {
   validateModuleType
 } from './options';
 import resolveHost from './resolveHost';
-
-const TSLIB_ID = '\0tslib';
+import emitDiagnostics from './diagnostics';
+import { getTsLibCode, TSLIB_ID } from './tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const opts = Object.assign({}, options);
@@ -32,9 +29,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const ts: typeof import('typescript') = opts.typescript || defaultTs;
   delete opts.typescript;
 
-  const tslib =
-    opts.tslib ||
-    fs.readFileSync(resolveId.sync('tslib/tslib.es6.js', { basedir: __dirname }), 'utf-8');
+  const tslib = getTsLibCode(opts);
   delete opts.tslib;
 
   // Load options from `tsconfig.json` unless explicitly asked not to.
@@ -106,38 +101,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         compilerOptions
       });
 
-      // All errors except `Cannot compile modules into 'es6' when targeting 'ES5' or lower.`
-      const diagnostics = transformed.diagnostics
-        ? transformed.diagnostics.filter((diagnostic) => diagnostic.code !== 1204)
-        : [];
-
-      let fatalError = false;
-
-      diagnostics.forEach((diagnostic) => {
-        const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-
-        if (diagnostic.file) {
-          const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
-            diagnostic.start
-          );
-
-          this.warn(
-            `${diagnostic.file.fileName}(${line + 1},${character + 1}): error TS${
-              diagnostic.code
-            }: ${message}`
-          );
-        } else {
-          this.warn(`Error: ${message}`);
-        }
-
-        if (diagnostic.category === ts.DiagnosticCategory.Error) {
-          fatalError = true;
-        }
-      });
-
-      if (fatalError) {
-        throw new Error(`There were TypeScript errors transpiling`);
-      }
+      emitDiagnostics(ts, this, transformed.diagnostics);
 
       return {
         code: transformed.outputText,

@@ -1,5 +1,31 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.3
+
+_2020-01-07_
+
+### Bugfixes
+
+- fix: createFilter Windows regression (#141)
+
+### Updates
+
+- test: fix windows path failure (0a0de65)
+- chore: fix test script (5eae320)
+
+## v3.0.2
+
+_2020-01-04_
+
+### Bugfixes
+
+- fix: makeLegalIdentifier - potentially unsafe input for blacklisted identifier (#116)
+
+### Updates
+
+- docs: Fix documented type of createFilter's include/exclude (#123)
+- chore: update minor linting correction (bcbf9d2)
+
 ## 3.0.1
 
 - fix: Escape glob characters in folder (#84)

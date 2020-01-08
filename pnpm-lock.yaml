@@ -188,14 +188,14 @@ importers:
       rollup-plugin-postcss: ^2.0.3
   packages/image:
     dependencies:
-      rollup-pluginutils: 2.8.2
+      '@rollup/pluginutils': 3.0.1_rollup@1.27.14
     devDependencies:
       rollup: 1.27.14
       rollup-plugin-buble: 0.10.0
     specifiers:
-      rollup: ^1.20.0
+      '@rollup/pluginutils': ^3.0.1
+      rollup: ^1.27.14
       rollup-plugin-buble: ^0.10.0
-      rollup-pluginutils: ^2.8.2
   packages/inject:
     dependencies:
       estree-walker: 0.9.0
@@ -428,26 +428,26 @@ importers:
       source-map: ^0.7.3
   packages/yaml:
     dependencies:
+      '@rollup/pluginutils': 3.0.1_rollup@1.27.14
       js-yaml: 3.13.1
-      rollup-pluginutils: 2.8.2
       tosource: 1.0.0
     devDependencies:
       '@babel/core': 7.7.7
       '@babel/preset-env': 7.7.7_@babel+core@7.7.7
+      '@rollup/plugin-node-resolve': 6.0.0_rollup@1.27.14
       del-cli: 3.0.0
       rollup: 1.27.14
       rollup-plugin-babel: 4.3.3_@babel+core@7.7.7+rollup@1.27.14
-      rollup-plugin-node-resolve: 5.2.0_rollup@1.27.14
       source-map-support: 0.5.16
     specifiers:
-      '@babel/core': ^7.7.2
-      '@babel/preset-env': ^7.7.1
+      '@babel/core': ^7.7.7
+      '@babel/preset-env': ^7.7.7
+      '@rollup/plugin-node-resolve': ^6.0.0
+      '@rollup/pluginutils': ^3.0.1
       del-cli: ^3.0.0
       js-yaml: ^3.13.1
-      rollup: ^1.27.0
+      rollup: ^1.27.14
       rollup-plugin-babel: ^4.3.3
-      rollup-plugin-node-resolve: ^5.2.0
-      rollup-pluginutils: ^2.8.2
       source-map-support: ^0.5.16
       tosource: ^1.0.0
 lockfileVersion: 5.1
@@ -2830,7 +2830,7 @@ packages:
       integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==
   /debug/3.2.6:
     dependencies:
-      ms: 2.1.2
+      ms: 2.1.1
     dev: true
     resolution:
       integrity: sha512-mel+jf7nrtEl5Pn1Qx46zARXKDpBbvzezse7p7LqINmdoIk8PYP5SySaxEmYv6TZ0JyEKA1hsCId6DIhgITtWQ==

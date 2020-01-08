@@ -1,5 +1,13 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v2.1.0
+
+_2020-01-07_
+
+### Features
+
+- feat: add documentMode, safe options (#137)
+
 ## 2.0.0
 
 _2019-10-18_

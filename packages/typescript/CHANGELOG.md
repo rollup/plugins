@@ -1,5 +1,32 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v2.1.0
+
+_2020-01-07_
+
+### Features
+
+- feat: Warning objects for type errors (#144)
+- feat: Find tslib asynchronously (#131)
+
+### Updates
+
+- chore: Use ts.findConfigFile helper (#145)
+
+## v2.0.2
+
+_2020-01-04_
+
+### Bugfixes
+
+- fix: Use this.warn for ts errors (#129)
+
+### Updates
+
+- refactor: use typescript in typescript plugin (#122)
+- chore: update changelog (b723f92)
+- chore: misc linting updates (4de10f0)
+
 ## 2.0.1
 
 _2019-12-04_
