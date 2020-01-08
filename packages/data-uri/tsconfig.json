@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["es6", "dom"],
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "inlineSourceMap": true
+  },
+  "exclude": ["test/fixtures/*.*"]
 }

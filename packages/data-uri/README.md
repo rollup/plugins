@@ -46,6 +46,10 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 This plugin currently has no available options.
 
+## Dynamic Imports
+
+Dynamic imports, such as `import('data:application/json, { "batman": "true" }')`, aren't supported by this plugin. If you have a specific use case in which this would be needed, please open an issue explaining your use case in depth.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)

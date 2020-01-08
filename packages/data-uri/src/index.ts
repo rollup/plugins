@@ -1,14 +1,24 @@
-import { Plugin } from 'rollup';
+import { Plugin, RollupError } from 'rollup';
 
 import { dataToEsm } from '@rollup/pluginutils';
 
 const reDataUri = /^([^/]+\/[^;,]+)(;base64)?,([\s\S]*)$/;
+const mimeTypes = {
+  js: 'text/javascript',
+  json: 'application/json'
+};
 
-const dataUri = (): Plugin => {
+export default function dataUri(): Plugin {
+  const resolved: { [key: string]: any } = {};
+
   return {
     name: 'dataUri',
 
-    load(id) {
+    resolveId(id) {
+      if (resolved[id]) {
+        return id;
+      }
+
       if (!reDataUri.test(id)) {
         return null;
       }
@@ -21,6 +31,21 @@ const dataUri = (): Plugin => {
 
       const [, mime, , content] = reDataUri.exec(uri.pathname) || [null, null, null, null];
 
+      if (Object.values(mimeTypes).includes(mime as string)) {
+        resolved[id] = { mime, content };
+        return id;
+      }
+
+      return null;
+    },
+
+    load(id) {
+      if (!resolved[id]) {
+        return null;
+      }
+
+      const { mime, content } = resolved[id];
+
       if (!content) {
         return null;
       }
@@ -31,9 +56,14 @@ const dataUri = (): Plugin => {
         let json = '';
         try {
           json = JSON.parse(content);
-        } catch (error) {
-          this.warn(error);
-          return null;
+        } catch (e) {
+          const error: RollupError = {
+            message: e.toString(),
+            parserError: e,
+            plugin: '@rollup/plugin-data-uri',
+            pluginCode: 'DU$JSON'
+          };
+          this.error(error);
         }
 
         return dataToEsm(json, {
@@ -46,6 +76,4 @@ const dataUri = (): Plugin => {
       return null;
     }
   };
-};
-
-export default dataUri;
+}

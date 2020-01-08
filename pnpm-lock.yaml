@@ -156,12 +156,12 @@ importers:
       typescript: ^3.5.2
   packages/data-uri:
     devDependencies:
-      '@rollup/plugin-typescript': 2.0.1_rollup@1.27.14+typescript@3.7.4
+      '@rollup/plugin-typescript': 2.1.0_rollup@1.27.14+typescript@3.7.4
       '@rollup/pluginutils': 3.0.1_rollup@1.27.14
       rollup: 1.27.14
       typescript: 3.7.4
     specifiers:
-      '@rollup/plugin-typescript': ^2.0.1
+      '@rollup/plugin-typescript': ^2.1.0
       '@rollup/pluginutils': ^3.0.1
       rollup: ^1.27.14
       typescript: ^3.7.4
@@ -1310,10 +1310,10 @@ packages:
       typescript: '>=2.1.0'
     resolution:
       integrity: sha512-UA/bN/DlHN19xdOllXmp7G7pM2ac9dQMg0q2T1rg4Bogzb7oHXj2WGafpiNpEm54PivcJdzGRJvRnI6zCISW3w==
-  /@rollup/plugin-typescript/2.0.1_rollup@1.27.14+typescript@3.7.4:
+  /@rollup/plugin-typescript/2.1.0_rollup@1.27.14+typescript@3.7.4:
     dependencies:
-      '@rollup/pluginutils': 3.0.1_rollup@1.27.14
-      resolve: 1.14.1
+      '@rollup/pluginutils': 3.0.3_rollup@1.27.14
+      resolve: 1.14.2
       rollup: 1.27.14
       typescript: 3.7.4
     dev: true
@@ -1324,7 +1324,7 @@ packages:
       tslib: '*'
       typescript: '>=2.1.0'
     resolution:
-      integrity: sha512-UA/bN/DlHN19xdOllXmp7G7pM2ac9dQMg0q2T1rg4Bogzb7oHXj2WGafpiNpEm54PivcJdzGRJvRnI6zCISW3w==
+      integrity: sha512-7lXKGY06aofrceVez/YnN2axttFdHSqlUBpCJ6ebzDfxwLDKMgSV5lD4ykBcdgE7aK3egxuLkD/HKyRB5L8Log==
   /@rollup/pluginutils/3.0.1_rollup@1.27.14:
     dependencies:
       estree-walker: 0.6.1
@@ -1335,6 +1335,17 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-PmNurkecagFimv7ZdKCVOfQuqKDPkrcpLFxRBcQ00LYr4HAjJwhCFxBiY2Xoletll2htTIiXBg6g0Yg21h2M3w==
+  /@rollup/pluginutils/3.0.3_rollup@1.27.14:
+    dependencies:
+      estree-walker: 0.6.1
+      rollup: 1.27.14
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-lxys3KlfYU8LOGu7+UL2upa3kM9q8ISo4EK+vSqqJCLk6N74HsUZbUFiElolh4BUsv0jeMGtYDzpNrtrShE6Gg==
   /@samverschueren/stream-to-observable/0.3.0:
     dependencies:
       any-observable: 0.3.0
@@ -6967,6 +6978,12 @@ packages:
       path-parse: 1.0.6
     resolution:
       integrity: sha512-fn5Wobh4cxbLzuHaE+nphztHy43/b++4M6SsGFC2gB8uYwf0C8LcarfCz1un7UTW8OFQg9iNjZ4xpcFVGebDPg==
+  /resolve/1.14.2:
+    dependencies:
+      path-parse: 1.0.6
+    dev: true
+    resolution:
+      integrity: sha512-EjlOBLBO1kxsUxsKjLt7TAECyKW6fOh1VRkykQkKGzcBbjjPIxBqGh0jf7GJ3k/f5mxMqW3htMD3WdTUVtW8HQ==
   /responselike/1.0.2:
     dependencies:
       lowercase-keys: 1.0.1
