@@ -11,7 +11,7 @@ const mimeTypes = {
 };
 
 export default function dataUri(): Plugin {
-  const resolved: { [key: string]: { mime?: string, content?: string } } = {};
+  const resolved: { [key: string]: { mime: string | null; content: string | null } } = {};
 
   return {
     name: 'dataUri',
