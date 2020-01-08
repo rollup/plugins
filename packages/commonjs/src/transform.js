@@ -648,12 +648,13 @@ export function transformCommonjs(
     .trim()
     .append(wrapperEnd);
 
-  if (hasDefaultExport || named.length > 0 || shouldWrap || (!isEntry && !isEsModule)) {
+  const injectExportBlock = hasDefaultExport || named.length > 0 || shouldWrap || !isEntry;
+  if (injectExportBlock) {
     magicString.append(exportBlock);
   }
 
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
 
-  return { code, map };
+  return { code, map, syntheticNamedExports: injectExportBlock };
 }

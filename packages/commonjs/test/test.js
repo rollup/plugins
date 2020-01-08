@@ -395,30 +395,6 @@ test('does not process the entry file when it has a leading "." (issue #63)', as
   await t.notThrowsAsync(executeBundle(bundle, t));
 });
 
-test('does not reexport named contents', async (t) => {
-  try {
-    await rollup({
-      input: 'fixtures/samples/reexport/main.js',
-      plugins: [commonjs()]
-    });
-  } catch (error) {
-    t.is(
-      error.message,
-      `'named' is not exported by fixtures${path.sep}samples${path.sep}reexport${path.sep}reexport.js, ` +
-        `imported by fixtures${path.sep}samples${path.sep}reexport${path.sep}main.js`
-    );
-  }
-});
-
-test(`exports props defined by 'Object.defineProperty'`, async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/samples/define-property/main.js',
-    plugins: [commonjs()]
-  });
-  const m = await executeBundle(bundle, t);
-  t.is(m.exports.foo, 'bar');
-});
-
 test('respects other plugins', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/other-transforms/main.js',
