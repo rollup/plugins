@@ -3,41 +3,52 @@ import { AsyncOpts } from 'resolve';
 
 export interface Options {
   /**
-   * the fields to scan in a package.json to determine the entry point
-   * if this list contains "browser", overrides specified in "pkg.browser"
-   * will be used
-   * @default ['module', 'main']
-   */
-  mainFields?: ReadonlyArray<string>;
-
-  /**
-   * some package.json files have a "browser" field which specifies
-   * alternative files to load for people bundling for the browser. If
-   * that's you, either use this option or add "browser" to the
-   * "mainfields" option, otherwise pkg.browser will be ignored
+   * If `true`, instructs the plugin to use the `"browser"` property in `package.json`
+   * files to specify alternative files to load for bundling. This is useful when
+   * bundling for a browser environment. Alternatively, a value of `'browser'` can be
+   * added to the `mainFields` option. If `false`, any `"browser"` properties in
+   * package files will be ignored. This option takes precedence over `mainFields`.
    * @default false
    */
   browser?: boolean;
 
   /**
-   * not all files you want to resolve are .js files
+   * An `Object` that specifies additional options that should be passed through to `node-resolve`.
+   */
+  customResolveOptions?: AsyncOpts;
+
+  /**
+   * An `Array` of modules names, which instructs the plugin to force resolving for the
+   * specified modules to the root `node_modules`. Helps to prevent bundling the same
+   * package multiple times if package is imported from dependencies.
+   */
+  dedupe?: string[] | ((importee: string) => boolean);
+
+  /**
+   * Specifies the extensions of files that the plugin will operate on.
    * @default [ '.mjs', '.js', '.json', '.node' ]
    */
   extensions?: ReadonlyArray<string>;
 
   /**
-   * whether to prefer built-in modules (e.g. `fs`, `path`) or
-   * local ones with the same names
-   * @default true
-   */
-  preferBuiltins?: boolean;
-
-  /**
-   * Lock the module search in this path (like a chroot). Module defined
-   * outside this path will be marked as external
+   * Locks the module search within specified path (e.g. chroot). Modules defined
+   * outside this path will be marked as external.
    * @default '/'
    */
   jail?: string;
+
+  /**
+   * Specifies the properties to scan within a `package.json`, used to determine the
+   * bundle entry point.
+   * @default ['module', 'main']
+   */
+  mainFields?: ReadonlyArray<string>;
+
+  /**
+   * If `true`, inspect resolved files to assert that they are ES2015 modules.
+   * @default false
+   */
+  modulesOnly?: boolean;
 
   /**
    * @deprecated use "resolveOnly" instead
@@ -46,35 +57,22 @@ export interface Options {
   only?: ReadonlyArray<string | RegExp> | null;
 
   /**
-   * If true, inspect resolved files to check that they are
-   * ES2015 modules
-   * @default false
+   * If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`,
+   * the plugin will look for locally installed modules of the same name.
+   * @default true
    */
-  modulesOnly?: boolean;
+  preferBuiltins?: boolean;
 
   /**
-   * Force resolving for these modules to root's node_modules that helps
-   * to prevent bundling the same package multiple times if package is
-   * imported from dependencies.
-   */
-  dedupe?: string[] | ((importee: string) => boolean);
-
-  /**
-   * Any additional options that should be passed through
-   * to node-resolve
-   */
-  customResolveOptions?: AsyncOpts;
-
-  /**
-   * @deprecated use "resolveOnly" instead
-   * @default null
+   * An `Array` which instructs the plugin to limit module resolution to those whose
+   * names match patterns in the array.
+   * @default []
    */
   resolveOnly?: ReadonlyArray<string | RegExp> | null;
 
   /**
-   * Root directory to resolve modules from. Used when resolving entrypoint imports,
-   * and when resolving deduplicated modules. Useful when executing rollup in a package
-   * of a monorepository.
+   * Specifies the root directory from which to resolve modules. Typically used when
+   * resolving entry-point imports, and when resolving deduplicated modules.
    * @default process.cwd()
    */
   rootDir?: string;

@@ -56,7 +56,7 @@ If `true`, instructs the plugin to use the `"browser"` property in `package.json
 Type: `Boolean`<br>
 Default: `null`
 
-Any additional options that should be passed through to node-resolve.
+An `Object` that specifies additional options that should be passed through to `node-resolve`.
 
 ```
 customResolveOptions: {
@@ -69,7 +69,7 @@ customResolveOptions: {
 Type: `Array[...String]`<br>
 Default: `[]`
 
-Force resolving for these modules to root's node_modules that helps to prevent bundling the same package multiple times if package is imported from dependencies.
+An `Array` of modules names, which instructs the plugin to force resolving for the specified modules to the root `node_modules`. Helps to prevent bundling the same package multiple times if package is imported from dependencies.
 
 ```js
 dedupe: ['my-package', '@namespace/my-package'];
@@ -101,7 +101,7 @@ Specifies the extensions of files that the plugin will operate on.
 Type: `String`<br>
 Default: `'/'`
 
-Lock the module search in this path (like a chroot). Modules defined outside this path will be marked as external.
+Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be marked as external.
 
 ### `mainFields`
 
@@ -120,14 +120,14 @@ DEPRECATED: use "resolveOnly" instead
 Type: `Boolean`<br>
 Default: `true`
 
-If `true` the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false` the plugin will look for locally installed modules of the same name.
+If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
 
 ### `modulesOnly`
 
 Type: `Boolean`<br>
 Default: `false`
 
-If true, inspect resolved files to check that they are ES2015 modules.
+If `true`, inspect resolved files to assert that they are ES2015 modules.
 
 ### `resolveOnly`
 
