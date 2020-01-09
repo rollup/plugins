@@ -29,6 +29,7 @@
     "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run test:ts",
     "pretest": "pnpm run build",
     "test": "ava",
+    "test:one": "pnpm run build && ava test/only.js --verbose",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [

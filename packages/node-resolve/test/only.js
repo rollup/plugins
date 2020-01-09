@@ -16,7 +16,7 @@ test('specify the only packages to resolve', async (t) => {
     onwarn: (warning) => warnings.push(warning),
     plugins: [
       nodeResolve({
-        only: ['test']
+        resolveOnly: ['test']
       })
     ]
   });
@@ -34,13 +34,49 @@ test('regex', async (t) => {
     onwarn: (warning) => warnings.push(warning),
     plugins: [
       nodeResolve({
-        only: [/^@scoped\/.*$/]
+        resolveOnly: [/^@scoped\/.*$/]
       })
     ]
   });
   const imports = await getImports(bundle);
 
   t.is(warnings.length, 1);
+  t.snapshot(warnings);
+  t.deepEqual(imports, ['test']);
+});
+
+test('deprecated: specify the only packages to resolve', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'only.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        only: ['test']
+      })
+    ]
+  });
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 3);
+  t.snapshot(warnings);
+  t.deepEqual(imports, ['@scoped/foo', '@scoped/bar']);
+});
+
+test('deprecated: regex', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'only.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        only: [/^@scoped\/.*$/]
+      })
+    ]
+  });
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 2);
   t.snapshot(warnings);
   t.deepEqual(imports, ['test']);
 });

@@ -11,32 +11,6 @@ export interface Options {
   mainFields?: ReadonlyArray<string>;
 
   /**
-   * @deprecated use "mainFields" instead
-   * use "module" field for ES6 module if possible
-   * @default true
-   */
-  module?: boolean;
-
-  /**
-   * @deprecated use "mainFields" instead
-   * use "jsnext:main" if possible
-   * legacy field pointing to ES6 module in third-party libraries,
-   * deprecated in favor of "pkg.module":
-   * - see: https://github.com/rollup/rollup/wiki/pkg.module
-   * @default false
-   */
-  jsnext?: boolean;
-
-  /**
-   * @deprecated use "mainFields" instead
-   * use "main" field or index.js, even if it's not an ES6 module
-   * (needs to be converted from CommonJS to ES6)
-   * – see https://github.com/rollup/rollup-plugin-commonjs
-   * @default true
-   */
-  main?: boolean;
-
-  /**
    * some package.json files have a "browser" field which specifies
    * alternative files to load for people bundling for the browser. If
    * that's you, either use this option or add "browser" to the
@@ -66,9 +40,7 @@ export interface Options {
   jail?: string;
 
   /**
-   * Set to an array of strings and/or regexps to lock the module search
-   * to modules that match at least one entry. Modules not matching any
-   * entry will be marked as external
+   * @deprecated use "resolveOnly" instead
    * @default null
    */
   only?: ReadonlyArray<string | RegExp> | null;
@@ -92,6 +64,12 @@ export interface Options {
    * to node-resolve
    */
   customResolveOptions?: AsyncOpts;
+
+  /**
+   * @deprecated use "resolveOnly" instead
+   * @default null
+   */
+  resolveOnly?: ReadonlyArray<string | RegExp> | null;
 
   /**
    * Root directory to resolve modules from. Used when resolving entrypoint imports,

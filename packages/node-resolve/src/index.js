@@ -1,176 +1,59 @@
 /* eslint-disable no-param-reassign, no-shadow, no-undefined */
-import { dirname, extname, normalize, resolve, sep } from 'path';
-
-import fs, { realpathSync } from 'fs';
+import { dirname, normalize, resolve, sep } from 'path';
 
 import builtinList from 'builtin-modules';
-import resolveId from 'resolve';
 import isModule from 'is-module';
-import { createFilter } from '@rollup/pluginutils';
 
-import { peerDependencies } from '../package.json';
+import { getPackageInfo, isDirCached, isFileCached, readCachedFile } from './cache';
+import { exists, readFile, realpath } from './fs';
+import { getMainFields, getPackageName, resolveImportSpecifiers } from './util';
 
 const builtins = new Set(builtinList);
-
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
-// It is important that .mjs occur before .js so that Rollup will interpret npm modules
-// which deploy both ESM .mjs and CommonJS .js files as ESM.
-const DEFAULT_EXTS = ['.mjs', '.js', '.json', '.node'];
-
-const existsAsync = (file) => new Promise((fulfil) => fs.exists(file, fulfil));
-
-const readFileAsync = (file) =>
-  new Promise((fulfil, reject) =>
-    fs.readFile(file, (err, contents) => (err ? reject(err) : fulfil(contents)))
-  );
-
-const realpathAsync = (file) =>
-  new Promise((fulfil, reject) =>
-    fs.realpath(file, (err, contents) => (err ? reject(err) : fulfil(contents)))
-  );
-
-const statAsync = (file) =>
-  new Promise((fulfil, reject) =>
-    fs.stat(file, (err, contents) => (err ? reject(err) : fulfil(contents)))
-  );
-
-const cache = (fn) => {
-  const cache = new Map();
-  const wrapped = (param, done) => {
-    if (cache.has(param) === false) {
-      cache.set(
-        param,
-        fn(param).catch((err) => {
-          cache.delete(param);
-          throw err;
-        })
-      );
-    }
-    return cache.get(param).then((result) => done(null, result), done);
-  };
-  wrapped.clear = () => cache.clear();
-  return wrapped;
+const nullFn = () => null;
+const defaults = {
+  customResolveOptions: {},
+  dedupe: [],
+  // It's important that .mjs is listed before .js so that Rollup will interpret npm modules
+  // which deploy both ESM .mjs and CommonJS .js files as ESM.
+  extensions: ['.mjs', '.js', '.json', '.node'],
+  resolveOnly: []
 };
 
-const ignoreENOENT = (err) => {
-  if (err.code === 'ENOENT') return false;
-  throw err;
-};
-
-const readFileCached = cache(readFileAsync);
-
-const isDirCached = cache((file) =>
-  statAsync(file).then((stat) => stat.isDirectory(), ignoreENOENT)
-);
-
-const isFileCached = cache((file) => statAsync(file).then((stat) => stat.isFile(), ignoreENOENT));
-
-function getMainFields(options) {
-  let mainFields;
-  if (options.mainFields) {
-    if ('module' in options || 'main' in options || 'jsnext' in options) {
-      throw new Error(
-        `node-resolve: do not use deprecated 'module', 'main', 'jsnext' options with 'mainFields'`
-      );
-    }
-    ({ mainFields } = options);
-  } else {
-    mainFields = [];
-    [
-      ['module', 'module', true],
-      ['jsnext', 'jsnext:main', false],
-      ['main', 'main', true]
-    ].forEach(([option, field, defaultIncluded]) => {
-      if (option in options) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `node-resolve: setting options.${option} is deprecated, please override options.mainFields instead`
-        );
-        if (options[option]) {
-          mainFields.push(field);
-        }
-      } else if (defaultIncluded) {
-        mainFields.push(field);
-      }
-    });
-  }
-  if (options.browser && mainFields.indexOf('browser') === -1) {
-    return ['browser'].concat(mainFields);
-  }
-  if (!mainFields.length) {
-    throw new Error(`Please ensure at least one 'mainFields' value is specified`);
-  }
-  return mainFields;
-}
-
-const alwaysNull = () => null;
-
-const resolveIdAsync = (file, opts) =>
-  new Promise((fulfil, reject) =>
-    resolveId(file, opts, (err, contents) => (err ? reject(err) : fulfil(contents)))
-  );
-
-// Resolve module specifiers in order. Promise resolves to the first
-// module that resolves successfully, or the error that resulted from
-// the last attempted module resolution.
-function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
-  let p = Promise.resolve();
-  for (let i = 0; i < importSpecifierList.length; i++) {
-    p = p.then((v) => {
-      // if we've already resolved to something, just return it.
-      if (v) return v;
-
-      return resolveIdAsync(importSpecifierList[i], resolveOptions);
-    });
-
-    if (i < importSpecifierList.length - 1) {
-      // swallow MODULE_NOT_FOUND errors from all but the last resolution
-      p = p.catch((err) => {
-        if (err.code !== 'MODULE_NOT_FOUND') {
-          throw err;
-        }
-      });
-    }
-  }
-
-  return p;
-}
-
-// returns the imported package name for bare module imports
-function getPackageName(id) {
-  if (id.startsWith('.') || id.startsWith('/')) {
-    return null;
-  }
-
-  const split = id.split('/');
-
-  // @my-scope/my-package/foo.js -> @my-scope/my-package
-  // @my-scope/my-package -> @my-scope/my-package
-  if (split[0][0] === '@') {
-    return `${split[0]}/${split[1]}`;
-  }
-
-  // my-package/foo.js -> my-package
-  // my-package -> my-package
-  return split[0];
-}
-
-export default function nodeResolve(options = {}) {
+export default function nodeResolve(opts = {}) {
+  const options = Object.assign({}, defaults, opts);
+  const { customResolveOptions, extensions, jail } = options;
+  const warnings = [];
+  const packageInfoCache = new Map();
+  const idToPackageInfo = new Map();
   const mainFields = getMainFields(options);
   const useBrowserOverrides = mainFields.indexOf('browser') !== -1;
-  const dedupe = options.dedupe || [];
   const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
-  const customResolveOptions = options.customResolveOptions || {};
   const rootDir = options.rootDir || process.cwd();
-  const { jail } = options;
-  const only = Array.isArray(options.only)
-    ? options.only.map((o) =>
-        o instanceof RegExp
-          ? o
-          : new RegExp(`^${String(o).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&')}$`)
-      )
-    : null;
+  let { dedupe } = options;
+
+  if (options.only) {
+    warnings.push('node-resolve: The `only` options is deprecated, please use `resolveOnly`');
+    options.resolveOnly = options.only;
+  }
+
+  if (typeof dedupe !== 'function') {
+    dedupe = (importee) =>
+      options.dedupe.includes(importee) || options.dedupe.includes(getPackageName(importee));
+  }
+
+  // console.log('opts:', opts);
+  // console.log('options:', options);
+
+  const resolveOnly = options.resolveOnly.map((pattern) => {
+    if (pattern instanceof RegExp) {
+      return pattern;
+    }
+    const normalized = pattern.replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+    return new RegExp(`^${normalized}$`);
+  });
+
   const browserMapCache = new Map();
   let preserveSymlinks;
 
@@ -180,132 +63,19 @@ export default function nodeResolve(options = {}) {
     );
   }
 
-  const extensions = options.extensions || DEFAULT_EXTS;
-  const packageInfoCache = new Map();
-  const idToPackageInfo = new Map();
-
-  const shouldDedupe =
-    typeof dedupe === 'function'
-      ? dedupe
-      : (importee) => dedupe.includes(importee) || dedupe.includes(getPackageName(importee));
-
-  function getCachedPackageInfo(pkg, pkgPath) {
-    if (packageInfoCache.has(pkgPath)) {
-      return packageInfoCache.get(pkgPath);
-    }
-
-    // browserify/resolve doesn't realpath paths returned in its packageFilter callback
-    if (!preserveSymlinks) {
-      pkgPath = realpathSync(pkgPath);
-    }
-
-    const pkgRoot = dirname(pkgPath);
-
-    const packageInfo = {
-      // copy as we are about to munge the `main` field of `pkg`.
-      packageJson: Object.assign({}, pkg),
-
-      // path to package.json file
-      packageJsonPath: pkgPath,
-
-      // directory containing the package.json
-      root: pkgRoot,
-
-      // which main field was used during resolution of this module (main, module, or browser)
-      resolvedMainField: 'main',
-
-      // whether the browser map was used to resolve the entry point to this module
-      browserMappedMain: false,
-
-      // the entry point of the module with respect to the selected main field and any
-      // relevant browser mappings.
-      resolvedEntryPoint: ''
-    };
-
-    let overriddenMain = false;
-    for (let i = 0; i < mainFields.length; i++) {
-      const field = mainFields[i];
-      if (typeof pkg[field] === 'string') {
-        pkg.main = pkg[field];
-        packageInfo.resolvedMainField = field;
-        overriddenMain = true;
-        break;
-      }
-    }
-
-    const internalPackageInfo = {
-      cachedPkg: pkg,
-      hasModuleSideEffects: alwaysNull,
-      hasPackageEntry: overriddenMain !== false || mainFields.indexOf('main') !== -1,
-      packageBrowserField:
-        useBrowserOverrides &&
-        typeof pkg.browser === 'object' &&
-        Object.keys(pkg.browser).reduce((browser, key) => {
-          let resolved = pkg.browser[key];
-          if (resolved && resolved[0] === '.') {
-            resolved = resolve(pkgRoot, resolved);
-          }
-          browser[key] = resolved;
-          if (key[0] === '.') {
-            const absoluteKey = resolve(pkgRoot, key);
-            browser[absoluteKey] = resolved;
-            if (!extname(key)) {
-              extensions.reduce((browser, ext) => {
-                browser[absoluteKey + ext] = browser[key];
-                return browser;
-              }, browser);
-            }
-          }
-          return browser;
-        }, {}),
-      packageInfo
-    };
-
-    const browserMap = internalPackageInfo.packageBrowserField;
-    if (
-      useBrowserOverrides &&
-      typeof pkg.browser === 'object' &&
-      // eslint-disable-next-line no-prototype-builtins
-      browserMap.hasOwnProperty(pkg.main)
-    ) {
-      packageInfo.resolvedEntryPoint = browserMap[pkg.main];
-      packageInfo.browserMappedMain = true;
-    } else {
-      // index.node is technically a valid default entrypoint as well...
-      packageInfo.resolvedEntryPoint = resolve(pkgRoot, pkg.main || 'index.js');
-      packageInfo.browserMappedMain = false;
-    }
-
-    const packageSideEffects = pkg.sideEffects;
-    if (typeof packageSideEffects === 'boolean') {
-      internalPackageInfo.hasModuleSideEffects = () => packageSideEffects;
-    } else if (Array.isArray(packageSideEffects)) {
-      internalPackageInfo.hasModuleSideEffects = createFilter(packageSideEffects, null, {
-        resolve: pkgRoot
-      });
-    }
-
-    packageInfoCache.set(pkgPath, internalPackageInfo);
-    return internalPackageInfo;
-  }
-
   return {
     name: 'node-resolve',
 
     buildStart(options) {
-      ({ preserveSymlinks } = options);
-      const [major, minor] = this.meta.rollupVersion.split('.').map(Number);
-      const minVersion = peerDependencies.rollup.slice(2);
-      const [minMajor, minMinor] = minVersion.split('.').map(Number);
-      if (major < minMajor || (major === minMajor && minor < minMinor)) {
-        this.error(
-          `Insufficient Rollup version: "rollup-plugin-node-resolve" requires at least rollup@${minVersion} but found rollup@${this.meta.rollupVersion}.`
-        );
+      for (const warning of warnings) {
+        this.warn(warning);
       }
+
+      ({ preserveSymlinks } = options);
     },
 
     generateBundle() {
-      readFileCached.clear();
+      readCachedFile.clear();
       isFileCached.clear();
       isDirCached.clear();
     },
@@ -317,7 +87,7 @@ export default function nodeResolve(options = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
-      const basedir = !importer || shouldDedupe(importee) ? rootDir : dirname(importer);
+      const basedir = !importer || dedupe(importee) ? rootDir : dirname(importer);
 
       // https://github.com/defunctzombie/package-browser-field-spec
       const browser = browserMapCache.get(importer);
@@ -347,28 +117,35 @@ export default function nodeResolve(options = {}) {
         id = resolve(basedir, importee);
       }
 
-      if (only && !only.some((pattern) => pattern.test(id))) return null;
+      if (resolveOnly.length && !resolveOnly.some((pattern) => pattern.test(id))) {
+        return null;
+      }
 
-      let hasModuleSideEffects = alwaysNull;
+      let hasModuleSideEffects = nullFn;
       let hasPackageEntry = true;
       let packageBrowserField = false;
       let packageInfo;
 
+      const filter = (pkg, pkgPath) => {
+        const info = getPackageInfo({
+          cache: packageInfoCache,
+          extensions,
+          pkg,
+          pkgPath,
+          mainFields,
+          preserveSymlinks,
+          useBrowserOverrides
+        });
+
+        ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
+
+        return info.cachedPkg;
+      };
+
       const resolveOptions = {
         basedir,
-        packageFilter(pkg, pkgPath) {
-          let cachedPkg;
-          ({
-            packageInfo,
-            cachedPkg,
-            hasModuleSideEffects,
-            hasPackageEntry,
-            packageBrowserField
-          } = getCachedPackageInfo(pkg, pkgPath));
-
-          return cachedPkg;
-        },
-        readFile: readFileCached,
+        packageFilter: filter,
+        readFile: readCachedFile,
         isFile: isFileCached,
         isDirectory: isDirCached,
         extensions
@@ -420,9 +197,7 @@ export default function nodeResolve(options = {}) {
           }
 
           if (hasPackageEntry && !preserveSymlinks && resolved) {
-            return existsAsync(resolved).then((exists) =>
-              exists ? realpathAsync(resolved) : resolved
-            );
+            return exists(resolved).then((exists) => (exists ? realpath(resolved) : resolved));
           }
           return resolved;
         })
@@ -447,7 +222,7 @@ export default function nodeResolve(options = {}) {
           }
 
           if (resolved && options.modulesOnly) {
-            return readFileAsync(resolved, 'utf-8').then((code) =>
+            return readFile(resolved, 'utf-8').then((code) =>
               isModule(code)
                 ? { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) }
                 : null
@@ -455,7 +230,7 @@ export default function nodeResolve(options = {}) {
           }
           return { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
         })
-        .catch(() => null);
+        .catch(nullFn);
     },
 
     load(importee) {
