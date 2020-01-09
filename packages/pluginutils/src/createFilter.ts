@@ -37,6 +37,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
             const pattern = getMatcherString(id, resolutionBase);
             const fn = mm.matcher(pattern, { dot: true });
             const result = fn(what);
+
             return result;
           }
         };
