@@ -58,10 +58,9 @@ class Scope implements AttachedScope {
 
 const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'scope') {
   let scope = new Scope();
-  // const { log } = console;
+
   walk(ast, {
     enter(node, parent) {
-      // log(node.type, (parent || {}).type);
       // function foo () {...}
       // class Foo {...}
       if (/(Function|Class)Declaration/.test(node.type)) {
