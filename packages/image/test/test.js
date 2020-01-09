@@ -32,3 +32,12 @@ test('ignores invalid image', async (t) =>
       plugins: [image()]
     })
   ));
+
+test('imports an svg without encoding', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/svg.js',
+    plugins: [image()]
+  });
+
+  t.snapshot(await getCode(bundle));
+});

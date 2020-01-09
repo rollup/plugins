@@ -22,9 +22,6 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
   // 2. the incoming glob (id) matcher, which uses /
   // we can't use join or resolve here because Node will force backslash (\) on windows
   const result = [...basePath.split('/'), ...id.split('/')].join('/');
-  // console.log('getMatcherString');
-  // console.log('  basePath', JSON.stringify(basePath));
-  // console.log('  result', JSON.stringify(result));
   return result;
 }
 
@@ -40,10 +37,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
             const pattern = getMatcherString(id, resolutionBase);
             const fn = mm.matcher(pattern, { dot: true });
             const result = fn(what);
-            // console.log('matcherFn');
-            // console.log('  pattern', JSON.stringify(pattern));
-            // console.log('  what', JSON.stringify(what));
-            // console.log('  result', result);
+
             return result;
           }
         };

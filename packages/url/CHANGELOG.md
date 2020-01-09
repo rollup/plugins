@@ -1,5 +1,17 @@
 # @rollup/plugin-url ChangeLog
 
+## v4.0.1
+
+_2020-01-07_
+
+### Bugfixes
+
+- fix: windows compatible, tests (#146)
+
+### Updates
+
+- chore: update changelog for v4.0.0 (087be59)
+
 ## 4.0.0
 
 _2019-11-25_

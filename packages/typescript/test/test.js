@@ -129,10 +129,8 @@ test('reports diagnostics and throws if errors occur during transpilation', asyn
   }
 
   t.truthy(caughtError, 'throws an error');
-  t.true(
-    caughtError.message.includes('There were TypeScript errors transpiling'),
-    `Unexpected error message: ${caughtError.message}`
-  );
+  t.is(caughtError.message, 'Error TS1110: Type expected.');
+  t.is(caughtError.pluginCode, 'TS1110');
 });
 
 test('works with named exports for abstract classes', async (t) => {
@@ -181,11 +179,25 @@ test('supports overriding the TypeScript version', async (t) => {
   t.is(result, 1337);
 });
 
-test('supports overriding tslib', async (t) => {
+test('supports overriding tslib with a string', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
     plugins: [
       typescript({ tslib: 'export const __extends = (Main, Super) => Main.myParent = Super' })
+    ]
+  });
+  const code = await evaluateBundle(bundle);
+
+  t.is(code.myParent.baseMethod(), 'base method');
+});
+
+test('supports overriding tslib with a promise', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/overriding-tslib/main.ts',
+    plugins: [
+      typescript({
+        tslib: Promise.resolve('export const __extends = (Main, Super) => Main.myParent = Super')
+      })
     ]
   });
   const code = await evaluateBundle(bundle);
