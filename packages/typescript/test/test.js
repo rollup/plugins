@@ -118,18 +118,14 @@ test('transpiles ES6 features to ES5 with source maps', async (t) => {
 });
 
 test('reports diagnostics and throws if errors occur during transpilation', async (t) => {
-  let caughtError = null;
-  try {
-    await rollup({
+  const caughtError = await t.throwsAsync(
+    rollup({
       input: 'fixtures/syntax-error/missing-type.ts',
       plugins: [typescript()]
-    });
-  } catch (error) {
-    caughtError = error;
-  }
+    })
+  );
 
-  t.truthy(caughtError, 'throws an error');
-  t.is(caughtError.message, 'Error TS1110: Type expected.');
+  t.is(caughtError.message, '@rollup/plugin-typescript TS1110: Type expected.');
   t.is(caughtError.pluginCode, 'TS1110');
 });
 
@@ -301,7 +297,7 @@ test('should throw on bad options', async (t) => {
 
   t.is(warnings.length, 1);
   t.is(warnings[0].plugin, 'typescript');
-  t.is(warnings[0].message, `@rollup/plugin-typescript: Unknown compiler option 'foo'.`);
+  t.is(warnings[0].message, `@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`);
 });
 
 test('prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options', async (t) => {
