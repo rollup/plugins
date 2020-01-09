@@ -39,6 +39,17 @@ export function getMainFields(options) {
   return mainFields;
 }
 
+export function normalizeInput(input) {
+  if (Array.isArray(input)) {
+    return input;
+  } else if (typeof input === 'object') {
+    return Object.values(input);
+  }
+
+  // otherwise it's a string
+  return input;
+}
+
 // Resolve module specifiers in order. Promise resolves to the first
 // module that resolves successfully, or the error that resulted from
 // the last attempted module resolution.

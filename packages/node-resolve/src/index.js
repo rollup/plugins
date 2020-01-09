@@ -6,7 +6,7 @@ import isModule from 'is-module';
 
 import { getPackageInfo, isDirCached, isFileCached, readCachedFile } from './cache';
 import { exists, readFile, realpath } from './fs';
-import { getMainFields, getPackageName, resolveImportSpecifiers } from './util';
+import { getMainFields, getPackageName, normalizeInput, resolveImportSpecifiers } from './util';
 
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
@@ -32,6 +32,7 @@ export default function nodeResolve(opts = {}) {
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
   const rootDir = options.rootDir || process.cwd();
   let { dedupe } = options;
+  let rollupOptions;
 
   if (options.only) {
     warnings.push('node-resolve: The `only` options is deprecated, please use `resolveOnly`');
@@ -61,6 +62,8 @@ export default function nodeResolve(opts = {}) {
     name: 'node-resolve',
 
     buildStart(options) {
+      rollupOptions = options;
+
       for (const warning of warnings) {
         this.warn(warning);
       }
@@ -111,8 +114,13 @@ export default function nodeResolve(opts = {}) {
         id = resolve(basedir, importee);
       }
 
+      const input = normalizeInput(rollupOptions.input);
+
       if (resolveOnly.length && !resolveOnly.some((pattern) => pattern.test(id))) {
-        return null;
+        if (input.includes(id)) {
+          return null;
+        }
+        return false;
       }
 
       let hasModuleSideEffects = nullFn;
