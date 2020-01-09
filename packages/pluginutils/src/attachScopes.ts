@@ -71,10 +71,13 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
       if (node.type === 'VariableDeclaration') {
         const { kind } = node;
         const isBlockDeclaration = blockDeclarations[kind];
-
-        node.declarations.forEach((declaration: Node) => {
-          scope.addDeclaration(declaration, isBlockDeclaration, true);
-        });
+        // don't add const/let declarations in the body of a for loop #113
+        const parentType = parent ? parent.type : '';
+        if (!(isBlockDeclaration && /ForOfStatement/.test(parentType))) {
+          node.declarations.forEach((declaration: Node) => {
+            scope.addDeclaration(declaration, isBlockDeclaration, true);
+          });
+        }
       }
 
       let newScope: AttachedScope | undefined;
