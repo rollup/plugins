@@ -2,14 +2,12 @@ import typescript from '@rollup/plugin-typescript';
 
 import pkg from './package.json';
 
-const external = Object.keys(pkg.devDependencies);
-
 export default {
   input: 'src/index.ts',
   plugins: [typescript()],
-  external,
+  external: [...Object.keys(pkg.devDependencies), 'url'],
   output: [
-    { format: 'cjs', file: pkg.main },
-    { format: 'esm', file: pkg.module }
+    { format: 'cjs', file: pkg.main, sourcemap: true },
+    { format: 'esm', file: pkg.module, sourcemap: true }
   ]
 };
