@@ -28,7 +28,7 @@ npm install @rollup/plugin-data-uri --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-const dataUri = require('@rollup/plugin-data-uri');
+import dataUri from '@rollup/plugin-data-uri';
 
 module.exports = {
   input: 'src/index.js',
