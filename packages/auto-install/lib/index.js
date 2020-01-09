@@ -16,6 +16,11 @@ function exec(cmd) {
 
 module.exports = function autoInstall(opts = {}) {
   const defaults = {
+    // intentionally undocumented options. used for tests
+    commands: {
+      npm: 'npm install',
+      yarn: 'yarn add'
+    },
     manager: fs.existsSync('yarn.lock') ? 'yarn' : 'npm',
     pkgFile: path.resolve(opts.pkgFile || 'package.json')
   };
@@ -23,10 +28,6 @@ module.exports = function autoInstall(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { manager, pkgFile } = options;
   const validManagers = ['npm', 'yarn'];
-  const commands = {
-    npm: 'npm install',
-    yarn: 'yarn add'
-  };
   let pkg;
 
   if (!validManagers.includes(manager)) {
@@ -45,7 +46,7 @@ module.exports = function autoInstall(opts = {}) {
   }
 
   const installed = new Set(Object.keys(pkg.dependencies || {}).concat(builtinModules));
-  const cmd = commands[manager];
+  const cmd = options.commands[manager];
 
   return {
     name: 'auto-install',
