@@ -118,7 +118,7 @@ export default function nodeResolve(opts = {}) {
       }
 
       if (resolveOnly.length && !resolveOnly.some((pattern) => pattern.test(id))) {
-        return null;
+        return false;
       }
 
       let hasModuleSideEffects = nullFn;
