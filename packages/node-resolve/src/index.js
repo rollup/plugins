@@ -57,12 +57,6 @@ export default function nodeResolve(opts = {}) {
   const browserMapCache = new Map();
   let preserveSymlinks;
 
-  if (options.skip) {
-    throw new Error(
-      'options.skip is no longer supported — you should use the main Rollup `external` option instead'
-    );
-  }
-
   return {
     name: 'node-resolve',
 
@@ -118,7 +112,7 @@ export default function nodeResolve(opts = {}) {
       }
 
       if (resolveOnly.length && !resolveOnly.some((pattern) => pattern.test(id))) {
-        return false;
+        return null;
       }
 
       let hasModuleSideEffects = nullFn;
