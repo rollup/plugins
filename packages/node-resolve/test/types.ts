@@ -11,20 +11,18 @@ const config = {
   },
   plugins: [
     resolve({
-      mainFields: ['untranspiled', 'module', 'main'],
-      module: true,
-      jsnext: true,
-      main: true,
       browser: true,
-      extensions: ['.mjs', '.js', '.jsx', '.json'],
-      preferBuiltins: false,
-      jail: '/my/jail/path',
-      only: ['some_module', /^@some_scope\/.*$/],
-      dedupe: ['lodash'],
-      modulesOnly: true,
       customResolveOptions: {
         moduleDirectory: 'js_modules'
-      }
+      },
+      dedupe: ['lodash'],
+      extensions: ['.mjs', '.js', '.jsx', '.json'],
+      jail: '/my/jail/path',
+      only: ['some_module', /^@some_scope\/.*$/],
+      preferBuiltins: false,
+      mainFields: ['untranspiled', 'module', 'main'],
+      modulesOnly: true,
+      resolveOnly: ['some_module', /^@some_scope\/.*$/]
     })
   ]
 };
