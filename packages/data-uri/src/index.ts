@@ -31,10 +31,15 @@ export default function dataUri(): Plugin {
         return null;
       }
 
-      const [, mime, , content] = reDataUri.exec(uri.pathname) || [null, null, null, null];
+      const empty = [null, null, null, null, null];
+      const [, mime, format, data] = reDataUri.exec(uri.pathname) || empty;
 
-      if (Object.values(mimeTypes).includes(mime as string)) {
+      if (Object.values(mimeTypes).includes(mime as string) && data) {
+        const base64 = format && /base64/i.test(format.substring(1));
+        const content = base64 ? Buffer.from(data, 'base64').toString('utf-8') : data;
+
         resolved[id] = { mime, content };
+
         return id;
       }
 

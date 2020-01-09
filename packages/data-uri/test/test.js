@@ -38,3 +38,13 @@ test('bad json', async (t) => {
   const { code, plugin, pluginCode } = await t.throwsAsync(fn);
   t.snapshot({ code, plugin, pluginCode });
 });
+
+test('base64', async (t) => {
+  t.plan(3);
+  const bundle = await rollup({
+    input: 'base64.js',
+    plugins: [dataUri()]
+  });
+  const { code } = await testBundle(t, bundle);
+  t.snapshot(code);
+});
