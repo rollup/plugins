@@ -46,6 +46,23 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 This plugin currently has no available options.
 
+## Supported MIME Types
+
+The following MIME types are supported by this plugin:
+
+- `text/javascript`
+- `application/json`
+
+This mirrors support in the [latest version of Node.js](https://nodejs.org/api/esm.html#esm_data_imports), with the exception of WebAssembly support.
+
+## Base64 Encoding
+
+Base64 encoding is supported for well-formed `data:` URIs. For example:
+
+```js
+import batman from 'data:application/json;base64, eyAiYmF0bWFuIjogInRydWUiIH0=';
+```
+
 ## Dynamic Imports
 
 Dynamic imports, such as `import('data:application/json, { "batman": "true" }')`, aren't supported by this plugin. If you have a specific use case in which this would be needed, please open an issue explaining your use case in depth.
