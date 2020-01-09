@@ -22,7 +22,7 @@ const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionEx
 
 function deconflict(scope, globals, identifier) {
   let i = 1;
-  let deconflicted = identifier;
+  let deconflicted = makeLegalIdentifier(identifier);
 
   while (scope.contains(deconflicted) || globals.has(deconflicted) || deconflicted in blacklist) {
     deconflicted = `${identifier}_${i}`;
