@@ -4,9 +4,15 @@ import { dirname, normalize, resolve, sep } from 'path';
 import builtinList from 'builtin-modules';
 import isModule from 'is-module';
 
-import { getPackageInfo, isDirCached, isFileCached, readCachedFile } from './cache';
+import { isDirCached, isFileCached, readCachedFile } from './cache';
 import { exists, readFile, realpath } from './fs';
-import { getMainFields, getPackageName, normalizeInput, resolveImportSpecifiers } from './util';
+import {
+  getMainFields,
+  getPackageInfo,
+  getPackageName,
+  normalizeInput,
+  resolveImportSpecifiers
+} from './util';
 
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
@@ -44,9 +50,6 @@ export default function nodeResolve(opts = {}) {
       options.dedupe.includes(importee) || options.dedupe.includes(getPackageName(importee));
   }
 
-  // console.log('opts:', opts);
-  // console.log('options:', options);
-
   const resolveOnly = options.resolveOnly.map((pattern) => {
     if (pattern instanceof RegExp) {
       return pattern;
@@ -77,7 +80,7 @@ export default function nodeResolve(opts = {}) {
       isDirCached.clear();
     },
 
-    resolveId(importee, importer) {
+    async resolveId(importee, importer) {
       if (importee === ES6_BROWSER_EMPTY) {
         return importee;
       }
@@ -144,7 +147,7 @@ export default function nodeResolve(opts = {}) {
         return info.cachedPkg;
       };
 
-      const resolveOptions = {
+      let resolveOptions = {
         basedir,
         packageFilter: filter,
         readFile: readCachedFile,
@@ -182,57 +185,58 @@ export default function nodeResolve(opts = {}) {
       }
 
       importSpecifierList.push(importee);
-      return resolveImportSpecifiers(
-        importSpecifierList,
-        Object.assign(resolveOptions, customResolveOptions)
-      )
-        .then((resolved) => {
-          if (resolved && packageBrowserField) {
-            if (Object.prototype.hasOwnProperty.call(packageBrowserField, resolved)) {
-              if (!packageBrowserField[resolved]) {
-                browserMapCache.set(resolved, packageBrowserField);
-                return ES6_BROWSER_EMPTY;
-              }
-              resolved = packageBrowserField[resolved];
+      resolveOptions = Object.assign(resolveOptions, customResolveOptions);
+
+      try {
+        let resolved = await resolveImportSpecifiers(importSpecifierList, resolveOptions);
+
+        if (resolved && packageBrowserField) {
+          if (Object.prototype.hasOwnProperty.call(packageBrowserField, resolved)) {
+            if (!packageBrowserField[resolved]) {
+              browserMapCache.set(resolved, packageBrowserField);
+              return ES6_BROWSER_EMPTY;
             }
-            browserMapCache.set(resolved, packageBrowserField);
+            resolved = packageBrowserField[resolved];
           }
+          browserMapCache.set(resolved, packageBrowserField);
+        }
 
-          if (hasPackageEntry && !preserveSymlinks && resolved) {
-            return exists(resolved).then((exists) => (exists ? realpath(resolved) : resolved));
+        if (hasPackageEntry && !preserveSymlinks && resolved) {
+          const fileExists = await exists(resolved);
+          if (fileExists) {
+            resolved = await realpath(resolved);
           }
-          return resolved;
-        })
-        .then((resolved) => {
-          idToPackageInfo.set(resolved, packageInfo);
+        }
 
-          if (hasPackageEntry) {
-            if (builtins.has(resolved) && preferBuiltins && isPreferBuiltinsSet) {
-              return null;
-            } else if (importeeIsBuiltin && preferBuiltins) {
-              if (!isPreferBuiltinsSet) {
-                this.warn(
-                  `preferring built-in module '${importee}' over local alternative ` +
-                    `at '${resolved}', pass 'preferBuiltins: false' to disable this ` +
-                    `behavior or 'preferBuiltins: true' to disable this warning`
-                );
-              }
-              return null;
-            } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
-              return null;
+        idToPackageInfo.set(resolved, packageInfo);
+
+        if (hasPackageEntry) {
+          if (builtins.has(resolved) && preferBuiltins && isPreferBuiltinsSet) {
+            return null;
+          } else if (importeeIsBuiltin && preferBuiltins) {
+            if (!isPreferBuiltinsSet) {
+              this.warn(
+                `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
+              );
             }
+            return null;
+          } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
+            return null;
           }
+        }
 
-          if (resolved && options.modulesOnly) {
-            return readFile(resolved, 'utf-8').then((code) =>
-              isModule(code)
-                ? { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) }
-                : null
-            );
+        if (resolved && options.modulesOnly) {
+          const code = await readFile(resolved, 'utf-8');
+          if (isModule(code)) {
+            return { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
           }
-          return { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
-        })
-        .catch(nullFn);
+          return null;
+        }
+        const result = { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
+        return result;
+      } catch (error) {
+        return null;
+      }
     },
 
     load(importee) {
