@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.4
+
+_2020-01-10_
+
+### Bugfixes
+
+- fix: keep for(const..) out of scope (#151)
+
 ## v3.0.3
 
 _2020-01-07_
