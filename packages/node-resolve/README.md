@@ -172,7 +172,7 @@ export default {
 
 ## Resolving Built-Ins (like `fs`)
 
-This plugin won't resolve any builtins (e.g. `fs`). If you need to resolve builtins you can install local modules and set `preferBuiltins` to `false`, or install a plugin like [rollup-plugin-node-builtins](https://github.com/calvinmetcalf/rollup-plugin-node-builtins) which provides stubbed versions of these methods.
+This plugin won't resolve any builtins (e.g. `fs`). If you need to resolve builtins you can install local modules and set `preferBuiltins` to `false`, or install a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) which provides stubbed versions of these methods.
 
 If you want to silence warnings about builtins, you can add the list of builtins to the `externals` option; like so:
 
