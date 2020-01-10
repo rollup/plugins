@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { resolve } from 'path';
 
 export function getDefaultOptions() {
   return {
@@ -25,7 +25,7 @@ export function readTsConfig(ts: typeof import('typescript'), tsconfigPath: stri
 
   const extendedTsConfig: string = tsconfig.config.extends;
   if (tsconfigPath && extendedTsConfig) {
-    tsconfig.config.extends = join(process.cwd(),existingTsConfig, '..', extendedTsConfig);
+    tsconfig.config.extends = resolve(process.cwd(), existingTsConfig, '..', extendedTsConfig);
   }
 
   return tsconfig.config;
