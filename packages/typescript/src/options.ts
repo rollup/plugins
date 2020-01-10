@@ -24,8 +24,8 @@ export function readTsConfig(ts: typeof import('typescript'), tsconfigPath: stri
   if (!tsconfig.config || !tsconfig.config.compilerOptions) return { compilerOptions: {} };
 
   const extendedTsConfig: string = tsconfig.config.extends;
-  if (extendedTsConfig) {
-    tsconfig.config.extends = join(process.cwd(),existingTsConfig, '..', extendedTsConfig );
+  if (tsconfigPath && extendedTsConfig) {
+    tsconfig.config.extends = join(process.cwd(),existingTsConfig, '..', extendedTsConfig);
   }
 
   return tsconfig.config;
