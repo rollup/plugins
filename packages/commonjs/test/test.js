@@ -199,7 +199,7 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
         resolve({
           preserveSymlinks: false,
           preferBuiltins: false
-        }),
+        })
       ]
     })
       .then((v) => {
@@ -640,5 +640,8 @@ test('logs a warning when the deprecated namedExports option is used', async (t)
   });
 
   await getCodeFromBundle(bundle);
-  t.is(message, 'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.');
+  t.is(
+    message,
+    'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
+  );
 });

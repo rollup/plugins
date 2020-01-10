@@ -1655,42 +1655,14 @@ packages:
       typescript: 3.7.5
     dev: true
     engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-    resolution:
-      integrity: sha512-qBbGQQaUUiId/lBU9VMeYlVLOoRNvz1fV8HWY5tiGDpI2gdPZHbmOfCjzSdXPhdq3XOfyWvXEBlIPbnM3+9ogQ==
-  /@rollup/pluginutils/3.0.1_rollup@1.27.13:
-    dependencies:
-      estree-walker: 0.6.1
-      rollup: 1.27.13
-    dev: false
-    engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-    resolution:
-      integrity: sha512-PmNurkecagFimv7ZdKCVOfQuqKDPkrcpLFxRBcQ00LYr4HAjJwhCFxBiY2Xoletll2htTIiXBg6g0Yg21h2M3w==
-  /@rollup/pluginutils/3.0.1_rollup@1.27.8:
-    dependencies:
-      estree-walker: 0.6.1
-      rollup: 1.27.8
-    dev: false
-    engines:
       node: '>=8.0.0'
     peerDependencies:
       rollup: ^1.20.0
       tslib: '*'
       typescript: '>=2.1.0'
     resolution:
-<<<<<<< HEAD
       integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
   /@rollup/plugin-typescript/3.0.0_rollup@2.2.0:
-=======
-<<<<<<< HEAD
-      integrity: sha512-UA/bN/DlHN19xdOllXmp7G7pM2ac9dQMg0q2T1rg4Bogzb7oHXj2WGafpiNpEm54PivcJdzGRJvRnI6zCISW3w==
-  /@rollup/plugin-typescript/2.1.0_rollup@1.27.14+typescript@3.7.4:
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
     dependencies:
       '@rollup/pluginutils': 3.0.8_rollup@2.2.0
       resolve: 1.15.0
@@ -1703,7 +1675,6 @@ packages:
       tslib: '*'
       typescript: '>=2.1.0'
     resolution:
-<<<<<<< HEAD
       integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
   /@rollup/plugin-typescript/3.0.0_rollup@2.2.0+typescript@3.7.5:
     dependencies:
@@ -1712,18 +1683,6 @@ packages:
       rollup: 2.2.0
       typescript: 3.7.5
     dev: true
-=======
-      integrity: sha512-7lXKGY06aofrceVez/YnN2axttFdHSqlUBpCJ6ebzDfxwLDKMgSV5lD4ykBcdgE7aK3egxuLkD/HKyRB5L8Log==
-  /@rollup/pluginutils/3.0.1_rollup@1.27.14:
-=======
-      integrity: sha512-PmNurkecagFimv7ZdKCVOfQuqKDPkrcpLFxRBcQ00LYr4HAjJwhCFxBiY2Xoletll2htTIiXBg6g0Yg21h2M3w==
-  /@rollup/pluginutils/3.0.1_rollup@1.28.0:
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
-    dependencies:
-      estree-walker: 0.6.1
-      rollup: 1.28.0
-    dev: false
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
     engines:
       node: '>=8.0.0'
     peerDependencies:
@@ -1885,29 +1844,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
-<<<<<<< HEAD
   /@types/node/12.12.28:
     dev: true
     resolution:
       integrity: sha512-g73GJYJDXgf0jqg+P9S8h2acWbDXNkoCX8DLtJVu7Fkn788pzQ/oJsrdJz/2JejRf/SjfZaAhsw+3nd1D5EWGg==
   /@types/node/13.1.6:
     dev: false
-=======
-  /@types/node/12.12.14:
-    resolution:
-      integrity: sha512-u/SJDyXwuihpwjXy7hOOghagLEV1KdAST6syfnOk6QZAMzZuWZqXy5aYYZbh8Jdpd4escVFP0MvftHNDb9pruA==
-  /@types/node/12.12.20:
-    dev: true
-    resolution:
-      integrity: sha512-VAe+DiwpnC/g448uN+/3gRl4th0BTdrR9gSLIOHA+SUQskaYZQDOHG7xmjiE7JUhjbXnbXytf6Ih+/pA6CtMFQ==
-  /@types/node/12.12.21:
-    resolution:
-      integrity: sha512-8sRGhbpU+ck1n0PGAUgVrWrWdjSW2aqNeyC15W88GRsMpSwzv6RJGlLhE7s2RhVSOdyDmxbqlWSeThq4/7xqlA==
-  /@types/node/12.12.22:
-    resolution:
-      integrity: sha512-r5i93jqbPWGXYXxianGATOxTelkp6ih/U0WVnvaqAvTqM+0U6J3kw6Xk6uq/dWNRkEVw/0SLcO5ORXbVNz4FMQ==
-  /@types/node/13.1.2:
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
     resolution:
       integrity: sha512-Jg1F+bmxcpENHP23sVKkNuU3uaxPnsBMW0cLjleiikFKomJQbsn0Cqk2yDvQArqzZN6ABfBkZ0To7pQ8sLdWDg==
   /@types/node/13.1.8:
@@ -6827,47 +6769,11 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-NDGVxTsjqfunkds7CqsOiEnxln4Bo7Nddl3XhS4pXg5OzwkLqJ971ZVAAnB+DDLnF76N+VnDEiBHaVV8I06SUg==
-<<<<<<< HEAD
   /rollup-plugin-babel/4.3.3_@babel+core@7.9.0+rollup@2.2.0:
-=======
-<<<<<<< HEAD
-  /rollup-plugin-babel/4.3.3_@babel+core@7.8.3+rollup@2.2.0:
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
     dependencies:
       '@babel/core': 7.9.0
       '@babel/helper-module-imports': 7.8.3
       rollup: 2.2.0
-=======
-  /rollup-plugin-babel/4.3.3_@babel+core@7.7.4+rollup@1.27.8:
-    dependencies:
-      '@babel/core': 7.7.4
-      '@babel/helper-module-imports': 7.7.4
-      rollup: 1.27.8
-      rollup-pluginutils: 2.8.2
-    dev: true
-    peerDependencies:
-      '@babel/core': 7 || ^7.0.0-rc.2
-      rollup: '>=0.60.0 <2'
-    resolution:
-      integrity: sha512-tKzWOCmIJD/6aKNz0H1GMM+lW1q9KyFubbWzGiOG540zxPPifnEAHTZwjo0g991Y+DyOZcLqBgqOdqazYE5fkw==
-  /rollup-plugin-babel/4.3.3_@babel+core@7.7.5+rollup@1.27.13:
-    dependencies:
-      '@babel/core': 7.7.5
-      '@babel/helper-module-imports': 7.7.4
-      rollup: 1.27.13
-      rollup-pluginutils: 2.8.2
-    dev: true
-    peerDependencies:
-      '@babel/core': 7 || ^7.0.0-rc.2
-      rollup: '>=0.60.0 <2'
-    resolution:
-      integrity: sha512-tKzWOCmIJD/6aKNz0H1GMM+lW1q9KyFubbWzGiOG540zxPPifnEAHTZwjo0g991Y+DyOZcLqBgqOdqazYE5fkw==
-  /rollup-plugin-babel/4.3.3_@babel+core@7.7.5+rollup@1.28.0:
-    dependencies:
-      '@babel/core': 7.7.7
-      '@babel/helper-module-imports': 7.7.4
-      rollup: 1.28.0
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
       rollup-pluginutils: 2.8.2
     dev: true
     peerDependencies:
@@ -6928,47 +6834,15 @@ packages:
     dev: true
     resolution:
       integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
-<<<<<<< HEAD
   /rollup/2.2.0:
     engines:
       node: '>=10.0.0'
-=======
-  /rollup/1.27.13:
-    dependencies:
-      '@types/estree': 0.0.40
-      '@types/node': 12.12.21
-      acorn: 7.1.0
-    hasBin: true
-    resolution:
-      integrity: sha512-hDi7M07MpmNSDE8YVwGVFA8L7n8jTLJ4lG65nMAijAyqBe//rtu4JdxjUBE7JqXfdpqxqDTbCDys9WcqdpsQvw==
-  /rollup/1.27.8:
-    dependencies:
-      '@types/estree': 0.0.41
-      '@types/node': 13.1.2
-      acorn: 7.1.0
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
     hasBin: true
     optionalDependencies:
       fsevents: 2.1.2
     resolution:
-<<<<<<< HEAD
       integrity: sha512-iAu/j9/WJ0i+zT0sAMuQnsEbmOKzdQ4Yxu5rbPs9aUCyqveI1Kw3H4Fi9NWfCOpb8luEySD2lDyFWL9CrLE8iw==
-<<<<<<< HEAD
   /run-async/2.4.0:
-=======
-=======
-      integrity: sha512-EVoEV5rAWl+5clnGznt1KY8PeVkzVQh/R0d2s3gHEkN7gfoyC4JmvIVuCtPbYE8NM5Ep/g+nAmvKXBjzaqTsHA==
-  /rollup/1.28.0:
-    dependencies:
-      '@types/estree': 0.0.40
-      '@types/node': 12.12.22
-      acorn: 7.1.0
-    hasBin: true
-    resolution:
-      integrity: sha512-v2J/DmQi9+Nf6frGqzwZRvbiuTTrqH0yzoUF4Eybf8sONT4UpLZzJYnYzW96Zm9X1+4SJmijfnFBWCzHDAXYnQ==
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
-  /run-async/2.3.0:
->>>>>>> feat(commonjs): set syntheticNamedExports for commonjs modules
     dependencies:
       is-promise: 2.1.0
     dev: true

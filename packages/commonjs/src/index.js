@@ -1,7 +1,6 @@
-import { realpathSync, existsSync, readFileSync } from 'fs';
-import { extname, resolve, normalize, join } from 'path';
+import { existsSync, readFileSync } from 'fs';
+import { extname, join } from 'path';
 
-import { sync as nodeResolveSync, isCore } from 'resolve';
 import { createFilter } from '@rollup/pluginutils';
 
 import getCommonDir from 'commondir';
@@ -39,6 +38,14 @@ export default function commonjs(options = {}) {
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
   const { ignoreGlobal } = options;
+
+  const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
+    options.dynamicRequireTargets
+  );
+  const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
+  const commonDir = isDynamicRequireModulesEnabled
+    ? getCommonDir(null, Array.from(dynamicRequireModuleSet).concat(process.cwd()))
+    : null;
 
   const esModulesWithoutDefaultExport = new Set();
   const esModulesWithDefaultExport = new Set();
@@ -99,7 +106,9 @@ export default function commonjs(options = {}) {
 
     buildStart() {
       if (options.namedExports != null) {
-        this.warn('The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.');
+        this.warn(
+          'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
+        );
       }
 
       const [major, minor] = this.meta.rollupVersion.split('.').map(Number);
