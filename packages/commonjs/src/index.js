@@ -40,48 +40,6 @@ export default function commonjs(options = {}) {
   const filter = createFilter(options.include, options.exclude);
   const { ignoreGlobal } = options;
 
-  const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
-    options.dynamicRequireTargets
-  );
-  const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
-  const commonDir = isDynamicRequireModulesEnabled
-    ? getCommonDir(null, Array.from(dynamicRequireModuleSet).concat(process.cwd()))
-    : null;
-
-  const customNamedExports = {};
-  if (options.namedExports) {
-    Object.keys(options.namedExports).forEach((id) => {
-      let resolveId = id;
-      let resolvedId;
-
-      if (isCore(id)) {
-        // resolve will not find npm modules with the same name as
-        // core modules without a trailing slash. Since core modules
-        // must be external, we can assume any core modules defined
-        // here are npm modules by that name.
-        resolveId += '/';
-      }
-
-      try {
-        resolvedId = nodeResolveSync(resolveId, { basedir: process.cwd() });
-      } catch (err) {
-        resolvedId = resolve(id);
-      }
-
-      // Note: customNamedExport's keys must be normalized file paths.
-      // resolve and nodeResolveSync both return normalized file paths
-      // so no additional normalization is necessary.
-      customNamedExports[resolvedId] = options.namedExports[id];
-
-      if (existsSync(resolvedId)) {
-        const realpath = realpathSync(resolvedId);
-        if (realpath !== resolvedId) {
-          customNamedExports[realpath] = options.namedExports[id];
-        }
-      }
-    });
-  }
-
   const esModulesWithoutDefaultExport = new Set();
   const esModulesWithDefaultExport = new Set();
 
@@ -111,8 +69,6 @@ export default function commonjs(options = {}) {
       return null;
     }
 
-    const normalizedId = normalize(id);
-
     const transformed = transformCommonjs(
       this.parse,
       code,
@@ -121,7 +77,6 @@ export default function commonjs(options = {}) {
       isEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
-      customNamedExports[normalizedId],
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
@@ -143,6 +98,10 @@ export default function commonjs(options = {}) {
     name: 'commonjs',
 
     buildStart() {
+      if (options.namedExports != null) {
+        this.warn('The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.');
+      }
+
       const [major, minor] = this.meta.rollupVersion.split('.').map(Number);
       const minVersion = peerDependencies.rollup.slice(2);
       const [minMajor, minMinor] = minVersion.split('.').map(Number);

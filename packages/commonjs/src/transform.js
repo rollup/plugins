@@ -109,7 +109,6 @@ export function transformCommonjs(
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
-  customNamedExports,
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
@@ -561,8 +560,6 @@ export function transformCommonjs(
       name: x
     });
   }
-
-  if (customNamedExports) customNamedExports.forEach(addExport);
 
   const defaultExportPropertyAssignments = [];
   let hasDefaultExport = false;
