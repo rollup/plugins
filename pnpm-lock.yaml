@@ -180,12 +180,12 @@ importers:
     dependencies:
       '@rollup/pluginutils': 3.0.1_rollup@1.27.14
     devDependencies:
+      '@rollup/plugin-buble': 0.21.0_rollup@1.27.14
       rollup: 1.27.14
-      rollup-plugin-buble: 0.10.0
     specifiers:
+      '@rollup/plugin-buble': ^0.21.0
       '@rollup/pluginutils': ^3.0.1
       rollup: ^1.27.14
-      rollup-plugin-buble: ^0.10.0
   packages/inject:
     dependencies:
       estree-walker: 0.9.0
@@ -1260,6 +1260,17 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-3Qkoa3n+6NjQggLkN5R6ouVL3/jveyqjJjJXxbk04HEig/97YyOwoimWYIOC5vlQ60Z+xLhnAvGd6mM0gFY2wQ==
+  /@rollup/plugin-buble/0.21.0_rollup@1.27.14:
+    dependencies:
+      '@types/buble': 0.19.2
+      buble: 0.19.8
+      rollup: 1.27.14
+      rollup-pluginutils: 2.8.2
+    dev: true
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-n6N311RCrVvnsWGyo/if6K2kFoDW+x9r+/hkp+fI73MryLFGxN50Y3zJDg3k0ZTDjRHmveVzM6Nzwv9+plWiLA==
   /@rollup/plugin-json/4.0.1_rollup@1.27.14:
     dependencies:
       rollup: 1.27.14
@@ -1413,8 +1424,7 @@ packages:
       integrity: sha512-TbH79tcyi9FHwbyboOKeRachRq63mSuWYXOflsNO9ZyE5ClQ/JaozNKl+aWUq87qPNsXasXxi2AbgfwIJ+8GQw==
   /@types/buble/0.19.2:
     dependencies:
-      magic-string: 0.25.5
-    dev: false
+      magic-string: 0.25.6
     resolution:
       integrity: sha512-uUD8zIfXMKThmFkahTXDGI3CthFH1kMg2dOm3KLi4GlC5cbARA64bEcUMbbWdWdE73eoc/iBB9PiTMqH0dNS2Q==
   /@types/color-name/1.1.1:
@@ -1608,12 +1618,6 @@ packages:
       acorn: ^6.0.0
     resolution:
       integrity: sha512-d3OEjQV4ROpoflsnUA8HozoIR504TFxNivYEUi6uwz0IYhBkTDXGuWlNdMtybRt3nqVx/L6XqMt0FxkXuWKZhw==
-  /acorn-jsx/3.0.1:
-    dependencies:
-      acorn: 3.3.0
-    dev: true
-    resolution:
-      integrity: sha1-r9+UiPsezvyDSPb7IvRk4ypYs2s=
   /acorn-jsx/5.1.0_acorn@6.4.0:
     dependencies:
       acorn: 6.4.0
@@ -1629,19 +1633,6 @@ packages:
       acorn: ^6.0.0 || ^7.0.0
     resolution:
       integrity: sha512-tMUqwBWfLFbJbizRmEcWSLw6HnFzfdJs2sOJEOwwtVPMoH/0Ay+E703oZz78VSXZiiDcZrQ5XKjPIUQixhmgVw==
-  /acorn-object-spread/1.0.0:
-    dependencies:
-      acorn: 3.3.0
-    dev: true
-    resolution:
-      integrity: sha1-SOrQ9KjrFplaF6Dbn/xqyq2kumg=
-  /acorn/3.3.0:
-    dev: true
-    engines:
-      node: '>=0.4.0'
-    hasBin: true
-    resolution:
-      integrity: sha1-ReN/s56No/JbruP/U2niu18iAXo=
   /acorn/6.4.0:
     engines:
       node: '>=0.4.0'
@@ -2039,25 +2030,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-+M4oeaTplPm/f1pXDw84YohEv7B1i/2Aisei8s4s6k3QsoSHa7i5sz8u/cGQkkatCPxMASKxPualR4wwYgVboA==
-  /buble/0.10.7:
-    dependencies:
-      acorn: 3.3.0
-      acorn-jsx: 3.0.1
-      acorn-object-spread: 1.0.0
-      chalk: 1.1.3
-      magic-string: 0.14.0
-      minimist: 1.2.0
-    dev: true
-    hasBin: true
-    resolution:
-      integrity: sha1-PGjwzl+CgB/zUVGle0hw6VExBdc=
   /buble/0.19.8:
     dependencies:
       acorn: 6.4.0
       acorn-dynamic-import: 4.0.0_acorn@6.4.0
       acorn-jsx: 5.1.0_acorn@6.4.0
       chalk: 2.4.2
-      magic-string: 0.25.5
+      magic-string: 0.25.6
       minimist: 1.2.0
       os-homedir: 2.0.0
       regexpu-core: 4.6.0
@@ -3273,10 +3252,6 @@ packages:
       node: '>=4.0'
     resolution:
       integrity: sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw==
-  /estree-walker/0.2.1:
-    dev: true
-    resolution:
-      integrity: sha1-va/oCVOD2EFNXcLs9MkXO225QS4=
   /estree-walker/0.6.1:
     resolution:
       integrity: sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
@@ -4718,17 +4693,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-sWZlbEP2OsHNkXrMl5GYk/jKk70MBng6UU4YI/qGDYbgf6YbP4EvmqISbXCoJiRKs+1bSpFHVgQxvJ17F2li5g==
-  /magic-string/0.14.0:
-    dependencies:
-      vlq: 0.2.3
-    dev: true
-    resolution:
-      integrity: sha1-VyJK7xcByu7Sc7F6OalW5ysXJGI=
   /magic-string/0.25.5:
     dependencies:
       sourcemap-codec: 1.4.6
     resolution:
       integrity: sha512-vIO/BOm9odBHBAGwv0gZPLJeO9IpwliiIc0uPeAW93rrFMJ/R3M665IAEfOU/IW3kD4S9AtEn76lfTn1Yif+9A==
+  /magic-string/0.25.6:
+    dependencies:
+      sourcemap-codec: 1.4.7
+    resolution:
+      integrity: sha512-3a5LOMSGoCTH5rbqobC2HuDNRtE2glHZ8J7pK+QZYppyWA36yuNpsX994rIY2nCuyP7CZYy7lQq/X2jygiZ89g==
   /make-dir/1.3.0:
     dependencies:
       pify: 3.0.0
@@ -6357,14 +6331,6 @@ packages:
       rollup: '>=0.60.0 <2'
     resolution:
       integrity: sha512-tKzWOCmIJD/6aKNz0H1GMM+lW1q9KyFubbWzGiOG540zxPPifnEAHTZwjo0g991Y+DyOZcLqBgqOdqazYE5fkw==
-  /rollup-plugin-buble/0.10.0:
-    dependencies:
-      buble: 0.10.7
-      rollup-pluginutils: 1.5.2
-    deprecated: This module has been deprecated and is no longer maintained. Please use @rollup/plugin-buble.
-    dev: true
-    resolution:
-      integrity: sha1-ytP2gq66Q/vpQD5EexVZ9lscpHk=
   /rollup-plugin-buble/0.19.8:
     dependencies:
       buble: 0.19.8
@@ -6473,13 +6439,6 @@ packages:
       typescript: '>=2.1.0'
     resolution:
       integrity: sha512-rwJDNn9jv/NsKZuyBb/h0jsclP4CJ58qbvZt2Q9zDIGILF2LtdtvCqMOL+Gq9IVq5MTrTlHZNrn8h7VjQgd8tw==
-  /rollup-pluginutils/1.5.2:
-    dependencies:
-      estree-walker: 0.2.1
-      minimatch: 3.0.4
-    dev: true
-    resolution:
-      integrity: sha1-HhVud4+UtyVb+hs9AXi+j1xVJAg=
   /rollup-pluginutils/2.8.2:
     dependencies:
       estree-walker: 0.6.1
@@ -6717,6 +6676,9 @@ packages:
   /sourcemap-codec/1.4.6:
     resolution:
       integrity: sha512-1ZooVLYFxC448piVLBbtOxFcXwnymH9oUF8nRd3CuYDVvkRBxRl6pB4Mtas5a4drtL+E8LDgFkQNcgIw6tc8Hg==
+  /sourcemap-codec/1.4.7:
+    resolution:
+      integrity: sha512-RuN23NzhAOuUtaivhcrjXx1OPXsFeH9m5sI373/U7+tGLKihjUyboZAzOadytMjnqHp1f45RGk1IzDKCpDpSYA==
   /spawn-wrap/1.4.3:
     dependencies:
       foreground-child: 1.5.6
@@ -7399,10 +7361,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-fOi47nsJP5Wqefa43kyWSg80qF+Q3XA6MUkgi7Hp1HQaKDQW4cQrK2D0P7mmbFtsV1N89am55Yru/nyEwRubcw==
-  /vlq/0.2.3:
-    dev: true
-    resolution:
-      integrity: sha512-DRibZL6DsNhIgYQ+wNdWDL2SL3bKPlVrRiBqV5yuMm++op8W4kGFtaQfCs4KEJn0wBZcHVHJ3eoywX8983k1ow==
   /wcwidth/1.0.1:
     dependencies:
       defaults: 1.0.3
