@@ -22,6 +22,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [beep](packages/beep)                 | System beeps on errors and warnings                                                       |
 | [buble](packages/buble)               | Compile ES2015 with buble                                                                 |
 | [commonjs](packages/commonjs)         | Convert CommonJS modules to ES6                                                           |
+| [data-uri](packages/data-uri)         | Import modules from Data URIs                                                             |
 | [dsv](packages/dsv)                   | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
 | [html](packages/html)                 | Creates HTML files to serve Rollup bundles                                                |
 | [image](packages/image)               | Import JPG, PNG, GIF, SVG, and WebP files                                                 |

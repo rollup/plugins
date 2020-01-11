@@ -1,17 +1,15 @@
 {
-  "name": "@rollup/pluginutils",
-  "version": "3.0.4",
+  "name": "@rollup/plugin-data-uri",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "A set of utility functions commonly used by Rollup plugins",
+  "description": "Import modules from Data URIs",
   "license": "MIT",
   "repository": "rollup/plugins",
-  "author": "Rich Harris <richard.a.harris@gmail.com>",
-  "homepage": "https://github.com/rollup/plugins/tree/master/packages/pluginutils#readme",
-  "bugs": {
-    "url": "https://github.com/rollup/plugins/issues"
-  },
+  "author": "shellscape",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/data-uri",
+  "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "engines": {
     "node": ">= 8.0.0"
@@ -24,10 +22,9 @@
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache src --ext .js,.ts",
+    "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
-    "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint && pnpm run build",
     "pretest": "pnpm run build -- --sourcemap",
     "test": "ava"
@@ -39,26 +36,22 @@
     "LICENSE"
   ],
   "keywords": [
-    "rollup",
+    "data",
+    "data-uri",
+    "data-url",
     "plugin",
-    "utils"
+    "rollup",
+    "uri",
+    "url"
   ],
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
-  "dependencies": {
-    "estree-walker": "^1.0.1"
-  },
   "devDependencies": {
-    "@types/estree": "0.0.39",
-    "@types/jest": "^24.0.23",
-    "@types/micromatch": "^3.1.1",
-    "@types/node": "^12.12.11",
-    "micromatch": "^4.0.2",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-typescript": "^1.0.1",
-    "typescript": "^3.7.2"
+    "@rollup/plugin-typescript": "^2.1.0",
+    "@rollup/pluginutils": "^3.0.1",
+    "rollup": "^1.27.14",
+    "typescript": "^3.7.4"
   },
   "ava": {
     "compileEnhancements": false,
@@ -70,17 +63,12 @@
     ],
     "files": [
       "!**/fixtures/**",
+      "!**/output/**",
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
     ]
   },
   "module": "dist/index.es.js",
-  "nyc": {
-    "extension": [
-      ".js",
-      ".ts"
-    ]
-  },
   "types": "types/index.d.ts"
 }
