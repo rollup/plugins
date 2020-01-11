@@ -1,5 +1,5 @@
 import MagicString from 'magic-string';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 
 function escape(str) {
   return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
