@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 export function getDefaultOptions() {
   return {
@@ -17,9 +18,16 @@ export function readTsConfig(ts: typeof import('typescript'), tsconfigPath: stri
   if (!existingTsConfig) {
     return {};
   }
+
   const tsconfig = ts.readConfigFile(existingTsConfig, (path) => readFileSync(path, 'utf8'));
 
   if (!tsconfig.config || !tsconfig.config.compilerOptions) return { compilerOptions: {} };
+
+  const extendedTsConfig: string = tsconfig.config.extends;
+  if (tsconfigPath && extendedTsConfig) {
+    tsconfig.config.extends = resolve(process.cwd(), existingTsConfig, '..', extendedTsConfig);
+  }
+
   return tsconfig.config;
 }
 
