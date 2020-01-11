@@ -29,7 +29,7 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 
 ```js
 import auto from '@rollup/plugin-auto-install';
-import resolve from 'rollup-plugin-node-resolve';
+import resolve from '@rollup/plugin-node-resolve';
 
 export default {
   input: 'src/index.js',
@@ -41,7 +41,7 @@ export default {
 };
 ```
 
-_Note: ensure that this plugin is added to the `plugins` array *before* [rollup-plugin-node-resolve](https://github.com/rollup/rollup-plugin-node-resolve)._
+_Note: ensure that this plugin is added to the `plugins` array *before* [@rollup/plugin-node-resolve](https://github.com/rollup/plugins)._
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
