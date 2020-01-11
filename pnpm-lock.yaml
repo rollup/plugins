@@ -332,18 +332,18 @@ importers:
       sinon: 8.0.4
   packages/strip:
     dependencies:
-      estree-walker: 0.6.1
+      '@rollup/pluginutils': 3.0.4_rollup@1.27.14
+      estree-walker: 1.0.1
       magic-string: 0.25.5
-      rollup-pluginutils: 2.8.2
     devDependencies:
-      acorn: 6.4.0
+      acorn: 7.1.0
       rollup: 1.27.14
     specifiers:
-      acorn: ^6.0.2
-      estree-walker: ^0.6.0
-      magic-string: ^0.25.1
-      rollup: ^1.20.0
-      rollup-pluginutils: ^2.8.1
+      '@rollup/pluginutils': ^3.0.4
+      acorn: 7.1.0
+      estree-walker: 1.0.1
+      magic-string: ^0.25.5
+      rollup: ^1.27.14
   packages/sucrase:
     dependencies:
       '@rollup/pluginutils': 3.0.1_rollup@1.27.14
