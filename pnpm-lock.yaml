@@ -188,26 +188,26 @@ importers:
       rollup: ^1.27.14
   packages/inject:
     dependencies:
-      estree-walker: 0.9.0
+      '@rollup/pluginutils': 3.0.4_rollup@1.27.14
+      estree-walker: 1.0.1
       magic-string: 0.25.5
-      rollup-pluginutils: 2.8.2
     devDependencies:
+      '@rollup/plugin-buble': 0.21.0_rollup@1.27.14
       del-cli: 3.0.0
       locate-character: 2.0.5
       rollup: 1.27.14
-      rollup-plugin-buble: 0.19.8
       source-map: 0.7.3
       typescript: 3.7.4
     specifiers:
+      '@rollup/plugin-buble': ^0.21.0
+      '@rollup/pluginutils': ^3.0.4
       del-cli: ^3.0.0
-      estree-walker: ^0.9.0
+      estree-walker: 1.0.1
       locate-character: ^2.0.5
-      magic-string: ^0.25.2
-      rollup: ^1.20.0
-      rollup-plugin-buble: ^0.19.6
-      rollup-pluginutils: ^2.6.0
+      magic-string: ^0.25.5
+      rollup: ^1.27.14
       source-map: ^0.7.3
-      typescript: ^3.4.3
+      typescript: ^3.7.4
   packages/json:
     dependencies:
       rollup-pluginutils: 2.8.2
@@ -3255,10 +3255,10 @@ packages:
   /estree-walker/0.6.1:
     resolution:
       integrity: sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
-  /estree-walker/0.9.0:
+  /estree-walker/1.0.1:
     dev: false
     resolution:
-      integrity: sha512-12U47o7XHUX329+x3FzNVjCx3SHEzMF0nkDv7r/HnBzX/xNTKxajBk6gyygaxrAFtLj39219oMfbtxv4KpaOiA==
+      integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==
   /esutils/2.0.3:
     dev: true
     engines:
