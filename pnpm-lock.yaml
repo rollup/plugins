@@ -210,16 +210,16 @@ importers:
       typescript: ^3.7.4
   packages/json:
     dependencies:
-      rollup-pluginutils: 2.8.2
+      '@rollup/pluginutils': 3.0.4
     devDependencies:
-      rollup-plugin-buble: 0.19.8
-      rollup-plugin-node-resolve: 5.2.0
+      '@rollup/plugin-buble': 0.21.0
+      '@rollup/plugin-node-resolve': 7.0.0
       source-map-support: 0.5.16
     specifiers:
-      rollup-plugin-buble: ^0.19.6
-      rollup-plugin-node-resolve: ^5.2.0
-      rollup-pluginutils: ^2.5.0
-      source-map-support: ^0.5.11
+      '@rollup/plugin-buble': ^0.21.0
+      '@rollup/plugin-node-resolve': ^7.0.0
+      '@rollup/pluginutils': ^3.0.4
+      source-map-support: ^0.5.16
   packages/legacy:
     devDependencies:
       '@rollup/plugin-buble': 0.20.0_rollup@1.27.14
@@ -1260,6 +1260,16 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-3Qkoa3n+6NjQggLkN5R6ouVL3/jveyqjJjJXxbk04HEig/97YyOwoimWYIOC5vlQ60Z+xLhnAvGd6mM0gFY2wQ==
+  /@rollup/plugin-buble/0.21.0:
+    dependencies:
+      '@types/buble': 0.19.2
+      buble: 0.19.8
+      rollup-pluginutils: 2.8.2
+    dev: true
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-n6N311RCrVvnsWGyo/if6K2kFoDW+x9r+/hkp+fI73MryLFGxN50Y3zJDg3k0ZTDjRHmveVzM6Nzwv9+plWiLA==
   /@rollup/plugin-buble/0.21.0_rollup@1.27.14:
     dependencies:
       '@types/buble': 0.19.2
@@ -1294,6 +1304,20 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-GqWz1CfXOsqpeVMcoM315+O7zMxpRsmhWyhJoxLFHVSp9S64/u02i7len/FnbTNbmgYs+sZyilasijH8UiuboQ==
+  /@rollup/plugin-node-resolve/7.0.0:
+    dependencies:
+      '@rollup/pluginutils': 3.0.4
+      '@types/resolve': 0.0.8
+      builtin-modules: 3.1.0
+      is-module: 1.0.0
+      resolve: 1.14.2
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-+vOx2+WMBMFotYKM3yYeDGZxIvcQ7yO4g+SuKDFsjKaq8Lw3EPgfB6qNlp8Z/3ceDCEhHvC9/b+PgBGwDQGbzQ==
   /@rollup/plugin-node-resolve/7.0.0_rollup@1.27.14:
     dependencies:
       '@rollup/pluginutils': 3.0.4_rollup@1.27.14
@@ -1361,6 +1385,15 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-lxys3KlfYU8LOGu7+UL2upa3kM9q8ISo4EK+vSqqJCLk6N74HsUZbUFiElolh4BUsv0jeMGtYDzpNrtrShE6Gg==
+  /@rollup/pluginutils/3.0.4:
+    dependencies:
+      estree-walker: 0.6.1
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-buc0oeq2zqQu2mpMyvZgAaQvitikYjT/4JYhA4EXwxX8/g0ZGHoGiX+0AwmfhrNqH4oJv67gn80sTZFQ/jL1bw==
   /@rollup/pluginutils/3.0.4_rollup@1.27.14:
     dependencies:
       estree-walker: 0.6.1
