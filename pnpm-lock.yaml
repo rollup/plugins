@@ -55,13 +55,13 @@ importers:
     dependencies:
       slash: 3.0.0
     devDependencies:
+      '@rollup/plugin-node-resolve': 7.0.0_rollup@1.27.14
       del-cli: 3.0.0
       rollup: 1.27.14
-      rollup-plugin-node-resolve: 5.2.0_rollup@1.27.14
     specifiers:
+      '@rollup/plugin-node-resolve': ^7.0.0
       del-cli: ^3.0.0
-      rollup: ^1.20.0
-      rollup-plugin-node-resolve: ^5.2.0
+      rollup: ^1.27.14
       slash: ^3.0.0
   packages/auto-install:
     dependencies:
@@ -1294,6 +1294,21 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-GqWz1CfXOsqpeVMcoM315+O7zMxpRsmhWyhJoxLFHVSp9S64/u02i7len/FnbTNbmgYs+sZyilasijH8UiuboQ==
+  /@rollup/plugin-node-resolve/7.0.0_rollup@1.27.14:
+    dependencies:
+      '@rollup/pluginutils': 3.0.4_rollup@1.27.14
+      '@types/resolve': 0.0.8
+      builtin-modules: 3.1.0
+      is-module: 1.0.0
+      resolve: 1.14.2
+      rollup: 1.27.14
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-+vOx2+WMBMFotYKM3yYeDGZxIvcQ7yO4g+SuKDFsjKaq8Lw3EPgfB6qNlp8Z/3ceDCEhHvC9/b+PgBGwDQGbzQ==
   /@rollup/plugin-typescript/2.0.1_c43d6d1c92f803cc012688f27ea7270a:
     dependencies:
       '@rollup/pluginutils': 3.0.1_rollup@1.27.14
@@ -1346,6 +1361,17 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-lxys3KlfYU8LOGu7+UL2upa3kM9q8ISo4EK+vSqqJCLk6N74HsUZbUFiElolh4BUsv0jeMGtYDzpNrtrShE6Gg==
+  /@rollup/pluginutils/3.0.4_rollup@1.27.14:
+    dependencies:
+      estree-walker: 0.6.1
+      rollup: 1.27.14
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-buc0oeq2zqQu2mpMyvZgAaQvitikYjT/4JYhA4EXwxX8/g0ZGHoGiX+0AwmfhrNqH4oJv67gn80sTZFQ/jL1bw==
   /@samverschueren/stream-to-observable/0.3.0:
     dependencies:
       any-observable: 0.3.0
@@ -1481,6 +1507,9 @@ packages:
     dev: true
     resolution:
       integrity: sha512-Lue/mlp2egZJoHXZr4LndxDAd7i/7SQYhV0EjWfb/a4/OZ6tuVwMCVPiwkU5nsEipxEf7hmkSU7Em5VQ8P5NGA==
+  /@types/node/13.1.6:
+    resolution:
+      integrity: sha512-Jg1F+bmxcpENHP23sVKkNuU3uaxPnsBMW0cLjleiikFKomJQbsn0Cqk2yDvQArqzZN6ABfBkZ0To7pQ8sLdWDg==
   /@types/normalize-package-data/2.4.0:
     dev: true
     resolution:
@@ -1491,7 +1520,7 @@ packages:
       integrity: sha512-ce5d3q03Ex0sy4R14722Rmt6MT07Ua+k4FwDfdcToYJcMKNtRVQvJ6JCAPdAmAnbRb6CsX6aYb9m96NGod9uTw==
   /@types/resolve/0.0.8:
     dependencies:
-      '@types/node': 13.1.2
+      '@types/node': 13.1.6
     resolution:
       integrity: sha512-auApPaJf3NPfe18hSoJkp8EbZzer2ISk7o8mCC3M9he/a04+gbMF97NkpD2S8riMGvm4BMRI59/SZQSaLTKpsQ==
   /@types/yargs-parser/13.1.0:
