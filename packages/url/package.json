@@ -44,17 +44,17 @@
     "rollup": "^1.20.0"
   },
   "dependencies": {
+    "@rollup/pluginutils": "^3.0.4",
     "make-dir": "^3.0.0",
-    "mime": "^2.4.4",
-    "rollup-pluginutils": "^2.8.2"
+    "mime": "^2.4.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
-    "@babel/register": "^7.7.4",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/register": "^7.7.7",
     "del": "^5.1.0",
     "globby": "^10.0.1",
-    "rollup": "^1.27.4",
+    "rollup": "^1.27.14",
     "rollup-plugin-babel": "^4.3.3"
   },
   "ava": {

@@ -378,9 +378,9 @@ importers:
       typescript: ^3.7.4
   packages/url:
     dependencies:
+      '@rollup/pluginutils': 3.0.4_rollup@1.27.14
       make-dir: 3.0.0
       mime: 2.4.4
-      rollup-pluginutils: 2.8.2
     devDependencies:
       '@babel/core': 7.8.0
       '@babel/preset-env': 7.8.2_@babel+core@7.8.0
@@ -390,16 +390,16 @@ importers:
       rollup: 1.29.0
       rollup-plugin-babel: 4.3.3_@babel+core@7.8.0+rollup@1.29.0
     specifiers:
-      '@babel/core': ^7.7.4
-      '@babel/preset-env': ^7.7.4
-      '@babel/register': ^7.7.4
+      '@babel/core': ^7.7.7
+      '@babel/preset-env': ^7.7.7
+      '@babel/register': ^7.7.7
+      '@rollup/pluginutils': ^3.0.4
       del: ^5.1.0
       globby: ^10.0.1
       make-dir: ^3.0.0
       mime: ^2.4.4
-      rollup: ^1.27.4
+      rollup: ^1.27.14
       rollup-plugin-babel: ^4.3.3
-      rollup-pluginutils: ^2.8.2
   packages/virtual:
     devDependencies:
       rollup: 1.29.0
@@ -6475,6 +6475,7 @@ packages:
   /rollup-pluginutils/2.8.2:
     dependencies:
       estree-walker: 0.6.1
+    dev: true
     resolution:
       integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
   /rollup/1.29.0:
