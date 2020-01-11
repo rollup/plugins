@@ -11,7 +11,7 @@
 
 🍣 A Rollup plugin which imports JPG, PNG, GIF, SVG, and WebP files.
 
-Images are encoded using base64, which means they will be 33% larger than the size on disk. You should therefore only use this for small images where the convenience of having them available on startup (e.g. rendering immediately to a canvas without co-ordinating asynchronous loading of several images) outweighs the cost.
+In case you are not using inline SVG, images are encoded using base64, which means they will be 33% larger than the size on disk. You should therefore only use this for small images where the convenience of having them available on startup (e.g. rendering immediately to a canvas without co-ordinating asynchronous loading of several images) outweighs the cost.
 
 ## Requirements
 
@@ -68,6 +68,28 @@ Using this option set to `true`, the export can be used as such:
 ```js
 import logo from './rollup.png';
 document.body.appendChild(logo);
+```
+
+### `inline`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Depending on `dom` option, the plugin exports DOM `svg` node or svg content as string without encoding. Affects only SVG files.
+
+If both `dom` and `inline` are `true`, the export can be used as such:
+
+```js
+import logo from './rollup.svg';
+document.body.appendChild(logo);
+logo.setAttribute('fill', 'red');
+```
+
+And string is exported using `inline` without `dom` option:
+
+```js
+import logo from './rollup.svg';
+document.body.innerHTML += logo;
 ```
 
 ### `exclude`

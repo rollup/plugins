@@ -41,3 +41,21 @@ test('imports an svg without encoding', async (t) => {
 
   t.snapshot(await getCode(bundle));
 });
+
+test('imports an svg and inline to string', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/svg.js',
+    plugins: [image({ inline: true })]
+  });
+
+  t.snapshot(await getCode(bundle));
+});
+
+test('imports an svg and inline to dom', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/svg.js',
+    plugins: [image({ dom: true, inline: true })]
+  });
+
+  t.snapshot(await getCode(bundle));
+});

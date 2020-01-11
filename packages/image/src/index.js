@@ -6,7 +6,8 @@ import { createFilter } from '@rollup/pluginutils';
 const defaults = {
   dom: false,
   exclude: null,
-  include: null
+  include: null,
+  inline: false
 };
 
 const mimeTypes = {
@@ -36,12 +37,21 @@ export default function image(opts = {}) {
         return null;
       }
 
-      const format = mime === mimeTypes['.svg'] ? 'utf-8' : 'base64';
+      const isSVG = mime === mimeTypes['.svg'];
+      const format = isSVG ? 'utf-8' : 'base64';
       const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');
-      const data = `'data:${mime};${format},${source}'`;
-      const code = options.dom
-        ? `var img = new Image(); img.src = ${data}; export default img;`
-        : `const img = ${data}; export default img;`;
+      let code;
+      if (isSVG && options.inline) {
+        const svg = JSON.stringify(source);
+        code = options.dom
+          ? `const svg = (new DOMParser().parseFromString(${svg}, 'image/svg+xml')).firstChild; export default svg;`
+          : `const svg = ${svg}; export default svg;`;
+      } else {
+        const data = `'data:${mime};${format},${source}'`;
+        code = options.dom
+          ? `const img = new Image(); img.src = ${data}; export default img;`
+          : `const img = ${data}; export default img;`;
+      }
 
       return code;
     }
