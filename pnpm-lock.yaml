@@ -84,22 +84,22 @@ importers:
       strip-ansi: ^5.2.0
   packages/buble:
     dependencies:
+      '@rollup/pluginutils': 3.0.4_rollup@1.27.14
       '@types/buble': 0.19.2
       buble: 0.19.8
-      rollup-pluginutils: 2.8.2
     devDependencies:
       del-cli: 3.0.0
       rollup: 1.27.14
       source-map: 0.7.3
       typescript: 3.7.4
     specifiers:
+      '@rollup/pluginutils': ^3.0.4
       '@types/buble': ^0.19.2
       buble: ^0.19.8
       del-cli: ^3.0.0
-      rollup: ^1.27.0
-      rollup-pluginutils: ^2.8.2
+      rollup: ^1.27.14
       source-map: ^0.7.3
-      typescript: ^3.7.2
+      typescript: ^3.7.4
   packages/commonjs:
     dependencies:
       '@rollup/pluginutils': 3.0.1_rollup@1.27.14
@@ -1365,7 +1365,6 @@ packages:
     dependencies:
       estree-walker: 0.6.1
       rollup: 1.27.14
-    dev: true
     engines:
       node: '>= 8.0.0'
     peerDependencies:
