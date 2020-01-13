@@ -21,17 +21,17 @@ export interface RollupJsonOptions {
 	 * Specify indentation for the generated default export
 	 * @default '\t'
 	 */
-	indent: string;
+	indent?: string;
 	/**
 	 * Ignores indent and generates the smallest code
 	 * @default false
 	 */
-	compact: boolean;
+	compact?: boolean;
 	/**
 	 * Generate a named export for every property of the JSON object
 	 * @default true
 	 */
-	namedExports: true;
+	namedExports?: boolean;
 }
 
 /**
