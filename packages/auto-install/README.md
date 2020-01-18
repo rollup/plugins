@@ -41,7 +41,7 @@ export default {
 };
 ```
 
-_Note: ensure that this plugin is added to the `plugins` array *before* [@rollup/plugin-node-resolve](https://github.com/rollup/plugins)._
+_Note: ensure that this plugin is added to the `plugins` array *before* [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve)._
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
