@@ -52,7 +52,7 @@ export default function strip(options = {}) {
 
     transform(code, id) {
       if (!filter(id)) return null;
-      if (functions.length > 0 && !firstpass.test(code)) return null;
+      if (!firstpass.test(code)) return null;
 
       let ast;
 
