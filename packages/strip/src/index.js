@@ -44,7 +44,7 @@ export default function strip(options = {}) {
 
   const labels = options.labels || [];
 
-  const firstpass = new RegExp(`\\b(?:${functions.join('|')}|debugger)\\b`);
+  const firstpass = new RegExp(`\\b(?:${[...functions, ...labels].join('|')}|debugger)\\b`);
   const pattern = new RegExp(`^(?:${functions.join('|')})$`);
 
   return {
