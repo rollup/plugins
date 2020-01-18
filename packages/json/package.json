@@ -46,12 +46,12 @@
     "rollup": "^1.20.0"
   },
   "dependencies": {
-    "rollup-pluginutils": "^2.5.0"
+    "@rollup/pluginutils": "^3.0.4"
   },
   "devDependencies": {
-    "rollup-plugin-buble": "^0.19.6",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "source-map-support": "^0.5.11"
+    "@rollup/plugin-buble": "^0.21.0",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "source-map-support": "^0.5.16"
   },
   "ava": {
     "files": [

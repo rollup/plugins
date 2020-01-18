@@ -42,9 +42,9 @@
     "node-noop": "^1.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^7.0.0",
     "del": "^5.1.0",
-    "rollup": "^1.20.0",
-    "rollup-plugin-node-resolve": "^5.2.0"
+    "rollup": "^1.27.14"
   },
   "ava": {
     "files": [

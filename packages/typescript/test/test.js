@@ -3,7 +3,7 @@ const path = require('path');
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const commonjs = require('rollup-plugin-commonjs');
+const commonjs = require('@rollup/plugin-commonjs');
 
 const { getCode, testBundle } = require('../../../util/test');
 
@@ -255,9 +255,11 @@ test.serial('should support extends property with given tsconfig', async (t) => 
 
   const bundle = await rollup({
     input: 'main.tsx',
-    plugins: [typescript({
-      tsconfig: './tsconfig.json',
-    })]
+    plugins: [
+      typescript({
+        tsconfig: './tsconfig.json'
+      })
+    ]
   });
   const code = await getCode(bundle, outputOptions);
 

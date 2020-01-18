@@ -3,7 +3,7 @@ const { join } = require('path');
 
 const test = require('ava');
 const del = require('del');
-const resolve = require('rollup-plugin-node-resolve');
+const resolve = require('@rollup/plugin-node-resolve');
 const { rollup } = require('rollup');
 
 const autoInstall = require('..');

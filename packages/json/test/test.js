@@ -3,7 +3,7 @@ const { readFileSync } = require('fs');
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const resolve = require('rollup-plugin-node-resolve');
+const resolve = require('@rollup/plugin-node-resolve');
 
 const { testBundle } = require('../../../util/test');
 

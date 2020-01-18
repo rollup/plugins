@@ -1,4 +1,4 @@
-import { createFilter, dataToEsm } from 'rollup-pluginutils';
+import { createFilter, dataToEsm } from '@rollup/pluginutils';
 
 export default function json(options = {}) {
   const filter = createFilter(options.include, options.exclude);

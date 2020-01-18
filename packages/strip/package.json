@@ -37,13 +37,13 @@
     "rollup": "^1.20.0"
   },
   "dependencies": {
+    "@rollup/pluginutils": "^3.0.4",
     "estree-walker": "^1.0.1",
-    "magic-string": "^0.25.1",
-    "rollup-pluginutils": "^2.8.1"
+    "magic-string": "^0.25.5"
   },
   "devDependencies": {
-    "acorn": "^6.0.2",
-    "rollup": "^1.20.0"
+    "acorn": "7.1.0",
+    "rollup": "^1.27.14"
   },
   "ava": {
     "files": [
