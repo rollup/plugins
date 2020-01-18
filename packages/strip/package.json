@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.0.4",
-    "estree-walker": "1.0.1",
+    "estree-walker": "^1.0.1",
     "magic-string": "^0.25.5"
   },
   "devDependencies": {
