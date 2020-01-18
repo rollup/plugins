@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 
 const whitespace = /\s/;
 

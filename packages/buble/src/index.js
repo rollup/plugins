@@ -1,5 +1,5 @@
 import { transform } from 'buble';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 
 export default function buble(options = {}) {
   const filter = createFilter(options.include, options.exclude);
