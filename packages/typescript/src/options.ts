@@ -2,7 +2,6 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
-
 import * as defaultTs from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
@@ -26,6 +25,12 @@ type JsonCompilerOptions = Omit<CompilerOptions, keyof EnumCompilerOptions> & En
 /** Compiler options set by the plugin user. */
 type PartialCustomOptions = Partial<CompilerOptions> | Partial<JsonCompilerOptions>;
 
+const DEFAULT_COMPILER_OPTIONS: PartialCustomOptions = {
+  module: 'esnext',
+  sourceMap: true,
+  noEmitOnError: true
+};
+
 const FORCED_COMPILER_OPTIONS: Partial<CompilerOptions> = {
   // See: https://github.com/rollup/rollup-plugin-typescript/issues/45
   // See: https://github.com/rollup/rollup-plugin-typescript/issues/142
@@ -36,9 +41,14 @@ const FORCED_COMPILER_OPTIONS: Partial<CompilerOptions> = {
   incremental: false,
   // eslint-disable-next-line no-undefined
   tsBuildInfoFile: undefined,
-  // Use tslib
+  // Always use tslib
   noEmitHelpers: true,
-  importHelpers: true
+  importHelpers: true,
+  // Typescript needs to emit the code for us to work with
+  noEmit: false,
+  emitDeclarationOnly: false,
+  // Preventing Typescript from resolving code may break compilation
+  noResolve: false
 };
 
 /**
@@ -200,7 +210,13 @@ export function parseTypescriptConfig(
   // This determines where the data is passed to the parser.
   if (containsEnumOptions(compilerOptions)) {
     parsedConfig = ts.parseJsonConfigFileContent(
-      tsConfigFile,
+      {
+        ...tsConfigFile,
+        compilerOptions: {
+          ...DEFAULT_COMPILER_OPTIONS,
+          ...tsConfigFile.compilerOptions
+        }
+      },
       ts.sys,
       cwd,
       { ...compilerOptions, ...FORCED_COMPILER_OPTIONS },
@@ -208,7 +224,14 @@ export function parseTypescriptConfig(
     );
   } else {
     parsedConfig = ts.parseJsonConfigFileContent(
-      { ...tsConfigFile, compilerOptions: { ...tsConfigFile.compilerOptions, ...compilerOptions } },
+      {
+        ...tsConfigFile,
+        compilerOptions: {
+          ...DEFAULT_COMPILER_OPTIONS,
+          ...tsConfigFile.compilerOptions,
+          ...compilerOptions
+        }
+      },
       ts.sys,
       cwd,
       FORCED_COMPILER_OPTIONS,
@@ -220,5 +243,6 @@ export function parseTypescriptConfig(
   // Normal script files are handled by Rollup.
   parsedConfig.fileNames = parsedConfig.fileNames.filter((file) => file.endsWith('.d.ts'));
   normalizeCompilerOptions(ts, parsedConfig.options);
+
   return parsedConfig;
 }
