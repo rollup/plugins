@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { extname } from 'path';
+import { escape } from 'querystring';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -36,9 +37,10 @@ export default function image(opts = {}) {
         return null;
       }
 
-      const format = mime === mimeTypes['.svg'] ? 'utf-8' : 'base64';
+      const isSVG = mime === mimeTypes['.svg'];
+      const format = isSVG ? 'utf-8' : 'base64';
       const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');
-      const data = `'data:${mime};${format},${source}'`;
+      const data = `'data:${mime};${format},${isSVG ? escape(source) : source}'`;
       const code = options.dom
         ? `var img = new Image(); img.src = ${data}; export default img;`
         : `const img = ${data}; export default img;`;
