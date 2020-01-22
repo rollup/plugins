@@ -129,7 +129,7 @@ Sometimes you have to leave require statements unconverted. Pass an array contai
 
 ## Using with @rollup/plugin-node-resolve
 
-Since most CommonJS packages you are importing are probably depdenencies in `node_modules`, you may need to use [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/packages/node-resolve):
+Since most CommonJS packages you are importing are probably depdenencies in `node_modules`, you may need to use [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve):
 
 ```js
 // rollup.config.js
