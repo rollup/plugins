@@ -10,7 +10,7 @@
         "allowJs": true
     },
     "files": [
-        "index.d.ts",
+        "types",
         "typings-test.js"
     ]
 }
