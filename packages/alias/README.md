@@ -140,7 +140,7 @@ Example:
 ```javascript
 // rollup.config.js
 import alias from '@rollup/plugin-alias';
-import resolve from 'rollup-plugin-node-resolve';
+import resolve from '@rollup/plugin-node-resolve';
 
 const customResolver = resolve({
   extensions: ['.mjs', '.js', '.jsx', '.json', '.sass', '.scss']
