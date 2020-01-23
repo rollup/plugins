@@ -5,7 +5,7 @@ import fs from 'fs';
 
 import makeDir from 'make-dir';
 import mime from 'mime';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 
 const fsStatPromise = util.promisify(fs.stat);
 const fsReadFilePromise = util.promisify(fs.readFile);

@@ -5,7 +5,7 @@ import { rollup } from 'rollup';
 import slash from 'slash';
 
 // eslint-disable-next-line import/no-unresolved, import/extensions
-import nodeResolvePlugin from 'rollup-plugin-node-resolve';
+import nodeResolvePlugin from '@rollup/plugin-node-resolve';
 
 import alias from '../dist';
 

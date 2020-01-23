@@ -1,4 +1,4 @@
-import buble from 'rollup-plugin-buble';
+import buble from '@rollup/plugin-buble';
 
 import pkg from './package.json';
 

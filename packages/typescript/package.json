@@ -48,17 +48,17 @@
     "typescript": ">=2.1.0"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.0.0",
-    "resolve": "^1.13.1"
+    "@rollup/pluginutils": "^3.0.1",
+    "resolve": "^1.14.1"
   },
   "devDependencies": {
-    "@rollup/plugin-buble": "^0.20.0",
+    "@rollup/plugin-buble": "^0.21.0",
+    "@rollup/plugin-commonjs": "^11.0.1",
     "@rollup/plugin-typescript": "^2.0.1",
     "buble": "^0.19.8",
-    "rollup": "^1.27.8",
-    "rollup-plugin-commonjs": "^9.3.4",
+    "rollup": "^1.27.14",
     "tslib": "^1.10.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.4"
   },
   "ava": {
     "compileEnhancements": false,

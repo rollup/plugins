@@ -1,6 +1,6 @@
 import { sep } from 'path';
 
-import { attachScopes, createFilter, makeLegalIdentifier } from 'rollup-pluginutils';
+import { attachScopes, createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
 import { walk } from 'estree-walker';
 
 import MagicString from 'magic-string';
