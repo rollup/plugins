@@ -111,7 +111,7 @@ function getTsConfigPath(ts: typeof import('typescript'), relativePath: string |
 function readTsConfigFile(ts: typeof import('typescript'), tsConfigPath: string) {
   const { config, error } = ts.readConfigFile(tsConfigPath, (path) => readFileSync(path, 'utf8'));
   if (error) {
-    throw Object.assign(Error(), diagnosticToWarning(ts, error));
+    throw Object.assign(Error(), diagnosticToWarning(ts, null, error));
   }
 
   const extendedTsConfig: string = config?.extends;
