@@ -86,6 +86,13 @@ Default: `true`
 
 When set to false, ignores any options specified in the config file. If set to a string that corresponds to a file path, the specified file will be used as config file.
 
+### `transpileOnly`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Set to true to avoid type checking the code.
+
 ### `typescript`
 
 Type: `import('typescript')`<br>
@@ -122,6 +129,14 @@ Type: `Boolean`<br>
 Default: `true`
 
 If a type error is detected, the Rollup build is aborted when this option is set to true.
+
+#### `isolatedModules`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Typescript will perform additional checks to allow faster separate compilation (such as with @babel/plugin-transform-typescript).
+If `isolatedModules` and `transpileOnly` are both set to true, a faster compilation method will be used.
 
 #### `files`, `include`, `exclude`
 

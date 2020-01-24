@@ -60,6 +60,24 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     transform(code, id) {
       if (!filter(id)) return null;
 
+      if (options.transpileOnly && parsedOptions.options.isolatedModules) {
+        // Use the quicker transpileModule API
+        const transformed = ts.transpileModule(code, {
+          fileName: id,
+          reportDiagnostics: true,
+          compilerOptions: parsedOptions.options
+        });
+
+        emitDiagnostics(ts, this, host, transformed.diagnostics);
+
+        return {
+          code: transformed.outputText,
+
+          // Rollup expects `map` to be an object so we must parse the string
+          map: transformed.sourceMapText ? JSON.parse(transformed.sourceMapText) : null
+        };
+      }
+
       host.addFile(id, code);
       const output = services.getEmitOutput(id);
 
@@ -77,9 +95,11 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     generateBundle() {
-      const program = services.getProgram();
-      if (program == null) return;
-      emitDiagnostics(ts, this, host, ts.getPreEmitDiagnostics(program));
+      if (!options.transpileOnly) {
+        const program = services.getProgram();
+        if (program == null) return;
+        emitDiagnostics(ts, this, host, ts.getPreEmitDiagnostics(program));
+      }
     }
   };
 }

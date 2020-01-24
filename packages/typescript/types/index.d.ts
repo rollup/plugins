@@ -37,6 +37,10 @@ interface RollupTypescriptOptions {
    * Overrides the injected TypeScript helpers with a custom version.
    */
   tslib?: Promise<string> | string;
+  /**
+   * Set to true to avoid type checking the code.
+   */
+  transpileOnly?: boolean;
 }
 
 /**

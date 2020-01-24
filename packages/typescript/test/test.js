@@ -161,7 +161,33 @@ test('reports diagnostics and throws if errors occur during transpilation', asyn
   t.is(caughtError.pluginCode, 'TS1110');
 });
 
-test('ignore type errors if noEmitOnError is false', async (t) => {
+test('throws if syntax error occurs with transpileOnly', async (t) => {
+  const caughtError = await t.throwsAsync(
+    rollup({
+      input: 'fixtures/syntax-error/missing-type.ts',
+      plugins: [typescript({ transpileOnly: true })],
+      onwarn
+    })
+  );
+
+  t.is(caughtError.message, '@rollup/plugin-typescript TS1110: Type expected.');
+  t.is(caughtError.pluginCode, 'TS1110');
+});
+
+test('throws if syntax error occurs with transpileOnly and isolatedModules', async (t) => {
+  const caughtError = await t.throwsAsync(
+    rollup({
+      input: 'fixtures/syntax-error/missing-type.ts',
+      plugins: [typescript({ transpileOnly: true, isolatedModules: true })],
+      onwarn
+    })
+  );
+
+  t.is(caughtError.message, '@rollup/plugin-typescript TS1110: Type expected.');
+  t.is(caughtError.pluginCode, 'TS1110');
+});
+
+test('only show warnings for type errors if noEmitOnError is false', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/syntax-error/missing-type.ts',
@@ -420,6 +446,26 @@ test('should handle re-exporting types', async (t) => {
     onwarn
   });
   await t.notThrowsAsync(getCode(bundle, outputOptions));
+});
+
+test('should not handle re-exporting types with isolatedModules', async (t) => {
+  const caughtError = await t.throwsAsync(
+    rollup({
+      input: 'fixtures/reexport-type/main.ts',
+      plugins: [typescript({ isolatedModules: true })],
+      onwarn
+    })
+  );
+
+  t.is(
+    caughtError.message,
+    `@rollup/plugin-typescript TS1205: Cannot re-export a type when the '--isolatedModules' flag is provided.`
+  );
+  t.is(caughtError.pluginCode, 'TS1205');
+  t.true(caughtError.frame.includes('export { Foo }'), caughtError.frame);
+  t.true(caughtError.loc.file.includes('main.ts'), caughtError.loc.file);
+  t.is(caughtError.loc.column, 10);
+  t.is(caughtError.loc.line, 3);
 });
 
 test('prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options', async (t) => {

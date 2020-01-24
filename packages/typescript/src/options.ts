@@ -62,7 +62,15 @@ const FORCED_COMPILER_OPTIONS: Partial<CompilerOptions> = {
  * - `tslib`: ESM code from the tslib helper library (possibly)
  */
 export function getPluginOptions(options: RollupTypescriptOptions) {
-  const { include, exclude, tsconfig, typescript, tslib, ...compilerOptions } = options;
+  const {
+    include,
+    exclude,
+    tsconfig,
+    typescript,
+    tslib,
+    transpileOnly,
+    ...compilerOptions
+  } = options;
 
   const filter = createFilter(
     include || ['*.ts+(|x)', '**/*.ts+(|x)'],
