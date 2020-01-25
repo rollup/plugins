@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.5
+
+_2020-01-25_
+
+### Bugfixes
+
+- fix: bring back named exports (#176)
+
 ## v3.0.4
 
 _2020-01-10_
