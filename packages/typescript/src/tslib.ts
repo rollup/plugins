@@ -16,9 +16,9 @@ const resolveIdAsync = (file: string, opts?: AsyncOpts) =>
 
 /**
  * Returns code asynchronously for the tslib helper library.
- * @param customCode Overrides the injected helpers with a custom version.
+ * @param customHelperCode Overrides the injected helpers with a custom version.
  */
-export async function getTsLibCode(customHelperCode: string | Promise<string>) {
+export async function getTsLibCode(customHelperCode: string | Promise<string> | undefined) {
   if (customHelperCode) return customHelperCode;
 
   const defaultPath = await resolveIdAsync('tslib/tslib.es6.js', { basedir: __dirname });

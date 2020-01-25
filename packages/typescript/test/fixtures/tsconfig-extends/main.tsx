@@ -1,1 +1,3 @@
-export default <span {...props}>Yo!</span>
+const props = {};
+// @ts-ignore
+export default <span {...props}>Yo!</span>;
