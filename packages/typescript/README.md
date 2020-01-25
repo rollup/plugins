@@ -186,6 +186,10 @@ export default {
 };
 ```
 
+### Faster compiling
+
+Previous versions of this plugin used Typescript's `transpileModule` API, which is faster but does not perform typechecking and does not support cross-file features like `const enum`s and emit-less types. If you want this behaviour, you can use [@rollup/plugin-sucrase](https://github.com/rollup/plugins/tree/master/packages/sucrase) instead.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)

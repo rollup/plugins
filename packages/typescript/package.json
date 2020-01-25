@@ -8,6 +8,9 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Oskar Segersvärd",
+  "contributors": [
+    "Tiger Oakes <contact@tigeroakes.com> (https://tigeroakes.com)"
+  ],
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/typescript/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
