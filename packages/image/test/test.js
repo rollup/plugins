@@ -36,6 +36,15 @@ test('ignores invalid image', async (t) =>
 test('imports an svg without encoding', async (t) => {
   const bundle = await rollup.rollup({
     input: 'fixtures/svg.js',
+    plugins: [image({ preferBase64Uri: false })]
+  });
+
+  t.snapshot(await getCode(bundle));
+});
+
+test('imports an svg with preferrer Base64 encoding', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/svg.js',
     plugins: [image()]
   });
 
