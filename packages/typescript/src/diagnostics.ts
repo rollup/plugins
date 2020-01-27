@@ -9,18 +9,21 @@ const CANNOT_COMPILE_ESM = 1204;
 export function emitDiagnostics(
   ts: typeof import('typescript'),
   context: PluginContext,
+  host: import('typescript').FormatDiagnosticsHost &
+    Pick<import('typescript').LanguageServiceHost, 'getCompilationSettings'>,
   diagnostics: readonly import('typescript').Diagnostic[] | undefined
 ) {
   if (!diagnostics) return;
+  const { noEmitOnError } = host.getCompilationSettings();
 
   diagnostics
     .filter((diagnostic) => diagnostic.code !== CANNOT_COMPILE_ESM)
     .forEach((diagnostic) => {
       // Build a Rollup warning object from the diagnostics object.
-      const warning = diagnosticToWarning(ts, diagnostic);
+      const warning = diagnosticToWarning(ts, host, diagnostic);
 
       // Errors are fatal. Otherwise emit warnings.
-      if (diagnostic.category === ts.DiagnosticCategory.Error) {
+      if (noEmitOnError && diagnostic.category === ts.DiagnosticCategory.Error) {
         context.error(warning);
       } else {
         context.warn(warning);
@@ -33,6 +36,7 @@ export function emitDiagnostics(
  */
 export function diagnosticToWarning(
   ts: typeof import('typescript'),
+  host: import('typescript').FormatDiagnosticsHost | null,
   diagnostic: import('typescript').Diagnostic
 ) {
   const pluginCode = `TS${diagnostic.code}`;
@@ -44,8 +48,8 @@ export function diagnosticToWarning(
     message: `@rollup/plugin-typescript ${pluginCode}: ${message}`
   };
 
-  // Add information about the file location
   if (diagnostic.file) {
+    // Add information about the file location
     const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
 
     warning.loc = {
@@ -53,6 +57,19 @@ export function diagnosticToWarning(
       line: line + 1,
       file: diagnostic.file.fileName
     };
+
+    if (host) {
+      // Extract a code frame from Typescript
+      const formatted = ts.formatDiagnosticsWithColorAndContext([diagnostic], host);
+      // Typescript only exposes this formatter as a string prefixed with the flattened message.
+      // We need to remove it here since Rollup treats the properties as separate parts.
+      let frame = formatted.slice(formatted.indexOf(message) + message.length);
+      const newLine = host.getNewLine();
+      if (frame.startsWith(newLine)) {
+        frame = frame.slice(frame.indexOf(newLine) + newLine.length);
+      }
+      warning.frame = frame;
+    }
   }
 
   return warning;

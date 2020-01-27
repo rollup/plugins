@@ -1,16 +1,13 @@
 {
-    "compilerOptions": {
-        "lib": [
-            "es6"
-        ],
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "strict": true,
-        "noEmit": true,
-        "allowJs": true
-    },
-    "files": [
-        "types",
-        "typings-test.js"
-    ]
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["es6"],
+    "module": "esnext",
+    "allowJs": true,
+    "target": "es2017"
+  },
+  "include": [
+    "types/**/*",
+    "typings-test.js"
+  ]
 }

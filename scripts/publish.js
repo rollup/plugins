@@ -101,7 +101,8 @@ const push = async () => {
   }
 
   log(chalk`{blue Pushing Release and Tags}`);
-  await execa('git', ['push', '--follow-tags']);
+  await execa('git', ['push']);
+  await execa('git', ['push', '--tags']);
 };
 
 const tag = async (cwd, pluginName, version) => {

@@ -117,3 +117,10 @@ test.serial('includes names containing parenthesis', (t) => {
   t.truthy(filter(resolve('.x/(test)a.ts')));
   t.falsy(filter(resolve('.x/(test)a.d.ts')));
 });
+
+test('handles relative paths', (t) => {
+  const filter = createFilter(['./index.js', './foo/../a.js']);
+  t.truthy(filter(resolve('index.js')));
+  t.truthy(filter(resolve('a.js')));
+  t.falsy(filter(resolve('foo/a.js')));
+});
