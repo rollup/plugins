@@ -20,7 +20,7 @@ export default {
       ]
     })
   ],
-  external: Object.keys(pkg.dependencies).concat(['path', 'fs', 'os']),
+  external: Object.keys(pkg.dependencies).concat(['fs', 'path', 'os', 'util']),
   output: [
     { file: pkg.main, format: 'cjs' },
     { file: pkg.module, format: 'es' }

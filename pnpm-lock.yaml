@@ -245,7 +245,7 @@ importers:
       rollup-plugin-babel: ^4.0.3
   packages/node-resolve:
     dependencies:
-      '@rollup/pluginutils': 3.0.4_rollup@1.29.0
+      '@rollup/pluginutils': 3.0.6_rollup@1.29.0
       '@types/resolve': 0.0.8
       builtin-modules: 3.1.0
       is-module: 1.0.0
@@ -261,18 +261,18 @@ importers:
       source-map: 0.7.3
       string-capitalize: 1.0.1
     specifiers:
-      '@babel/core': ^7.4.5
-      '@babel/preset-env': ^7.4.5
-      '@rollup/plugin-json': ^4.0.0
-      '@rollup/pluginutils': ^3.0.0
+      '@babel/core': ^7.8.3
+      '@babel/preset-env': ^7.8.3
+      '@rollup/plugin-json': ^4.0.1
+      '@rollup/pluginutils': ^3.0.6
       '@types/resolve': 0.0.8
       builtin-modules: ^3.1.0
-      es5-ext: ^0.10.50
+      es5-ext: ^0.10.53
       is-module: ^1.0.0
-      resolve: ^1.11.1
-      rollup: ^1.20.0
-      rollup-plugin-babel: ^4.3.2
-      rollup-plugin-commonjs: ^10.0.0
+      resolve: ^1.14.2
+      rollup: ^1.29.0
+      rollup-plugin-babel: ^4.3.3
+      rollup-plugin-commonjs: ^10.1.0
       source-map: ^0.7.3
       string-capitalize: ^1.0.1
   packages/pluginutils:
@@ -1459,13 +1459,23 @@ packages:
   /@rollup/pluginutils/3.0.4_rollup@1.29.0:
     dependencies:
       estree-walker: 0.6.1
-      rollup: 1.29.0
     engines:
       node: '>= 8.0.0'
     peerDependencies:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-buc0oeq2zqQu2mpMyvZgAaQvitikYjT/4JYhA4EXwxX8/g0ZGHoGiX+0AwmfhrNqH4oJv67gn80sTZFQ/jL1bw==
+  /@rollup/pluginutils/3.0.6_rollup@1.29.0:
+    dependencies:
+      estree-walker: 1.0.1
+      rollup: 1.29.0
+    dev: false
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-Nb6U7sg11v8D+E4mxRxwT+UumUL7MSnwI8V1SJB3THyW2MOGD/Q6GyxLtpnjrbT3zTRPSozzDMyVZwemgldO3w==
   /@samverschueren/stream-to-observable/0.3.0:
     dependencies:
       any-observable: 0.3.0
