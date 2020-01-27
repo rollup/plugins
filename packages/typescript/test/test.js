@@ -39,19 +39,42 @@ test('ignores the declaration option', async (t) => {
 });
 
 test('throws for unsupported module types', async (t) => {
-  let caughtError = null;
-  try {
-    await rollup({
+  const caughtError = t.throws(() =>
+    rollup({
       input: 'fixtures/basic/main.ts',
-      plugins: [typescript({ module: 'ES5' })]
-    });
-  } catch (error) {
-    caughtError = error;
-  }
+      plugins: [typescript({ module: 'amd' })]
+    })
+  );
 
-  t.truthy(caughtError, 'Throws an error.');
   t.true(
-    caughtError.message.includes("The module kind should be 'ES2015' or 'ESNext, found: 'ES5'"),
+    caughtError.message.includes("The module kind should be 'ES2015' or 'ESNext, found: 'AMD'"),
+    `Unexpected error message: ${caughtError.message}`
+  );
+});
+
+test('warns for invalid module types', async (t) => {
+  const warnings = [];
+  const caughtError = await t.throwsAsync(() =>
+    rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [typescript({ module: 'ES5' })],
+      onwarn({ toString, ...warning }) {
+        // Can't match toString with deepEqual, so remove it here
+        warnings.push(warning);
+      }
+    })
+  );
+
+  t.deepEqual(warnings, [
+    {
+      code: 'PLUGIN_WARNING',
+      plugin: 'typescript',
+      pluginCode: 'TS6046',
+      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'esnext'.`
+    }
+  ]);
+  t.true(
+    caughtError.message.includes(`@rollup/plugin-typescript: Couldn't process compiler options`),
     `Unexpected error message: ${caughtError.message}`
   );
 });
@@ -388,7 +411,7 @@ test('supports dynamic imports', async (t) => {
   t.true(code.includes("console.log('dynamic')"));
 });
 
-test('supports CommonJS imports when the output format is CommonJS', async (t) => {
+test.serial('supports CommonJS imports when the output format is CommonJS', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/commonjs-imports/main.ts',
     plugins: [typescript({ module: 'CommonJS' }), commonjs({ extensions: ['.ts', '.js'] })]
@@ -400,6 +423,16 @@ test('supports CommonJS imports when the output format is CommonJS', async (t) =
 function fakeTypescript(custom) {
   return Object.assign(
     {
+      ModuleKind: {
+        None: 0,
+        CommonJS: 1,
+        AMD: 2,
+        UMD: 3,
+        System: 4,
+        ES2015: 5,
+        ESNext: 99
+      },
+
       transpileModule() {
         return {
           outputText: '',
@@ -418,6 +451,14 @@ function fakeTypescript(custom) {
         return {
           options,
           errors: []
+        };
+      },
+
+      parseJsonConfigFileContent(json, host, basePath, existingOptions) {
+        return {
+          options: existingOptions,
+          errors: [],
+          fileNames: []
         };
       }
     },

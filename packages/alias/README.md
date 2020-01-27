@@ -129,7 +129,7 @@ This would replace the file extension for all imports ending with `.js` to `.ali
 
 ## Resolving algorithm
 
-This plugin uses resolver plugins specified for Rollup and eventually Rollup default algorithm. If you rely on Node specific features, you probably want [rollup-plugin-node-resolve](https://www.npmjs.com/package/rollup-plugin-node-resolve) in your setup.
+This plugin uses resolver plugins specified for Rollup and eventually Rollup default algorithm. If you rely on Node specific features, you probably want [@rollup/plugin-node-resolve](https://www.npmjs.com/package/@rollup/plugin-node-resolve) in your setup.
 
 ## Custom Resolvers
 
@@ -140,7 +140,7 @@ Example:
 ```javascript
 // rollup.config.js
 import alias from '@rollup/plugin-alias';
-import resolve from 'rollup-plugin-node-resolve';
+import resolve from '@rollup/plugin-node-resolve';
 
 const customResolver = resolve({
   extensions: ['.mjs', '.js', '.jsx', '.json', '.sass', '.scss']
