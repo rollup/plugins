@@ -1,5 +1,24 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v3.0.0
+
+_2020-01-27_
+
+### Breaking Changes
+
+- feat: Add typechecking! (#177)
+
+### Bugfixes
+
+- fix: extended config file path (#157)
+
+### Updates
+
+- core: Add note about old behaviour (#181)
+- chore: Always use ParsedCommandLine (#162)
+- chore: update devDeps (96c45ff)
+- chore: Remove resolveHost (#148)
+
 ## v2.1.0
 
 _2020-01-07_
