@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.6
+
+_2020-01-27_
+
+### Bugfixes
+
+- fix: resolve relative paths starting with "./" (#180)
+
 ## v3.0.5
 
 _2020-01-25_
