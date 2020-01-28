@@ -146,12 +146,12 @@ importers:
       typescript: ^3.7.4
   packages/data-uri:
     devDependencies:
-      '@rollup/plugin-typescript': 2.1.0_rollup@1.29.0+typescript@3.7.5
-      '@rollup/pluginutils': 3.0.4_rollup@1.29.0
+      '@rollup/plugin-typescript': 3.0.0_rollup@1.29.0+typescript@3.7.5
+      '@rollup/pluginutils': 3.0.6_rollup@1.29.0
       rollup: 1.29.0
       typescript: 3.7.5
     specifiers:
-      '@rollup/plugin-typescript': ^2.1.0
+      '@rollup/plugin-typescript': ^3.0.0
       '@rollup/pluginutils': ^3.0.1
       rollup: ^1.27.14
       typescript: ^3.7.4
@@ -279,6 +279,7 @@ importers:
     dependencies:
       estree-walker: 1.0.1
     devDependencies:
+      '@rollup/plugin-typescript': 3.0.0_typescript@3.7.5
       '@types/estree': 0.0.39
       '@types/jest': 24.9.0
       '@types/micromatch': 3.1.1
@@ -286,9 +287,9 @@ importers:
       micromatch: 4.0.2
       rollup-plugin-commonjs: 10.1.0
       rollup-plugin-node-resolve: 5.2.0
-      rollup-plugin-typescript: 1.0.1_typescript@3.7.5
       typescript: 3.7.5
     specifiers:
+      '@rollup/plugin-typescript': ^3.0.0
       '@types/estree': 0.0.39
       '@types/jest': ^24.0.23
       '@types/micromatch': ^3.1.1
@@ -297,7 +298,6 @@ importers:
       micromatch: ^4.0.2
       rollup-plugin-commonjs: ^10.1.0
       rollup-plugin-node-resolve: ^5.2.0
-      rollup-plugin-typescript: ^1.0.1
       typescript: ^3.7.2
   packages/replace:
     dependencies:
@@ -356,12 +356,12 @@ importers:
       sucrase: ^3.10.1
   packages/typescript:
     dependencies:
-      '@rollup/pluginutils': 3.0.4_rollup@1.29.0
+      '@rollup/pluginutils': 3.0.6_rollup@1.29.0
       resolve: 1.14.2
     devDependencies:
       '@rollup/plugin-buble': 0.21.0_rollup@1.29.0
       '@rollup/plugin-commonjs': 11.0.1_rollup@1.29.0
-      '@rollup/plugin-typescript': 2.1.0_a8ccbbb8df3d541f86d9e2f77577b79b
+      '@rollup/plugin-typescript': 3.0.0_a8ccbbb8df3d541f86d9e2f77577b79b
       buble: 0.19.8
       rollup: 1.29.0
       tslib: 1.10.0
@@ -369,7 +369,7 @@ importers:
     specifiers:
       '@rollup/plugin-buble': ^0.21.0
       '@rollup/plugin-commonjs': ^11.0.1
-      '@rollup/plugin-typescript': ^2.0.1
+      '@rollup/plugin-typescript': ^3.0.0
       '@rollup/pluginutils': ^3.0.1
       buble: ^0.19.8
       resolve: ^1.14.1
@@ -1416,10 +1416,10 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-+vOx2+WMBMFotYKM3yYeDGZxIvcQ7yO4g+SuKDFsjKaq8Lw3EPgfB6qNlp8Z/3ceDCEhHvC9/b+PgBGwDQGbzQ==
-  /@rollup/plugin-typescript/2.1.0_a8ccbbb8df3d541f86d9e2f77577b79b:
+  /@rollup/plugin-typescript/3.0.0_a8ccbbb8df3d541f86d9e2f77577b79b:
     dependencies:
-      '@rollup/pluginutils': 3.0.4_rollup@1.29.0
-      resolve: 1.14.2
+      '@rollup/pluginutils': 3.0.6_rollup@1.29.0
+      resolve: 1.15.0
       rollup: 1.29.0
       tslib: 1.10.0
       typescript: 3.7.5
@@ -1431,11 +1431,11 @@ packages:
       tslib: '*'
       typescript: '>=2.1.0'
     resolution:
-      integrity: sha512-7lXKGY06aofrceVez/YnN2axttFdHSqlUBpCJ6ebzDfxwLDKMgSV5lD4ykBcdgE7aK3egxuLkD/HKyRB5L8Log==
-  /@rollup/plugin-typescript/2.1.0_rollup@1.29.0+typescript@3.7.5:
+      integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
+  /@rollup/plugin-typescript/3.0.0_rollup@1.29.0+typescript@3.7.5:
     dependencies:
-      '@rollup/pluginutils': 3.0.4_rollup@1.29.0
-      resolve: 1.14.2
+      '@rollup/pluginutils': 3.0.6_rollup@1.29.0
+      resolve: 1.15.0
       rollup: 1.29.0
       typescript: 3.7.5
     dev: true
@@ -1446,7 +1446,21 @@ packages:
       tslib: '*'
       typescript: '>=2.1.0'
     resolution:
-      integrity: sha512-7lXKGY06aofrceVez/YnN2axttFdHSqlUBpCJ6ebzDfxwLDKMgSV5lD4ykBcdgE7aK3egxuLkD/HKyRB5L8Log==
+      integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
+  /@rollup/plugin-typescript/3.0.0_typescript@3.7.5:
+    dependencies:
+      '@rollup/pluginutils': 3.0.6
+      resolve: 1.15.0
+      typescript: 3.7.5
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+      tslib: '*'
+      typescript: '>=2.1.0'
+    resolution:
+      integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
   /@rollup/pluginutils/3.0.4:
     dependencies:
       estree-walker: 0.6.1
@@ -1465,11 +1479,20 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-buc0oeq2zqQu2mpMyvZgAaQvitikYjT/4JYhA4EXwxX8/g0ZGHoGiX+0AwmfhrNqH4oJv67gn80sTZFQ/jL1bw==
+  /@rollup/pluginutils/3.0.6:
+    dependencies:
+      estree-walker: 1.0.1
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-Nb6U7sg11v8D+E4mxRxwT+UumUL7MSnwI8V1SJB3THyW2MOGD/Q6GyxLtpnjrbT3zTRPSozzDMyVZwemgldO3w==
   /@rollup/pluginutils/3.0.6_rollup@1.29.0:
     dependencies:
       estree-walker: 1.0.1
       rollup: 1.29.0
-    dev: false
     engines:
       node: '>= 8.0.0'
     peerDependencies:
@@ -3348,7 +3371,6 @@ packages:
     resolution:
       integrity: sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
   /estree-walker/1.0.1:
-    dev: false
     resolution:
       integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==
   /esutils/2.0.3:
@@ -6323,6 +6345,12 @@ packages:
       path-parse: 1.0.6
     resolution:
       integrity: sha512-EjlOBLBO1kxsUxsKjLt7TAECyKW6fOh1VRkykQkKGzcBbjjPIxBqGh0jf7GJ3k/f5mxMqW3htMD3WdTUVtW8HQ==
+  /resolve/1.15.0:
+    dependencies:
+      path-parse: 1.0.6
+    dev: true
+    resolution:
+      integrity: sha512-+hTmAldEGE80U2wJJDC1lebb5jWqvTYAfm3YZ1ckk1gBr0MnCqUKlwK1e+anaFljIl+F5tR5IoZcm4ZDA1zMQw==
   /responselike/1.0.2:
     dependencies:
       lowercase-keys: 1.0.1
@@ -6456,18 +6484,6 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-d12oKl6za/GGXmlytzVPzzTdPCKgti/Kq2kNhtfm5vv9hkNbyrTvizMBm6zZ5rRWX/sIWl3znjIJ8xy6Hofoeg==
-  /rollup-plugin-typescript/1.0.1_typescript@3.7.5:
-    dependencies:
-      resolve: 1.14.2
-      rollup-pluginutils: 2.8.2
-      typescript: 3.7.5
-    deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-typescript.
-    dev: true
-    peerDependencies:
-      tslib: '*'
-      typescript: '>=2.1.0'
-    resolution:
-      integrity: sha512-rwJDNn9jv/NsKZuyBb/h0jsclP4CJ58qbvZt2Q9zDIGILF2LtdtvCqMOL+Gq9IVq5MTrTlHZNrn8h7VjQgd8tw==
   /rollup-pluginutils/2.8.2:
     dependencies:
       estree-walker: 0.6.1
