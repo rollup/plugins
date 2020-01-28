@@ -84,7 +84,7 @@ export function getPluginOptions(options: RollupTypescriptOptions) {
  * If `false` is passed, then a null path is returned.
  * @returns The absolute path, or null if the file does not exist.
  */
-function getTsConfigPath(ts: typeof import('typescript'), relativePath: string | false) {
+function getTsConfigPath(ts: typeof import('typescript'), relativePath?: string | false) {
   if (relativePath === false) return null;
 
   // Resolve path to file. `tsConfigOption` defaults to 'tsconfig.json'.

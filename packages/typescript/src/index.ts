@@ -65,7 +65,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       if (output.emitSkipped) {
         // Emit failed, print all diagnostics for this file
-        const allDiagnostics: import('typescript').Diagnostic[] = []
+        const allDiagnostics = ([] as import('typescript').Diagnostic[])
           .concat(services.getSyntacticDiagnostics(id))
           .concat(services.getSemanticDiagnostics(id));
         emitDiagnostics(ts, this, host, allDiagnostics);

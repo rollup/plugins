@@ -71,20 +71,18 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
 
   let namedExportCode = '';
   const defaultExportRows = [];
-  const dataKeys = Object.keys(data);
-  for (let i = 0; i < dataKeys.length; i++) {
-    const key = dataKeys[i];
+  for (const [key, value] of Object.entries(data)) {
     if (key === makeLegalIdentifier(key)) {
       if (options.objectShorthand) defaultExportRows.push(key);
       else defaultExportRows.push(`${key}:${_}${key}`);
       namedExportCode += `export ${declarationType} ${key}${_}=${_}${serialize(
-        data[key],
+        value,
         options.compact ? null : t,
         ''
       )};${n}`;
     } else {
       defaultExportRows.push(
-        `${stringify(key)}:${_}${serialize(data[key], options.compact ? null : t, '')}`
+        `${stringify(key)}:${_}${serialize(value, options.compact ? null : t, '')}`
       );
     }
   }
