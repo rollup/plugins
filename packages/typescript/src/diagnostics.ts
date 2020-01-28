@@ -50,7 +50,7 @@ export function diagnosticToWarning(
 
   if (diagnostic.file) {
     // Add information about the file location
-    const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+    const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
 
     warning.loc = {
       column: character + 1,

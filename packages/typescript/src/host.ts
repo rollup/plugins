@@ -72,7 +72,7 @@ export default function createHost(
       }
       addFile(id, code);
     }
-    return files.get(id);
+    return files.get(id)!;
   }
 
   parsedOptions.fileNames.forEach((id) => getFile(id));

@@ -9,7 +9,7 @@ const readFileAsync = (file: string) =>
     readFile(file, 'utf-8', (err, contents) => (err ? reject(err) : fulfil(contents)))
   );
 
-const resolveIdAsync = (file: string, opts?: AsyncOpts) =>
+const resolveIdAsync = (file: string, opts: AsyncOpts) =>
   new Promise<string>((fulfil, reject) =>
     resolveId(file, opts, (err, contents) => (err ? reject(err) : fulfil(contents)))
   );

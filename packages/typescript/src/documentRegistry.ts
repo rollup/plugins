@@ -15,7 +15,7 @@ export default function getDocumentRegistry(ts: typeof import('typescript'), cwd
   if (!globalRegistryCache.has(ts)) {
     globalRegistryCache.set(ts, new Map());
   }
-  const instanceRegistryCache = globalRegistryCache.get(ts);
+  const instanceRegistryCache = globalRegistryCache.get(ts)!;
   if (!instanceRegistryCache.has(cwd)) {
     instanceRegistryCache.set(
       cwd,
