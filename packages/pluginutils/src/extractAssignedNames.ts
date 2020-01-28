@@ -1,28 +1,29 @@
-import { Node } from 'estree-walker';
+import { ExtractAssignedNames } from '../types';
 
 interface Extractors {
-  [key: string]: (names: Array<string>, param: Node) => void;
+  [key: string]: (names: string[], param: any) => void;
 }
 
 const extractors: Extractors = {
-  ArrayPattern(names: Array<string>, param: Node) {
+  ArrayPattern(names: string[], param: import('estree').ArrayPattern) {
     for (const element of param.elements) {
       if (element) extractors[element.type](names, element);
     }
   },
 
-  AssignmentPattern(names: Array<string>, param: Node) {
+  AssignmentPattern(names: string[], param: import('estree').AssignmentPattern) {
     extractors[param.left.type](names, param.left);
   },
 
-  Identifier(names: Array<string>, param: Node) {
+  Identifier(names: string[], param: import('estree').Identifier) {
     names.push(param.name);
   },
 
   MemberExpression() {},
 
-  ObjectPattern(names: Array<string>, param: Node) {
+  ObjectPattern(names: string[], param: import('estree').ObjectPattern) {
     for (const prop of param.properties) {
+      // @ts-ignore Typescript reports that this is not a valid type
       if (prop.type === 'RestElement') {
         extractors.RestElement(names, prop);
       } else {
@@ -31,13 +32,13 @@ const extractors: Extractors = {
     }
   },
 
-  RestElement(names: Array<string>, param: Node) {
+  RestElement(names: string[], param: import('estree').RestElement) {
     extractors[param.argument.type](names, param.argument);
   }
 };
 
-const extractAssignedNames = function extractAssignedNames(param: Node): Array<string> {
-  const names: Array<string> = [];
+const extractAssignedNames: ExtractAssignedNames = function extractAssignedNames(param) {
+  const names: string[] = [];
 
   extractors[param.type](names, param);
   return names;

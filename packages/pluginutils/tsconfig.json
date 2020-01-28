@@ -3,5 +3,9 @@
   "compilerOptions": {
     "lib": ["es6"],
     "esModuleInterop": true
-  }
+  },
+  "include": [
+    "src/**/*",
+    "types/**/*"
+  ]
 }

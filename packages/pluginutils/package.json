@@ -50,6 +50,7 @@
     "estree-walker": "^1.0.1"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^3.0.0",
     "@types/estree": "0.0.39",
     "@types/jest": "^24.0.23",
     "@types/micromatch": "^3.1.1",
@@ -57,7 +58,6 @@
     "micromatch": "^4.0.2",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-typescript": "^1.0.1",
     "typescript": "^3.7.2"
   },
   "ava": {
