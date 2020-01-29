@@ -4,14 +4,14 @@ import makeLegalIdentifier from './makeLegalIdentifier';
 
 export type Indent = string | null | undefined;
 
-function stringify(obj: any): string {
+function stringify(obj: unknown): string {
   return (JSON.stringify(obj) || 'undefined').replace(
     /[\u2028\u2029]/g,
     (char) => `\\u${`000${char.charCodeAt(0).toString(16)}`.slice(-4)}`
   );
 }
 
-function serializeArray<T>(arr: Array<T>, indent: Indent, baseIndent: string): string {
+function serializeArray<T>(arr: T[], indent: Indent, baseIndent: string): string {
   let output = '[';
   const separator = indent ? `\n${baseIndent}${indent}` : '';
   for (let i = 0; i < arr.length; i++) {
@@ -21,15 +21,15 @@ function serializeArray<T>(arr: Array<T>, indent: Indent, baseIndent: string): s
   return `${output}${indent ? `\n${baseIndent}` : ''}]`;
 }
 
-function serializeObject<T>(obj: { [key: string]: T }, indent: Indent, baseIndent: string): string {
+function serializeObject(obj: object, indent: Indent, baseIndent: string): string {
   let output = '{';
   const separator = indent ? `\n${baseIndent}${indent}` : '';
-  const keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
+  const entries = Object.entries(obj);
+  for (let i = 0; i < entries.length; i++) {
+    const [key, value] = entries[i];
     const stringKey = makeLegalIdentifier(key) === key ? key : stringify(key);
     output += `${i > 0 ? ',' : ''}${separator}${stringKey}:${indent ? ' ' : ''}${serialize(
-      obj[key],
+      value,
       indent,
       baseIndent + indent
     )}`;
@@ -37,7 +37,7 @@ function serializeObject<T>(obj: { [key: string]: T }, indent: Indent, baseInden
   return `${output}${indent ? `\n${baseIndent}` : ''}}`;
 }
 
-function serialize(obj: any, indent: Indent, baseIndent: string): string {
+function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
   if (obj === Infinity) return 'Infinity';
   if (obj === -Infinity) return '-Infinity';
   if (obj === 0 && 1 / obj === -Infinity) return '-0';
@@ -46,7 +46,7 @@ function serialize(obj: any, indent: Indent, baseIndent: string): string {
   if (obj !== obj) return 'NaN'; // eslint-disable-line no-self-compare
   if (Array.isArray(obj)) return serializeArray(obj, indent, baseIndent);
   if (obj === null) return 'null';
-  if (typeof obj === 'object') return serializeObject(obj, indent, baseIndent);
+  if (typeof obj === 'object') return serializeObject(obj!, indent, baseIndent);
   return stringify(obj);
 }
 

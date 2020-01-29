@@ -44,7 +44,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
-  return function result(id: string | any): boolean {
+  return function result(id: string | unknown): boolean {
     if (typeof id !== 'string') return false;
     if (/\0/.test(id)) return false;
 
