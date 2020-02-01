@@ -1,5 +1,17 @@
 # @rollup/plugin-json ChangeLog
 
+## v4.0.2
+
+_2020-02-01_
+
+### Bugfixes
+
+- fix: correct type definitions (#161)
+
+### Updates
+
+- chore: update dependencies (e1d317b)
+
 ## 4.0.1
 
 _2019-12-21_
