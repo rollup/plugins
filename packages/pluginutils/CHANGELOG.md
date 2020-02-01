@@ -1,5 +1,19 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.8
+
+_2020-02-01_
+
+### Bugfixes
+
+- fix: resolve relative paths starting with "./" (#180)
+
+### Updates
+
+- chore: add missing typescript devDep (238b140)
+- chore: Use readonly arrays, add TSDoc (#187)
+- chore: Use typechecking (2ae08eb)
+
 ## v3.0.7
 
 _2020-02-01_
