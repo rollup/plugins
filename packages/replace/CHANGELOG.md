@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v2.3.1
+
+_2020-02-01_
+
+### Updates
+
+- chore: update dependencies (aca4a94)
+
 ## 2.3.0
 
 _2019-12-21_
