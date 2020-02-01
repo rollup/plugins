@@ -359,6 +359,29 @@ test('complies code that uses browser functions', async (t) => {
   t.true(code.includes('navigator.clipboard.readText()'), code);
 });
 
+test('reports compiler options errors', async (t) => {
+  process.chdir('fixtures/invalid-compiler-options');
+  const warnings = [];
+  const err = await t.throwsAsync(() =>
+    rollup({
+      input: 'main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'tsconfig.json'
+        })
+      ],
+      onwarn({ toString, ...warning }) {
+        warnings.push(warning);
+      }
+    })
+  );
+
+  t.true(
+    err.message.includes('Composite projects may not disable declaration emit'),
+    `Unexpected error message: ${err.message}`
+  );
+});
+
 test('allows specifying a path for tsconfig.json', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/tsconfig-jsx/main.tsx',

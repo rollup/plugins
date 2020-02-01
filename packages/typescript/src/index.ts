@@ -67,7 +67,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         // Emit failed, print all diagnostics for this file
         const allDiagnostics = ([] as import('typescript').Diagnostic[])
           .concat(services.getSyntacticDiagnostics(id))
-          .concat(services.getSemanticDiagnostics(id));
+          .concat(services.getSemanticDiagnostics(id))
+          .concat(services.getCompilerOptionsDiagnostics());
+
         emitDiagnostics(ts, this, host, allDiagnostics);
 
         throw new Error(`Couldn't compile ${id}`);
