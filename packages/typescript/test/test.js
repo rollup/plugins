@@ -361,7 +361,6 @@ test('complies code that uses browser functions', async (t) => {
 
 test('reports compiler options errors', async (t) => {
   process.chdir('fixtures/invalid-compiler-options');
-  const warnings = [];
   const err = await t.throwsAsync(() =>
     rollup({
       input: 'main.ts',
@@ -369,10 +368,7 @@ test('reports compiler options errors', async (t) => {
         typescript({
           tsconfig: 'tsconfig.json'
         })
-      ],
-      onwarn({ toString, ...warning }) {
-        warnings.push(warning);
-      }
+      ]
     })
   );
 
