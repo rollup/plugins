@@ -1,5 +1,18 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.7
+
+_2020-02-01_
+
+### Bugfixes
+
+- fix: resolve relative paths starting with "./" (#180)
+
+### Updates
+
+- chore: Use readonly arrays, add TSDoc (#187)
+- chore: Use typechecking (2ae08eb)
+
 ## v3.0.6
 
 _2020-01-27_
