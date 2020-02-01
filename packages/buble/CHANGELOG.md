@@ -1,5 +1,14 @@
 # @rollup/plugin-buble ChangeLog
 
+## v0.21.1
+
+_2020-02-01_
+
+### Updates
+
+- chore: update dependencies (579c612)
+- chore: add missing entry to changelog (cbfbe98)
+
 ## 0.21.0
 
 _2019-12-21_
