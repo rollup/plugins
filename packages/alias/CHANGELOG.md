@@ -1,5 +1,16 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.0.1
+
+_2020-02-01_
+
+### Updates
+
+- docs: Fix reference to plugin-node-resolve (#175)
+- chore: update dependencies (bcb53d8)
+- chore: update dependencies (e36540f)
+- chore: fix minor linting issue (a695579)
+
 ## 3.0.0
 
 ### Breaking Changes
