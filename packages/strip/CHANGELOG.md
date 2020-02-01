@@ -1,5 +1,13 @@
 # @rollup/plugin-strip ChangeLog
 
+## v1.3.2
+
+_2020-02-01_
+
+### Updates
+
+- chore: update dependencies (059d1f2)
+
 ## 1.2.2
 
 - Fix object destructuring assignments with default values ([#17](https://github.com/rollup/@rollup/plugin-strip/pull/17))
