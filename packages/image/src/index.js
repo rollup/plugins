@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs';
 import { extname } from 'path';
-import { escape } from 'querystring';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -18,6 +17,20 @@ const mimeTypes = {
   '.svg': 'image/svg+xml',
   '.webp': 'image/webp'
 };
+
+const domTemplate = ({ format, mime, source }) => `
+  const img = new Image();
+  const source = ${format === 'base64' ? `'${source}'` : `btoa('${source}')`};
+  img.src = 'data:${mime};base64,' + source;
+  export default img;
+`;
+
+const constTemplate = ({ format, mime, source }) => `
+  const escape = (data) => new URLSearchParams(data).toString();
+  const source = '${source}';
+  const img = 'data:${mime};${format},' + ${format === 'base64' ? 'source' : 'escape(source)'};
+  export default img;
+`;
 
 export default function image(opts = {}) {
   const options = Object.assign({}, defaults, opts);
@@ -37,15 +50,14 @@ export default function image(opts = {}) {
         return null;
       }
 
-      const isSVG = mime === mimeTypes['.svg'];
-      const format = isSVG ? 'utf-8' : 'base64';
+      const isSvg = mime === mimeTypes['.svg'];
+      const format = isSvg ? 'utf-8' : 'base64';
       const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');
-      const data = `'data:${mime};${format},${isSVG ? escape(source) : source}'`;
       const code = options.dom
-        ? `var img = new Image(); img.src = ${data}; export default img;`
-        : `const img = ${data}; export default img;`;
+        ? domTemplate({ format, mime, source })
+        : constTemplate({ format, mime, source });
 
-      return code;
+      return code.trim();
     }
   };
 }
