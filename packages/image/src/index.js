@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { extname } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
+import svgToMiniDataURI from 'mini-svg-data-uri';
 
 const defaults = {
   dom: false,
@@ -18,19 +19,19 @@ const mimeTypes = {
   '.webp': 'image/webp'
 };
 
-const domTemplate = ({ format, mime, source }) => `
+const domTemplate = ({ dataUri }) => `
   const img = new Image();
-  const source = ${format === 'base64' ? `'${source}'` : `btoa('${source}')`};
-  img.src = 'data:${mime};base64,' + source;
+  img.src = "${dataUri}";
   export default img;
 `;
 
-const constTemplate = ({ format, mime, source }) => `
-  const escape = (data) => new URLSearchParams(data).toString();
-  const source = '${source}';
-  const img = 'data:${mime};${format},' + ${format === 'base64' ? 'source' : 'escape(source)'};
+const constTemplate = ({ dataUri }) => `
+  const img = "${dataUri}";
   export default img;
 `;
+
+const getDataUri = ({ format, isSvg, mime, source }) =>
+  isSvg ? svgToMiniDataURI(source) : `data:${mime};${format}${source}`;
 
 export default function image(opts = {}) {
   const options = Object.assign({}, defaults, opts);
@@ -53,9 +54,8 @@ export default function image(opts = {}) {
       const isSvg = mime === mimeTypes['.svg'];
       const format = isSvg ? 'utf-8' : 'base64';
       const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');
-      const code = options.dom
-        ? domTemplate({ format, mime, source })
-        : constTemplate({ format, mime, source });
+      const dataUri = getDataUri({ format, isSvg, mime, source });
+      const code = options.dom ? domTemplate({ dataUri }) : constTemplate({ dataUri });
 
       return code.trim();
     }

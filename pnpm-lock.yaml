@@ -179,13 +179,15 @@ importers:
   packages/image:
     dependencies:
       '@rollup/pluginutils': 3.0.4_rollup@1.29.0
+      mini-svg-data-uri: 1.1.3
     devDependencies:
       '@rollup/plugin-buble': 0.21.0_rollup@1.29.0
       rollup: 1.29.0
     specifiers:
       '@rollup/plugin-buble': ^0.21.0
-      '@rollup/pluginutils': ^3.0.1
-      rollup: ^1.27.14
+      '@rollup/pluginutils': ^3.0.4
+      mini-svg-data-uri: ^1.1.3
+      rollup: ^1.29.0
   packages/inject:
     dependencies:
       '@rollup/pluginutils': 3.0.4_rollup@1.29.0
@@ -4924,6 +4926,10 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-j5EctnkH7amfV/q5Hgmoal1g2QHFJRraOtmx0JpIqkxhBhI/lJSl1nMpQ45hVarwNETOoWEimndZ4QK0RHxuxQ==
+  /mini-svg-data-uri/1.1.3:
+    dev: false
+    resolution:
+      integrity: sha512-EeKOmdzekjdPe53/GdxmUpNgDQFkNeSte6XkJmOBt4BfWL6FQ9G9RtLNh+JMjFS3LhdpSICMIkZdznjiecASHQ==
   /minimatch/3.0.4:
     dependencies:
       brace-expansion: 1.1.11
