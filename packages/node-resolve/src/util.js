@@ -33,7 +33,7 @@ export function getMainFields(options) {
   if (options.mainFields) {
     ({ mainFields } = options);
   } else {
-    mainFields = ['main', 'module'];
+    mainFields = ['module', 'main'];
   }
   if (options.browser && mainFields.indexOf('browser') === -1) {
     return ['browser'].concat(mainFields);
