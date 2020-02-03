@@ -31,7 +31,7 @@ const constTemplate = ({ dataUri }) => `
 `;
 
 const getDataUri = ({ format, isSvg, mime, source }) =>
-  isSvg ? svgToMiniDataURI(source) : `data:${mime};${format}${source}`;
+  isSvg ? svgToMiniDataURI(source) : `data:${mime};${format},${source}`;
 
 export default function image(opts = {}) {
   const options = Object.assign({}, defaults, opts);
