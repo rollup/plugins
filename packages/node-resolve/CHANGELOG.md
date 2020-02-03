@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v7.1.1
+
+_2020-02-03_
+
+### Bugfixes
+
+- fix: main fields regression (#196)
+
 ## v7.1.0
 
 _2020-02-01_
