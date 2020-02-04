@@ -1,5 +1,13 @@
 # @rollup/plugin-image ChangeLog
 
+## v2.0.3
+
+_2020-02-04_
+
+### Bugfixes
+
+- fix: url-encode SVG source (#173)
+
 ## v2.0.2
 
 _2020-02-01_
