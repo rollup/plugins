@@ -16,7 +16,7 @@
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose",
+    "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
     "lint:js": "eslint --fix --cache src test",
@@ -25,10 +25,12 @@
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
     "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -60,5 +62,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js"
+  "module": "dist/index.es.js",
+  "types": "types/index.d.ts"
 }
