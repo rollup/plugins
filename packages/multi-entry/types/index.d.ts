@@ -12,6 +12,6 @@ export interface Options {
 }
 
 /**
- * allow the use of multiple entry points for a bundle
+ * 🍣 A Rollup plugin which allows use of multiple entry points for a bundle.
  */
 export default function multiEntry(options?: Options): Plugin;
