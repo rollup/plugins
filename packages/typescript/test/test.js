@@ -347,6 +347,22 @@ test.serial('should support extends property with given tsconfig', async (t) => 
   t.not(usage, -1, 'should contain usage');
 });
 
+test.serial('should support extends property with node resolution', async (t) => {
+  process.chdir('fixtures/tsconfig-extends-module');
+
+  const bundle = await rollup({
+    input: 'main.tsx',
+    plugins: [
+      typescript()
+    ],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  const usage = code.includes('React.createElement("span", __assign({}, props), "Yo!")');
+  t.true(usage, 'should contain usage');
+});
+
 test('complies code that uses browser functions', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/dom/main.ts',

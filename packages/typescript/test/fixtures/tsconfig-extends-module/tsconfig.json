@@ -1,0 +1,6 @@
+{
+  "extends": "shared-config",
+  "compilerOptions": {
+    "allowJs": true
+  }
+}

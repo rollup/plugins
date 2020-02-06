@@ -114,12 +114,6 @@ function readTsConfigFile(ts: typeof import('typescript'), tsConfigPath: string)
     throw Object.assign(Error(), diagnosticToWarning(ts, null, error));
   }
 
-  const extendedTsConfig: string = config?.extends;
-  if (extendedTsConfig) {
-    // Get absolute path of `extends`, starting at basedir of the tsconfig file.
-    config.extends = resolve(process.cwd(), tsConfigPath, '..', extendedTsConfig);
-  }
-
   return config || {};
 }
 
