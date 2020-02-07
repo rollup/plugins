@@ -19,6 +19,16 @@ test('respects order if given module,jsnext:main,main', async (t) => {
   t.is(module.exports, 'MODULE-ENTRY');
 });
 
+test('prefer module field by default', async (t) => {
+  const bundle = await rollup({
+    input: 'prefer-module.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ preferBuiltins: false })]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'MODULE-ENTRY');
+});
+
 test('finds and uses a dual-distributed .js & .mjs module', async (t) => {
   const bundle = await rollup({
     input: 'dual-cjs-mjs.js',
@@ -27,15 +37,6 @@ test('finds and uses a dual-distributed .js & .mjs module', async (t) => {
   });
   const { module } = await testBundle(t, bundle);
   t.is(module.exports, 'DUAL-MJS');
-});
-
-test('keeps the order of [browser, module, jsnext, main] with all enabled', async (t) => {
-  const bundle = await rollup({
-    input: 'browser.js',
-    plugins: [nodeResolve({ main: true, browser: true, jsnext: true, module: true })]
-  });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'browser');
 });
 
 test('respects order if given jsnext:main, main', async (t) => {

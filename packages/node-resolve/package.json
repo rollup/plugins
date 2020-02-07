@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-node-resolve",
-  "version": "7.0.0",
+  "version": "7.1.1",
   "publishConfig": {
     "access": "public"
   },
@@ -48,20 +48,20 @@
     "rollup": "^1.20.0"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.0.0",
+    "@rollup/pluginutils": "^3.0.6",
     "@types/resolve": "0.0.8",
     "builtin-modules": "^3.1.0",
     "is-module": "^1.0.0",
-    "resolve": "^1.11.1"
+    "resolve": "^1.14.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/preset-env": "^7.4.5",
-    "@rollup/plugin-json": "^4.0.0",
-    "es5-ext": "^0.10.50",
-    "rollup": "^1.20.0",
-    "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-commonjs": "^10.0.0",
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@rollup/plugin-json": "^4.0.1",
+    "es5-ext": "^0.10.53",
+    "rollup": "^1.29.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
     "source-map": "^0.7.3",
     "string-capitalize": "^1.0.1"
   },

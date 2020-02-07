@@ -12,6 +12,42 @@ process.chdir(join(__dirname, 'fixtures'));
 test('specify the only packages to resolve', async (t) => {
   const warnings = [];
   const bundle = await rollup({
+    input: ['only.js'],
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        resolveOnly: ['test']
+      })
+    ]
+  });
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 0);
+  t.snapshot(warnings);
+  t.deepEqual(imports, ['@scoped/foo', '@scoped/bar']);
+});
+
+test('regex', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'only.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        resolveOnly: [/^@scoped\/.*$/]
+      })
+    ]
+  });
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 0);
+  t.snapshot(warnings);
+  t.deepEqual(imports, ['test']);
+});
+
+test('deprecated: specify the only packages to resolve', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
     input: 'only.js',
     onwarn: (warning) => warnings.push(warning),
     plugins: [
@@ -22,12 +58,12 @@ test('specify the only packages to resolve', async (t) => {
   });
   const imports = await getImports(bundle);
 
-  t.is(warnings.length, 2);
+  t.is(warnings.length, 1);
   t.snapshot(warnings);
   t.deepEqual(imports, ['@scoped/foo', '@scoped/bar']);
 });
 
-test('regex', async (t) => {
+test('deprecated: regex', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'only.js',

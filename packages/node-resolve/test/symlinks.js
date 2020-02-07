@@ -39,7 +39,7 @@ test.beforeEach(() => {
   linkDirectories();
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
   unlinkDirectories();
 });
 

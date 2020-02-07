@@ -1,4 +1,4 @@
-import { resolve, sep } from 'path';
+import { resolve, sep, posix } from 'path';
 
 import mm from 'micromatch';
 
@@ -17,12 +17,11 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
     .join('/')
     // escape all possible (posix + win) path characters that might interfere with regex
     .replace(/[-^$*+?.()|[\]{}]/g, '\\$&');
-  // this juggling is to join two paths:
-  // 1. the basePath which has been normalized to use /
-  // 2. the incoming glob (id) matcher, which uses /
-  // we can't use join or resolve here because Node will force backslash (\) on windows
-  const result = [...basePath.split('/'), ...id.split('/')].join('/');
-  return result;
+  // Note that we use posix.join because:
+  // 1. the basePath has been normalized to use /
+  // 2. the incoming glob (id) matcher, also uses /
+  // otherwise Node will force backslash (\) on windows
+  return posix.join(basePath, id);
 }
 
 const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
@@ -37,6 +36,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
             const pattern = getMatcherString(id, resolutionBase);
             const fn = mm.matcher(pattern, { dot: true });
             const result = fn(what);
+
             return result;
           }
         };
@@ -44,7 +44,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
-  return function result(id: string | any): boolean {
+  return function result(id: string | unknown): boolean {
     if (typeof id !== 'string') return false;
     if (/\0/.test(id)) return false;
 

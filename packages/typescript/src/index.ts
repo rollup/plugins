@@ -1,59 +1,29 @@
-import { createFilter } from '@rollup/pluginutils';
+import * as path from 'path';
+
 import { Plugin } from 'rollup';
-import * as defaultTs from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
-import {
-  adjustCompilerOptions,
-  getDefaultOptions,
-  parseCompilerOptions,
-  readTsConfig,
-  validateModuleType
-} from './options';
-import resolveHost from './resolveHost';
-import emitDiagnostics from './diagnostics';
-import { getTsLibCode, TSLIB_ID } from './tslib';
+import { diagnosticToWarning, emitDiagnostics } from './diagnostics';
+import getDocumentRegistry from './documentRegistry';
+import createHost from './host';
+import { getPluginOptions, parseTypescriptConfig } from './options';
+import typescriptOutputToRollupTransformation from './outputToRollupTransformation';
+import { TSLIB_ID } from './tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
-  const opts = Object.assign({}, options);
+  const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
 
-  const filter = createFilter(
-    opts.include || ['*.ts+(|x)', '**/*.ts+(|x)'],
-    opts.exclude || ['*.d.ts', '**/*.d.ts']
-  );
-  delete opts.include;
-  delete opts.exclude;
-
-  // Allow users to override the TypeScript version used for transpilation and tslib version used for helpers.
-  const ts: typeof import('typescript') = opts.typescript || defaultTs;
-  delete opts.typescript;
-
-  const tslib = getTsLibCode(opts);
-  delete opts.tslib;
-
-  // Load options from `tsconfig.json` unless explicitly asked not to.
-  const tsConfig =
-    opts.tsconfig === false ? { compilerOptions: {} } : readTsConfig(ts, opts.tsconfig);
-  delete opts.tsconfig;
-
-  // Since the CompilerOptions aren't designed for the Rollup
-  // use case, we'll adjust them for use with Rollup.
-  tsConfig.compilerOptions = adjustCompilerOptions(tsConfig.compilerOptions);
-
-  Object.assign(tsConfig.compilerOptions, getDefaultOptions(), adjustCompilerOptions(opts));
-
-  // Verify that we're targeting ES2015 modules.
-  validateModuleType(tsConfig.compilerOptions.module);
-
-  const { options: compilerOptions, errors } = parseCompilerOptions(ts, tsConfig);
+  const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
+  const host = createHost(ts, parsedOptions);
+  const services = ts.createLanguageService(host, getDocumentRegistry(ts, process.cwd()));
 
   return {
     name: 'typescript',
 
     buildStart() {
-      if (errors.length > 0) {
-        errors.forEach((error) => this.warn(`@rollup/plugin-typescript: ${error.messageText}`));
+      if (parsedOptions.errors.length > 0) {
+        parsedOptions.errors.forEach((error) => this.warn(diagnosticToWarning(ts, host, error)));
 
         this.error(`@rollup/plugin-typescript: Couldn't process compiler options`);
       }
@@ -65,21 +35,16 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       }
 
       if (!importer) return null;
-      const containingFile = importer.split('\\').join('/');
 
-      const result = ts.nodeModuleNameResolver(
-        importee,
-        containingFile,
-        compilerOptions,
-        resolveHost
-      );
+      // Convert path from windows separators to posix separators
+      const containingFile = importer.split(path.win32.sep).join(path.posix.sep);
 
-      if (result.resolvedModule && result.resolvedModule.resolvedFileName) {
-        if (result.resolvedModule.resolvedFileName.endsWith('.d.ts')) {
-          return null;
-        }
+      const resolved = host.resolveModuleNames([importee], containingFile);
+      const resolvedFile = resolved[0]?.resolvedFileName;
 
-        return result.resolvedModule.resolvedFileName;
+      if (resolvedFile) {
+        if (resolvedFile.endsWith('.d.ts')) return null;
+        return resolvedFile;
       }
 
       return null;
@@ -95,20 +60,26 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     transform(code, id) {
       if (!filter(id)) return null;
 
-      const transformed = ts.transpileModule(code, {
-        fileName: id,
-        reportDiagnostics: true,
-        compilerOptions
-      });
+      host.addFile(id, code);
+      const output = services.getEmitOutput(id);
 
-      emitDiagnostics(ts, this, transformed.diagnostics);
+      if (output.emitSkipped) {
+        // Emit failed, print all diagnostics for this file
+        const allDiagnostics = ([] as import('typescript').Diagnostic[])
+          .concat(services.getSyntacticDiagnostics(id))
+          .concat(services.getSemanticDiagnostics(id));
+        emitDiagnostics(ts, this, host, allDiagnostics);
 
-      return {
-        code: transformed.outputText,
+        throw new Error(`Couldn't compile ${id}`);
+      }
 
-        // Rollup expects `map` to be an object so we must parse the string
-        map: transformed.sourceMapText ? JSON.parse(transformed.sourceMapText) : null
-      };
+      return typescriptOutputToRollupTransformation(output.outputFiles);
+    },
+
+    generateBundle() {
+      const program = services.getProgram();
+      if (program == null) return;
+      emitDiagnostics(ts, this, host, ts.getPreEmitDiagnostics(program));
     }
   };
 }

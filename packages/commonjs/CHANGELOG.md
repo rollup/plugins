@@ -1,5 +1,15 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v11.0.2
+
+_2020-02-01_
+
+### Updates
+
+- docs: fix link for plugin-node-resolve (#170)
+- chore: update dependencies (5405eea)
+- chore: remove jsnext:main (#152)
+
 ## v11.0.1
 
 _2020-01-04_

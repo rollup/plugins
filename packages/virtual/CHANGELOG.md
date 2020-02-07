@@ -1,5 +1,14 @@
 # @rollup/plugin-virtual ChangeLog
 
+## v2.0.1
+
+_2020-02-01_
+
+### Updates
+
+- chore: update devDeps (3e47e87)
+- docs: typo in virtual plugin readme (#132)
+
 ## 2.0.0
 
 - **Breaking:** Minimum compatible Rollup version is 1.20.0

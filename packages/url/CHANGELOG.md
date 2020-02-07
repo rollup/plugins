@@ -1,5 +1,13 @@
 # @rollup/plugin-url ChangeLog
 
+## v4.0.2
+
+_2020-02-01_
+
+### Updates
+
+- chore: update dependencies (d048a39)
+
 ## v4.0.1
 
 _2020-01-07_

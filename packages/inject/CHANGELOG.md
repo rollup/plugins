@@ -1,5 +1,13 @@
 # @rollup/plugin-inject ChangeLog
 
+## v4.0.1
+
+_2020-02-01_
+
+### Updates
+
+- chore: update dependencies (73d8ae7)
+
 ## 3.0.2
 
 - Fix bug with sourcemap usage

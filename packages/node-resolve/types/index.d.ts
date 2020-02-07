@@ -3,100 +3,76 @@ import { AsyncOpts } from 'resolve';
 
 export interface Options {
   /**
-   * the fields to scan in a package.json to determine the entry point
-   * if this list contains "browser", overrides specified in "pkg.browser"
-   * will be used
-   * @default ['module', 'main']
-   */
-  mainFields?: ReadonlyArray<string>;
-
-  /**
-   * @deprecated use "mainFields" instead
-   * use "module" field for ES6 module if possible
-   * @default true
-   */
-  module?: boolean;
-
-  /**
-   * @deprecated use "mainFields" instead
-   * use "jsnext:main" if possible
-   * legacy field pointing to ES6 module in third-party libraries,
-   * deprecated in favor of "pkg.module":
-   * - see: https://github.com/rollup/rollup/wiki/pkg.module
-   * @default false
-   */
-  jsnext?: boolean;
-
-  /**
-   * @deprecated use "mainFields" instead
-   * use "main" field or index.js, even if it's not an ES6 module
-   * (needs to be converted from CommonJS to ES6)
-   * – see https://github.com/rollup/rollup-plugin-commonjs
-   * @default true
-   */
-  main?: boolean;
-
-  /**
-   * some package.json files have a "browser" field which specifies
-   * alternative files to load for people bundling for the browser. If
-   * that's you, either use this option or add "browser" to the
-   * "mainfields" option, otherwise pkg.browser will be ignored
+   * If `true`, instructs the plugin to use the `"browser"` property in `package.json`
+   * files to specify alternative files to load for bundling. This is useful when
+   * bundling for a browser environment. Alternatively, a value of `'browser'` can be
+   * added to the `mainFields` option. If `false`, any `"browser"` properties in
+   * package files will be ignored. This option takes precedence over `mainFields`.
    * @default false
    */
   browser?: boolean;
 
   /**
-   * not all files you want to resolve are .js files
+   * An `Object` that specifies additional options that should be passed through to `node-resolve`.
+   */
+  customResolveOptions?: AsyncOpts;
+
+  /**
+   * An `Array` of modules names, which instructs the plugin to force resolving for the
+   * specified modules to the root `node_modules`. Helps to prevent bundling the same
+   * package multiple times if package is imported from dependencies.
+   */
+  dedupe?: string[] | ((importee: string) => boolean);
+
+  /**
+   * Specifies the extensions of files that the plugin will operate on.
    * @default [ '.mjs', '.js', '.json', '.node' ]
    */
   extensions?: ReadonlyArray<string>;
 
   /**
-   * whether to prefer built-in modules (e.g. `fs`, `path`) or
-   * local ones with the same names
-   * @default true
-   */
-  preferBuiltins?: boolean;
-
-  /**
-   * Lock the module search in this path (like a chroot). Module defined
-   * outside this path will be marked as external
+   * Locks the module search within specified path (e.g. chroot). Modules defined
+   * outside this path will be marked as external.
    * @default '/'
    */
   jail?: string;
 
   /**
-   * Set to an array of strings and/or regexps to lock the module search
-   * to modules that match at least one entry. Modules not matching any
-   * entry will be marked as external
-   * @default null
+   * Specifies the properties to scan within a `package.json`, used to determine the
+   * bundle entry point.
+   * @default ['module', 'main']
    */
-  only?: ReadonlyArray<string | RegExp> | null;
+  mainFields?: ReadonlyArray<string>;
 
   /**
-   * If true, inspect resolved files to check that they are
-   * ES2015 modules
+   * If `true`, inspect resolved files to assert that they are ES2015 modules.
    * @default false
    */
   modulesOnly?: boolean;
 
   /**
-   * Force resolving for these modules to root's node_modules that helps
-   * to prevent bundling the same package multiple times if package is
-   * imported from dependencies.
+   * @deprecated use "resolveOnly" instead
+   * @default null
    */
-  dedupe?: string[] | ((importee: string) => boolean);
+  only?: ReadonlyArray<string | RegExp> | null;
 
   /**
-   * Any additional options that should be passed through
-   * to node-resolve
+   * If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`,
+   * the plugin will look for locally installed modules of the same name.
+   * @default true
    */
-  customResolveOptions?: AsyncOpts;
+  preferBuiltins?: boolean;
 
   /**
-   * Root directory to resolve modules from. Used when resolving entrypoint imports,
-   * and when resolving deduplicated modules. Useful when executing rollup in a package
-   * of a monorepository.
+   * An `Array` which instructs the plugin to limit module resolution to those whose
+   * names match patterns in the array.
+   * @default []
+   */
+  resolveOnly?: ReadonlyArray<string | RegExp> | null;
+
+  /**
+   * Specifies the root directory from which to resolve modules. Typically used when
+   * resolving entry-point imports, and when resolving deduplicated modules.
    * @default process.cwd()
    */
   rootDir?: string;

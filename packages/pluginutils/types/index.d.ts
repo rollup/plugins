@@ -1,10 +1,14 @@
-import { Node } from 'estree-walker';
+import { BaseNode } from 'estree';
 
 export interface AttachedScope {
   parent?: AttachedScope;
   isBlockScope: boolean;
   declarations: { [key: string]: boolean };
-  addDeclaration(node: Node, isBlockDeclaration: boolean, isVar: boolean): void;
+  addDeclaration(
+    node: BaseNode,
+    isBlockDeclaration: boolean,
+    isVar: boolean
+  ): void;
   contains(name: string): boolean;
 }
 
@@ -16,27 +20,66 @@ export interface DataToEsmOptions {
   preferConst?: boolean;
 }
 
-export type AddExtension = (filename: string, ext?: string) => string;
-export const addExtension: AddExtension;
+/**
+ * A valid `minimatch` pattern, or array of patterns.
+ */
+export type FilterPattern = ReadonlyArray<string | RegExp> | string | RegExp | null;
 
-export type AttachScopes = (ast: Node, propertyName?: string) => AttachedScope;
-export const attachScopes: AttachScopes;
+/**
+ * Adds an extension to a module ID if one does not exist.
+ */
+export function addExtension(filename: string, ext?: string): string;
 
-export type CreateFilter = (
-  include?: Array<string | RegExp> | string | RegExp | null,
-  exclude?: Array<string | RegExp> | string | RegExp | null,
+/**
+ * Attaches `Scope` objects to the relevant nodes of an AST.
+ * Each `Scope` object has a `scope.contains(name)` method that returns `true`
+ * if a given name is defined in the current scope or a parent scope.
+ */
+export function attachScopes(
+  ast: BaseNode,
+  propertyName?: string
+): AttachedScope;
+
+/**
+ * Constructs a filter function which can be used to determine whether or not
+ * certain modules should be operated upon.
+ * @param include If `include` is omitted or has zero length, filter will return `true` by default.
+ * @param exclude ID must not match any of the `exclude` patterns.
+ * @param options Optionally resolves the patterns against a directory other than `process.cwd()`.
+ * If a `string` is specified, then the value will be used as the base directory.
+ * Relative paths will be resolved against `process.cwd()` first.
+ * If `false`, then the patterns will not be resolved against any directory.
+ * This can be useful if you want to create a filter for virtual module names.
+ */
+export function createFilter(
+  include?: FilterPattern,
+  exclude?: FilterPattern,
   options?: { resolve?: string | false | null }
-) => (id: string | any) => boolean;
-export const createFilter: CreateFilter;
+): (id: string | unknown) => boolean;
 
-export type MakeLegalIdentifier = (str: string) => string;
-export const makeLegalIdentifier: MakeLegalIdentifier;
+/**
+ * Transforms objects into tree-shakable ES Module imports.
+ * @param data An object to transform into an ES module.
+ */
+export function dataToEsm(data: unknown, options?: DataToEsmOptions): string;
 
-export type DataToEsm = (data: any, options?: DataToEsmOptions) => string;
-export const dataToEsm: DataToEsm;
+/**
+ * Extracts the names of all assignment targets based upon specified patterns.
+ * @param param An `acorn` AST Node.
+ */
+export function extractAssignedNames(param: BaseNode): string[];
 
-export type ExtractAssignedNames = (param: Node) => Array<string>;
-export const extractAssignedNames: ExtractAssignedNames;
+/**
+ * Constructs a bundle-safe identifier from a `string`.
+ */
+export function makeLegalIdentifier(str: string): string;
+
+export type AddExtension = typeof addExtension;
+export type AttachScopes = typeof attachScopes;
+export type CreateFilter = typeof createFilter;
+export type ExtractAssignedNames = typeof extractAssignedNames;
+export type MakeLegalIdentifier = typeof makeLegalIdentifier;
+export type DataToEsm = typeof dataToEsm;
 
 declare const defaultExport: {
   addExtension: AddExtension;

@@ -105,7 +105,7 @@ test('supports non-standard extensions', async (t) => {
 });
 
 test('ignores IDs with null character', async (t) => {
-  const result = nodeResolve().resolveId('\0someid', 'test.js');
+  const result = await nodeResolve().resolveId('\0someid', 'test.js');
   t.is(result, null);
 });
 
@@ -215,7 +215,6 @@ test('handles package side-effects', async (t) => {
     plugins: [nodeResolve()]
   });
   await testBundle(t, bundle);
-
   t.snapshot(global.sideEffects);
 
   delete global.sideEffects;
