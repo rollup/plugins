@@ -53,9 +53,9 @@ readdirSync('./fixtures/form').forEach((dir) => {
     }
 
     const expected = readFileSync(outputFile, 'utf-8').trim();
-
     const transformed = transform.call(transformContext, input, id);
     const actual = (transformed ? transformed.code : input).trim().replace(/\0/g, '_');
+
     t.is(actual, expected);
   });
 });
