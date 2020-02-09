@@ -17,10 +17,6 @@ export const HELPERS_ID = '\0commonjsHelpers.js';
 export const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-export function commonjsRegister (path, loader) {
-	DYNAMIC_REQUIRE_LOADERS[path] = loader;
-}
-
 export function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
@@ -31,6 +27,18 @@ export function createCommonjsModule(fn, module) {
 
 export function getCjsExportFromNamespace (n) {
 	return n && n['default'] || n;
+}
+`;
+
+export const HELPER_NON_DYNAMIC = `
+export function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+}
+`;
+
+export const HELPERS_DYNAMIC = `
+export function commonjsRegister (path, loader) {
+	DYNAMIC_REQUIRE_LOADERS[path] = loader;
 }
 
 const DYNAMIC_REQUIRE_LOADERS = Object.create(null);
@@ -63,6 +71,7 @@ function normalize (path) {
 	  path = '.';
 	return path;
 }
+
 function join () {
 	if (arguments.length === 0)
 	  return '.';
@@ -81,6 +90,7 @@ function join () {
   
 	return joined;
 }
+
 function isPossibleNodeModulesPath (modulePath) {
 	let c0 = modulePath[0];
 	if (c0 === '/' || c0 === '\\\\') return false;
@@ -91,6 +101,7 @@ function isPossibleNodeModulesPath (modulePath) {
 		return false;
 	return true;
 }
+
 export function commonjsRequire (path, originalModuleDir) {
 	const shouldTryNodeModules = isPossibleNodeModulesPath(path);
 	path = normalize(path);

@@ -16,6 +16,8 @@ import {
   getIdFromProxyId,
   HELPERS,
   HELPERS_ID,
+  HELPER_NON_DYNAMIC,
+  HELPERS_DYNAMIC,
   PROXY_SUFFIX
 } from './helpers';
 
@@ -146,7 +148,17 @@ export default function commonjs(options = {}) {
     resolveId,
 
     load(id) {
-      if (id === HELPERS_ID) return HELPERS;
+      if (id === HELPERS_ID) {
+        let code = HELPERS;
+
+        // Do not bloat everyone's code with the module manager code
+        if (isDynamicRequireModulesEnabled)
+          code += HELPERS_DYNAMIC;
+        else
+          code += HELPER_NON_DYNAMIC;
+
+        return code;
+      }
 
       // generate proxy modules
       if (id.endsWith(EXTERNAL_SUFFIX)) {
