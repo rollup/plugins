@@ -21,7 +21,7 @@ readdirSync('./fixtures/function').forEach((dir) => {
   (config.solo ? test.only : test)(dir, async (t) => {
     const options = Object.assign(
       {
-        input: `fixtures/function/${dir}/main.js`
+        input: `fixtures/function/${dir}/${config.input || 'main.js'}`
       },
       config.options || {},
       {

@@ -51,6 +51,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^3.0.8",
     "estree-walker": "^1.0.1",
+    "glob": "^7.1.2",
     "is-reference": "^1.1.2",
     "magic-string": "^0.25.2",
     "resolve": "^1.11.0"

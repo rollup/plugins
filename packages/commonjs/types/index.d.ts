@@ -43,6 +43,17 @@ interface RollupCommonJSOptions {
    * option if you know what you're doing!
    */
   ignore?: ReadonlyArray<string | ((id: string) => boolean)>;
+  /**
+   * Some modules contain dynamic `require` calls, or require modules that contain
+   *   circular dependencies, which are not handled well by static imports.
+   * Including those modules as `dynamicRequireTargets` will simulate a CommonJS (NodeJS-like)
+   *   environment for them with support for dynamic and circular dependencies.
+   *
+   * Note: This feature may result in some paths being rendered as absolute in the final bundle.
+   * That may require replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
+   * We may find a way to do this automatically in the future.
+   */
+  dynamicRequireTargets?: string|ReadonlyArray<string>;
 }
 
 /**

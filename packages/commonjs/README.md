@@ -44,6 +44,33 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
+### `dynamicRequireTargets`
+
+Type: `String|Array[String]`<br>
+Default: `[]`
+
+Some modules contain dynamic `require` calls, or require modules that contain circular dependencies, which are not handled well by static imports.
+Including those modules as `dynamicRequireTargets` will simulate a CommonJS (NodeJS-like) environment for them with support for dynamic and circular dependencies.
+
+_Note: This feature may result in some paths being rendered as absolute in the final bundle. That may require replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`. We may find a way to do this automatically in the future._
+
+Example:
+
+```js
+commonjs({
+  dynamicRequireTargets: [
+    // include using a glob pattern (either a string or an array of strings)
+    'node_modules/logform/*.js',
+
+    // exclude files that are known to not be required dynamically, this allows for better optimizations
+    '!node_modules/logform/index.js',
+    '!node_modules/logform/format.js',
+    '!node_modules/logform/levels.js',
+    '!node_modules/logform/browser.js'
+  ]
+});
+```
+
 ### `exclude`
 
 Type: `String` | `Array[...String]`<br>

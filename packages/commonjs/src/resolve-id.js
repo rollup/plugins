@@ -3,6 +3,8 @@ import { statSync } from 'fs';
 import { dirname, resolve, sep } from 'path';
 
 import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_PACKAGES_ID,
   getExternalProxyId,
   getIdFromProxyId,
   getProxyId,
@@ -46,10 +48,16 @@ export default function getResolveId(extensions) {
     if (isProxyModule) {
       importee = getIdFromProxyId(importee);
     } else if (importee.startsWith('\0')) {
-      if (importee === HELPERS_ID) {
+      if (importee === HELPERS_ID ||
+        importee === DYNAMIC_PACKAGES_ID ||
+        importee.startsWith(DYNAMIC_JSON_PREFIX)) {
         return importee;
       }
       return null;
+    }
+
+    if (importee.startsWith(DYNAMIC_JSON_PREFIX)) {
+      return importee;
     }
 
     if (importer && importer.endsWith(PROXY_SUFFIX)) {
