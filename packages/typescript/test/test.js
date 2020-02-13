@@ -525,7 +525,7 @@ test('supports CommonJS imports when the output format is CommonJS', async (t) =
   t.is(output, 'exported from commonjs');
 });
 
-test('supports optional chaining', async (t) => {
+test.skip('supports optional chaining', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/optional-chaining/main.ts',
     plugins: [typescript({ module: 'esnext', target: 'esnext' })],
