@@ -525,6 +525,16 @@ test('supports CommonJS imports when the output format is CommonJS', async (t) =
   t.is(output, 'exported from commonjs');
 });
 
+test.skip('supports optional chaining', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/optional-chaining/main.ts',
+    plugins: [typescript({ module: 'esnext', target: 'esnext' })],
+    onwarn
+  });
+  const output = await evaluateBundle(bundle);
+  t.is(output, 'NOT FOUND');
+});
+
 function fakeTypescript(custom) {
   return Object.assign(
     {
