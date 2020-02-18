@@ -23,10 +23,8 @@ export interface WatchCompilerHost extends BaseHost {
 interface CreateWatchHostOptions {
   /** Formatting host used to get some system functions and emit type errors. */
   formatHost: DiagnosticsHost;
-  /** Typescript compiler options. */
-  compilerOptions: import('typescript').CompilerOptions;
-  /** List of Typescript files that should be compiled. */
-  fileNames: string[];
+  /** Parsed Typescript compiler options. */
+  parsedOptions: import('typescript').ParsedCommandLine;
   /** Callback to save compiled files in memory. */
   writeFile: import('typescript').WriteFileCallback;
 }
@@ -40,19 +38,20 @@ interface CreateWatchHostOptions {
 export default function createWatchHost(
   ts: typeof import('typescript'),
   context: PluginContext,
-  { formatHost, compilerOptions, fileNames, writeFile }: CreateWatchHostOptions
+  { formatHost, parsedOptions, writeFile }: CreateWatchHostOptions
 ): WatchCompilerHost {
   const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
 
   const baseHost = ts.createWatchCompilerHost(
-    fileNames,
-    compilerOptions,
+    parsedOptions.fileNames,
+    parsedOptions.options,
     ts.sys,
     createProgram,
     // Use Rollup to report diagnostics from Typescript
     (diagnostic) => emitDiagnostics(ts, context, formatHost, [diagnostic]),
     // Ignore watch status changes
-    () => {}
+    () => {},
+    parsedOptions.projectReferences
   );
 
   const resolver = createModuleResolver(ts, { ...formatHost, ...baseHost });

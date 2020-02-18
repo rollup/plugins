@@ -14,6 +14,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const emittedFiles = new Map<string, string>();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
+  parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
+
   const formatHost = createFormattingHost(ts, parsedOptions.options);
   let host: WatchCompilerHost;
 
@@ -22,12 +24,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
+      console.log(parsedOptions.projectReferences)
 
       host = createWatchHost(ts, this, {
         formatHost,
-        compilerOptions: parsedOptions.options,
-        fileNames: parsedOptions.fileNames.filter(filter),
+        parsedOptions,
         writeFile(fileName, data) {
+          console.log(fileName);
           emittedFiles.set(fileName, data);
         }
       });
@@ -57,7 +60,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     load(id) {
       if (!filter(id)) return null;
-
+      console.log('Load: ', id)
       return findTypescriptOutput(id, emittedFiles);
     }
   };

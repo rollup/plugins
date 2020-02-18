@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 import { PluginContext } from 'rollup';
@@ -34,15 +34,6 @@ const DEFAULT_COMPILER_OPTIONS: PartialCustomOptions = {
 };
 
 const FORCED_COMPILER_OPTIONS: Partial<CompilerOptions> = {
-  // See: https://github.com/rollup/rollup-plugin-typescript/issues/45
-  // See: https://github.com/rollup/rollup-plugin-typescript/issues/142
-  declaration: false,
-  // Delete the `declarationMap` option, as it will cause an error, because we have
-  // deleted the `declaration` option.
-  declarationMap: false,
-  incremental: false,
-  // eslint-disable-next-line no-undefined
-  tsBuildInfoFile: undefined,
   // Always use tslib
   noEmitHelpers: true,
   importHelpers: true,
@@ -239,6 +230,12 @@ export function parseTypescriptConfig(
   // Normal script files are handled by Rollup.
   // parsedConfig.fileNames = parsedConfig.fileNames.filter((file) => file.endsWith('.d.ts'));
   normalizeCompilerOptions(ts, parsedConfig.options);
+  parsedConfig.projectReferences = parsedConfig.projectReferences?.map((projectReference) => {
+    return {
+      ...projectReference,
+      path: resolve(dirname(tsConfigPath || cwd), projectReference.originalPath!)
+    }
+  })
 
   return parsedConfig;
 }

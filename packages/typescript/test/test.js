@@ -279,7 +279,7 @@ test('supports overriding tslib with a custom path in a promise', async (t) => {
 test('should not resolve .d.ts files', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/dts/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/dts/main.ts' })],
+    plugins: [typescript({ tsconfig: 'fixtures/dts/tsconfig.json' })],
     onwarn,
     external: ['an-import']
   });
@@ -536,6 +536,22 @@ test('supports optional chaining', async (t) => {
   });
   const output = await evaluateBundle(bundle);
   t.is(output, 'NOT FOUND');
+});
+
+test.serial.only('supports project references', async (t) => {
+  process.chdir('fixtures/project-references');
+
+  const bundle = await rollup({
+    input: 'zoo/zoo.ts',
+    plugins: [typescript({ tsconfig: 'zoo/tsconfig.json' })],
+    onwarn
+  });
+  const createZoo = await evaluateBundle(bundle);
+  const zoo = createZoo();
+
+  t.is(zoo.length, 1);
+  t.is(zoo[0].size, 'medium');
+  t.is(zoo[0].name, 'Bob!?! ');
 });
 
 function fakeTypescript(custom) {
