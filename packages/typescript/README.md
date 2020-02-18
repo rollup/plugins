@@ -108,7 +108,7 @@ Overrides the injected TypeScript helpers with a custom version.
 
 ```js
 typescript({
-  tslib: fs.readFileSync(require.resolve('some-fork-of-tslib'))
+  tslib: require.resolve('some-fork-of-tslib')
 });
 ```
 

@@ -8,7 +8,7 @@ import * as defaultTs from 'typescript';
 import { RollupTypescriptOptions } from '../types';
 
 import diagnosticToWarning from './diagnostics/toWarning';
-import { getTsLibCode } from './tslib';
+import getTsLibPath from './tslib';
 
 /** Properties of `CompilerOptions` that are normally enums */
 interface EnumCompilerOptions {
@@ -61,7 +61,7 @@ const FORCED_COMPILER_OPTIONS: Partial<CompilerOptions> = {
  * - `tsconfig`: Path to a tsconfig, or directive to ignore tsconfig.
  * - `compilerOptions`: Custom Typescript compiler options that override tsconfig.
  * - `typescript`: Instance of Typescript library (possibly custom).
- * - `tslib`: ESM code from the tslib helper library (possibly)
+ * - `tslib`: ESM code from the tslib helper library (possibly custom).
  */
 export function getPluginOptions(options: RollupTypescriptOptions) {
   const { include, exclude, tsconfig, typescript, tslib, ...compilerOptions } = options;
@@ -76,7 +76,7 @@ export function getPluginOptions(options: RollupTypescriptOptions) {
     tsconfig,
     compilerOptions: compilerOptions as PartialCustomOptions,
     typescript: typescript || defaultTs,
-    tslib: getTsLibCode(tslib)
+    tslib: tslib || getTsLibPath()
   };
 }
 

@@ -8,7 +8,6 @@ import createFormattingHost from './diagnostics/host';
 import createWatchHost, { WatchCompilerHost } from './host';
 import { emitParsedOptionsErrors, getPluginOptions, parseTypescriptConfig } from './options';
 import findTypescriptOutput from './outputFile';
-import { TSLIB_ID } from './tslib';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
@@ -38,7 +37,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     resolveId(importee, importer) {
       if (importee === 'tslib') {
-        return TSLIB_ID;
+        return tslib;
       }
 
       if (!importer) return null;
@@ -46,22 +45,17 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       // Convert path from windows separators to posix separators
       const containingFile = importer.split(path.win32.sep).join(path.posix.sep);
 
-      const resolved = host.resolveModuleNames([importee], containingFile);
-      const resolvedFile = resolved[0]?.resolvedFileName;
+      const [resolved] = host.resolveModuleNames([importee], containingFile);
 
-      if (resolvedFile) {
-        if (resolvedFile.endsWith('.d.ts')) return null;
-        return resolvedFile;
+      if (resolved) {
+        if (resolved.extension === '.d.ts') return null;
+        return resolved.resolvedFileName;
       }
 
       return null;
     },
 
     load(id) {
-      if (id === TSLIB_ID) {
-        return tslib;
-      }
-
       if (!filter(id)) return null;
 
       return findTypescriptOutput(id, emittedFiles);

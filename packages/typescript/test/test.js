@@ -249,11 +249,14 @@ test('supports overriding the TypeScript version', async (t) => {
   t.is(result, 1337);
 });
 
-test('supports overriding tslib with a string', async (t) => {
+test('supports overriding tslib with a custom path', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
     plugins: [
-      typescript({ tslib: 'export const __extends = (Main, Super) => Main.myParent = Super' })
+      typescript({
+        tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
+        tslib: 'fixtures/overriding-tslib/tslib.js'
+      })
     ],
     onwarn
   });
@@ -262,12 +265,13 @@ test('supports overriding tslib with a string', async (t) => {
   t.is(code.myParent.baseMethod(), 'base method');
 });
 
-test('supports overriding tslib with a promise', async (t) => {
+test('supports overriding tslib with a custom path in a promise', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
     plugins: [
       typescript({
-        tslib: Promise.resolve('export const __extends = (Main, Super) => Main.myParent = Super')
+        tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
+        tslib: Promise.resolve('fixtures/overriding-tslib/tslib.js')
       })
     ],
     onwarn
@@ -471,21 +475,6 @@ test('should not fail if source maps are off', async (t) => {
   );
 });
 
-test('does not include helpers in source maps', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/dedup-helpers/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/dedup-helpers/tsconfig.json', sourceMap: true })],
-    onwarn
-  });
-  const { output } = await bundle.generate({
-    format: 'es',
-    sourcemap: true
-  });
-  const [{ map }] = output;
-
-  t.true(map.sources.every((source) => !source.includes('tslib')));
-});
-
 test('should allow a namespace containing a class', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-namespace-export-class/test.ts',
@@ -538,10 +527,16 @@ test('supports CommonJS imports when the output format is CommonJS', async (t) =
   t.is(output, 'exported from commonjs');
 });
 
-test.skip('supports optional chaining', async (t) => {
+test('supports optional chaining', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/optional-chaining/main.ts',
-    plugins: [typescript({ module: 'esnext', target: 'esnext' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/optional-chaining/tsconfig.json',
+        module: 'esnext',
+        target: 'es2020'
+      })
+    ],
     onwarn
   });
   const output = await evaluateBundle(bundle);
