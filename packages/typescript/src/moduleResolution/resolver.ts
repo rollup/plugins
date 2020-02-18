@@ -1,6 +1,7 @@
-type ModuleResolverHost = import('typescript').ModuleResolutionHost &
-  Pick<import('typescript').FormatDiagnosticsHost, 'getCanonicalFileName'> &
-  Pick<import('typescript').LanguageServiceHost, 'getCompilationSettings'>;
+import { DiagnosticsHost } from '../diagnostics/host';
+
+type ModuleResolutionHost = import('typescript').ModuleResolutionHost;
+type ModuleResolverHost = ModuleResolutionHost & DiagnosticsHost;
 
 export type Resolver = (
   moduleName: string,
@@ -9,6 +10,8 @@ export type Resolver = (
 
 /**
  * Create a helper for resolving modules using Typescript.
+ * @param host Typescript host that extends `ModuleResolutionHost`
+ * with methods for sanitizing filenames and getting compiler options.
  */
 export default function createModuleResolver(
   ts: typeof import('typescript'),

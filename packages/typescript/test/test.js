@@ -352,9 +352,7 @@ test.serial('should support extends property with node resolution', async (t) =>
 
   const bundle = await rollup({
     input: 'main.tsx',
-    plugins: [
-      typescript()
-    ],
+    plugins: [typescript()],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);

@@ -1,8 +1,8 @@
-import createModuleResolver, { Resolver } from './resolver';
+import createFormattingHost, { DiagnosticsHost } from './diagnostics/host';
+import createModuleResolutionHost, { ModuleResolutionHost } from './moduleResolution/host';
+import createModuleResolver, { Resolver } from './moduleResolution/resolver';
 
-type BaseHost = import('typescript').LanguageServiceHost &
-  import('typescript').ModuleResolutionHost &
-  import('typescript').FormatDiagnosticsHost;
+type BaseHost = import('typescript').LanguageServiceHost & ModuleResolutionHost & DiagnosticsHost;
 
 export interface TypescriptHost extends BaseHost {
   /**
@@ -35,6 +35,10 @@ interface File {
 
 /**
  * Create a language service host to use with the Typescript compiler & type checking APIs.
+ * Typescript hosts are used to represent the user's system,
+ * with an API for reading files, checking directories and case sensitivity etc.
+ * This host creates a local file cache which can be updated with `addFile`.
+ *
  * @param parsedOptions Parsed options for Typescript.
  * @param parsedOptions.options Typescript compiler options. Affects functions such as `getNewLine`.
  * @param parsedOptions.fileNames Declaration files to include for typechecking.
@@ -79,16 +83,10 @@ export default function createHost(
 
   let resolver: Resolver;
   const host: TypescriptHost = {
-    getCompilationSettings: () => parsedOptions.options,
-    getCurrentDirectory: () => process.cwd(),
-    getNewLine: () => getNewLine(ts, parsedOptions.options.newLine),
-    getCanonicalFileName: (fileName) =>
-      ts.sys.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase(),
+    ...createModuleResolutionHost(ts),
+    ...createFormattingHost(ts, parsedOptions.options),
     useCaseSensitiveFileNames: () => ts.sys.useCaseSensitiveFileNames,
     getDefaultLibFileName: ts.getDefaultLibFilePath,
-    getDirectories: ts.sys.getDirectories,
-    directoryExists: ts.sys.directoryExists,
-    realpath: ts.sys.realpath,
     readDirectory: ts.sys.readDirectory,
     readFile(fileName, encoding) {
       const file = files.get(fileName);
@@ -108,21 +106,4 @@ export default function createHost(
   resolver = createModuleResolver(ts, host);
 
   return host;
-}
-
-/**
- * Returns the string that corresponds with the selected `NewLineKind`.
- */
-function getNewLine(
-  ts: typeof import('typescript'),
-  kind: import('typescript').NewLineKind | undefined
-) {
-  switch (kind) {
-    case ts.NewLineKind.CarriageReturnLineFeed:
-      return '\r\n';
-    case ts.NewLineKind.LineFeed:
-      return '\n';
-    default:
-      return ts.sys.newLine;
-  }
 }
