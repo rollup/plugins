@@ -22,10 +22,9 @@ export default function findTypescriptOutput(
   const code = emittedFiles.get(id.replace(TS_EXTENSION, '.js'));
   if (!code) return null;
 
-  const declarations = [
-    getDeclaration(id.replace(TS_EXTENSION, '.d.ts'), emittedFiles),
-    getDeclaration(id.replace(TS_EXTENSION, '.d.ts.map'), emittedFiles)
-  ].filter(notNull);
+  const declarations = ['.d.ts', '.d.ts.map']
+    .map((ext) => getDeclaration(id.replace(TS_EXTENSION, ext), emittedFiles))
+    .filter(notNull);
 
   return {
     code,

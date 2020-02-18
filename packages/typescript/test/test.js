@@ -221,24 +221,19 @@ test('supports overriding the TypeScript version', async (t) => {
         typescript: fakeTypescript({
           version: '1.8.0-fake',
 
-          createLanguageService() {
-            return {
-              getProgram: () => null,
-              getSyntacticDiagnostics: () => [],
-              getSemanticDiagnostics: () => [],
-              getEmitOutput() {
-                // Ignore the code to transpile. Always return the same thing.
-                return {
-                  outputFiles: [
-                    {
-                      name: 'whatever.js',
-                      text: 'export default 1337;'
-                    }
-                  ],
-                  emitSkipped: false
-                };
+          createWatchProgram(host) {
+            const program = {
+              emit(_, writeFile) {
+                writeFile(
+                  path.posix.join(__dirname, 'fixtures/overriding-typescript/main.js'),
+                  'export default 1337;'
+                );
               }
             };
+            host.afterProgramCreate(program);
+
+            // Call the overrided emit function to trigger writeFile
+            program.emit();
           }
         })
       })
@@ -548,9 +543,7 @@ function fakeTypescript(custom) {
     {
       sys: ts.sys,
       createModuleResolutionCache: ts.createModuleResolutionCache,
-      createDocumentRegistry: ts.createDocumentRegistry,
       ModuleKind: ts.ModuleKind,
-      ScriptSnapshot: ts.ScriptSnapshot,
 
       transpileModule() {
         return {
@@ -560,17 +553,14 @@ function fakeTypescript(custom) {
         };
       },
 
-      convertCompilerOptionsFromJson(options) {
-        ['include', 'exclude', 'typescript', 'tslib', 'tsconfig'].forEach((option) => {
-          if (option in options) {
-            throw new Error(`unrecognized compiler option "${option}"`);
-          }
-        });
-
+      createWatchCompilerHost() {
         return {
-          options,
-          errors: []
+          afterProgramCreate() {}
         };
+      },
+
+      createWatchProgram() {
+        return {};
       },
 
       parseJsonConfigFileContent(json, host, basePath, existingOptions) {
