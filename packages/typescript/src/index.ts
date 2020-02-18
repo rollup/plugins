@@ -31,7 +31,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
       host = ts.createWatchCompilerHost(
-        parsedOptions.fileNames,
+        parsedOptions.fileNames.filter(filter),
         parsedOptions.options,
         ts.sys,
         createProgram,
