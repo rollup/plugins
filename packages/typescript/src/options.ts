@@ -29,7 +29,8 @@ type PartialCustomOptions = Partial<CompilerOptions> | Partial<JsonCompilerOptio
 const DEFAULT_COMPILER_OPTIONS: PartialCustomOptions = {
   module: 'esnext',
   sourceMap: true,
-  noEmitOnError: true
+  noEmitOnError: true,
+  skipLibCheck: true
 };
 
 const FORCED_COMPILER_OPTIONS: Partial<CompilerOptions> = {
@@ -236,7 +237,7 @@ export function parseTypescriptConfig(
 
   // We only want to automatically add ambient declaration files.
   // Normal script files are handled by Rollup.
-  parsedConfig.fileNames = parsedConfig.fileNames.filter((file) => file.endsWith('.d.ts'));
+  // parsedConfig.fileNames = parsedConfig.fileNames.filter((file) => file.endsWith('.d.ts'));
   normalizeCompilerOptions(ts, parsedConfig.options);
 
   return parsedConfig;

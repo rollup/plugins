@@ -301,7 +301,7 @@ test('should transpile JSX if enabled', async (t) => {
   t.not(usage, -1, 'should contain usage');
 });
 
-test.serial('automatically loads tsconfig.json from the current directory', async (t) => {
+test.serial.only('automatically loads tsconfig.json from the current directory', async (t) => {
   process.chdir('fixtures/tsconfig-jsx');
 
   const bundle = await rollup({

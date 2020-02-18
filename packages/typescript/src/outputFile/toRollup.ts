@@ -1,18 +1,6 @@
 import { SourceDescription } from 'rollup';
 
-/**
- * Checks if the given OutputFile represents some code
- */
-function isCodeOutputFile(file: import('typescript').OutputFile): boolean {
-  return !isMapOutputFile(file) && !file.name.endsWith('.d.ts');
-}
-
-/**
- * Checks if the given OutputFile represents some source map
- */
-function isMapOutputFile({ name }: import('typescript').OutputFile): boolean {
-  return name.endsWith('.map');
-}
+import { isCodeOutputFile, isMapOutputFile } from './isFile';
 
 /**
  * Transforms a Typescript EmitOutput into a Rollup SourceDescription.
