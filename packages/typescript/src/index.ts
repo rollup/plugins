@@ -1,17 +1,20 @@
 import * as path from 'path';
 
-import { Plugin } from 'rollup';
+import { Plugin, SourceDescription } from 'rollup';
 
 import { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
 import createWatchHost, { WatchCompilerHost } from './host';
-import { emitParsedOptionsErrors, getPluginOptions, parseTypescriptConfig } from './options';
+import getPluginOptions from './options/plugin';
+import { validatePaths } from './options/normalize';
+import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import findTypescriptOutput from './outputFile';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
   const emittedFiles = new Map<string, string>();
+  const declarationFiles = new Set<string>();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
@@ -24,18 +27,20 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
-      console.log(parsedOptions.projectReferences)
 
       host = createWatchHost(ts, this, {
         formatHost,
         parsedOptions,
         writeFile(fileName, data) {
-          console.log(fileName);
           emittedFiles.set(fileName, data);
         }
       });
 
       ts.createWatchProgram(host);
+    },
+
+    renderStart(outputOptions) {
+      validatePaths(this, parsedOptions.options, outputOptions);
     },
 
     resolveId(importee, importer) {
@@ -60,8 +65,24 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     load(id) {
       if (!filter(id)) return null;
-      console.log('Load: ', id)
-      return findTypescriptOutput(id, emittedFiles);
+
+      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
+      output.declarations.forEach((declaration) => declarationFiles.add(declaration));
+
+      return output.code ? output as SourceDescription : null;
+    },
+
+    generateBundle(outputOptions) {
+      for (const id of declarationFiles) {
+        const code = emittedFiles.get(id);
+        if (code) {
+          this.emitFile({
+            type: 'asset',
+            fileName: path.relative(outputOptions.dir!, id),
+            source: code
+          })
+        }
+      }
     }
   };
 }

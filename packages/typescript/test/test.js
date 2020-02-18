@@ -35,13 +35,83 @@ test('runs code through typescript', async (t) => {
   t.false(code.includes('const'), code);
 });
 
-test('ignores the declaration option', async (t) => {
-  await t.notThrowsAsync(
-    rollup({
-      input: 'fixtures/basic/main.ts',
-      plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', declaration: true })],
-      onwarn
-    })
+test('supports creating declaration files', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({
+      tsconfig: 'fixtures/basic/tsconfig.json',
+      outDir: 'fixtures/basic/dist',
+      declaration: true
+    })],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'main.d.ts']
+  );
+
+  t.is(output[1].source, 'declare const answer = 42;\n');
+});
+
+test('supports creating declaration files in subfolder', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({
+      tsconfig: 'fixtures/basic/tsconfig.json',
+      outDir: 'fixtures/basic/dist/types',
+      declaration: true,
+      declarationMap: true
+    })],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'types/main.d.ts', 'types/main.d.ts.map']
+  );
+
+  t.is(output[1].source, 'declare const answer = 42;\n//# sourceMappingURL=main.d.ts.map');
+});
+
+test('supports creating declaration files in declarationDir', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({
+      tsconfig: 'fixtures/basic/tsconfig.json',
+      declarationDir: 'fixtures/basic/dist/types',
+      declaration: true
+    })],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'types/main.d.ts']
+  );
+
+  t.is(output[1].source, 'declare const answer = 42;\n');
+});
+
+test('ensures outDir is set when creating declaration files', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({
+      tsconfig: 'fixtures/basic/tsconfig.json',
+      declaration: true
+    })],
+    onwarn
+  });
+  const caughtError = await t.throwsAsync(() =>
+    getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
+  );
+
+  t.true(
+    caughtError.message.includes(`'outDir' or 'declarationDir' must be specified to generate declaration files`),
+    `Unexpected error message: ${caughtError.message}`
   );
 });
 
@@ -538,7 +608,7 @@ test('supports optional chaining', async (t) => {
   t.is(output, 'NOT FOUND');
 });
 
-test.serial.only('supports project references', async (t) => {
+test.serial.skip('supports project references', async (t) => {
   process.chdir('fixtures/project-references');
 
   const bundle = await rollup({
@@ -588,6 +658,10 @@ function fakeTypescript(custom) {
           fileNames: [],
           errors: []
         };
+      },
+
+      getOutputFileNames(_, id) {
+        return [id.replace(/\.tsx?/, '.js')]
       }
     },
     custom

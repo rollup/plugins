@@ -1,12 +1,21 @@
-import { EmittedAsset, SourceDescription } from 'rollup';
+import { SourceDescription } from 'rollup';
 
-const TS_EXTENSION = /\.tsx?$/;
+export interface TypescriptSourceDescription extends Partial<SourceDescription> {
+  declarations: string[]
+}
 
 /**
- * Variant of `SourceDescription` with extra properties for Typescript declaration files.
+ * Checks if the given OutputFile represents some code
  */
-export interface TypescriptSourceDescription extends SourceDescription {
-  declarations: EmittedAsset[];
+function isCodeOutputFile(name: string): boolean {
+  return !isMapOutputFile(name) && !name.endsWith('.d.ts');
+}
+
+/**
+ * Checks if the given OutputFile represents some source map
+ */
+function isMapOutputFile(name: string): boolean {
+  return name.endsWith('.map');
 }
 
 /**
@@ -16,37 +25,19 @@ export interface TypescriptSourceDescription extends SourceDescription {
  * containing files emitted by the Typescript compiler.
  */
 export default function findTypescriptOutput(
+  ts: typeof import('typescript'),
+  parsedOptions: import('typescript').ParsedCommandLine,
   id: string,
   emittedFiles: ReadonlyMap<string, string>
-): TypescriptSourceDescription | null {
-  const code = emittedFiles.get(id.replace(TS_EXTENSION, '.js'));
-  if (!code) return null;
+): TypescriptSourceDescription {
+  const emittedFileNames = ts.getOutputFileNames(parsedOptions, id, !ts.sys.useCaseSensitiveFileNames);
 
-  const declarations = ['.d.ts', '.d.ts.map']
-    .map((ext) => getDeclaration(id.replace(TS_EXTENSION, ext), emittedFiles))
-    .filter(notNull);
+  const codeFile = emittedFileNames.find(isCodeOutputFile);
+  const mapFile = emittedFileNames.find(isMapOutputFile);
 
   return {
-    code,
-    map: emittedFiles.get(id.replace(TS_EXTENSION, '.map')),
-    declarations
-  };
-}
-
-function getDeclaration(
-  fileName: string,
-  emittedFiles: ReadonlyMap<string, string>
-): EmittedAsset | null {
-  const source = emittedFiles.get(fileName);
-  if (!source) return null;
-
-  return {
-    type: 'asset',
-    fileName,
-    source
-  };
-}
-
-function notNull<T>(obj: T | null): obj is T {
-  return obj != null;
+    code: emittedFiles.get(codeFile!),
+    map: emittedFiles.get(mapFile!),
+    declarations: emittedFileNames.filter(name => name !== codeFile && name !== mapFile)
+  }
 }
