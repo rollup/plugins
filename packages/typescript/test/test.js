@@ -199,7 +199,7 @@ test('works with named exports for abstract classes', async (t) => {
   t.true(code.length > 0, code);
 });
 
-test.only('should use named exports for classes', async (t) => {
+test('should use named exports for classes', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-class/main.ts',
     plugins: [typescript({ include: 'fixtures/export-class/**/*' })],

@@ -1,22 +1,14 @@
-import createFormattingHost, { DiagnosticsHost } from './diagnostics/host';
-import createModuleResolutionHost, { ModuleResolutionHost } from './moduleResolution/host';
-import createModuleResolver, { Resolver } from './moduleResolution/resolver';
+import { PluginContext } from 'rollup';
 
-type BaseHost = import('typescript').LanguageServiceHost & ModuleResolutionHost & DiagnosticsHost;
+import { DiagnosticsHost } from './diagnostics/host';
+import createModuleResolver from './moduleResolution/resolver';
+import emitDiagnostics from './diagnostics/emit';
 
-export interface TypescriptHost extends BaseHost {
-  /**
-   * Lets the host know about a file by adding it to its memory.
-   * @param id Filename
-   * @param code Body of the file
-   * @see https://blog.scottlogic.com/2015/01/20/typescript-compiler-api.html
-   */
-  addFile(id: string, code: string): void;
-  /**
-   * Reads the given file.
-   * Used for both `LanguageServiceHost` (2 params) and `ModuleResolutionHost` (1 param).
-   */
-  readFile(path: string, encoding?: string): string | undefined;
+type BaseHost = import('typescript').WatchCompilerHostOfFilesAndCompilerOptions<
+  import('typescript').EmitAndSemanticDiagnosticsBuilderProgram
+>;
+
+export interface WatchCompilerHost extends BaseHost {
   /**
    * Uses Typescript to resolve a module path.
    * The `compilerOptions` parameter from `LanguageServiceHost.resolveModuleNames`
@@ -28,82 +20,55 @@ export interface TypescriptHost extends BaseHost {
   ): Array<import('typescript').ResolvedModuleFull | undefined>;
 }
 
-interface File {
-  file: import('typescript').IScriptSnapshot;
-  version: number;
+interface CreateWatchHostOptions {
+  /** Formatting host used to get some system functions and emit type errors. */
+  formatHost: DiagnosticsHost;
+  /** Typescript compiler options. */
+  compilerOptions: import('typescript').CompilerOptions;
+  /** List of Typescript files that should be compiled. */
+  fileNames: string[];
+  /** Callback to save compiled files in memory. */
+  writeFile: import('typescript').WriteFileCallback;
 }
 
 /**
  * Create a language service host to use with the Typescript compiler & type checking APIs.
  * Typescript hosts are used to represent the user's system,
  * with an API for reading files, checking directories and case sensitivity etc.
- * This host creates a local file cache which can be updated with `addFile`.
- *
- * @param parsedOptions Parsed options for Typescript.
- * @param parsedOptions.options Typescript compiler options. Affects functions such as `getNewLine`.
- * @param parsedOptions.fileNames Declaration files to include for typechecking.
  * @see https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
  */
-export default function createHost(
+export default function createWatchHost(
   ts: typeof import('typescript'),
-  parsedOptions: import('typescript').ParsedCommandLine
-): TypescriptHost {
-  const files = new Map<string, File>();
+  context: PluginContext,
+  { formatHost, compilerOptions, fileNames, writeFile }: CreateWatchHostOptions
+): WatchCompilerHost {
+  const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
 
-  /** Get the code stored in a File snapshot. */
-  function getCode({ file }: File) {
-    return file.getText(0, file.getLength());
-  }
+  const baseHost = ts.createWatchCompilerHost(
+    fileNames,
+    compilerOptions,
+    ts.sys,
+    createProgram,
+    // Use Rollup to report diagnostics from Typescript
+    (diagnostic) => emitDiagnostics(ts, context, formatHost, [diagnostic]),
+    // Ignore watch status changes
+    () => {}
+  );
 
-  /** @see TypescriptHost.addFile */
-  function addFile(id: string, code: string) {
-    const existing = files.get(id);
-    // Don't need to update if nothing changed
-    if (existing && getCode(existing) === code) return;
-
-    files.set(id, {
-      file: ts.ScriptSnapshot.fromString(code),
-      version: existing ? existing.version + 1 : 0
-    });
-  }
-
-  /** Helper that tries to read the file if it hasn't been stored yet */
-  function getFile(id: string) {
-    if (!files.has(id)) {
-      const code = ts.sys.readFile(id);
-      if (code == null) {
-        throw new Error(`@rollup/plugin-typescript: Could not find ${id}`);
-      }
-      addFile(id, code);
-    }
-    return files.get(id)!;
-  }
-
-  parsedOptions.fileNames.forEach((id) => getFile(id));
-
-  let resolver: Resolver;
-  const host: TypescriptHost = {
-    ...createModuleResolutionHost(ts),
-    ...createFormattingHost(ts, parsedOptions.options),
-    useCaseSensitiveFileNames: () => ts.sys.useCaseSensitiveFileNames,
-    getDefaultLibFileName: ts.getDefaultLibFilePath,
-    readDirectory: ts.sys.readDirectory,
-    readFile(fileName, encoding) {
-      const file = files.get(fileName);
-      if (file != null) return getCode(file);
-      return ts.sys.readFile(fileName, encoding);
+  const resolver = createModuleResolver(ts, { ...formatHost, ...baseHost });
+  return {
+    ...baseHost,
+    /** Override the created program so an in-memory emit is used */
+    afterProgramCreate(program) {
+      const origEmit = program.emit;
+      // eslint-disable-next-line no-param-reassign
+      program.emit = (targetSourceFile, _, ...args) =>
+        origEmit(targetSourceFile, writeFile, ...args);
+      return baseHost.afterProgramCreate!(program);
     },
-    fileExists: (fileName) => files.has(fileName) || ts.sys.fileExists(fileName),
-    getScriptFileNames: () => Array.from(files.keys()),
-    getScriptSnapshot: (fileName) => getFile(fileName).file,
-    getScriptVersion: (fileName) => getFile(fileName).version.toString(),
+    /** Add helper to deal with module resolution */
     resolveModuleNames(moduleNames, containingFile) {
       return moduleNames.map((moduleName) => resolver(moduleName, containingFile));
-    },
-    addFile
+    }
   };
-  // Declared here because this has a circular reference
-  resolver = createModuleResolver(ts, host);
-
-  return host;
 }

@@ -4,13 +4,11 @@ import { Plugin } from 'rollup';
 
 import { RollupTypescriptOptions } from '../types';
 
-import emitDiagnostics from './diagnostics/emit';
 import createFormattingHost from './diagnostics/host';
+import createWatchHost, { WatchCompilerHost } from './host';
 import { emitParsedOptionsErrors, getPluginOptions, parseTypescriptConfig } from './options';
+import findTypescriptOutput from './outputFile';
 import { TSLIB_ID } from './tslib';
-import createModuleResolver from './moduleResolution/resolver';
-
-const TS_EXTENSION = /\.tsx?$/;
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
@@ -18,11 +16,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
   const formatHost = createFormattingHost(ts, parsedOptions.options);
-
-  const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
-  type BuilderProgram = ReturnType<typeof createProgram>;
-  let host: import('typescript').WatchCompilerHostOfFilesAndCompilerOptions<BuilderProgram>;
-  // let watchProgram: import('typescript').WatchOfFilesAndCompilerOptions<BuilderProgram>;
+  let host: WatchCompilerHost;
 
   return {
     name: 'typescript',
@@ -30,30 +24,14 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
-      host = ts.createWatchCompilerHost(
-        parsedOptions.fileNames.filter(filter),
-        parsedOptions.options,
-        ts.sys,
-        createProgram,
-        (diagnostic) => emitDiagnostics(ts, this, formatHost, [diagnostic]),
-        () => {}
-      );
-      const resolver = createModuleResolver(ts, { ...formatHost, ...host });
-
-      const origPostProgramCreate = host.afterProgramCreate!;
-      host.afterProgramCreate = (program) => {
-        const origEmit = program.emit;
-        // eslint-disable-next-line no-param-reassign
-        program.emit = (targetSourceFile, _, ...args) => {
-          function writeFile(fileName: string, data: string) {
-            emittedFiles.set(fileName, data);
-          }
-          return origEmit(targetSourceFile, writeFile, ...args);
-        };
-        return origPostProgramCreate(program);
-      };
-      host.resolveModuleNames = (moduleNames, containingFile) =>
-        moduleNames.map((moduleName) => resolver(moduleName, containingFile));
+      host = createWatchHost(ts, this, {
+        formatHost,
+        compilerOptions: parsedOptions.options,
+        fileNames: parsedOptions.fileNames.filter(filter),
+        writeFile(fileName, data) {
+          emittedFiles.set(fileName, data);
+        }
+      });
 
       ts.createWatchProgram(host);
     },
@@ -68,13 +46,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       // Convert path from windows separators to posix separators
       const containingFile = importer.split(path.win32.sep).join(path.posix.sep);
 
-      const resolved = host.resolveModuleNames!(
-        [importee],
-        containingFile,
-        undefined,
-        undefined,
-        parsedOptions.options
-      );
+      const resolved = host.resolveModuleNames([importee], containingFile);
       const resolvedFile = resolved[0]?.resolvedFileName;
 
       if (resolvedFile) {
@@ -92,13 +64,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       if (!filter(id)) return null;
 
-      const code = emittedFiles.get(id.replace(TS_EXTENSION, '.js'));
-      if (!code) return null;
-
-      return {
-        code,
-        map: emittedFiles.get(id.replace(TS_EXTENSION, '.map'))
-      };
+      return findTypescriptOutput(id, emittedFiles);
     }
   };
 }
