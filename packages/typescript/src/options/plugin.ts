@@ -21,7 +21,7 @@ export default function getPluginOptions(options: RollupTypescriptOptions) {
 
   const filter = createFilter(
     include || ['*.ts+(|x)', '**/*.ts+(|x)'],
-    exclude || ['*.d.ts', '**/*.d.ts']
+    exclude
   );
 
   return {

@@ -304,6 +304,8 @@ test('supports overriding the TypeScript version', async (t) => {
 
             // Call the overrided emit function to trigger writeFile
             program.emit();
+
+            return { close() {} };
           }
         })
       })

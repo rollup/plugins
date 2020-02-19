@@ -21,6 +21,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
   const formatHost = createFormattingHost(ts, parsedOptions.options);
   let host: WatchCompilerHost;
+  let program: import('typescript').Watch<unknown>;
 
   return {
     name: 'typescript',
@@ -36,7 +37,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         }
       });
 
-      ts.createWatchProgram(host);
+      program = ts.createWatchProgram(host);
+    },
+
+    buildEnd() {
+      if (process.env.ROLLUP_WATCH !== 'true') {
+        program.close();
+      }
     },
 
     renderStart(outputOptions) {
