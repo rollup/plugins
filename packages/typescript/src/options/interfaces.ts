@@ -17,7 +17,6 @@ export type PartialCustomOptions = Partial<CompilerOptions> | Partial<JsonCompil
 
 export const DEFAULT_COMPILER_OPTIONS: PartialCustomOptions = {
   module: 'esnext',
-  sourceMap: true,
   noEmitOnError: true,
   skipLibCheck: true
 };

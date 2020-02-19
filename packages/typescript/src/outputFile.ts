@@ -1,7 +1,7 @@
 import { SourceDescription } from 'rollup';
 
 export interface TypescriptSourceDescription extends Partial<SourceDescription> {
-  declarations: string[]
+  declarations: string[];
 }
 
 /**
@@ -30,7 +30,11 @@ export default function findTypescriptOutput(
   id: string,
   emittedFiles: ReadonlyMap<string, string>
 ): TypescriptSourceDescription {
-  const emittedFileNames = ts.getOutputFileNames(parsedOptions, id, !ts.sys.useCaseSensitiveFileNames);
+  const emittedFileNames = ts.getOutputFileNames(
+    parsedOptions,
+    id,
+    !ts.sys.useCaseSensitiveFileNames
+  );
 
   const codeFile = emittedFileNames.find(isCodeOutputFile);
   const mapFile = emittedFileNames.find(isMapOutputFile);
@@ -38,6 +42,6 @@ export default function findTypescriptOutput(
   return {
     code: emittedFiles.get(codeFile!),
     map: emittedFiles.get(mapFile!),
-    declarations: emittedFileNames.filter(name => name !== codeFile && name !== mapFile)
-  }
+    declarations: emittedFileNames.filter((name) => name !== codeFile && name !== mapFile)
+  };
 }

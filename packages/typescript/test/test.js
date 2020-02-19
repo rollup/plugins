@@ -38,11 +38,13 @@ test('runs code through typescript', async (t) => {
 test('supports creating declaration files', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({
-      tsconfig: 'fixtures/basic/tsconfig.json',
-      outDir: 'fixtures/basic/dist',
-      declaration: true
-    })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        outDir: 'fixtures/basic/dist',
+        declaration: true
+      })
+    ],
     onwarn
   });
   const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
@@ -58,12 +60,14 @@ test('supports creating declaration files', async (t) => {
 test('supports creating declaration files in subfolder', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({
-      tsconfig: 'fixtures/basic/tsconfig.json',
-      outDir: 'fixtures/basic/dist/types',
-      declaration: true,
-      declarationMap: true
-    })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        outDir: 'fixtures/basic/dist/types',
+        declaration: true,
+        declarationMap: true
+      })
+    ],
     onwarn
   });
   const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
@@ -79,11 +83,13 @@ test('supports creating declaration files in subfolder', async (t) => {
 test('supports creating declaration files in declarationDir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({
-      tsconfig: 'fixtures/basic/tsconfig.json',
-      declarationDir: 'fixtures/basic/dist/types',
-      declaration: true
-    })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        declarationDir: 'fixtures/basic/dist/types',
+        declaration: true
+      })
+    ],
     onwarn
   });
   const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
@@ -99,10 +105,12 @@ test('supports creating declaration files in declarationDir', async (t) => {
 test('ensures outDir is set when creating declaration files', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({
-      tsconfig: 'fixtures/basic/tsconfig.json',
-      declaration: true
-    })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        declaration: true
+      })
+    ],
     onwarn
   });
   const caughtError = await t.throwsAsync(() =>
@@ -110,8 +118,69 @@ test('ensures outDir is set when creating declaration files', async (t) => {
   );
 
   t.true(
-    caughtError.message.includes(`'outDir' or 'declarationDir' must be specified to generate declaration files`),
+    caughtError.message.includes(
+      `'outDir' or 'declarationDir' must be specified to generate declaration files`
+    ),
     `Unexpected error message: ${caughtError.message}`
+  );
+});
+
+test('ensures outDir is located in Rollup output dir', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        outDir: 'fixtures/basic/'
+      })
+    ],
+    onwarn
+  });
+
+  const noDirError = await t.throwsAsync(() =>
+    getCode(bundle, { format: 'esm', file: 'fixtures/basic/dist/out.js' }, true)
+  );
+  t.true(
+    noDirError.message.includes(`'dir' must be used when 'outDir' is specified`),
+    `Unexpected error message: ${noDirError.message}`
+  );
+
+  const wrongDirError = await t.throwsAsync(() =>
+    getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
+  );
+  t.true(
+    wrongDirError.message.includes(`'outDir' must be located inside 'dir'`),
+    `Unexpected error message: ${wrongDirError.message}`
+  );
+});
+
+test('ensures declarationDir is located in Rollup output dir', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        declarationDir: 'fixtures/basic/',
+        declaration: true
+      })
+    ],
+    onwarn
+  });
+
+  const noDirError = await t.throwsAsync(() =>
+    getCode(bundle, { format: 'esm', file: 'fixtures/basic/dist/out.js' }, true)
+  );
+  t.true(
+    noDirError.message.includes(`'dir' must be used when 'declarationDir' is specified`),
+    `Unexpected error message: ${noDirError.message}`
+  );
+
+  const wrongDirError = await t.throwsAsync(() =>
+    getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
+  );
+  t.true(
+    wrongDirError.message.includes(`'declarationDir' must be located inside 'dir'`),
+    `Unexpected error message: ${wrongDirError.message}`
   );
 });
 
@@ -626,6 +695,58 @@ test.serial.skip('supports project references', async (t) => {
   t.is(zoo[0].name, 'Bob!?! ');
 });
 
+test('warns if sourceMap is set in Typescript but not Rollup', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', sourceMap: true })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  await getCode(bundle, { format: 'esm' });
+
+  t.is(warnings.length, 1);
+  t.true(
+    warnings[0].message.includes(`Rollup 'sourcemap' option must be set to generate source maps`),
+    warnings[0].message
+  );
+});
+
+test('warns if sourceMap is set in Rollup but not Typescript', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', sourceMap: false })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  await getCode(bundle, { format: 'esm', sourcemap: true });
+
+  t.is(warnings.length, 1);
+  t.true(
+    warnings[0].message.includes(
+      `Typescript 'sourceMap' compiler option must be set to generate source maps`
+    ),
+    warnings[0].message
+  );
+});
+
+test('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json' })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  await getCode(bundle, { format: 'esm', sourcemap: true });
+
+  t.is(warnings.length, 0);
+});
+
 function fakeTypescript(custom) {
   return Object.assign(
     {
@@ -663,7 +784,7 @@ function fakeTypescript(custom) {
       },
 
       getOutputFileNames(_, id) {
-        return [id.replace(/\.tsx?/, '.js')]
+        return [id.replace(/\.tsx?/, '.js')];
       }
     },
     custom

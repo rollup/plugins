@@ -7,7 +7,7 @@ import { RollupTypescriptOptions } from '../types';
 import createFormattingHost from './diagnostics/host';
 import createWatchHost, { WatchCompilerHost } from './host';
 import getPluginOptions from './options/plugin';
-import { validatePaths } from './options/normalize';
+import { validatePaths, validateSourceMap } from './options/validate';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import findTypescriptOutput from './outputFile';
 
@@ -20,8 +20,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
   const formatHost = createFormattingHost(ts, parsedOptions.options);
-  let host: WatchCompilerHost;
-  let program: import('typescript').Watch<unknown>;
+  let host: WatchCompilerHost | null = null;
+  let program: import('typescript').Watch<unknown> | null = null;
 
   return {
     name: 'typescript',
@@ -42,11 +42,14 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     buildEnd() {
       if (process.env.ROLLUP_WATCH !== 'true') {
-        program.close();
+        // ESLint doesn't understand optional chaining
+        // eslint-disable-next-line
+        program?.close();
       }
     },
 
     renderStart(outputOptions) {
+      validateSourceMap(this, parsedOptions.options, outputOptions, parsedOptions.autoSetSourceMap);
       validatePaths(this, parsedOptions.options, outputOptions);
     },
 
@@ -60,7 +63,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       // Convert path from windows separators to posix separators
       const containingFile = importer.split(path.win32.sep).join(path.posix.sep);
 
-      const [resolved] = host.resolveModuleNames([importee], containingFile);
+      const [resolved] = host!.resolveModuleNames([importee], containingFile);
 
       if (resolved) {
         if (resolved.extension === '.d.ts') return null;
@@ -76,7 +79,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
       output.declarations.forEach((declaration) => declarationFiles.add(declaration));
 
-      return output.code ? output as SourceDescription : null;
+      return output.code ? (output as SourceDescription) : null;
     },
 
     generateBundle(outputOptions) {
@@ -87,7 +90,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
             type: 'asset',
             fileName: path.relative(outputOptions.dir!, id),
             source: code
-          })
+          });
         }
       }
     }

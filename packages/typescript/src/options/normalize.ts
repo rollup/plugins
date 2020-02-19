@@ -1,18 +1,18 @@
 /* eslint-disable no-param-reassign */
-import { relative, resolve, dirname } from 'path';
-
-import { PluginContext, OutputOptions } from "rollup";
+import { resolve, dirname } from 'path';
 
 import { CompilerOptions } from './interfaces';
 
 /**
  * Mutates the compiler options to normalize some values for Rollup.
  * @param compilerOptions Compiler options to _mutate_.
+ * @returns True if the source map compiler option was not initially set.
  */
 export function normalizeCompilerOptions(
   ts: typeof import('typescript'),
   compilerOptions: CompilerOptions
 ) {
+  let autoSetSourceMap = false;
   if (compilerOptions.inlineSourceMap) {
     // Force separate source map files for Rollup to work with.
     compilerOptions.sourceMap = true;
@@ -21,6 +21,7 @@ export function normalizeCompilerOptions(
     // Default to using source maps.
     // If the plugin user sets sourceMap to false we keep that option.
     compilerOptions.sourceMap = true;
+    autoSetSourceMap = true;
   }
 
   switch (compilerOptions.module) {
@@ -28,7 +29,7 @@ export function normalizeCompilerOptions(
     case ts.ModuleKind.ESNext:
     case ts.ModuleKind.CommonJS:
       // OK module type
-      return;
+      return autoSetSourceMap;
     case ts.ModuleKind.None:
     case ts.ModuleKind.AMD:
     case ts.ModuleKind.UMD:
@@ -43,6 +44,8 @@ export function normalizeCompilerOptions(
       // Unknown or unspecified module type, force ESNext
       compilerOptions.module = ts.ModuleKind.ESNext;
   }
+
+  return autoSetSourceMap;
 }
 
 /**
@@ -61,47 +64,4 @@ export function normalizeProjectReferences(
       path: resolve(dirname(tsConfigPath), projectReference.originalPath!)
     };
   });
-}
-
-export function validatePaths(
-  context: PluginContext,
-  compilerOptions: CompilerOptions,
-  outputOptions: OutputOptions
-) {
-  /** Checks if the given path lies within Rollup output dir */
-  function rollupCanEmit(path: string) {
-    const fromRollupDirToTs = relative(outputOptions.dir!, path);
-    return !fromRollupDirToTs.startsWith('..');
-  }
-
-  if (compilerOptions.out) {
-    context.error(`@rollup/plugin-typescript: Deprecated 'out' option is not supported. Use 'outDir' instead.`)
-  } else if (compilerOptions.outFile) {
-    context.error(`@rollup/plugin-typescript: 'outFile' option is not supported. Use 'outDir' instead.`)
-  }
-
-  if (compilerOptions.outDir) {
-    if (!outputOptions.dir) {
-      context.error(`@rollup/plugin-typescript: 'dir' must be used when 'outDir' is specified.`);
-    }
-
-    if (!rollupCanEmit(compilerOptions.outDir)) {
-      context.error(`@rollup/plugin-typescript: 'outDir' must be located inside 'dir'.`);
-    }
-  }
-  if (compilerOptions.declarationDir) {
-    if (!outputOptions.dir) {
-      context.error(`@rollup/plugin-typescript: 'dir' must be used when 'declarationDir' is specified.`);
-    }
-
-    if (!rollupCanEmit(compilerOptions.declarationDir)) {
-      context.error(`@rollup/plugin-typescript: 'declarationDir' must be located inside 'dir'.`);
-    }
-  }
-
-  if (compilerOptions.declaration || compilerOptions.declarationMap) {
-    if (!compilerOptions.outDir && !compilerOptions.declarationDir) {
-      context.error(`@rollup/plugin-typescript: 'outDir' or 'declarationDir' must be specified to generate declaration files.`);
-    }
-  }
 }

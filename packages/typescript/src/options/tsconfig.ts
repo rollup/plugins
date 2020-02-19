@@ -86,7 +86,7 @@ export function parseTypescriptConfig(
   ts: typeof import('typescript'),
   tsconfig: RollupTypescriptOptions['tsconfig'],
   compilerOptions: PartialCustomOptions
-): import('typescript').ParsedCommandLine {
+) {
   const cwd = process.cwd();
   let parsedConfig: import('typescript').ParsedCommandLine;
 
@@ -131,10 +131,13 @@ export function parseTypescriptConfig(
   // We only want to automatically add ambient declaration files.
   // Normal script files are handled by Rollup.
   // parsedConfig.fileNames = parsedConfig.fileNames.filter((file) => file.endsWith('.d.ts'));
-  normalizeCompilerOptions(ts, parsedConfig.options);
+  const autoSetSourceMap = normalizeCompilerOptions(ts, parsedConfig.options);
   normalizeProjectReferences(parsedConfig, tsConfigPath || cwd);
 
-  return parsedConfig;
+  return {
+    ...parsedConfig,
+    autoSetSourceMap
+  };
 }
 
 /**

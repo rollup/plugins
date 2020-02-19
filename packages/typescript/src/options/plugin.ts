@@ -19,10 +19,7 @@ import { PartialCustomOptions } from './interfaces';
 export default function getPluginOptions(options: RollupTypescriptOptions) {
   const { include, exclude, tsconfig, typescript, tslib, ...compilerOptions } = options;
 
-  const filter = createFilter(
-    include || ['*.ts+(|x)', '**/*.ts+(|x)'],
-    exclude
-  );
+  const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude);
 
   return {
     filter,
