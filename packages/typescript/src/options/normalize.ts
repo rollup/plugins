@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
-import { dirname, resolve } from 'path';
+import { resolve } from 'path';
 
 import { CompilerOptions, PartialCustomOptions } from './interfaces';
 
-const PATH_PROPS = ['outDir', 'declarationDir'] as const;
+export const DIRECTORY_PROPS = ['outDir', 'declarationDir'] as const;
 
 /**
  * Mutates the compiler options to convert paths from relative to absolute.
@@ -12,11 +12,8 @@ const PATH_PROPS = ['outDir', 'declarationDir'] as const;
  * @param compilerOptions Compiler options to _mutate_.
  * @param relativeTo Paths are resolved relative to this path.
  */
-export function makePathsAbsolute(
-  compilerOptions: PartialCustomOptions,
-  relativeTo: string
-) {
-  for (const pathProp of PATH_PROPS) {
+export function makePathsAbsolute(compilerOptions: PartialCustomOptions, relativeTo: string) {
+  for (const pathProp of DIRECTORY_PROPS) {
     if (compilerOptions[pathProp]) {
       compilerOptions[pathProp] = resolve(relativeTo, compilerOptions[pathProp] as string);
     }

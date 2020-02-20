@@ -1,6 +1,6 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist",
-        "declaration": true
-    }
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declaration": true
+  }
 }

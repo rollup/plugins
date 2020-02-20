@@ -5,12 +5,12 @@ import { Plugin, SourceDescription } from 'rollup';
 import { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
-import createWatchProgram from './program/watch';
-import getPluginOptions from './options/plugin';
-import { validatePaths, validateSourceMap } from './options/validate';
-import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
-import findTypescriptOutput from './outputFile';
 import createModuleResolver from './moduleResolution';
+import getPluginOptions from './options/plugin';
+import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
+import { validatePaths, validateSourceMap } from './options/validate';
+import findTypescriptOutput from './outputFile';
+import createWatchProgram from './watchProgram';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);

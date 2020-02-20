@@ -1,10 +1,9 @@
 import { relative } from 'path';
 
-import { PluginContext, OutputOptions } from 'rollup';
+import { OutputOptions, PluginContext } from 'rollup';
 
 import { CompilerOptions } from './interfaces';
-
-const DIRECTORY_PROPS = ['outDir', 'declarationDir'] as const;
+import { DIRECTORY_PROPS } from './normalize';
 
 /**
  * Validate that the `compilerOptions.sourceMap` option matches `outputOptions.sourcemap`.

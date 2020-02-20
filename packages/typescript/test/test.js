@@ -187,9 +187,7 @@ test('ensures declarationDir is located in Rollup output dir', async (t) => {
 test('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/relative-dir/main.ts',
-    plugins: [
-      typescript({ tsconfig: 'fixtures/relative-dir/tsconfig.json' })
-    ],
+    plugins: [typescript({ tsconfig: 'fixtures/relative-dir/tsconfig.json' })],
     onwarn
   });
   const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/relative-dir/dist' }, true);
