@@ -54,7 +54,7 @@ test('supports creating declaration files', async (t) => {
     ['main.js', 'main.d.ts']
   );
 
-  t.is(output[1].source, 'declare const answer = 42;\n');
+  t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
 test('supports creating declaration files in subfolder', async (t) => {
@@ -77,7 +77,9 @@ test('supports creating declaration files in subfolder', async (t) => {
     ['main.js', 'types/main.d.ts', 'types/main.d.ts.map']
   );
 
-  t.is(output[1].source, 'declare const answer = 42;\n//# sourceMappingURL=main.d.ts.map');
+  const declarationSource = output[1].source;
+  t.true(declarationSource.includes('declare const answer = 42;'), declarationSource);
+  t.true(declarationSource.includes('//# sourceMappingURL=main.d.ts.map'), declarationSource);
 });
 
 test('supports creating declaration files in declarationDir', async (t) => {
@@ -99,7 +101,7 @@ test('supports creating declaration files in declarationDir', async (t) => {
     ['main.js', 'types/main.d.ts']
   );
 
-  t.is(output[1].source, 'declare const answer = 42;\n');
+  t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
 test('ensures outDir is set when creating declaration files', async (t) => {
@@ -197,7 +199,7 @@ test('relative paths in tsconfig.json are resolved relative to the file', async 
     ['main.js', 'main.d.ts']
   );
 
-  t.is(output[1].source, 'declare const answer = 42;\n');
+  t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
 test('throws for unsupported module types', async (t) => {
@@ -380,7 +382,7 @@ test('supports overriding the TypeScript version', async (t) => {
             const program = {
               emit(_, writeFile) {
                 writeFile(
-                  path.posix.join(__dirname, 'fixtures/overriding-typescript/main.js'),
+                  path.join(__dirname, 'fixtures/overriding-typescript/main.js'),
                   'export default 1337;'
                 );
               }

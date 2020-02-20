@@ -25,6 +25,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
   let program: import('typescript').Watch<unknown> | null = null;
 
+  function normalizePath(fileName: string) {
+    return fileName.split(path.win32.sep).join(path.posix.sep);
+  }
+
   return {
     name: 'typescript',
 
@@ -62,7 +66,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       if (!importer) return null;
 
       // Convert path from windows separators to posix separators
-      const containingFile = importer.split(path.win32.sep).join(path.posix.sep);
+      const containingFile = normalizePath(importer);
 
       const resolved = resolveModule(importee, containingFile);
 
@@ -89,7 +93,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         if (code) {
           this.emitFile({
             type: 'asset',
-            fileName: path.relative(outputOptions.dir!, id),
+            fileName: normalizePath(path.relative(outputOptions.dir!, id)),
             source: code
           });
         }
@@ -99,7 +103,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       if (tsBuildInfoPath) {
         this.emitFile({
           type: 'asset',
-          fileName: path.relative(outputOptions.dir!, tsBuildInfoPath),
+          fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
           source: emittedFiles.get(tsBuildInfoPath)
         });
       }
