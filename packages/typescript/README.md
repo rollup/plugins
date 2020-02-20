@@ -134,8 +134,6 @@ Declaration files are automatically included if they are listed in the `files` f
 
 These compiler options are ignored by Rollup:
 
-- `declaration`, `declarationMap`: This plugin currently cannot emit declaration files.
-- `incremental`, `tsBuildInfoFile`: This plugin currently does not support incremental compilation using Typescript.
 - `noEmitHelpers`, `importHelpers`: The `tslib` helper module always must be used.
 - `noEmit`, `emitDeclarationOnly`: Typescript needs to emit code for the plugin to work with.
 - `noResolve`: Preventing Typescript from resolving code may break compilation
