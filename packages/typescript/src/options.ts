@@ -2,11 +2,12 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
+import { PluginContext } from 'rollup';
 import * as defaultTs from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
-import { diagnosticToWarning } from './diagnostics';
+import diagnosticToWarning from './diagnostics/toWarning';
 import { getTsLibCode } from './tslib';
 
 /** Properties of `CompilerOptions` that are normally enums */
@@ -239,4 +240,20 @@ export function parseTypescriptConfig(
   normalizeCompilerOptions(ts, parsedConfig.options);
 
   return parsedConfig;
+}
+
+/**
+ * If errors are detected in the parsed options,
+ * display all of them as warnings then emit an error.
+ */
+export function emitParsedOptionsErrors(
+  ts: typeof import('typescript'),
+  context: PluginContext,
+  parsedOptions: import('typescript').ParsedCommandLine
+) {
+  if (parsedOptions.errors.length > 0) {
+    parsedOptions.errors.forEach((error) => context.warn(diagnosticToWarning(ts, null, error)));
+
+    context.error(`@rollup/plugin-typescript: Couldn't process compiler options`);
+  }
 }

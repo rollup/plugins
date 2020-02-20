@@ -4,10 +4,11 @@ import { Plugin } from 'rollup';
 
 import { RollupTypescriptOptions } from '../types';
 
-import { diagnosticToWarning, emitDiagnostics } from './diagnostics';
+import emitDiagnostics from './diagnostics/emit';
+import createFormattingHost from './diagnostics/host';
 import getDocumentRegistry from './documentRegistry';
 import createHost from './host';
-import { getPluginOptions, parseTypescriptConfig } from './options';
+import { emitParsedOptionsErrors, getPluginOptions, parseTypescriptConfig } from './options';
 import typescriptOutputToRollupTransformation from './outputToRollupTransformation';
 import { TSLIB_ID } from './tslib';
 
@@ -15,6 +16,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
+  const formatHost = createFormattingHost(ts, parsedOptions.options);
   const host = createHost(ts, parsedOptions);
   const services = ts.createLanguageService(host, getDocumentRegistry(ts, process.cwd()));
 
@@ -22,11 +24,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     name: 'typescript',
 
     buildStart() {
-      if (parsedOptions.errors.length > 0) {
-        parsedOptions.errors.forEach((error) => this.warn(diagnosticToWarning(ts, host, error)));
-
-        this.error(`@rollup/plugin-typescript: Couldn't process compiler options`);
-      }
+      emitParsedOptionsErrors(ts, this, parsedOptions);
     },
 
     resolveId(importee, importer) {
@@ -68,7 +66,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const allDiagnostics = ([] as import('typescript').Diagnostic[])
           .concat(services.getSyntacticDiagnostics(id))
           .concat(services.getSemanticDiagnostics(id));
-        emitDiagnostics(ts, this, host, allDiagnostics);
+        emitDiagnostics(ts, this, formatHost, allDiagnostics);
 
         throw new Error(`Couldn't compile ${id}`);
       }
@@ -79,7 +77,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     generateBundle() {
       const program = services.getProgram();
       if (program == null) return;
-      emitDiagnostics(ts, this, host, ts.getPreEmitDiagnostics(program));
+      emitDiagnostics(ts, this, formatHost, ts.getPreEmitDiagnostics(program));
     }
   };
 }
