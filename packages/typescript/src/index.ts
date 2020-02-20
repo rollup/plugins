@@ -50,7 +50,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     renderStart(outputOptions) {
       validateSourceMap(this, parsedOptions.options, outputOptions, parsedOptions.autoSetSourceMap);
-      validatePaths(this, parsedOptions.options, outputOptions);
+      validatePaths(ts, this, parsedOptions.options, outputOptions);
     },
 
     resolveId(importee, importer) {
@@ -92,6 +92,15 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
             source: code
           });
         }
+      }
+
+      const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
+      if (tsBuildInfoPath) {
+        this.emitFile({
+          type: 'asset',
+          fileName: path.relative(outputOptions.dir!, tsBuildInfoPath),
+          source: emittedFiles.get(tsBuildInfoPath)
+        });
       }
     }
   };

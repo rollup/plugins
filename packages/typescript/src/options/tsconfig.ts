@@ -71,6 +71,10 @@ function containsEnumOptions(
   return enums.some((prop) => prop in compilerOptions && typeof compilerOptions[prop] === 'number');
 }
 
+const configCache = new Map() as import('typescript').Map<
+  import('typescript').ExtendedConfigCacheEntry
+>;
+
 /**
  * Parse the Typescript config to use with the plugin.
  * @param ts Typescript library instance.
@@ -87,6 +91,7 @@ export function parseTypescriptConfig(
   tsconfig: RollupTypescriptOptions['tsconfig'],
   compilerOptions: PartialCustomOptions
 ) {
+  /* eslint-disable no-undefined */
   const cwd = process.cwd();
   let parsedConfig: import('typescript').ParsedCommandLine;
 
@@ -109,7 +114,10 @@ export function parseTypescriptConfig(
       ts.sys,
       cwd,
       { ...compilerOptions, ...FORCED_COMPILER_OPTIONS },
-      tsConfigPath
+      tsConfigPath,
+      undefined,
+      undefined,
+      configCache
     );
   } else {
     parsedConfig = ts.parseJsonConfigFileContent(
@@ -124,7 +132,10 @@ export function parseTypescriptConfig(
       ts.sys,
       cwd,
       FORCED_COMPILER_OPTIONS,
-      tsConfigPath
+      tsConfigPath,
+      undefined,
+      undefined,
+      configCache
     );
   }
 

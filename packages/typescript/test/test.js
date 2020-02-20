@@ -679,12 +679,29 @@ test('supports optional chaining', async (t) => {
   t.is(output, 'NOT FOUND');
 });
 
-test.serial.skip('supports project references', async (t) => {
-  process.chdir('fixtures/project-references');
-
+test('supports incremental build', async (t) => {
   const bundle = await rollup({
-    input: 'zoo/zoo.ts',
-    plugins: [typescript({ tsconfig: 'zoo/tsconfig.json' })],
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        incremental: true
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'tsconfig.tsbuildinfo']
+  );
+});
+
+test.serial.skip('supports project references', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/project-references/zoo/zoo.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/project-references/zoo/tsconfig.json' })],
     onwarn
   });
   const createZoo = await evaluateBundle(bundle);
@@ -785,7 +802,10 @@ function fakeTypescript(custom) {
 
       getOutputFileNames(_, id) {
         return [id.replace(/\.tsx?/, '.js')];
-      }
+      },
+
+      // eslint-disable-next-line no-undefined
+      getTsBuildInfoEmitOutputFilePath: () => undefined
     },
     custom
   );

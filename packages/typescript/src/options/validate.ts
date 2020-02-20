@@ -38,6 +38,7 @@ export function validateSourceMap(
  * @param outputOptions Rollup output options.
  */
 export function validatePaths(
+  ts: typeof import('typescript'),
   context: PluginContext,
   compilerOptions: CompilerOptions,
   outputOptions: OutputOptions
@@ -65,6 +66,21 @@ export function validatePaths(
       if (fromRollupDirToTs.startsWith('..')) {
         context.error(`@rollup/plugin-typescript: '${dirProperty}' must be located inside 'dir'.`);
       }
+    }
+  }
+
+  const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(compilerOptions);
+  if (tsBuildInfoPath && compilerOptions.incremental) {
+    if (!outputOptions.dir) {
+      context.error(
+        `@rollup/plugin-typescript: 'dir' must be used when 'tsBuildInfoFile' or 'incremental' are specified.`
+      );
+    }
+
+    // Checks if the given path lies within Rollup output dir
+    const fromRollupDirToTs = relative(outputOptions.dir, tsBuildInfoPath);
+    if (fromRollupDirToTs.startsWith('..')) {
+      context.error(`@rollup/plugin-typescript: 'tsBuildInfoFile' must be located inside 'dir'.`);
     }
   }
 
