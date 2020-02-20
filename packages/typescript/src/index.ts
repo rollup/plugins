@@ -5,7 +5,7 @@ import { Plugin, SourceDescription } from 'rollup';
 import { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
-import createWatchHost from './host';
+import createWatchProgram from './program/watch';
 import getPluginOptions from './options/plugin';
 import { validatePaths, validateSourceMap } from './options/validate';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
@@ -31,7 +31,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
-      const host = createWatchHost(ts, this, {
+      program = createWatchProgram(ts, this, {
         formatHost,
         resolveModule,
         parsedOptions,
@@ -39,8 +39,6 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           emittedFiles.set(fileName, data);
         }
       });
-
-      program = ts.createWatchProgram(host);
     },
 
     buildEnd() {
