@@ -37,7 +37,7 @@ export function buildDiagnosticReporter(
 ): import('typescript').DiagnosticReporter {
   return function reportDiagnostics(diagnostic) {
     emitDiagnostic(ts, context, host, diagnostic);
-  }
+  };
 }
 
 /**

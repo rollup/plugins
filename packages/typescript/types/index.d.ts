@@ -1,7 +1,7 @@
 import { Plugin } from 'rollup';
 import { CompilerOptionsValue, TsConfigSourceFile } from 'typescript';
 
-interface RollupTypescriptOptions {
+export interface RollupTypescriptOptions {
   /**
    * Other Typescript compiler options.
    */

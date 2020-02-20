@@ -1,6 +1,7 @@
 import { PluginContext } from 'rollup';
 
 import { buildDiagnosticReporter } from '../diagnostics/emit';
+
 import { CreateProgramOptions, BuilderProgram } from '.';
 
 /**
@@ -45,9 +46,9 @@ function createWatchHost(
 }
 
 export default function createWatchProgram(
-    ts: typeof import('typescript'),
+  ts: typeof import('typescript'),
   context: PluginContext,
   options: CreateProgramOptions
 ) {
-    return ts.createWatchProgram(createWatchHost(ts, context, options))
+  return ts.createWatchProgram(createWatchHost(ts, context, options));
 }
