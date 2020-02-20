@@ -730,7 +730,7 @@ test.serial('supports incremental rebuild', async (t) => {
   );
 });
 
-test.serial('supports project references', async (t) => {
+test.serial.skip('supports project references', async (t) => {
   process.chdir('fixtures/project-references');
 
   const bundle = await rollup({
