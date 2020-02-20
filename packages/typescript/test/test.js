@@ -699,13 +699,11 @@ test('supports incremental build', async (t) => {
 });
 
 test.serial.only('supports incremental rebuild', async (t) => {
-  process.chdir('fixtures/incremental')
+  process.chdir('fixtures/incremental');
 
   const bundle = await rollup({
     input: 'main.ts',
-    plugins: [
-      typescript()
-    ],
+    plugins: [typescript()],
     onwarn
   });
   const output = await getCode(bundle, { format: 'esm', dir: 'dist' }, true);
@@ -716,10 +714,12 @@ test.serial.only('supports incremental rebuild', async (t) => {
   );
 });
 
-test.serial.skip('supports project references', async (t) => {
+test.serial('supports project references', async (t) => {
+  process.chdir('fixtures/project-references');
+
   const bundle = await rollup({
-    input: 'fixtures/project-references/zoo/zoo.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/project-references/zoo/tsconfig.json' })],
+    input: 'zoo/zoo.ts',
+    plugins: [typescript({ tsconfig: 'zoo/tsconfig.json' })],
     onwarn
   });
   const createZoo = await evaluateBundle(bundle);

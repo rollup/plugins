@@ -5,11 +5,12 @@ import { Plugin, SourceDescription } from 'rollup';
 import { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
-import createWatchHost, { WatchCompilerHost } from './host';
+import createWatchHost from './host';
 import getPluginOptions from './options/plugin';
 import { validatePaths, validateSourceMap } from './options/validate';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import findTypescriptOutput from './outputFile';
+import createModuleResolver from './moduleResolution';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
@@ -20,7 +21,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
   const formatHost = createFormattingHost(ts, parsedOptions.options);
-  let host: WatchCompilerHost | null = null;
+  const resolveModule = createModuleResolver(ts, formatHost);
+
   let program: import('typescript').Watch<unknown> | null = null;
 
   return {
@@ -29,8 +31,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
-      host = createWatchHost(ts, this, {
+      const host = createWatchHost(ts, this, {
         formatHost,
+        resolveModule,
         parsedOptions,
         writeFile(fileName, data) {
           emittedFiles.set(fileName, data);
@@ -63,7 +66,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       // Convert path from windows separators to posix separators
       const containingFile = importer.split(path.win32.sep).join(path.posix.sep);
 
-      const [resolved] = host!.resolveModuleNames([importee], containingFile);
+      const resolved = resolveModule(importee, containingFile);
 
       if (resolved) {
         if (resolved.extension === '.d.ts') return null;
@@ -95,7 +98,6 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       }
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
-      console.log(tsBuildInfoPath, parsedOptions.options.tsBuildInfoFile)
       if (tsBuildInfoPath) {
         this.emitFile({
           type: 'asset',

@@ -1,7 +1,7 @@
 import { PluginContext } from 'rollup';
 
 import { DiagnosticsHost } from './diagnostics/host';
-import createModuleResolver from './moduleResolution/resolver';
+import { Resolver } from './moduleResolution';
 import emitDiagnostics from './diagnostics/emit';
 
 type BaseHost = import('typescript').WatchCompilerHostOfFilesAndCompilerOptions<
@@ -27,6 +27,8 @@ interface CreateWatchHostOptions {
   parsedOptions: import('typescript').ParsedCommandLine;
   /** Callback to save compiled files in memory. */
   writeFile: import('typescript').WriteFileCallback;
+  /** Function to resolve a module location */
+  resolveModule: Resolver;
 }
 
 /**
@@ -38,7 +40,7 @@ interface CreateWatchHostOptions {
 export default function createWatchHost(
   ts: typeof import('typescript'),
   context: PluginContext,
-  { formatHost, parsedOptions, writeFile }: CreateWatchHostOptions
+  { formatHost, parsedOptions, writeFile, resolveModule }: CreateWatchHostOptions
 ): WatchCompilerHost {
   const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
 
@@ -54,7 +56,6 @@ export default function createWatchHost(
     parsedOptions.projectReferences
   );
 
-  const resolver = createModuleResolver(ts, { ...formatHost, ...baseHost });
   return {
     ...baseHost,
     /** Override the created program so an in-memory emit is used */
@@ -67,7 +68,7 @@ export default function createWatchHost(
     },
     /** Add helper to deal with module resolution */
     resolveModuleNames(moduleNames, containingFile) {
-      return moduleNames.map((moduleName) => resolver(moduleName, containingFile));
+      return moduleNames.map((moduleName) => resolveModule(moduleName, containingFile));
     }
   };
 }
