@@ -698,6 +698,24 @@ test('supports incremental build', async (t) => {
   );
 });
 
+test.serial.only('supports incremental rebuild', async (t) => {
+  process.chdir('fixtures/incremental')
+
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [
+      typescript()
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'dist' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', '.tsbuildinfo']
+  );
+});
+
 test.serial.skip('supports project references', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/project-references/zoo/zoo.ts',

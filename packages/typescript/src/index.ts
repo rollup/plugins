@@ -95,6 +95,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       }
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
+      console.log(tsBuildInfoPath, parsedOptions.options.tsBuildInfoFile)
       if (tsBuildInfoPath) {
         this.emitFile({
           type: 'asset',
