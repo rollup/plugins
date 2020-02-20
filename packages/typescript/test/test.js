@@ -131,14 +131,14 @@ test('ensures outDir is located in Rollup output dir', async (t) => {
     plugins: [
       typescript({
         tsconfig: 'fixtures/basic/tsconfig.json',
-        outDir: 'fixtures/basic/'
+        outDir: 'fixtures/basic/other/'
       })
     ],
     onwarn
   });
 
   const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/dist/out.js' }, true)
+    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
   );
   t.true(
     noDirError.message.includes(`'dir' must be used when 'outDir' is specified`),
@@ -160,7 +160,7 @@ test('ensures declarationDir is located in Rollup output dir', async (t) => {
     plugins: [
       typescript({
         tsconfig: 'fixtures/basic/tsconfig.json',
-        declarationDir: 'fixtures/basic/',
+        declarationDir: 'fixtures/basic/other/',
         declaration: true
       })
     ],
@@ -168,7 +168,7 @@ test('ensures declarationDir is located in Rollup output dir', async (t) => {
   });
 
   const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/dist/out.js' }, true)
+    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
   );
   t.true(
     noDirError.message.includes(`'dir' must be used when 'declarationDir' is specified`),
@@ -182,6 +182,24 @@ test('ensures declarationDir is located in Rollup output dir', async (t) => {
     wrongDirError.message.includes(`'declarationDir' must be located inside 'dir'`),
     `Unexpected error message: ${wrongDirError.message}`
   );
+});
+
+test('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/relative-dir/main.ts',
+    plugins: [
+      typescript({ tsconfig: 'fixtures/relative-dir/tsconfig.json' })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/relative-dir/dist' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'main.d.ts']
+  );
+
+  t.is(output[1].source, 'declare const answer = 42;\n');
 });
 
 test('throws for unsupported module types', async (t) => {
@@ -714,7 +732,7 @@ test.serial('supports incremental rebuild', async (t) => {
   );
 });
 
-test.serial.skip('supports project references', async (t) => {
+test.serial('supports project references', async (t) => {
   process.chdir('fixtures/project-references');
 
   const bundle = await rollup({

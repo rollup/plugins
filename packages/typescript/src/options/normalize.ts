@@ -1,7 +1,27 @@
 /* eslint-disable no-param-reassign */
-import { resolve, dirname } from 'path';
+import { dirname, resolve } from 'path';
 
-import { CompilerOptions } from './interfaces';
+import { CompilerOptions, PartialCustomOptions } from './interfaces';
+
+const PATH_PROPS = ['outDir', 'declarationDir'] as const;
+
+/**
+ * Mutates the compiler options to convert paths from relative to absolute.
+ * This should be used with compiler options passed through the Rollup plugin options,
+ * not those found from loading a tsconfig.json file.
+ * @param compilerOptions Compiler options to _mutate_.
+ * @param relativeTo Paths are resolved relative to this path.
+ */
+export function makePathsAbsolute(
+  compilerOptions: PartialCustomOptions,
+  relativeTo: string
+) {
+  for (const pathProp of PATH_PROPS) {
+    if (compilerOptions[pathProp]) {
+      compilerOptions[pathProp] = resolve(relativeTo, compilerOptions[pathProp] as string);
+    }
+  }
+}
 
 /**
  * Mutates the compiler options to normalize some values for Rollup.
@@ -46,22 +66,4 @@ export function normalizeCompilerOptions(
   }
 
   return autoSetSourceMap;
-}
-
-/**
- * Mutates the parsed options to normalize paths.
- * By default Typescript makes the paths relative to the working directory rather than the tsconfig file.
- * @param parsedConfig Typescript options to _mutate_.
- * @param tsConfigPath Path to the tsconfig.json file.
- */
-export function normalizeProjectReferences(
-  parsedConfig: import('typescript').ParsedCommandLine,
-  tsConfigPath: string
-) {
-  parsedConfig.projectReferences = parsedConfig.projectReferences?.map((projectReference) => {
-    return {
-      ...projectReference,
-      path: resolve(dirname(tsConfigPath), projectReference.originalPath!)
-    };
-  });
 }

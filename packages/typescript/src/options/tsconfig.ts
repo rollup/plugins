@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 
 import { PluginContext } from 'rollup';
 
@@ -13,7 +13,7 @@ import {
   FORCED_COMPILER_OPTIONS,
   PartialCustomOptions
 } from './interfaces';
-import { normalizeCompilerOptions, normalizeProjectReferences } from './normalize';
+import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
 
 /**
  * Finds the path to the tsconfig file relative to the current working directory.
@@ -93,12 +93,14 @@ export function parseTypescriptConfig(
 ) {
   /* eslint-disable no-undefined */
   const cwd = process.cwd();
+  makePathsAbsolute(compilerOptions, cwd);
   let parsedConfig: import('typescript').ParsedCommandLine;
 
   // Resolve path to file. If file is not found, pass undefined path to `parseJsonConfigFileContent`.
   // eslint-disable-next-line no-undefined
   const tsConfigPath = getTsConfigPath(ts, tsconfig) || undefined;
   const tsConfigFile = tsConfigPath ? readTsConfigFile(ts, tsConfigPath) : {};
+  const basePath = tsConfigPath ? dirname(tsConfigPath) : cwd;
 
   // If compilerOptions has enums, it represents an CompilerOptions object instead of parsed JSON.
   // This determines where the data is passed to the parser.
@@ -112,7 +114,7 @@ export function parseTypescriptConfig(
         }
       },
       ts.sys,
-      cwd,
+      basePath,
       { ...compilerOptions, ...FORCED_COMPILER_OPTIONS },
       tsConfigPath,
       undefined,
@@ -130,7 +132,7 @@ export function parseTypescriptConfig(
         }
       },
       ts.sys,
-      cwd,
+      basePath,
       FORCED_COMPILER_OPTIONS,
       tsConfigPath,
       undefined,
@@ -139,11 +141,7 @@ export function parseTypescriptConfig(
     );
   }
 
-  // We only want to automatically add ambient declaration files.
-  // Normal script files are handled by Rollup.
-  // parsedConfig.fileNames = parsedConfig.fileNames.filter((file) => file.endsWith('.d.ts'));
   const autoSetSourceMap = normalizeCompilerOptions(ts, parsedConfig.options);
-  normalizeProjectReferences(parsedConfig, tsConfigPath || cwd);
 
   return {
     ...parsedConfig,
