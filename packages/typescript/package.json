@@ -19,7 +19,7 @@
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose",
+    "ci:test": "pnpm run test -- --verbose --serial",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
     "lint:js": "eslint --fix --cache src test --ext .js,.ts",

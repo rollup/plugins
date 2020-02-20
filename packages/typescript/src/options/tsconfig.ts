@@ -71,10 +71,9 @@ function containsEnumOptions(
   return enums.some((prop) => prop in compilerOptions && typeof compilerOptions[prop] === 'number');
 }
 
-// eslint-disable-next-line
-const configCache = undefined; /*new Map() as import('typescript').Map<
+const configCache = new Map() as import('typescript').Map<
   import('typescript').ExtendedConfigCacheEntry
->;*/
+>;
 
 /**
  * Parse the Typescript config to use with the plugin.
