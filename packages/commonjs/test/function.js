@@ -42,5 +42,6 @@ readdirSync('./fixtures/function').forEach((dir) => {
 
     if (config.exports) config.exports(exports, t);
     if (config.global) config.global(global, t);
+    t.snapshot(code);
   });
 });
