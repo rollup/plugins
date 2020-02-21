@@ -1,10 +1,11 @@
 // @ts-check
 import { dirname } from 'path';
 
-import replace, { RollupReplaceOptions } from '..';
+import { RollupOptions } from 'rollup';
 
-/** @type {import("rollup").RollupOptions} */
-const config = {
+import replace from '..';
+
+const config: RollupOptions = {
   input: 'main.js',
   output: {
     file: 'bundle.js',

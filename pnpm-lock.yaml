@@ -93,7 +93,7 @@ importers:
       source-map: 0.7.3
       typescript: 3.7.5
     specifiers:
-      '@rollup/pluginutils': ^3.0.4
+      '@rollup/pluginutils': ^3.0.8
       '@types/buble': ^0.19.2
       buble: ^0.19.8
       del-cli: ^3.0.0
@@ -129,7 +129,7 @@ importers:
       '@babel/register': ^7.7.7
       '@rollup/plugin-json': ^4.0.1
       '@rollup/plugin-node-resolve': ^7.0.0
-      '@rollup/pluginutils': ^3.0.0
+      '@rollup/pluginutils': ^3.0.8
       acorn: ^7.1.0
       estree-walker: ^1.0.1
       is-reference: ^1.1.2
@@ -220,7 +220,7 @@ importers:
     specifiers:
       '@rollup/plugin-buble': ^0.21.0
       '@rollup/plugin-node-resolve': ^7.0.0
-      '@rollup/pluginutils': ^3.0.4
+      '@rollup/pluginutils': ^3.0.8
       source-map-support: ^0.5.16
   packages/legacy:
     devDependencies:
@@ -266,7 +266,7 @@ importers:
       '@babel/core': ^7.8.3
       '@babel/preset-env': ^7.8.3
       '@rollup/plugin-json': ^4.0.1
-      '@rollup/pluginutils': ^3.0.6
+      '@rollup/pluginutils': ^3.0.8
       '@types/resolve': 0.0.8
       builtin-modules: ^3.1.0
       es5-ext: ^0.10.53
@@ -314,7 +314,7 @@ importers:
       typescript: 3.7.5
     specifiers:
       '@rollup/plugin-buble': ^0.21.0
-      '@rollup/pluginutils': ^3.0.4
+      '@rollup/pluginutils': ^3.0.8
       del-cli: ^3.0.0
       locate-character: ^2.0.5
       magic-string: ^0.25.5
