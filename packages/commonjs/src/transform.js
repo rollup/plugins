@@ -67,6 +67,25 @@ export function checkEsModule(parse, code, id) {
   return { isEsModule, hasDefaultExport: false, ast };
 }
 
+function defineProperty(node, targetName) {
+  if (node.type !== 'CallExpression') return;
+
+  const {
+    callee: { object, property }
+  } = node;
+
+  if (!object || object.type !== 'Identifier' || object.name !== 'Object') return;
+
+  if (!property || property.type !== 'Identifier' || property.name !== 'defineProperty') return;
+
+  if (node.arguments.length !== 3) return;
+
+  const [target, val] = node.arguments;
+  if (target.type !== 'Identifier' || target.name !== targetName) return;
+  // eslint-disable-next-line consistent-return
+  return val.value;
+}
+
 export function transformCommonjs(
   parse,
   code,
@@ -298,6 +317,10 @@ export function transformCommonjs(
         if (match[1]) namedExports[match[1]] = true;
         return;
       }
+
+      // Is this a call to Object.defineProperty(exports, ...)?
+      const def = defineProperty(node, 'exports');
+      if (def && def === makeLegalIdentifier(def)) namedExports[def] = true;
 
       // if this is `var x = require('x')`, we can do `import x from 'x'`
       if (
