@@ -49,9 +49,11 @@ interface RollupCommonJSOptions {
    * Including those modules as `dynamicRequireTargets` will simulate a CommonJS (NodeJS-like)
    *   environment for them with support for dynamic and circular dependencies.
    *
-   * Note: This feature may result in some paths being rendered as absolute in the final bundle.
-   * That may require replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
-   * We may find a way to do this automatically in the future.
+   * Note: In extreme cases, this feature may result in some paths being rendered as
+   *   absolute in the final bundle. The plugin tries to avoid exposing paths from
+   *   the local machine, but if you are `dynamicRequirePaths` with paths that are
+   *   far away from your project's folder, that may require replacing strings
+   *   like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
    */
   dynamicRequireTargets?: string|ReadonlyArray<string>;
 }

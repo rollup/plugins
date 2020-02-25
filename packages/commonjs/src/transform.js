@@ -4,7 +4,13 @@ import MagicString from 'magic-string';
 import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
 
 import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
-import { getProxyId, HELPERS_ID, DYNAMIC_REGISTER_PREFIX, DYNAMIC_JSON_PREFIX } from './helpers';
+import {
+  getProxyId,
+  getVirtualPathForDynamicRequirePath,
+  HELPERS_ID,
+  DYNAMIC_REGISTER_PREFIX,
+  DYNAMIC_JSON_PREFIX,
+} from './helpers';
 import { getName } from './utils';
 import { resolve, dirname } from 'path';
 // TODO can this be async?
@@ -105,6 +111,7 @@ export function transformCommonjs(
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
+  commonDir,
   astCache
 ) {
   const ast = astCache || tryParse(parse, code, id);
@@ -323,9 +330,10 @@ export function transformCommonjs(
                 magicString.appendLeft(
                   parent.end - 1,
                   ',' +
-                  // TODO stringify(null) looks very wrong; find a test
                   JSON.stringify(
-                    dirname(id) === '.' ? null : normalizePathSlashes(dirname(id))
+                    dirname(id) === '.'
+                      ? null /* default behavior */
+                      : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
                   )
                 );
               }
@@ -434,10 +442,11 @@ export function transformCommonjs(
             node.start,
             node.end,
             `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-              normalizePathSlashes(required.source)
+              getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
             )}, ${JSON.stringify(
-              // TODO check if null is what we want
-              dirname(id) === '.' ? null : normalizePathSlashes(dirname(id))
+              dirname(id) === '.'
+                ? null /* default behavior */
+                : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
             )})`
           );
           usesDynamicHelpers = true;

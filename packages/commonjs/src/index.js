@@ -4,6 +4,7 @@ import { extname, resolve, normalize, join } from 'path';
 import { sync as nodeResolveSync, isCore } from 'resolve';
 import { createFilter } from '@rollup/pluginutils';
 import getDynamicRequirePaths from './dynamic-require-paths';
+import getCommonDir from 'commondir';
 
 import { peerDependencies } from '../package.json';
 
@@ -11,6 +12,7 @@ import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
   DYNAMIC_REGISTER_PREFIX,
+  getVirtualPathForDynamicRequirePath,
   EXTERNAL_SUFFIX,
   getIdFromExternalProxyId,
   getIdFromProxyId,
@@ -35,6 +37,9 @@ export default function commonjs(options = {}) {
     options.dynamicRequireTargets
   );
   const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
+  const commonDir = isDynamicRequireModulesEnabled
+    ? getCommonDir(null, Array.from(dynamicRequireModuleSet).concat(process.cwd()))
+    : null;
 
   const customNamedExports = {};
   if (options.namedExports) {
@@ -117,6 +122,7 @@ export default function commonjs(options = {}) {
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
+      commonDir,
       ast
     );
 
@@ -188,7 +194,7 @@ export default function commonjs(options = {}) {
           }
 
           code += `\ncommonjsRegister(${JSON.stringify(
-            dir
+            getVirtualPathForDynamicRequirePath(dir, commonDir)
           )}, function (module, exports) {
   module.exports = require(${JSON.stringify(
             normalizePathSlashes(join(dir, entryPoint))
@@ -209,7 +215,7 @@ export default function commonjs(options = {}) {
 
       if (isDynamicJson) {
         return `require('${HELPERS_ID}').commonjsRegister(${JSON.stringify(
-          normalizedPath
+          getVirtualPathForDynamicRequirePath(normalizedPath, commonDir)
         )}, function (module, exports) {
   module.exports = require(${JSON.stringify(normalizedPath)});
 });`;
@@ -220,7 +226,7 @@ export default function commonjs(options = {}) {
         // The commonjs polyfill should take care of circular references.
 
         return `require('${HELPERS_ID}').commonjsRegister(${JSON.stringify(
-          normalizedPath
+          getVirtualPathForDynamicRequirePath(normalizedPath, commonDir)
         )}, function (module, exports) {
   ${readFileSync(normalizedPath, { encoding: 'utf8' })}
 });`;
@@ -233,7 +239,7 @@ export default function commonjs(options = {}) {
         return getIsCjsPromise(actualId).then((isCjs) => {
           if (dynamicRequireModuleSet.has(normalizePathSlashes(actualId)) && !actualId.endsWith('.json'))
             return `import {commonjsRequire} from '${HELPERS_ID}'; const ${name} = commonjsRequire(${JSON.stringify(
-              normalizePathSlashes(actualId)
+              getVirtualPathForDynamicRequirePath(normalizePathSlashes(actualId), commonDir)
             )}); export default (${name} && ${name}['default']) || ${name}`;
           else if (isCjs)
             return `import { __moduleExports } from ${JSON.stringify(

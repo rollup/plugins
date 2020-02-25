@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.0.8",
+    "commondir": "^1.0.1",
     "estree-walker": "^1.0.1",
     "glob": "^7.1.2",
     "is-reference": "^1.1.2",

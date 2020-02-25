@@ -6,6 +6,13 @@ export const EXTERNAL_SUFFIX = '?commonjs-external';
 export const getExternalProxyId = (id) => `\0${id}${EXTERNAL_SUFFIX}`;
 export const getIdFromExternalProxyId = (proxyId) => proxyId.slice(1, -EXTERNAL_SUFFIX.length);
 
+export const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
+export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
+  if (path.startsWith(commonDir))
+    return VIRTUAL_PATH_BASE + path.slice(commonDir.length);
+  return path;
+};
+
 export const DYNAMIC_REGISTER_PREFIX = '\0commonjs-dynamic-register:';
 export const DYNAMIC_JSON_PREFIX = '\0commonjs-dynamic-json:';
 export const DYNAMIC_PACKAGES_ID = '\0commonjs-dynamic-packages';
