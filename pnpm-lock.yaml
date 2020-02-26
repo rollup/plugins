@@ -64,14 +64,15 @@ importers:
       rollup: ^1.27.14
       slash: ^3.0.0
   packages/auto-install:
-    dependencies:
-      node-noop: 1.0.0
     devDependencies:
       '@rollup/plugin-node-resolve': 7.1.1_rollup@1.29.0
+      '@rollup/plugin-typescript': 3.0.0_rollup@1.29.0
       del: 5.1.0
+      node-noop: 1.0.0
       rollup: 1.29.0
     specifiers:
       '@rollup/plugin-node-resolve': ^7.0.0
+      '@rollup/plugin-typescript': ^3.0.0
       del: ^5.1.0
       node-noop: ^1.0.0
       rollup: ^1.27.14
@@ -1434,7 +1435,7 @@ packages:
       integrity: sha512-14ddhD7TnemeHE97a4rLOhobfYvUVcaYuqTnL8Ti7Jxi9V9Jr5LY7Gko4HZ5k4h4vqQM0gBQt6tsp9xXW94WPA==
   /@rollup/plugin-typescript/3.0.0_a8ccbbb8df3d541f86d9e2f77577b79b:
     dependencies:
-      '@rollup/pluginutils': 3.0.6_rollup@1.29.0
+      '@rollup/pluginutils': 3.0.8_rollup@1.29.0
       resolve: 1.15.0
       rollup: 1.29.0
       tslib: 1.10.0
@@ -1448,9 +1449,23 @@ packages:
       typescript: '>=2.1.0'
     resolution:
       integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
+  /@rollup/plugin-typescript/3.0.0_rollup@1.29.0:
+    dependencies:
+      '@rollup/pluginutils': 3.0.8_rollup@1.29.0
+      resolve: 1.15.0
+      rollup: 1.29.0
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0
+      tslib: '*'
+      typescript: '>=2.1.0'
+    resolution:
+      integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
   /@rollup/plugin-typescript/3.0.0_rollup@1.29.0+typescript@3.7.5:
     dependencies:
-      '@rollup/pluginutils': 3.0.6_rollup@1.29.0
+      '@rollup/pluginutils': 3.0.8_rollup@1.29.0
       resolve: 1.15.0
       rollup: 1.29.0
       typescript: 3.7.5
@@ -1465,7 +1480,7 @@ packages:
       integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
   /@rollup/plugin-typescript/3.0.0_typescript@3.7.5:
     dependencies:
-      '@rollup/pluginutils': 3.0.6
+      '@rollup/pluginutils': 3.0.8
       resolve: 1.15.0
       typescript: 3.7.5
     dev: true
@@ -1498,27 +1513,6 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-buc0oeq2zqQu2mpMyvZgAaQvitikYjT/4JYhA4EXwxX8/g0ZGHoGiX+0AwmfhrNqH4oJv67gn80sTZFQ/jL1bw==
-  /@rollup/pluginutils/3.0.6:
-    dependencies:
-      estree-walker: 1.0.1
-    dev: true
-    engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-    resolution:
-      integrity: sha512-Nb6U7sg11v8D+E4mxRxwT+UumUL7MSnwI8V1SJB3THyW2MOGD/Q6GyxLtpnjrbT3zTRPSozzDMyVZwemgldO3w==
-  /@rollup/pluginutils/3.0.6_rollup@1.29.0:
-    dependencies:
-      estree-walker: 1.0.1
-      rollup: 1.29.0
-    dev: true
-    engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-    resolution:
-      integrity: sha512-Nb6U7sg11v8D+E4mxRxwT+UumUL7MSnwI8V1SJB3THyW2MOGD/Q6GyxLtpnjrbT3zTRPSozzDMyVZwemgldO3w==
   /@rollup/pluginutils/3.0.8:
     dependencies:
       estree-walker: 1.0.1
@@ -5079,7 +5073,7 @@ packages:
     resolution:
       integrity: sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
   /node-noop/1.0.0:
-    dev: false
+    dev: true
     resolution:
       integrity: sha1-R6Pn2Az/qmRYNkvSLthcqzMHvnk=
   /node-releases/1.1.46:

@@ -10,20 +10,26 @@
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/auto-install/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run lint",
+    "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache lib test",
+    "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "pretest": "pnpm run build",
     "test": "ava"
   },
   "files": [
-    "lib",
+    "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -38,20 +44,29 @@
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
-  "dependencies": {
-    "node-noop": "^1.0.0"
-  },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^7.0.0",
+    "@rollup/plugin-typescript": "^3.0.0",
     "del": "^5.1.0",
+    "node-noop": "^1.0.0",
     "rollup": "^1.27.14"
   },
   "ava": {
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
     "files": [
       "!**/fixtures/**",
+      "!**/output/**",
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  }
+  },
+  "module": "dist/index.es.js",
+  "types": "types/index.d.ts"
 }
