@@ -67,7 +67,7 @@ export function checkEsModule(parse, code, id) {
   return { isEsModule, hasDefaultExport: false, ast };
 }
 
-function defineProperty(node, targetName) {
+function isDefinePropertyCall(node, targetName) {
   if (node.type !== 'CallExpression') return;
 
   const {
@@ -318,8 +318,7 @@ export function transformCommonjs(
         return;
       }
 
-      // Is this a call to Object.defineProperty(exports, ...)?
-      const def = defineProperty(node, 'exports');
+      const def = isDefinePropertyCall(node, 'exports');
       if (def && def === makeLegalIdentifier(def)) namedExports[def] = true;
 
       // if this is `var x = require('x')`, we can do `import x from 'x'`
