@@ -22,7 +22,7 @@
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache src test",
+    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
@@ -48,7 +48,7 @@
     "rollup": "^1.20.0"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.0.6",
+    "@rollup/pluginutils": "^3.0.8",
     "@types/resolve": "0.0.8",
     "builtin-modules": "^3.1.0",
     "is-module": "^1.0.0",

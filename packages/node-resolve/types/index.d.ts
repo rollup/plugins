@@ -28,7 +28,7 @@ export interface Options {
    * Specifies the extensions of files that the plugin will operate on.
    * @default [ '.mjs', '.js', '.json', '.node' ]
    */
-  extensions?: ReadonlyArray<string>;
+  extensions?: readonly string[];
 
   /**
    * Locks the module search within specified path (e.g. chroot). Modules defined
@@ -42,7 +42,7 @@ export interface Options {
    * bundle entry point.
    * @default ['module', 'main']
    */
-  mainFields?: ReadonlyArray<string>;
+  mainFields?: readonly string[];
 
   /**
    * If `true`, inspect resolved files to assert that they are ES2015 modules.
