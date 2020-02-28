@@ -1,83 +1,19 @@
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 
-import { createFilter } from '@rollup/pluginutils';
 import { PluginContext } from 'rollup';
-import * as defaultTs from 'typescript';
 
-import { RollupTypescriptOptions } from '../types';
+import { RollupTypescriptOptions } from '../../types';
+import diagnosticToWarning from '../diagnostics/toWarning';
 
-import diagnosticToWarning from './diagnostics/toWarning';
-import { getTsLibCode } from './tslib';
-
-/** Properties of `CompilerOptions` that are normally enums */
-interface EnumCompilerOptions {
-  module: string;
-  moduleResolution: string;
-  newLine: string;
-  jsx: string;
-  target: string;
-}
-
-/** Typescript compiler options */
-type CompilerOptions = import('typescript').CompilerOptions;
-/** JSON representation of Typescript compiler options */
-type JsonCompilerOptions = Omit<CompilerOptions, keyof EnumCompilerOptions> & EnumCompilerOptions;
-/** Compiler options set by the plugin user. */
-type PartialCustomOptions = Partial<CompilerOptions> | Partial<JsonCompilerOptions>;
-
-const DEFAULT_COMPILER_OPTIONS: PartialCustomOptions = {
-  module: 'esnext',
-  sourceMap: true,
-  noEmitOnError: true
-};
-
-const FORCED_COMPILER_OPTIONS: Partial<CompilerOptions> = {
-  // See: https://github.com/rollup/rollup-plugin-typescript/issues/45
-  // See: https://github.com/rollup/rollup-plugin-typescript/issues/142
-  declaration: false,
-  // Delete the `declarationMap` option, as it will cause an error, because we have
-  // deleted the `declaration` option.
-  declarationMap: false,
-  incremental: false,
-  // eslint-disable-next-line no-undefined
-  tsBuildInfoFile: undefined,
-  // Always use tslib
-  noEmitHelpers: true,
-  importHelpers: true,
-  // Typescript needs to emit the code for us to work with
-  noEmit: false,
-  emitDeclarationOnly: false,
-  // Preventing Typescript from resolving code may break compilation
-  noResolve: false
-};
-
-/**
- * Separate the Rollup plugin options from the Typescript compiler options,
- * and normalize the Rollup options.
- * @returns Object with normalized options:
- * - `filter`: Checks if a file should be included.
- * - `tsconfig`: Path to a tsconfig, or directive to ignore tsconfig.
- * - `compilerOptions`: Custom Typescript compiler options that override tsconfig.
- * - `typescript`: Instance of Typescript library (possibly custom).
- * - `tslib`: ESM code from the tslib helper library (possibly)
- */
-export function getPluginOptions(options: RollupTypescriptOptions) {
-  const { include, exclude, tsconfig, typescript, tslib, ...compilerOptions } = options;
-
-  const filter = createFilter(
-    include || ['*.ts+(|x)', '**/*.ts+(|x)'],
-    exclude || ['*.d.ts', '**/*.d.ts']
-  );
-
-  return {
-    filter,
-    tsconfig,
-    compilerOptions: compilerOptions as PartialCustomOptions,
-    typescript: typescript || defaultTs,
-    tslib: getTsLibCode(tslib)
-  };
-}
+import {
+  CompilerOptions,
+  DEFAULT_COMPILER_OPTIONS,
+  EnumCompilerOptions,
+  FORCED_COMPILER_OPTIONS,
+  PartialCustomOptions
+} from './interfaces';
+import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
 
 /**
  * Finds the path to the tsconfig file relative to the current working directory.
@@ -135,47 +71,9 @@ function containsEnumOptions(
   return enums.some((prop) => prop in compilerOptions && typeof compilerOptions[prop] === 'number');
 }
 
-/**
- * Mutates the compiler options to normalize some values for Rollup.
- * @param compilerOptions Compiler options to _mutate_.
- */
-function normalizeCompilerOptions(
-  ts: typeof import('typescript'),
-  compilerOptions: CompilerOptions
-) {
-  /* eslint-disable no-param-reassign */
-
-  if (compilerOptions.inlineSourceMap) {
-    // Force separate source map files for Rollup to work with.
-    compilerOptions.sourceMap = true;
-    compilerOptions.inlineSourceMap = false;
-  } else if (typeof compilerOptions.sourceMap !== 'boolean') {
-    // Default to using source maps.
-    // If the plugin user sets sourceMap to false we keep that option.
-    compilerOptions.sourceMap = true;
-  }
-
-  switch (compilerOptions.module) {
-    case ts.ModuleKind.ES2015:
-    case ts.ModuleKind.ESNext:
-    case ts.ModuleKind.CommonJS:
-      // OK module type
-      return;
-    case ts.ModuleKind.None:
-    case ts.ModuleKind.AMD:
-    case ts.ModuleKind.UMD:
-    case ts.ModuleKind.System: {
-      // Invalid module type
-      const moduleType = ts.ModuleKind[compilerOptions.module];
-      throw new Error(
-        `@rollup/plugin-typescript: The module kind should be 'ES2015' or 'ESNext, found: '${moduleType}'`
-      );
-    }
-    default:
-      // Unknown or unspecified module type, force ESNext
-      compilerOptions.module = ts.ModuleKind.ESNext;
-  }
-}
+const configCache = new Map() as import('typescript').Map<
+  import('typescript').ExtendedConfigCacheEntry
+>;
 
 /**
  * Parse the Typescript config to use with the plugin.
@@ -192,14 +90,17 @@ export function parseTypescriptConfig(
   ts: typeof import('typescript'),
   tsconfig: RollupTypescriptOptions['tsconfig'],
   compilerOptions: PartialCustomOptions
-): import('typescript').ParsedCommandLine {
+) {
+  /* eslint-disable no-undefined */
   const cwd = process.cwd();
+  makePathsAbsolute(compilerOptions, cwd);
   let parsedConfig: import('typescript').ParsedCommandLine;
 
   // Resolve path to file. If file is not found, pass undefined path to `parseJsonConfigFileContent`.
   // eslint-disable-next-line no-undefined
   const tsConfigPath = getTsConfigPath(ts, tsconfig) || undefined;
   const tsConfigFile = tsConfigPath ? readTsConfigFile(ts, tsConfigPath) : {};
+  const basePath = tsConfigPath ? dirname(tsConfigPath) : cwd;
 
   // If compilerOptions has enums, it represents an CompilerOptions object instead of parsed JSON.
   // This determines where the data is passed to the parser.
@@ -213,9 +114,12 @@ export function parseTypescriptConfig(
         }
       },
       ts.sys,
-      cwd,
+      basePath,
       { ...compilerOptions, ...FORCED_COMPILER_OPTIONS },
-      tsConfigPath
+      tsConfigPath,
+      undefined,
+      undefined,
+      configCache
     );
   } else {
     parsedConfig = ts.parseJsonConfigFileContent(
@@ -228,18 +132,21 @@ export function parseTypescriptConfig(
         }
       },
       ts.sys,
-      cwd,
+      basePath,
       FORCED_COMPILER_OPTIONS,
-      tsConfigPath
+      tsConfigPath,
+      undefined,
+      undefined,
+      configCache
     );
   }
 
-  // We only want to automatically add ambient declaration files.
-  // Normal script files are handled by Rollup.
-  parsedConfig.fileNames = parsedConfig.fileNames.filter((file) => file.endsWith('.d.ts'));
-  normalizeCompilerOptions(ts, parsedConfig.options);
+  const autoSetSourceMap = normalizeCompilerOptions(ts, parsedConfig.options);
 
-  return parsedConfig;
+  return {
+    ...parsedConfig,
+    autoSetSourceMap
+  };
 }
 
 /**

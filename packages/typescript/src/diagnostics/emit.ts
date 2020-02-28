@@ -7,28 +7,48 @@ import diagnosticToWarning from './toWarning';
 const CANNOT_COMPILE_ESM = 1204;
 
 /**
+ * Emit a Rollup warning or error for a Typescript type error.
+ */
+export function emitDiagnostic(
+  ts: typeof import('typescript'),
+  context: PluginContext,
+  host: DiagnosticsHost,
+  diagnostic: import('typescript').Diagnostic
+) {
+  if (diagnostic.code === CANNOT_COMPILE_ESM) return;
+
+  const { noEmitOnError } = host.getCompilationSettings();
+
+  // Build a Rollup warning object from the diagnostics object.
+  const warning = diagnosticToWarning(ts, host, diagnostic);
+
+  // Errors are fatal. Otherwise emit warnings.
+  if (noEmitOnError && diagnostic.category === ts.DiagnosticCategory.Error) {
+    context.error(warning);
+  } else {
+    context.warn(warning);
+  }
+}
+
+export function buildDiagnosticReporter(
+  ts: typeof import('typescript'),
+  context: PluginContext,
+  host: DiagnosticsHost
+): import('typescript').DiagnosticReporter {
+  return function reportDiagnostics(diagnostic) {
+    emitDiagnostic(ts, context, host, diagnostic);
+  };
+}
+
+/**
  * For each type error reported by Typescript, emit a Rollup warning or error.
  */
-export default function emitDiagnostics(
+export function emitDiagnostics(
   ts: typeof import('typescript'),
   context: PluginContext,
   host: DiagnosticsHost,
   diagnostics: readonly import('typescript').Diagnostic[] | undefined
 ) {
   if (!diagnostics) return;
-  const { noEmitOnError } = host.getCompilationSettings();
-
-  diagnostics
-    .filter((diagnostic) => diagnostic.code !== CANNOT_COMPILE_ESM)
-    .forEach((diagnostic) => {
-      // Build a Rollup warning object from the diagnostics object.
-      const warning = diagnosticToWarning(ts, host, diagnostic);
-
-      // Errors are fatal. Otherwise emit warnings.
-      if (noEmitOnError && diagnostic.category === ts.DiagnosticCategory.Error) {
-        context.error(warning);
-      } else {
-        context.warn(warning);
-      }
-    });
+  diagnostics.forEach(buildDiagnosticReporter(ts, context, host));
 }

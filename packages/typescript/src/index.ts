@@ -1,83 +1,112 @@
 import * as path from 'path';
 
-import { Plugin } from 'rollup';
+import { Plugin, SourceDescription } from 'rollup';
 
 import { RollupTypescriptOptions } from '../types';
 
-import emitDiagnostics from './diagnostics/emit';
 import createFormattingHost from './diagnostics/host';
-import getDocumentRegistry from './documentRegistry';
-import createHost from './host';
-import { emitParsedOptionsErrors, getPluginOptions, parseTypescriptConfig } from './options';
-import typescriptOutputToRollupTransformation from './outputToRollupTransformation';
-import { TSLIB_ID } from './tslib';
+import createModuleResolver from './moduleResolution';
+import getPluginOptions from './options/plugin';
+import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
+import { validatePaths, validateSourceMap } from './options/validate';
+import findTypescriptOutput from './outputFile';
+import createWatchProgram from './watchProgram';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
+  const emittedFiles = new Map<string, string>();
+  const declarationFiles = new Set<string>();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
+  parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
+
   const formatHost = createFormattingHost(ts, parsedOptions.options);
-  const host = createHost(ts, parsedOptions);
-  const services = ts.createLanguageService(host, getDocumentRegistry(ts, process.cwd()));
+  const resolveModule = createModuleResolver(ts, formatHost);
+
+  let program: import('typescript').Watch<unknown> | null = null;
+
+  function normalizePath(fileName: string) {
+    return fileName.split(path.win32.sep).join(path.posix.sep);
+  }
 
   return {
     name: 'typescript',
 
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
+
+      program = createWatchProgram(ts, this, {
+        formatHost,
+        resolveModule,
+        parsedOptions,
+        writeFile(fileName, data) {
+          emittedFiles.set(fileName, data);
+        }
+      });
+    },
+
+    buildEnd() {
+      if (process.env.ROLLUP_WATCH !== 'true') {
+        // ESLint doesn't understand optional chaining
+        // eslint-disable-next-line
+        program?.close();
+      }
+    },
+
+    renderStart(outputOptions) {
+      validateSourceMap(this, parsedOptions.options, outputOptions, parsedOptions.autoSetSourceMap);
+      validatePaths(ts, this, parsedOptions.options, outputOptions);
     },
 
     resolveId(importee, importer) {
       if (importee === 'tslib') {
-        return TSLIB_ID;
+        return tslib;
       }
 
       if (!importer) return null;
 
       // Convert path from windows separators to posix separators
-      const containingFile = importer.split(path.win32.sep).join(path.posix.sep);
+      const containingFile = normalizePath(importer);
 
-      const resolved = host.resolveModuleNames([importee], containingFile);
-      const resolvedFile = resolved[0]?.resolvedFileName;
+      const resolved = resolveModule(importee, containingFile);
 
-      if (resolvedFile) {
-        if (resolvedFile.endsWith('.d.ts')) return null;
-        return resolvedFile;
+      if (resolved) {
+        if (resolved.extension === '.d.ts') return null;
+        return resolved.resolvedFileName;
       }
 
       return null;
     },
 
     load(id) {
-      if (id === TSLIB_ID) {
-        return tslib;
-      }
-      return null;
-    },
-
-    transform(code, id) {
       if (!filter(id)) return null;
 
-      host.addFile(id, code);
-      const output = services.getEmitOutput(id);
+      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
+      output.declarations.forEach((declaration) => declarationFiles.add(declaration));
 
-      if (output.emitSkipped) {
-        // Emit failed, print all diagnostics for this file
-        const allDiagnostics = ([] as import('typescript').Diagnostic[])
-          .concat(services.getSyntacticDiagnostics(id))
-          .concat(services.getSemanticDiagnostics(id));
-        emitDiagnostics(ts, this, formatHost, allDiagnostics);
-
-        throw new Error(`Couldn't compile ${id}`);
-      }
-
-      return typescriptOutputToRollupTransformation(output.outputFiles);
+      return output.code ? (output as SourceDescription) : null;
     },
 
-    generateBundle() {
-      const program = services.getProgram();
-      if (program == null) return;
-      emitDiagnostics(ts, this, formatHost, ts.getPreEmitDiagnostics(program));
+    generateBundle(outputOptions) {
+      for (const id of declarationFiles) {
+        const code = emittedFiles.get(id);
+        if (code) {
+          this.emitFile({
+            type: 'asset',
+            fileName: normalizePath(path.relative(outputOptions.dir!, id)),
+            source: code
+          });
+        }
+      }
+
+      const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
+      if (tsBuildInfoPath) {
+        this.emitFile({
+          type: 'asset',
+          fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
+          source: emittedFiles.get(tsBuildInfoPath)
+        });
+      }
     }
   };
 }

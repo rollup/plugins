@@ -1,7 +1,7 @@
-import { DiagnosticsHost } from '../diagnostics/host';
+import { DiagnosticsHost } from './diagnostics/host';
 
 type ModuleResolutionHost = import('typescript').ModuleResolutionHost;
-type ModuleResolverHost = ModuleResolutionHost & DiagnosticsHost;
+type ModuleResolverHost = Partial<ModuleResolutionHost> & DiagnosticsHost;
 
 export type Resolver = (
   moduleName: string,
@@ -23,13 +23,14 @@ export default function createModuleResolver(
     host.getCanonicalFileName,
     compilerOptions
   );
+  const moduleHost = { ...ts.sys, ...host };
 
   return (moduleName, containingFile) => {
     const resolved = ts.nodeModuleNameResolver(
       moduleName,
       containingFile,
       compilerOptions,
-      host,
+      moduleHost,
       cache
     );
     return resolved.resolvedModule;
