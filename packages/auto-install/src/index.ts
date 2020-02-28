@@ -1,20 +1,16 @@
-const fs = require('fs');
-const path = require('path');
-const child_process = require('child_process'); // eslint-disable-line camelcase
-const { builtinModules } = require('module');
+import * as fs from 'fs';
+import * as path from 'path';
+import mod from 'module';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-const { log } = console;
+import { Plugin } from 'rollup';
 
-function exec(cmd) {
-  return new Promise((fulfil, reject) => {
-    child_process.exec(cmd, (err) => {
-      if (err) reject(err);
-      else fulfil();
-    });
-  });
-}
+import { RollupAutoInstallOptions } from '../types';
 
-module.exports = function autoInstall(opts = {}) {
+const execAsync = promisify(exec);
+
+export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin {
   const defaults = {
     // intentionally undocumented options. used for tests
     commands: {
@@ -28,16 +24,15 @@ module.exports = function autoInstall(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { manager, pkgFile } = options;
   const validManagers = ['npm', 'yarn'];
-  let pkg;
 
   if (!validManagers.includes(manager)) {
     throw new RangeError(
-      `'${manager}' is not a valid package manager. Valid managers include: '${validManagers.join(
-        "', '"
-      )}'.`
+      `'${manager}' is not a valid package manager. ` +
+        `Valid managers include: '${validManagers.join("', '")}'.`
     );
   }
 
+  let pkg: any;
   if (fs.existsSync(pkgFile)) {
     pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
   } else {
@@ -45,7 +40,7 @@ module.exports = function autoInstall(opts = {}) {
     pkg = {};
   }
 
-  const installed = new Set(Object.keys(pkg.dependencies || {}).concat(builtinModules));
+  const installed = new Set(Object.keys(pkg.dependencies || {}).concat(mod.builtinModules));
   const cmd = options.commands[manager];
 
   return {
@@ -53,7 +48,7 @@ module.exports = function autoInstall(opts = {}) {
 
     async resolveId(importee, importer) {
       // entry module
-      if (!importer) return;
+      if (!importer) return null;
 
       // this function doesn't actually resolve anything, but it provides us with a hook to discover uninstalled deps
 
@@ -63,14 +58,17 @@ module.exports = function autoInstall(opts = {}) {
       if (isExternalPackage) {
         // we have a bare import — check it's installed
         const parts = importee.split('/');
-        let name = parts.shift();
+        let name = parts.shift()!;
         if (name[0] === '@') name += `/${parts.shift()}`;
 
         if (!installed.has(name)) {
-          log(`installing ${name}...`);
-          await exec(`${cmd} ${name}`);
+          // eslint-disable-next-line no-console
+          console.log(`installing ${name}...`);
+          await execAsync(`${cmd} ${name}`);
         }
       }
+
+      return null;
     }
   };
-};
+}

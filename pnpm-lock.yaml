@@ -66,14 +66,15 @@ importers:
       rollup: ^1.27.14
       slash: ^3.0.0
   packages/auto-install:
-    dependencies:
-      node-noop: 1.0.0
     devDependencies:
       '@rollup/plugin-node-resolve': 7.1.1_rollup@1.29.0
+      '@rollup/plugin-typescript': 3.0.0_rollup@1.29.0
       del: 5.1.0
+      node-noop: 1.0.0
       rollup: 1.29.0
     specifiers:
       '@rollup/plugin-node-resolve': ^7.0.0
+      '@rollup/plugin-typescript': ^3.0.0
       del: ^5.1.0
       node-noop: ^1.0.0
       rollup: ^1.27.14
@@ -5074,7 +5075,7 @@ packages:
     resolution:
       integrity: sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
   /node-noop/1.0.0:
-    dev: false
+    dev: true
     resolution:
       integrity: sha1-R6Pn2Az/qmRYNkvSLthcqzMHvnk=
   /node-releases/1.1.46:
