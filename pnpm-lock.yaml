@@ -91,11 +91,13 @@ importers:
       '@types/buble': 0.19.2
       buble: 0.19.8
     devDependencies:
+      '@rollup/plugin-typescript': 3.0.0_rollup@1.29.0+typescript@3.7.5
       del-cli: 3.0.0
       rollup: 1.29.0
       source-map: 0.7.3
       typescript: 3.7.5
     specifiers:
+      '@rollup/plugin-typescript': ^3.0.0
       '@rollup/pluginutils': ^3.0.8
       '@types/buble': ^0.19.2
       buble: ^0.19.8

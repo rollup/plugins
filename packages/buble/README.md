@@ -9,7 +9,7 @@
 
 # @rollup/plugin-buble
 
-🍣 A Rollup which converts ES2015+ code with the Bublé compiler.
+🍣 A Rollup plugin which converts ES2015+ code with the Bublé compiler.
 
 ## Requirements
 
@@ -49,7 +49,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 Type: `Object`<br>
 Default: `{ modules: false }`
 
-Specifies additional [transform options](https://buble.surge.sh/guide/) for the Bublé compiler
+Specifies additional [transform options](https://buble.surge.sh/guide/) for the Bublé compiler.
 
 ### `exclude`
 
