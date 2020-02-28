@@ -1,13 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "lib": ["es6"],
-    "module": "esnext",
-    "allowJs": true
-  },
   "include": [
     "src/**/*",
-    "types/**/*",
-    "typings-test.js"
+    "types/**/*"
   ]
 }

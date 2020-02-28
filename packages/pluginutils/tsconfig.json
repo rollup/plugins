@@ -1,11 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["es6"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "module": "commonjs"
   },
   "include": [
     "src/**/*",
+    "test/**/*",
     "types/**/*"
   ]
 }

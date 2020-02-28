@@ -9,7 +9,7 @@ export default {
   plugins: [
     resolve(),
     commonjs({ include: '../../node_modules/.pnpm/registry.npmjs.org/**' }),
-    typescript({ include: '**/*.{ts,js}' })
+    typescript({ include: '**/*.{ts,js}', module: 'esnext' })
   ],
   external: Object.keys(pkg.dependencies).concat('path', 'util'),
   output: [

@@ -284,13 +284,13 @@ importers:
       string-capitalize: ^1.0.1
   packages/pluginutils:
     dependencies:
+      '@types/estree': 0.0.39
       estree-walker: 1.0.1
       micromatch: 4.0.2
     devDependencies:
       '@rollup/plugin-commonjs': 11.0.2
       '@rollup/plugin-node-resolve': 7.1.1
       '@rollup/plugin-typescript': 3.0.0_typescript@3.7.5
-      '@types/estree': 0.0.39
       '@types/jest': 24.9.0
       '@types/micromatch': 3.1.1
       '@types/node': 12.12.25
