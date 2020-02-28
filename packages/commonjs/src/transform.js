@@ -67,7 +67,7 @@ export function checkEsModule(parse, code, id) {
   return { isEsModule, hasDefaultExport: false, ast };
 }
 
-function isDefinePropertyCall(node, targetName) {
+function getDefinePropertyCallName(node, targetName) {
   if (node.type !== 'CallExpression') return;
 
   const {
@@ -318,8 +318,8 @@ export function transformCommonjs(
         return;
       }
 
-      const def = isDefinePropertyCall(node, 'exports');
-      if (def && def === makeLegalIdentifier(def)) namedExports[def] = true;
+      const name = getDefinePropertyCallName(node, 'exports');
+      if (name && name === makeLegalIdentifier(name)) namedExports[name] = true;
 
       // if this is `var x = require('x')`, we can do `import x from 'x'`
       if (
