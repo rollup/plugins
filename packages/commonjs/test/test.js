@@ -407,6 +407,15 @@ test('does not reexport named contents', async (t) => {
   }
 });
 
+test(`exports props defined by 'Object.defineProperty'`, async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/define-property/main.js',
+    plugins: [commonjs()]
+  });
+  const m = await executeBundle(bundle, t);
+  t.is(m.exports.foo, 'bar');
+});
+
 test('respects other plugins', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/other-transforms/main.js',
