@@ -589,6 +589,19 @@ test('should throw on bad options', async (t) => {
   ]);
 });
 
+test('creates _tslib.js file when preserveModules is used', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/preserve-modules/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/preserve-modules/tsconfig.json' })],
+    preserveModules: true,
+    onwarn
+  });
+
+  const files = await getCode(bundle, { format: 'es' }, true);
+  t.true(files[0].fileName.includes('main.js'), files[0].fileName);
+  t.true(files[1].fileName.includes('tslib.es6.js'), files[1].fileName);
+});
+
 test('should handle re-exporting types', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/reexport-type/main.ts',
