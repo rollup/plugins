@@ -66,15 +66,14 @@ importers:
       rollup: ^1.27.14
       slash: ^3.0.0
   packages/auto-install:
+    dependencies:
+      node-noop: 1.0.0
     devDependencies:
       '@rollup/plugin-node-resolve': 7.1.1_rollup@1.29.0
-      '@rollup/plugin-typescript': 3.0.0_rollup@1.29.0
       del: 5.1.0
-      node-noop: 1.0.0
       rollup: 1.29.0
     specifiers:
       '@rollup/plugin-node-resolve': ^7.0.0
-      '@rollup/plugin-typescript': ^3.0.0
       del: ^5.1.0
       node-noop: ^1.0.0
       rollup: ^1.27.14
@@ -163,6 +162,7 @@ importers:
   packages/dsv:
     dependencies:
       '@rollup/pluginutils': 3.0.8_rollup@1.29.0
+      '@types/d3-dsv': 1.0.36
       d3-dsv: 1.2.0
       tosource: 1.0.0
     devDependencies:
@@ -170,6 +170,7 @@ importers:
       rollup: 1.29.0
     specifiers:
       '@rollup/pluginutils': ^3.0.4
+      '@types/d3-dsv': ^1.0.36
       d3-dsv: 1.2.0
       del-cli: ^3.0.0
       rollup: ^1.27.14
@@ -327,12 +328,15 @@ importers:
       source-map: ^0.7.3
       typescript: ^3.7.4
   packages/run:
-    devDependencies:
+    dependencies:
       '@types/node': 13.1.6
+    devDependencies:
+      '@rollup/plugin-typescript': 3.0.0_rollup@1.29.0
       del: 5.1.0
       rollup: 1.29.0
       sinon: 8.0.4
     specifiers:
+      '@rollup/plugin-typescript': ^3.0.0
       '@types/node': 13.1.6
       del: ^5.1.0
       rollup: ^1.27.14
@@ -366,7 +370,7 @@ importers:
       '@rollup/pluginutils': 3.0.8_rollup@1.29.0
       resolve: 1.14.2
     devDependencies:
-      '@rollup/plugin-buble': 0.21.0_rollup@1.29.0
+      '@rollup/plugin-buble': 0.21.1_rollup@1.29.0
       '@rollup/plugin-commonjs': 11.0.2_rollup@1.29.0
       '@rollup/plugin-typescript': 3.0.0_a8ccbbb8df3d541f86d9e2f77577b79b
       buble: 0.19.8
@@ -1348,13 +1352,23 @@ packages:
     dependencies:
       '@types/buble': 0.19.2
       buble: 0.19.8
-      rollup: 1.29.0
       rollup-pluginutils: 2.8.2
     dev: true
     peerDependencies:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-n6N311RCrVvnsWGyo/if6K2kFoDW+x9r+/hkp+fI73MryLFGxN50Y3zJDg3k0ZTDjRHmveVzM6Nzwv9+plWiLA==
+  /@rollup/plugin-buble/0.21.1_rollup@1.29.0:
+    dependencies:
+      '@rollup/pluginutils': 3.0.8_rollup@1.29.0
+      '@types/buble': 0.19.2
+      buble: 0.19.8
+      rollup: 1.29.0
+    dev: true
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-Tmd4V95cVyGTwh7qc9ZNkg53E/isFY4q/sqZK7mSyGajYp9Wb0gbJyZWAzYlg9kZxEHmwCDlvcHDcn56SpOCCQ==
   /@rollup/plugin-commonjs/11.0.2:
     dependencies:
       '@rollup/pluginutils': 3.0.4
@@ -1440,7 +1454,7 @@ packages:
   /@rollup/plugin-typescript/3.0.0_a8ccbbb8df3d541f86d9e2f77577b79b:
     dependencies:
       '@rollup/pluginutils': 3.0.8_rollup@1.29.0
-      resolve: 1.15.0
+      resolve: 1.15.1
       rollup: 1.29.0
       tslib: 1.10.0
       typescript: 3.7.5
@@ -1456,7 +1470,7 @@ packages:
   /@rollup/plugin-typescript/3.0.0_rollup@1.29.0:
     dependencies:
       '@rollup/pluginutils': 3.0.8_rollup@1.29.0
-      resolve: 1.15.0
+      resolve: 1.15.1
       rollup: 1.29.0
     dev: true
     engines:
@@ -1596,6 +1610,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
+  /@types/d3-dsv/1.0.36:
+    dev: false
+    resolution:
+      integrity: sha512-jbIWQ27QJcBNMZbQv0NSQMHnBDCmxghAxePxgyiPH1XPCRkOsTBei7jcdi3fDrUCGpCV3lKrSZFSlOkhUQVClA==
   /@types/eslint-visitor-keys/1.0.0:
     dev: true
     resolution:
@@ -1667,7 +1685,7 @@ packages:
     resolution:
       integrity: sha512-g73GJYJDXgf0jqg+P9S8h2acWbDXNkoCX8DLtJVu7Fkn788pzQ/oJsrdJz/2JejRf/SjfZaAhsw+3nd1D5EWGg==
   /@types/node/13.1.6:
-    dev: true
+    dev: false
     resolution:
       integrity: sha512-Jg1F+bmxcpENHP23sVKkNuU3uaxPnsBMW0cLjleiikFKomJQbsn0Cqk2yDvQArqzZN6ABfBkZ0To7pQ8sLdWDg==
   /@types/node/13.1.8:
@@ -5077,7 +5095,7 @@ packages:
     resolution:
       integrity: sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
   /node-noop/1.0.0:
-    dev: true
+    dev: false
     resolution:
       integrity: sha1-R6Pn2Az/qmRYNkvSLthcqzMHvnk=
   /node-releases/1.1.46:
@@ -6391,6 +6409,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-+hTmAldEGE80U2wJJDC1lebb5jWqvTYAfm3YZ1ckk1gBr0MnCqUKlwK1e+anaFljIl+F5tR5IoZcm4ZDA1zMQw==
+  /resolve/1.15.1:
+    dependencies:
+      path-parse: 1.0.6
+    dev: true
+    resolution:
+      integrity: sha512-84oo6ZTtoTUpjgNEr5SJyzQhzL72gaRodsSfyxC/AXRvwu0Yse9H8eF9IpGo7b8YetZhlI6v7ZQ6bKBFV/6S7w==
   /responselike/1.0.2:
     dependencies:
       lowercase-keys: 1.0.1

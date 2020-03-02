@@ -12,7 +12,7 @@ const { rollup } = require('rollup');
 const test = require('ava');
 const sinon = require('sinon');
 
-const run = require('../lib/');
+const run = require('../');
 
 const cwd = join(__dirname, 'fixtures/');
 const file = join(cwd, 'output/bundle.js');

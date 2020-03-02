@@ -10,22 +10,32 @@
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/run/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "scripts": {
+    "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run lint",
+    "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:json && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write README.md",
-    "lint:js": "eslint --fix --cache lib test types --ext .js,.ts",
+    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
+    "lint:json": "prettier --write tsconfig.json",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint && pnpm run test",
+    "pretest": "pnpm run build",
     "test": "ava"
   },
   "files": [
-    "lib",
-    "types"
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "rollup",
@@ -35,15 +45,25 @@
   "peerDependencies": {
     "rollup": "^1.20.0"
   },
+  "dependencies": {
+    "@types/node": "13.1.6"
+  },
   "devDependencies": {
-    "@types/node": "13.1.6",
+    "@rollup/plugin-typescript": "^3.0.0",
     "del": "^5.1.0",
     "rollup": "^1.27.14",
     "sinon": "8.0.4"
   },
   "ava": {
+    "compileEnhancements": false,
     "files": [
-      "!**/fixtures/**"
+      "!**/fixtures/**",
+      "!**/output/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
     ]
-  }
+  },
+  "module": "dist/index.es.js",
+  "types": "types/index.d.ts"
 }
