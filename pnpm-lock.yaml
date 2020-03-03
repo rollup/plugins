@@ -238,6 +238,7 @@ importers:
       rollup: ^1.27.2
   packages/multi-entry:
     dependencies:
+      '@rollup/pluginutils': 3.0.8_rollup@1.29.0
       matched: 1.0.2
     devDependencies:
       '@babel/core': 7.8.3
@@ -245,11 +246,12 @@ importers:
       rollup: 1.29.0
       rollup-plugin-babel: 4.3.3_@babel+core@7.8.3+rollup@1.29.0
     specifiers:
-      '@babel/core': ^7.2.0
-      '@babel/preset-env': ^7.2.0
+      '@babel/core': ^7.8.3
+      '@babel/preset-env': ^7.8.3
+      '@rollup/pluginutils': ^3.0.8
       matched: ^1.0.2
-      rollup: ^1.20.1
-      rollup-plugin-babel: ^4.0.3
+      rollup: ^1.29.0
+      rollup-plugin-babel: ^4.3.3
   packages/node-resolve:
     dependencies:
       '@rollup/pluginutils': 3.0.8_rollup@1.29.0
