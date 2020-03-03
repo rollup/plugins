@@ -49,14 +49,14 @@ export const color = 'purple';
 Then, create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import multi from '@rollup/plugin-multi-entry';
+import multiEntry from '@rollup/plugin-multi-entry';
 
 export default {
   input: ['batman.js', 'robin.js', 'joker.js'],
   output: {
     dir: 'output'
   },
-  plugins: [multi()]
+  plugins: [multiEntry()]
 };
 ```
 
@@ -84,7 +84,7 @@ When using `plugin-multi-entry`, input values passed as a normal `String` are [g
 ```js
 export default {
   input: 'batcave/friends/**/*.js',
-  plugins: [multi()]
+  plugins: [multiEntry()]
   // ...
 };
 ```
@@ -96,7 +96,7 @@ An `Array` of `String` can be passed as the input. Values are glob-aware and can
 ```js
 export default {
   input: ['party/supplies.js', 'batcave/friends/**/*.js'],
-  plugins: [multi()]
+  plugins: [multiEntry()]
   // ...
 };
 ```
@@ -113,7 +113,7 @@ export default {
     // except for the joker
     exclude: ['**/joker.js']
   },
-  plugins: [multi()]
+  plugins: [multiEntry()]
   // ...
 };
 ```
