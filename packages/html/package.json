@@ -21,7 +21,7 @@
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
     "lint:docs": "prettier --single-quote --write *.md",
-    "lint:js": "eslint --fix --cache lib test",
+    "lint:js": "eslint --fix --cache lib test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prepublishOnly": "pnpm run lint",
     "test": "ava"

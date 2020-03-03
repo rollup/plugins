@@ -1,24 +1,22 @@
-// @ts-check
-import { dirname } from "path";
+import { RollupOptions } from 'rollup';
 
-import inject, { RollupInjectOptions } from "..";
+import inject from '..';
 
-/** @type {import("rollup").RollupOptions} */
-const config = {
-  input: "main.js",
+const config: RollupOptions = {
+  input: 'main.js',
   output: {
-    file: "bundle.js",
-    format: "iife"
+    file: 'bundle.js',
+    format: 'iife'
   },
   plugins: [
     inject({
-      include: "config.js",
-      exclude: "node_modules/**",
-      Promise: ["es6-promise", "Promise"],
-      $: "jquery",
+      include: 'config.js',
+      exclude: 'node_modules/**',
+      Promise: ['es6-promise', 'Promise'],
+      $: 'jquery',
       modules: {
-        Promise: ["es6-promise", "Promise"],
-        $: "jquery"
+        Promise: ['es6-promise', 'Promise'],
+        $: 'jquery'
       }
     })
   ]

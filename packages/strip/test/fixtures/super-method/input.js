@@ -1,3 +1,4 @@
+/* eslint-disable */
 class Foo {
   bar() {
     a();

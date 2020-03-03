@@ -1,3 +1,4 @@
+import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
 import { CompilerOptionsValue, TsConfigSourceFile } from 'typescript';
 
@@ -17,12 +18,12 @@ export interface RollupTypescriptOptions {
    * Determine which files are transpiled by Typescript (all `.ts` and
    * `.tsx` files by default).
    */
-  include?: string | RegExp | Array<string | RegExp> | null;
+  include?: FilterPattern;
   /**
    * Determine which files are transpiled by Typescript (all `.ts` and
    * `.tsx` files by default).
    */
-  exclude?: string | RegExp | Array<string | RegExp> | null;
+  exclude?: FilterPattern;
   /**
    * When set to false, ignores any options specified in the config file.
    * If set to a string that corresponds to a file path, the specified file
