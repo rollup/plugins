@@ -83,6 +83,16 @@ test('detects changes - forks a new child process and kills older process', asyn
   t.is(mockChildProcess().kill.callCount, 1);
 });
 
+test.only('works when chunk is use in entry and dynamic import', async (t) => {
+  const bundle = await rollup({
+    input: join(cwd, 'input-with-dynamic.js'),
+    plugins: [run()]
+  });
+  await t.notThrowsAsync(async () => {
+    await bundle.write({ dir: join(cwd, 'output'), format: 'cjs' });
+  });
+});
+
 test.after(async () => {
   await del(['output']);
 });
