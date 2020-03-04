@@ -39,7 +39,6 @@ module.exports = (opts = {}) => {
       const dir = outputOptions.dir || path.dirname(outputOptions.file);
 
       let dest;
-      let hasEntry = false;
 
       for (const fileName in bundle) {
         if (Object.prototype.hasOwnProperty.call(bundle, fileName)) {
@@ -48,17 +47,11 @@ module.exports = (opts = {}) => {
           // eslint-disable-next-line no-continue
           if (!chunk.isEntry) continue;
 
-          hasEntry = true;
-
           if (chunk.modules[input]) {
             dest = path.join(dir, fileName);
             break;
           }
         }
-      }
-
-      if (hasEntry === false) {
-        this.error(`@rollup/plugin-run requires Rollup 0.65 or higher`);
       }
 
       if (dest) {
