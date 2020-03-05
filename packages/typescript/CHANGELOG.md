@@ -1,5 +1,24 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v3.1.0
+
+_2020-03-05_
+
+### Bugfixes
+
+- fix: Use builtin extends resolution (#199)
+
+### Features
+
+- feat: Move to BuilderProgram API (#217)
+
+### Updates
+
+- test: Add preserveModules test (#234)
+- chore: refactor compiler host (#214)
+- test: Add test for optional chaining (#207)
+- chore: Use typechecking (4bb8753)
+
 ## v3.0.0
 
 _2020-01-27_
