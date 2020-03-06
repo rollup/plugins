@@ -403,7 +403,7 @@ test('does not reexport named contents', async (t) => {
     t.is(
       error.message,
       `'named' is not exported by fixtures${path.sep}samples${path.sep}reexport${path.sep}reexport.js, ` +
-        `imported by fixtures${path.sep}samples${path.sep}reexport/main.js`
+        `imported by fixtures${path.sep}samples${path.sep}reexport${path.sep}main.js`
     );
   }
 });
