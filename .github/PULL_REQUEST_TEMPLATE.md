@@ -32,8 +32,10 @@ Are tests included?
 
 Breaking Changes?
 
-- [ ] yes (_include "BREAKING CHANGES" in the title. breaking changes will not be merged unless absolutely necessary_)
+- [ ] yes (_breaking changes will not be merged unless absolutely necessary_)
 - [ ] no
+
+If yes, then include "BREAKING CHANGES:" in the first commit message body, followed by a description of what is breaking. 
 
 List any relevant issue numbers:
 
