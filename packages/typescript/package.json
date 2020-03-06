@@ -57,7 +57,7 @@
     "@rollup/plugin-commonjs": "^11.0.1",
     "@rollup/plugin-typescript": "^3.0.0",
     "buble": "^0.19.8",
-    "rollup": "^1.27.14",
+    "rollup": "^2.0.0-2",
     "tslib": "^1.10.0",
     "typescript": "^3.7.4"
   },

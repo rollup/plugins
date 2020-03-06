@@ -2,7 +2,7 @@ const { extname } = require('path');
 
 const getFiles = (bundle) => {
   const files = Object.values(bundle).filter(
-    (file) => file.isEntry || file.type === 'asset' || file.isAsset
+    (file) => file.isEntry || (typeof file.type === 'string' ? file.type === 'asset' : file.isAsset)
   );
   const result = {};
   for (const file of files) {

@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^7.0.0",
-    "rollup": "^1.27.14"
+    "rollup": "^2.0.0-2"
   },
   "ava": {
     "files": [

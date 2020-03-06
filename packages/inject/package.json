@@ -54,7 +54,7 @@
     "@rollup/plugin-buble": "^0.21.0",
     "del-cli": "^3.0.0",
     "locate-character": "^2.0.5",
-    "rollup": "^1.27.14",
+    "rollup": "^2.0.0-2",
     "source-map": "^0.7.3",
     "typescript": "^3.7.4"
   },

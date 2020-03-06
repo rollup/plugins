@@ -54,7 +54,7 @@
     "@babel/register": "^7.7.7",
     "del": "^5.1.0",
     "globby": "^10.0.1",
-    "rollup": "^1.27.14",
+    "rollup": "^2.0.0-2",
     "rollup-plugin-babel": "^4.3.3"
   },
   "ava": {
