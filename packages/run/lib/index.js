@@ -44,10 +44,6 @@ module.exports = (opts = {}) => {
         if (Object.prototype.hasOwnProperty.call(bundle, fileName)) {
           const chunk = bundle[fileName];
 
-          if (!('isEntry' in chunk)) {
-            this.error(`@rollup/plugin-run requires Rollup 0.65 or higher`);
-          }
-
           // eslint-disable-next-line no-continue
           if (!chunk.isEntry) continue;
 
