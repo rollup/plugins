@@ -51,7 +51,7 @@
     "sucrase": "^3.10.1"
   },
   "devDependencies": {
-    "rollup": "^2.0.0-2"
+    "rollup": "^2.0.0"
   },
   "ava": {
     "files": [

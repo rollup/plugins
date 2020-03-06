@@ -50,7 +50,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^3.0.0",
     "@rollup/pluginutils": "^3.0.1",
-    "rollup": "^2.0.0-2",
+    "rollup": "^2.0.0",
     "typescript": "^3.7.4"
   },
   "ava": {

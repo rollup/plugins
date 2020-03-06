@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/node": "13.1.6",
     "del": "^5.1.0",
-    "rollup": "^2.0.0-2",
+    "rollup": "^2.0.0",
     "sinon": "8.0.4"
   },
   "ava": {
