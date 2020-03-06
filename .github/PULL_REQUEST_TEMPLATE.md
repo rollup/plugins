@@ -32,7 +32,7 @@ Are tests included?
 
 Breaking Changes?
 
-- [ ] yes (_breaking changes will not be merged unless absolutely necessary_)
+- [ ] yes (_include "BREAKING CHANGES" in the title. breaking changes will not be merged unless absolutely necessary_)
 - [ ] no
 
 List any relevant issue numbers:
