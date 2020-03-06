@@ -1,8 +1,6 @@
 # @rollup/plugin-typescript ChangeLog
 
-## v3.1.0
-
-_2020-03-05_
+## v4.0.0
 
 ### Bugfixes
 
@@ -11,6 +9,16 @@ _2020-03-05_
 ### Features
 
 - feat: Move to BuilderProgram API (#217)
+
+### Breaking Changes
+
+Please see https://github.com/rollup/plugins/pull/217 for more information.
+
+## v3.1.0
+
+_2020-03-05_
+
+_Note: This was a bad release due to breaking changes. v3.1.1 has been published to revert the latest 3.x.x version to a non-breaking state. For the changes in this erroneous version, please use v4.0.0._
 
 ### Updates
 
