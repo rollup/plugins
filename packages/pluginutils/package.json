@@ -44,7 +44,7 @@
     "utils"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0"
+    "rollup": "^1.20.0||^2.0.0"
   },
   "dependencies": {
     "@types/estree": "0.0.39",
