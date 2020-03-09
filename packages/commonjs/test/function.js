@@ -35,11 +35,13 @@ readdirSync('./fixtures/function').forEach((dir) => {
     const bundle = await rollup(options);
     const codeMap = await getCodeMapFromBundle(bundle);
     if (config.show || config.solo) {
+      console.error();
       for (const chunkName of Object.keys(codeMap)) {
-        console.group(chunkName);
+        console.error();
+        console.error(`===> ${chunkName}`);
+        console.group();
         console.error(codeMap[chunkName]);
         console.groupEnd();
-        console.error();
       }
     }
     const { exports, global } = runCodeSplitTest(codeMap, t, config.context);
