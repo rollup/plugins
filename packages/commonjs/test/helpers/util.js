@@ -1,4 +1,4 @@
-const relative = require('require-relative');
+const path = require('path');
 
 const commonjsPlugin = require('../../dist/index');
 
@@ -7,59 +7,83 @@ function commonjs(options) {
   return commonjsPlugin(options);
 }
 
-function execute(code, context = {}, t) {
-  let fn;
-  const contextKeys = Object.keys(context);
-  const argNames = contextKeys.concat(
-    'module',
-    'exports',
-    'require',
-    'global',
-    't',
-    'globalThis',
-    code
-  );
-
-  try {
-    fn = new Function(...argNames); // eslint-disable-line no-new-func
-  } catch (err) {
-    // syntax error
-    console.log(code); // eslint-disable-line no-console
-    throw err;
-  }
-
+function requireWithContext(code, context) {
   const module = { exports: {} };
-  const global = {};
-
-  const argValues = contextKeys
-    .map((key) => context[key])
-    .concat(module, module.exports, (name) => relative(name, 'test/x.js'), global, t, global);
-
-  fn(...argValues);
-
-  return {
-    code,
-    exports: module.exports,
-    global
-  };
+  const contextWithExports = Object.assign({}, context, { module, exports: module.exports });
+  const contextKeys = Object.keys(contextWithExports);
+  const contextValues = contextKeys.map((key) => contextWithExports[key]);
+  try {
+    // eslint-disable-next-line no-new-func
+    const fn = new Function(contextKeys, code);
+    fn.apply({}, contextValues);
+  } catch (error) {
+    error.exports = module.exports;
+    throw error;
+  }
+  return contextWithExports.module.exports;
 }
 
-const getOutputFromGenerated = (generated) => (generated.output ? generated.output[0] : generated);
+function runCodeSplitTest(codeMap, t, configContext = {}) {
+  const requireFromOutputVia = (importer) => (importee) => {
+    const outputId = path.posix.join(path.posix.dirname(importer), importee);
+    const code = codeMap[outputId];
+    if (typeof code !== 'undefined') {
+      return requireWithContext(
+        code,
+        // eslint-disable-next-line no-use-before-define
+        Object.assign({ require: requireFromOutputVia(outputId) }, context)
+      );
+    }
+    // eslint-disable-next-line import/no-dynamic-require
+    return require(importee);
+  };
+
+  const chunkNames = Object.keys(codeMap);
+  const entryName = chunkNames.length === 1 ? chunkNames[0] : 'main.js';
+  if (!codeMap[entryName]) {
+    throw new Error(
+      `Could not find entry "${entryName}" in generated output.\nChunks:\n${Object.keys(
+        codeMap
+      ).join('\n')}`
+    );
+  }
+  const global = {};
+  const context = Object.assign({ t, global, globalThis: global }, configContext);
+  let exports;
+  try {
+    exports = requireWithContext(
+      codeMap[entryName],
+      Object.assign({ require: requireFromOutputVia('main.js') }, context)
+    );
+  } catch (error) {
+    return { error, exports: error.exports };
+  }
+  return { exports, global };
+}
+
+async function getCodeMapFromBundle(bundle, options = {}) {
+  const generated = await bundle.generate(Object.assign({ format: 'cjs' }, options));
+  const codeMap = {};
+  for (const chunk of generated.output) {
+    codeMap[chunk.fileName] = chunk.code;
+  }
+  return codeMap;
+}
 
 async function getCodeFromBundle(bundle, customOptions = {}) {
   const options = Object.assign({ format: 'cjs' }, customOptions);
-  return getOutputFromGenerated(await bundle.generate(options)).code;
+  return (await bundle.generate(options)).output[0].code;
 }
 
 async function executeBundle(bundle, t, { context, exports } = {}) {
-  const code = await getCodeFromBundle(bundle, exports ? { exports } : {});
-  return execute(code, context, t);
+  const codeMap = await getCodeMapFromBundle(bundle, exports ? { exports } : {});
+  return runCodeSplitTest(codeMap, t, context);
 }
 
 module.exports = {
   commonjs,
-  execute,
-  getOutputFromGenerated,
+  executeBundle,
   getCodeFromBundle,
-  executeBundle
+  getCodeMapFromBundle,
+  runCodeSplitTest
 };

@@ -5,7 +5,7 @@ import { readdirSync } from 'fs';
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import { commonjs, getCodeFromBundle, execute } from './helpers/util';
+import { commonjs, getCodeMapFromBundle, runCodeSplitTest } from './helpers/util';
 
 process.chdir(__dirname);
 
@@ -33,15 +33,19 @@ readdirSync('./fixtures/function').forEach((dir) => {
     );
 
     const bundle = await rollup(options);
-    const code = await getCodeFromBundle(bundle);
+    const codeMap = await getCodeMapFromBundle(bundle);
     if (config.show || config.solo) {
-      console.error(code);
+      for (const chunkName of Object.keys(codeMap)) {
+        console.group(chunkName);
+        console.error(codeMap[chunkName]);
+        console.groupEnd();
+        console.error();
+      }
     }
-
-    const { exports, global } = execute(code, config.context, t);
+    const { exports, global } = runCodeSplitTest(codeMap, t, config.context);
 
     if (config.exports) config.exports(exports, t);
     if (config.global) config.global(global, t);
-    t.snapshot(code);
+    t.snapshot(codeMap);
   });
 });
