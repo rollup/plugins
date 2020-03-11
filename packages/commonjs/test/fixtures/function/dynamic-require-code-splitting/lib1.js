@@ -8,5 +8,5 @@ for (const index of [1, 2]) {
   } catch (err) {
     ({ message } = err);
   }
-  t.is(message, '1');
+  t.is(message, index.toString());
 }
