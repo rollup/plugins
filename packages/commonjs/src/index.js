@@ -89,8 +89,6 @@ export default function commonjs(options = {}) {
 
   const sourceMap = options.sourceMap !== false;
 
-  let mainModuleId = null;
-
   function transformAndCheckExports(code, id) {
     const { isEsModule, hasDefaultExport, ast } = checkEsModule(this.parse, code, id);
 
@@ -256,11 +254,7 @@ export default function commonjs(options = {}) {
         });
       }
 
-      // TODO: For code splitting, the runtime probably needs to be imported by each entry point
-
-      if (!mainModuleId && isDynamicRequireModulesEnabled) {
-        mainModuleId = actualId;
-
+      if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
         let code;
 
         try {
