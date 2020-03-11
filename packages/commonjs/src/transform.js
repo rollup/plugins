@@ -199,7 +199,7 @@ export function transformCommonjs(
       }
 
       if (isDynamicRegister || !isDynamic || sourceId.endsWith('.json')) {
-        sources.push(sourceId);
+        sources.push([sourceId, !isDynamicRegister]);
       }
 
       required[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
@@ -512,15 +512,17 @@ export function transformCommonjs(
   )
     .concat(
       sources.map(
-        (source) =>
+        ([source]) =>
           // import the actual module before the proxy, so that we know
           // what kind of proxy to build
           `import '${source}';`
       ),
-      sources.map((source) => {
-        const { name, importsDefault } = required[source];
-        return `import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`;
-      })
+      sources
+        .filter(([_source, importProxy]) => importProxy)
+        .map(([source]) => {
+          const { name, importsDefault } = required[source];
+          return `import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`;
+        })
     )
     .join('\n')}\n\n`;
 
