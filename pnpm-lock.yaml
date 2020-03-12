@@ -108,7 +108,9 @@ importers:
   packages/commonjs:
     dependencies:
       '@rollup/pluginutils': 3.0.8_rollup@1.29.0
+      commondir: 1.0.1
       estree-walker: 1.0.1
+      glob: 7.1.6
       is-reference: 1.1.4
       magic-string: 0.25.6
       resolve: 1.14.2
@@ -136,7 +138,9 @@ importers:
       '@rollup/plugin-node-resolve': ^7.0.0
       '@rollup/pluginutils': ^3.0.8
       acorn: ^7.1.0
+      commondir: ^1.0.1
       estree-walker: ^1.0.1
+      glob: ^7.1.2
       is-reference: ^1.1.2
       locate-character: ^2.0.5
       magic-string: ^0.25.2
@@ -2529,7 +2533,6 @@ packages:
     resolution:
       integrity: sha1-zVL28HEuC6q5fW+XModPIvR3UsA=
   /commondir/1.0.1:
-    dev: true
     resolution:
       integrity: sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
   /concat-map/0.0.1:
