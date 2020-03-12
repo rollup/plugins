@@ -518,7 +518,7 @@ export function transformCommonjs(
           `import '${source}';`
       ),
       sources
-        .filter(([_source, importProxy]) => importProxy)
+        .filter(([, importProxy]) => importProxy)
         .map(([source]) => {
           const { name, importsDefault } = required[source];
           return `import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`;

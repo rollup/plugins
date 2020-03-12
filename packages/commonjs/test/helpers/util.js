@@ -34,7 +34,7 @@ function runCodeSplitTest(codeMap, t, configContext = {}) {
         Object.assign({ require: requireFromOutputVia(outputId) }, context)
       );
     }
-    // eslint-disable-next-line import/no-dynamic-require
+    // eslint-disable-next-line import/no-dynamic-require, global-require
     return require(importee);
   };
 
