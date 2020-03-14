@@ -441,10 +441,12 @@ export function transformCommonjs(
   function addExport(x) {
     const deconflicted = deconflict(scope, globals, name);
 
+    const path = x === '__moduleExports' ? moduleName : `${moduleName}.${x}`;
+
     const declaration =
       deconflicted === name
-        ? `export var ${x} = ${moduleName}.${x};`
-        : `var ${deconflicted} = ${moduleName}.${x};\nexport { ${deconflicted} as ${x} };`;
+        ? `export var ${x} = ${path};`
+        : `var ${deconflicted} = ${path};\nexport { ${deconflicted} as ${x} };`;
 
     namedExportDeclarations.push({
       str: declaration,
