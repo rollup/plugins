@@ -42,7 +42,7 @@
     "magic-string": "^0.25.5"
   },
   "devDependencies": {
-    "acorn": "7.1.0",
+    "acorn": "7.1.1",
     "rollup": "^1.27.14"
   },
   "ava": {
