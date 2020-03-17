@@ -56,7 +56,7 @@ If `true`, instructs the plugin to use the `"browser"` property in `package.json
 Type: `Boolean`<br>
 Default: `null`
 
-An `Object` that specifies additional options that should be passed through to `node-resolve`.
+An `Object` that specifies additional options that should be passed through to [`resolve`](https://www.npmjs.com/package/resolve).
 
 ```
 customResolveOptions: {
