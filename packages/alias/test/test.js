@@ -333,12 +333,11 @@ test('Alias + rollup-plugin-node-resolve', (t) =>
     .then(getModuleIdsFromBundle)
     .then((moduleIds) => {
       const normalizedIds = moduleIds.map((id) => path.resolve(id)).sort();
-      t.is(normalizedIds.length, 7);
+      t.is(normalizedIds.length, 6);
       [
         '/fixtures/aliasMe.js',
         '/fixtures/folder/anotherNumber.js',
         '/fixtures/folder/deep/deep2/index.js',
-        '/fixtures/folder/index.js',
         '/fixtures/index.js',
         '/fixtures/localAliasMe.js',
         '/fixtures/nonAliased.js'
