@@ -1,12 +1,13 @@
 import { PluginContext } from 'rollup';
 
+import { CustomTransformerFactories } from '../types';
+
 import { buildDiagnosticReporter } from './diagnostics/emit';
 import { DiagnosticsHost } from './diagnostics/host';
 import { Resolver } from './moduleResolution';
 import { mergeTransformers } from './customTransformers';
 
 type BuilderProgram = import('typescript').EmitAndSemanticDiagnosticsBuilderProgram;
-type CustomTransformers = import('typescript').CustomTransformers;
 
 interface CreateProgramOptions {
   /** Formatting host used to get some system functions and emit type errors. */
@@ -18,7 +19,7 @@ interface CreateProgramOptions {
   /** Function to resolve a module location */
   resolveModule: Resolver;
   /** Custom TypeScript transformers */
-  transformers?: CustomTransformers;
+  transformers?: CustomTransformerFactories;
 }
 
 /**
@@ -59,7 +60,7 @@ function createWatchHost(
           args[0],
           // emitOnlyDtsFiles
           args[1],
-          mergeTransformers(transformers, args[2])
+          mergeTransformers(program, transformers, args[2] as CustomTransformerFactories)
         );
 
       return baseHost.afterProgramCreate!(program);

@@ -815,6 +815,10 @@ test('does not warn if sourceMap is set in Rollup and unset in Typescript', asyn
 
 test('supports custom transformers', async (t) => {
   const warnings = [];
+
+  let program = null;
+  let typeChecker = null;
+
   const bundle = await rollup({
     input: 'fixtures/transformers/main.ts',
     plugins: [
@@ -844,6 +848,26 @@ test('supports custom transformers', async (t) => {
 
                 return ts.visitEachChild(source, visitor, context);
               };
+            },
+            // Check if transformers with custom factories can request a program reference
+            {
+              type: 'program',
+              factory: (p) => {
+                program = p;
+
+                // eslint-disable-next-line no-undefined
+                return undefined;
+              }
+            },
+            // Check if transformers with custom factories can request a type checker reference
+            {
+              type: 'typeChecker',
+              factory: (tc) => {
+                typeChecker = tc;
+
+                // eslint-disable-next-line no-undefined
+                return undefined;
+              }
             }
           ],
           after: [
@@ -905,6 +929,17 @@ test('supports custom transformers', async (t) => {
   t.true(
     output[1].source.includes('export declare const HashFn: (val: string) => number;'),
     output[1].source
+  );
+
+  // Expect a Program to have been forwarded for transformers with custom factories requesting one
+  t.deepEqual(program && program.emit && typeof program.emit === 'function', true);
+
+  // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
+  t.deepEqual(
+    typeChecker &&
+      typeChecker.getTypeAtLocation &&
+      typeof typeChecker.getTypeAtLocation === 'function',
+    true
   );
 });
 

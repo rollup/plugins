@@ -1,6 +1,12 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import { CompilerOptionsValue, TsConfigSourceFile, CustomTransformers } from 'typescript';
+import {
+  CompilerOptionsValue,
+  TsConfigSourceFile,
+  CustomTransformers,
+  Program,
+  TypeChecker
+} from 'typescript';
 
 export interface RollupTypescriptOptions {
   /**
@@ -41,7 +47,33 @@ export interface RollupTypescriptOptions {
   /**
    * TypeScript custom transformers
    */
-  transformers?: CustomTransformers;
+  transformers?: CustomTransformerFactories;
+}
+
+type ElementType<T extends Array<any>> = T extends (infer U)[] ? U : never;
+export type TransformerStage = keyof CustomTransformers;
+type StagedTransformerFactory<T extends TransformerStage> = ElementType<CustomTransformers[T]>;
+
+export type CustomTransformerFactories = {
+  [stage in TransformerStage]: Array<
+    StagedTransformerFactory<stage> | CustomTransformerFactory<stage>
+  >;
+};
+
+type CustomTransformerFactory<T extends TransformerStage> =
+  | ProgramTransformerFactory<T>
+  | TypeCheckerTransformerFactory<T>;
+
+interface ProgramTransformerFactory<T extends TransformerStage> {
+  factory: (program: Program) => StagedTransformerFactory<T> | undefined;
+
+  type: 'program';
+}
+
+interface TypeCheckerTransformerFactory<T extends TransformerStage> {
+  factory: (typeChecker: TypeChecker) => StagedTransformerFactory<T> | undefined;
+
+  type: 'typeChecker';
 }
 
 /**
