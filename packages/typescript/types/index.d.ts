@@ -1,6 +1,6 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import { CompilerOptionsValue, TsConfigSourceFile } from 'typescript';
+import { CompilerOptionsValue, TsConfigSourceFile, CustomTransformers } from 'typescript';
 
 export interface RollupTypescriptOptions {
   /**
@@ -38,6 +38,10 @@ export interface RollupTypescriptOptions {
    * Overrides the injected TypeScript helpers with a custom version.
    */
   tslib?: Promise<string> | string;
+  /**
+   * TypeScript custom transformers
+   */
+  transformers?: CustomTransformers;
 }
 
 /**

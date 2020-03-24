@@ -813,6 +813,101 @@ test('does not warn if sourceMap is set in Rollup and unset in Typescript', asyn
   t.is(warnings.length, 0);
 });
 
+test('supports custom transformers', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/transformers/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/transformers/tsconfig.json',
+        outDir: 'fixtures/transformers/dist',
+        declaration: true,
+        transformers: {
+          before: [
+            // Replace the source contents before transforming
+            function removeOneParameterFactory(context) {
+              return function removeOneParameter(source) {
+                function visitor(node) {
+                  if (ts.isArrowFunction(node)) {
+                    return ts.createArrowFunction(
+                      node.modifiers,
+                      node.typeParameters,
+                      [node.parameters[0]],
+                      node.type,
+                      node.equalsGreaterThanToken,
+                      node.body
+                    );
+                  }
+
+                  return ts.visitEachChild(node, visitor, context);
+                }
+
+                return ts.visitEachChild(source, visitor, context);
+              };
+            }
+          ],
+          after: [
+            // Enforce a constant numeric output
+            function enforceConstantReturnFactory(context) {
+              return function enforceConstantReturn(source) {
+                function visitor(node) {
+                  if (ts.isReturnStatement(node)) {
+                    return ts.createReturn(ts.createNumericLiteral('1'));
+                  }
+
+                  return ts.visitEachChild(node, visitor, context);
+                }
+
+                return ts.visitEachChild(source, visitor, context);
+              };
+            }
+          ],
+          afterDeclarations: [
+            // Change the return type to numeric
+            function fixDeclarationFactory(context) {
+              return function fixDeclaration(source) {
+                function visitor(node) {
+                  if (ts.isFunctionTypeNode(node)) {
+                    return ts.createFunctionTypeNode(
+                      node.typeParameters,
+                      [node.parameters[0]],
+                      ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+                    );
+                  }
+
+                  return ts.visitEachChild(node, visitor, context);
+                }
+
+                return ts.visitEachChild(source, visitor, context);
+              };
+            }
+          ]
+        }
+      })
+    ],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/transformers' }, true);
+
+  t.is(warnings.length, 0);
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'dist/main.d.ts']
+  );
+
+  // Expect the function to have one less arguments from before transformer and return 1 from after transformer
+  t.true(output[0].code.includes('var HashFn = function (val) { return 1; };'), output[0].code);
+
+  // Expect the definition file to reflect the resulting function type after transformer modifications
+  t.true(
+    output[1].source.includes('export declare const HashFn: (val: string) => number;'),
+    output[1].source
+  );
+});
+
 function fakeTypescript(custom) {
   return Object.assign(
     {

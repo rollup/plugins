@@ -13,7 +13,14 @@ import findTypescriptOutput from './outputFile';
 import createWatchProgram from './watchProgram';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
-  const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
+  const {
+    filter,
+    tsconfig,
+    compilerOptions,
+    tslib,
+    typescript: ts,
+    transformers
+  } = getPluginOptions(options);
   const emittedFiles = new Map<string, string>();
   const declarationFiles = new Set<string>();
 
@@ -41,7 +48,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         parsedOptions,
         writeFile(fileName, data) {
           emittedFiles.set(fileName, data);
-        }
+        },
+        transformers
       });
     },
 

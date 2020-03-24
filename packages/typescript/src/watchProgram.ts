@@ -3,8 +3,10 @@ import { PluginContext } from 'rollup';
 import { buildDiagnosticReporter } from './diagnostics/emit';
 import { DiagnosticsHost } from './diagnostics/host';
 import { Resolver } from './moduleResolution';
+import { mergeTransformers } from './customTransformers';
 
 type BuilderProgram = import('typescript').EmitAndSemanticDiagnosticsBuilderProgram;
+type CustomTransformers = import('typescript').CustomTransformers;
 
 interface CreateProgramOptions {
   /** Formatting host used to get some system functions and emit type errors. */
@@ -15,6 +17,8 @@ interface CreateProgramOptions {
   writeFile: import('typescript').WriteFileCallback;
   /** Function to resolve a module location */
   resolveModule: Resolver;
+  /** Custom TypeScript transformers */
+  transformers?: CustomTransformers;
 }
 
 /**
@@ -26,7 +30,7 @@ interface CreateProgramOptions {
 function createWatchHost(
   ts: typeof import('typescript'),
   context: PluginContext,
-  { formatHost, parsedOptions, writeFile, resolveModule }: CreateProgramOptions
+  { formatHost, parsedOptions, writeFile, resolveModule, transformers }: CreateProgramOptions
 ): import('typescript').WatchCompilerHostOfFilesAndCompilerOptions<BuilderProgram> {
   const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
 
@@ -48,7 +52,16 @@ function createWatchHost(
       const origEmit = program.emit;
       // eslint-disable-next-line no-param-reassign
       program.emit = (targetSourceFile, _, ...args) =>
-        origEmit(targetSourceFile, writeFile, ...args);
+        origEmit(
+          targetSourceFile,
+          writeFile,
+          // cancellationToken
+          args[0],
+          // emitOnlyDtsFiles
+          args[1],
+          mergeTransformers(transformers, args[2])
+        );
+
       return baseHost.afterProgramCreate!(program);
     },
     /** Add helper to deal with module resolution */
