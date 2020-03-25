@@ -1,5 +1,18 @@
 # @rollup/plugin-run ChangeLog
 
+## v1.2.1
+
+_2020-03-24_
+
+### Bugfixes
+
+- fix: plugin could fork before bundle generated (#281)
+- fix: Support assets (#240)
+
+### Updates
+
+- chore: update devDeps (1b08a83)
+
 ## v1.2.0
 
 _2020-01-04_

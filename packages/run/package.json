@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-run",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publishConfig": {
     "access": "public"
   },
@@ -33,12 +33,12 @@
     "run"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0"
+    "rollup": "^1.20.0||^2.0.0"
   },
   "devDependencies": {
     "@types/node": "13.1.6",
     "del": "^5.1.0",
-    "rollup": "^1.27.14",
+    "rollup": "^2.0.0",
     "sinon": "8.0.4"
   },
   "ava": {
