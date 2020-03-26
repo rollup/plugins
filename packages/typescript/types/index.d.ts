@@ -18,6 +18,7 @@ export interface RollupTypescriptOptions {
     | RollupTypescriptOptions['include']
     | RollupTypescriptOptions['typescript']
     | RollupTypescriptOptions['tslib']
+    | RollupTypescriptOptions['transformers']
     | undefined;
 
   /**
@@ -51,29 +52,28 @@ export interface RollupTypescriptOptions {
 }
 
 type ElementType<T extends Array<any>> = T extends (infer U)[] ? U : never;
+
 export type TransformerStage = keyof CustomTransformers;
 type StagedTransformerFactory<T extends TransformerStage> = ElementType<CustomTransformers[T]>;
-
-export type CustomTransformerFactories = {
-  [stage in TransformerStage]: Array<
-    StagedTransformerFactory<stage> | CustomTransformerFactory<stage>
-  >;
-};
-
-type CustomTransformerFactory<T extends TransformerStage> =
+type TransformerFactory<T extends TransformerStage> =
+  | StagedTransformerFactory<T>
   | ProgramTransformerFactory<T>
   | TypeCheckerTransformerFactory<T>;
 
-interface ProgramTransformerFactory<T extends TransformerStage> {
-  factory: (program: Program) => StagedTransformerFactory<T> | undefined;
+export type CustomTransformerFactories = {
+  [stage in TransformerStage]?: Array<TransformerFactory<stage>>;
+};
 
+interface ProgramTransformerFactory<T extends TransformerStage> {
   type: 'program';
+
+  factory(program: Program): StagedTransformerFactory<T>;
 }
 
 interface TypeCheckerTransformerFactory<T extends TransformerStage> {
-  factory: (typeChecker: TypeChecker) => StagedTransformerFactory<T> | undefined;
-
   type: 'typeChecker';
+
+  factory(typeChecker: TypeChecker): StagedTransformerFactory<T>;
 }
 
 /**

@@ -1,9 +1,6 @@
 import { BuilderProgram, CustomTransformers, Program, TypeChecker } from 'typescript';
 
-import { CustomTransformerFactories, TransformerStage } from '../types';
-
-// List of all transformer stages
-const transformerTypes: TransformerStage[] = ['after', 'afterDeclarations', 'before'];
+import { CustomTransformerFactories, TransformerStage, TransformerFactory } from '../types';
 
 /**
  * Merges all received custom transformer definitions into a single CustomTransformers object
@@ -12,6 +9,9 @@ export function mergeTransformers(
   builder: BuilderProgram,
   ...input: Array<CustomTransformerFactories | undefined>
 ): CustomTransformers {
+  // List of all transformer stages
+  const transformerTypes: TransformerStage[] = ['after', 'afterDeclarations', 'before'];
+
   const accumulator: Required<CustomTransformers> = {
     after: [],
     afterDeclarations: [],
@@ -28,7 +28,7 @@ export function mergeTransformers(
     }
 
     transformerTypes.forEach((stage) => {
-      (transformers[stage] as CustomTransformerFactories['before']).forEach((transformer) => {
+      getTransformers<typeof stage>(transformers[stage]).forEach((transformer) => {
         if (!transformer) {
           // Skip empty
           return;
@@ -67,6 +67,12 @@ export function mergeTransformers(
   });
 
   return accumulator;
+}
+
+function getTransformers<T extends TransformerStage>(
+  transformers?: Array<TransformerFactory<T>>
+): Array<TransformerFactory<T>> {
+  return transformers || [];
 }
 
 export default mergeTransformers;

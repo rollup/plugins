@@ -829,61 +829,55 @@ test('supports custom transformers', async (t) => {
         transformers: {
           before: [
             // Replace the source contents before transforming
-            function removeOneParameterFactory(context) {
-              return function removeOneParameter(source) {
-                function visitor(node) {
-                  if (ts.isArrowFunction(node)) {
-                    return ts.createArrowFunction(
-                      node.modifiers,
-                      node.typeParameters,
-                      [node.parameters[0]],
-                      node.type,
-                      node.equalsGreaterThanToken,
-                      node.body
-                    );
-                  }
-
-                  return ts.visitEachChild(node, visitor, context);
-                }
-
-                return ts.visitEachChild(source, visitor, context);
-              };
-            },
-            // Check if transformers with custom factories can request a program reference
             {
               type: 'program',
               factory: (p) => {
                 program = p;
 
-                // eslint-disable-next-line no-undefined
-                return undefined;
-              }
-            },
-            // Check if transformers with custom factories can request a type checker reference
-            {
-              type: 'typeChecker',
-              factory: (tc) => {
-                typeChecker = tc;
+                return function removeOneParameterFactory(context) {
+                  return function removeOneParameter(source) {
+                    function visitor(node) {
+                      if (ts.isArrowFunction(node)) {
+                        return ts.createArrowFunction(
+                          node.modifiers,
+                          node.typeParameters,
+                          [node.parameters[0]],
+                          node.type,
+                          node.equalsGreaterThanToken,
+                          node.body
+                        );
+                      }
 
-                // eslint-disable-next-line no-undefined
-                return undefined;
+                      return ts.visitEachChild(node, visitor, context);
+                    }
+
+                    return ts.visitEachChild(source, visitor, context);
+                  };
+                };
               }
             }
           ],
           after: [
             // Enforce a constant numeric output
-            function enforceConstantReturnFactory(context) {
-              return function enforceConstantReturn(source) {
-                function visitor(node) {
-                  if (ts.isReturnStatement(node)) {
-                    return ts.createReturn(ts.createNumericLiteral('1'));
-                  }
+            {
+              type: 'typeChecker',
+              factory: (tc) => {
+                typeChecker = tc;
 
-                  return ts.visitEachChild(node, visitor, context);
-                }
+                return function enforceConstantReturnFactory(context) {
+                  return function enforceConstantReturn(source) {
+                    function visitor(node) {
+                      if (ts.isReturnStatement(node)) {
+                        return ts.createReturn(ts.createNumericLiteral('1'));
+                      }
 
-                return ts.visitEachChild(source, visitor, context);
-              };
+                      return ts.visitEachChild(node, visitor, context);
+                    }
+
+                    return ts.visitEachChild(source, visitor, context);
+                  };
+                };
+              }
             }
           ],
           afterDeclarations: [
