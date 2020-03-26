@@ -10,7 +10,7 @@ import resolve from '@rollup/plugin-node-resolve';
 
 import { testBundle } from '../../../util/test';
 
-import { commonjs, getCodeFromBundle, getOutputFromGenerated, executeBundle } from './helpers/util';
+import { commonjs, executeBundle, getCodeFromBundle } from './helpers/util';
 
 install();
 
@@ -23,13 +23,13 @@ test('generates a sourcemap', async (t) => {
     plugins: [commonjs({ sourceMap: true })]
   });
 
-  const { code, map } = getOutputFromGenerated(
-    await bundle.generate({
-      format: 'cjs',
-      sourcemap: true,
-      sourcemapFile: path.resolve('bundle.js')
-    })
-  );
+  const {
+    output: [{ code, map }]
+  } = await bundle.generate({
+    format: 'cjs',
+    sourcemap: true,
+    sourcemapFile: path.resolve('bundle.js')
+  });
 
   const smc = new SourceMapConsumer(map);
   const locator = getLocator(code, { offsetLine: 1 });
@@ -357,7 +357,9 @@ test('typeof transforms: sinon', async (t) => {
     plugins: [commonjs()]
   });
 
-  const { code } = getOutputFromGenerated(await bundle.generate({ format: 'es' }));
+  const {
+    output: [{ code }]
+  } = await bundle.generate({ format: 'es' });
 
   t.is(code.indexOf('typeof require'), -1, code);
   // t.not( code.indexOf( 'typeof module' ), -1, code ); // #151 breaks this test
