@@ -1,10 +1,8 @@
 import { createFilter } from '@rollup/pluginutils';
 import * as defaultTs from 'typescript';
 
-import { RollupTypescriptOptions } from '../../types';
+import { RollupTypescriptOptions, PartialCompilerOptions } from '../../types';
 import getTsLibPath from '../tslib';
-
-import { PartialCustomOptions } from './interfaces';
 
 /**
  * Separate the Rollup plugin options from the Typescript compiler options,
@@ -24,7 +22,7 @@ export default function getPluginOptions(options: RollupTypescriptOptions) {
   return {
     filter,
     tsconfig,
-    compilerOptions: compilerOptions as PartialCustomOptions,
+    compilerOptions: compilerOptions as PartialCompilerOptions,
     typescript: typescript || defaultTs,
     tslib: tslib || getTsLibPath()
   };
