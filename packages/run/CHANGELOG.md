@@ -1,5 +1,13 @@
 # @rollup/plugin-run ChangeLog
 
+## v1.2.2
+
+_2020-03-30_
+
+### Updates
+
+- chore: revert rollup v2 changes (9727dc3)
+
 ## v1.2.1
 
 _2020-03-24_
