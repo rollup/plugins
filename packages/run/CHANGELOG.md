@@ -1,5 +1,13 @@
 # @rollup/plugin-run ChangeLog
 
+## v2.0.1
+
+_2020-03-30_
+
+### Bugfixes
+
+- fix: remove rollup v1 from peerDeps (0eb4d59)
+
 ## v2.0.0
 
 _2020-03-29_
