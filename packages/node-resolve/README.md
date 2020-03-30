@@ -53,10 +53,10 @@ If `true`, instructs the plugin to use the `"browser"` property in `package.json
 
 ### `customResolveOptions`
 
-Type: `Boolean`<br>
+Type: `Object`<br>
 Default: `null`
 
-An `Object` that specifies additional options that should be passed through to `node-resolve`.
+An `Object` that specifies additional options that should be passed through to [`resolve`](https://www.npmjs.com/package/resolve).
 
 ```
 customResolveOptions: {
@@ -152,7 +152,7 @@ rootDir: path.join(process.cwd(), '..')
 
 ## Using with @rollup/plugin-commonjs
 
-Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [@rollup/plugin-commonjs](https://github.com/rollup/plugins/packages/commonjs):
+Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [@rollup/plugin-commonjs](https://github.com/rollup/plugins/tree/master/packages/commonjs):
 
 ```js
 // rollup.config.js

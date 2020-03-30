@@ -14,7 +14,8 @@ const config: import('rollup').RollupOptions = {
       ignoreGlobal: false,
       sourceMap: false,
       namedExports: { './module.js': ['foo', 'bar'] },
-      ignore: ['conditional-runtime-dependency']
+      ignore: ['conditional-runtime-dependency'],
+      dynamicRequireTargets: [ 'node_modules/logform/*.js' ]
     })
   ]
 };

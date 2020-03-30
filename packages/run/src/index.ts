@@ -39,16 +39,17 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       if (!isWrite) {
         this.error(`@rollup/plugin-run currently only works with bundles that are written to disk`);
       }
+    },
 
+    writeBundle(outputOptions, bundle) {
       const dir = outputOptions.dir || path.dirname(outputOptions.file!);
 
       let dest: string | undefined;
       for (const fileName of Object.keys(bundle)) {
         const chunk = bundle[fileName];
 
-        if (!('isEntry' in chunk)) {
-          this.error(`@rollup/plugin-run requires Rollup 0.65 or higher`);
-        }
+        // eslint-disable-next-line no-continue
+        if (!chunk.isEntry) continue;
 
         if (chunk.isEntry && chunk.modules[input]) {
           dest = path.join(dir, fileName);

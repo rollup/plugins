@@ -1,11 +1,20 @@
-/* eslint-disable no-param-reassign, no-shadow, no-underscore-dangle */
+/* eslint-disable no-param-reassign, no-shadow, no-underscore-dangle, no-continue */
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
 
 import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
-import { getProxyId, HELPERS_ID } from './helpers';
+import {
+  getProxyId,
+  getVirtualPathForDynamicRequirePath,
+  HELPERS_ID,
+  DYNAMIC_REGISTER_PREFIX,
+  DYNAMIC_JSON_PREFIX,
+} from './helpers';
 import { getName } from './utils';
+import { resolve, dirname } from 'path';
+// TODO can this be async?
+import { sync as nodeResolveSync } from 'resolve';
 
 const reserved = 'process location abstract arguments boolean break byte case catch char class const continue debugger default delete do double else enum eval export extends false final finally float for from function goto if implements import in instanceof int interface let long native new null package private protected public return short static super switch synchronized this throw throws transient true try typeof var void volatile while with yield'.split(
   ' '
@@ -40,6 +49,10 @@ function tryParse(parse, code, id) {
     err.message += ` in ${id}`;
     throw err;
   }
+}
+
+export function normalizePathSlashes(path) {
+  return path.replace(/\\/g, '/');
 }
 
 export function hasCjsKeywords(code, ignoreGlobal) {
@@ -91,11 +104,14 @@ export function transformCommonjs(
   code,
   id,
   isEntry,
+  isEsModule,
   ignoreGlobal,
   ignoreRequire,
   customNamedExports,
   sourceMap,
-  allowDynamicRequire,
+  isDynamicRequireModulesEnabled,
+  dynamicRequireModuleSet,
+  commonDir,
   astCache
 ) {
   const ast = astCache || tryParse(parse, code, id);
@@ -124,6 +140,7 @@ export function transformCommonjs(
 
   // TODO handle transpiled modules
   let shouldWrap = /__esModule/.test(code);
+  let usesDynamicHelpers = false;
 
   function isRequireStatement(node) {
     if (!node) return false;
@@ -145,8 +162,11 @@ export function transformCommonjs(
   function isStaticRequireStatement(node) {
     if (!isRequireStatement(node)) return false;
     if (hasDynamicArguments(node)) return false;
-    if (ignoreRequire(node.arguments[0].value)) return false;
     return true;
+  }
+
+  function isIgnoredRequireStatement(requiredNode) {
+    return ignoreRequire(requiredNode.arguments[0].value);
   }
 
   function getRequireStringArg(node) {
@@ -156,10 +176,17 @@ export function transformCommonjs(
   }
 
   function getRequired(node, name) {
-    const sourceId = getRequireStringArg(node);
+    let sourceId = getRequireStringArg(node);
+    const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
+    if (isDynamicRegister) {
+      sourceId = sourceId.substr(DYNAMIC_REGISTER_PREFIX.length);
+    }
+
     const existing = required[sourceId];
     // eslint-disable-next-line no-undefined
     if (existing === undefined) {
+      const isDynamic = hasDynamicModuleForPath(sourceId);
+
       if (!name) {
         do {
           name = `require$$${uid}`;
@@ -167,11 +194,51 @@ export function transformCommonjs(
         } while (scope.contains(name));
       }
 
-      sources.push(sourceId);
-      required[sourceId] = { source: sourceId, name, importsDefault: false };
+      if (isDynamicRegister && sourceId.endsWith('.json')) {
+        sourceId = DYNAMIC_JSON_PREFIX + sourceId;
+      }
+
+      if (isDynamicRegister || !isDynamic || sourceId.endsWith('.json')) {
+        sources.push([sourceId, !isDynamicRegister]);
+      }
+
+      required[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
     }
 
     return required[sourceId];
+  }
+
+  function hasDynamicModuleForPath(source) {
+    if (!/[/\\]/.test(source)) {
+      try {
+        const resolvedPath = normalizePathSlashes(
+          nodeResolveSync(source, { basedir: dirname(id) })
+        );
+        if (dynamicRequireModuleSet.has(resolvedPath)) {
+          return true;
+        }
+      } catch (ex) {
+        // Probably a node.js internal module
+        return false;
+      }
+
+      return false;
+    }
+
+    for (const attemptExt of ['', '.js', '.json']) {
+      const resolvedPath = normalizePathSlashes(resolve(dirname(id), source + attemptExt));
+      if (dynamicRequireModuleSet.has(resolvedPath)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function shouldUseSimulatedRequire(required) {
+    return hasDynamicModuleForPath(required.source) &&
+      // We only do `commonjsRequire` for json if it's the `commonjsRegister` call.
+      (required.source.startsWith(DYNAMIC_REGISTER_PREFIX) || !required.source.endsWith('.json'));
   }
 
   // do a first pass, see which names are assigned to. This is necessary to prevent
@@ -255,10 +322,26 @@ export function transformCommonjs(
         if (isReference(node, parent) && !scope.contains(node.name)) {
           if (node.name in uses) {
             if (node.name === 'require') {
-              if (allowDynamicRequire) return;
+              if (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent)) {
+                return;
+              }
+
+              if (isDynamicRequireModulesEnabled && isRequireStatement(parent)) {
+                magicString.appendLeft(
+                  parent.end - 1,
+                  ',' +
+                  JSON.stringify(
+                    dirname(id) === '.'
+                      ? null /* default behavior */
+                      : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
+                  )
+                );
+              }
+
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
                 storeName: true
               });
+              usesDynamicHelpers = true
             }
 
             uses[node.name] = true;
@@ -325,7 +408,8 @@ export function transformCommonjs(
       if (
         node.type === 'VariableDeclarator' &&
         node.id.type === 'Identifier' &&
-        isStaticRequireStatement(node.init)
+        isStaticRequireStatement(node.init) &&
+        !isIgnoredRequireStatement(node.init)
       ) {
         // for now, only do this for top-level requires. maybe fix this in future
         if (scope.parent) return;
@@ -336,12 +420,14 @@ export function transformCommonjs(
         const required = getRequired(node.init, node.id.name);
         required.importsDefault = true;
 
-        if (required.name === node.id.name) {
+        if (required.name === node.id.name && !required.isDynamic) {
           node._shouldRemove = true;
         }
       }
 
-      if (!isStaticRequireStatement(node)) return;
+      if (!isStaticRequireStatement(node) || isIgnoredRequireStatement(node)) {
+        return;
+      }
 
       const required = getRequired(node);
 
@@ -350,7 +436,23 @@ export function transformCommonjs(
         magicString.remove(parent.start, parent.end);
       } else {
         required.importsDefault = true;
-        magicString.overwrite(node.start, node.end, required.name);
+
+        if (shouldUseSimulatedRequire(required)) {
+          magicString.overwrite(
+            node.start,
+            node.end,
+            `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
+              getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
+            )}, ${JSON.stringify(
+              dirname(id) === '.'
+                ? null /* default behavior */
+                : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
+            )})`
+          );
+          usesDynamicHelpers = true;
+        } else {
+          magicString.overwrite(node.start, node.end, required.name);
+        }
       }
 
       node.callee._skip = true;
@@ -403,22 +505,24 @@ export function transformCommonjs(
     return null;
   }
 
-  const includeHelpers = shouldWrap || uses.global || uses.require;
+  const includeHelpers = usesDynamicHelpers || shouldWrap || uses.global || uses.require;
   const importBlock = `${(includeHelpers
     ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
     : []
   )
     .concat(
       sources.map(
-        (source) =>
+        ([source]) =>
           // import the actual module before the proxy, so that we know
           // what kind of proxy to build
           `import '${source}';`
       ),
-      sources.map((source) => {
-        const { name, importsDefault } = required[source];
-        return `import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`;
-      })
+      sources
+        .filter(([, importProxy]) => importProxy)
+        .map(([source]) => {
+          const { name, importsDefault } = required[source];
+          return `import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`;
+        })
     )
     .join('\n')}\n\n`;
 
@@ -427,7 +531,7 @@ export function transformCommonjs(
   let wrapperEnd = '';
 
   const moduleName = deconflict(scope, globals, getName(id));
-  if (!isEntry) {
+  if (!isEntry && !isEsModule) {
     const exportModuleExports = {
       str: `export { ${moduleName} as __moduleExports };`,
       name: '__moduleExports'
@@ -465,15 +569,19 @@ export function transformCommonjs(
   } else {
     const names = [];
 
-    ast.body.forEach((node) => {
+    for (const node of ast.body) {
       if (node.type === 'ExpressionStatement' && node.expression.type === 'AssignmentExpression') {
         const { left } = node.expression;
         const flattened = flatten(left);
 
-        if (!flattened) return;
+        if (!flattened) {
+          continue;
+        }
 
         const match = exportsPattern.exec(flattened.keypath);
-        if (!match) return;
+        if (!match) {
+          continue;
+        }
 
         if (flattened.keypath === 'module.exports') {
           hasDefaultExport = true;
@@ -502,14 +610,15 @@ export function transformCommonjs(
           defaultExportPropertyAssignments.push(`${moduleName}.${name} = ${deconflicted};`);
         }
       }
-    });
+    }
 
-    if (!hasDefaultExport && (names.length || !isEntry)) {
+    if (!hasDefaultExport && (names.length || (!isEntry && !isEsModule))) {
       wrapperEnd = `\n\nvar ${moduleName} = {\n${names
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n};`;
     }
   }
+
   Object.keys(namedExports)
     .filter((key) => !blacklist[key])
     .forEach(addExport);
@@ -522,7 +631,7 @@ export function transformCommonjs(
     .filter((x) => x.name !== 'default' || !hasDefaultExport)
     .map((x) => x.str);
 
-  const exportBlock = `\n\n${[defaultExport]
+  const exportBlock = `\n\n${(isEsModule ? [] : [defaultExport])
     .concat(named)
     .concat(hasDefaultExport ? defaultExportPropertyAssignments : [])
     .join('\n')}`;
@@ -533,7 +642,7 @@ export function transformCommonjs(
     .trim()
     .append(wrapperEnd);
 
-  if (hasDefaultExport || named.length > 0 || shouldWrap || !isEntry) {
+  if (hasDefaultExport || named.length > 0 || shouldWrap || (!isEntry && !isEsModule)) {
     magicString.append(exportBlock);
   }
 

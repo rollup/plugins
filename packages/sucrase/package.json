@@ -44,14 +44,14 @@
     "jsx"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0"
+    "rollup": "^1.20.0||^2.0.0"
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.0.1",
     "sucrase": "^3.10.1"
   },
   "devDependencies": {
-    "rollup": "^1.27.13"
+    "rollup": "^2.0.0"
   },
   "ava": {
     "files": [
