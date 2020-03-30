@@ -1,7 +1,7 @@
 import { ChildProcess, fork } from 'child_process';
 import * as path from 'path';
 
-import { Plugin } from 'rollup';
+import { Plugin, RenderedChunk } from 'rollup';
 
 import { RollupRunOptions } from '../types';
 
@@ -46,7 +46,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
 
       let dest: string | undefined;
       for (const fileName of Object.keys(bundle)) {
-        const chunk = bundle[fileName];
+        const chunk = bundle[fileName] as RenderedChunk;
 
         // eslint-disable-next-line no-continue
         if (!chunk.isEntry) continue;
