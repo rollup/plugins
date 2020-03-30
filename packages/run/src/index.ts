@@ -35,7 +35,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       return options;
     },
 
-    generateBundle(outputOptions, bundle, isWrite) {
+    generateBundle(_outputOptions, _bundle, isWrite) {
       if (!isWrite) {
         this.error(`@rollup/plugin-run currently only works with bundles that are written to disk`);
       }
