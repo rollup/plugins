@@ -152,7 +152,7 @@ rootDir: path.join(process.cwd(), '..')
 
 ## Using with @rollup/plugin-commonjs
 
-Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [@rollup/plugin-commonjs](https://github.com/rollup/plugins/packages/commonjs):
+Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [@rollup/plugin-commonjs](https://github.com/rollup/plugins/tree/master/packages/commonjs):
 
 ```js
 // rollup.config.js
