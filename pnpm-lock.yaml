@@ -331,12 +331,15 @@ importers:
       source-map: ^0.7.3
       typescript: ^3.7.4
   packages/run:
-    devDependencies:
+    dependencies:
       '@types/node': 13.1.6
+    devDependencies:
+      '@rollup/plugin-typescript': 3.0.0_rollup@2.2.0
       del: 5.1.0
       rollup: 2.2.0
       sinon: 8.0.4
     specifiers:
+      '@rollup/plugin-typescript': ^3.0.0
       '@types/node': 13.1.6
       del: ^5.1.0
       rollup: ^2.0.0
@@ -1644,7 +1647,7 @@ packages:
     resolution:
       integrity: sha512-g73GJYJDXgf0jqg+P9S8h2acWbDXNkoCX8DLtJVu7Fkn788pzQ/oJsrdJz/2JejRf/SjfZaAhsw+3nd1D5EWGg==
   /@types/node/13.1.6:
-    dev: true
+    dev: false
     resolution:
       integrity: sha512-Jg1F+bmxcpENHP23sVKkNuU3uaxPnsBMW0cLjleiikFKomJQbsn0Cqk2yDvQArqzZN6ABfBkZ0To7pQ8sLdWDg==
   /@types/node/13.1.8:
