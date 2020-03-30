@@ -35,9 +35,7 @@ module.exports = (opts = {}) => {
       if (!isWrite) {
         this.error(`@rollup/plugin-run currently only works with bundles that are written to disk`);
       }
-    },
 
-    writeBundle(outputOptions, bundle) {
       const dir = outputOptions.dir || path.dirname(outputOptions.file);
 
       let dest;
