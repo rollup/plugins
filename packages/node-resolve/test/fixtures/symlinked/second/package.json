@@ -1,0 +1,7 @@
+{
+  "name": "second",
+  "main": "./index.js",
+  "browser": {
+    "./index.js": "./index.browser.js"
+  }
+}
