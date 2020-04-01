@@ -16,7 +16,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
   return {
     name: 'run',
 
-    options(options) {
+    buildStart(options) {
       let inputs = options.input!;
 
       if (typeof inputs === 'string') {
@@ -32,7 +32,6 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       }
 
       input = path.resolve(inputs[0]);
-      return options;
     },
 
     generateBundle(_outputOptions, _bundle, isWrite) {
@@ -43,23 +42,14 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
 
     writeBundle(outputOptions, bundle) {
       const dir = outputOptions.dir || path.dirname(outputOptions.file!);
-
-      let dest: string | undefined;
-      for (const fileName of Object.keys(bundle)) {
+      const entryFileName = Object.keys(bundle).find((fileName) => {
         const chunk = bundle[fileName] as RenderedChunk;
+        return chunk.isEntry && chunk.facadeModuleId === input;
+      });
 
-        // eslint-disable-next-line no-continue
-        if (!chunk.isEntry) continue;
-
-        if (chunk.isEntry && chunk.modules[input]) {
-          dest = path.join(dir, fileName);
-          break;
-        }
-      }
-
-      if (dest) {
+      if (entryFileName) {
         if (proc) proc.kill();
-        proc = fork(dest, args, forkOptions);
+        proc = fork(path.join(dir, entryFileName), args, forkOptions);
       } else {
         this.error(`@rollup/plugin-run could not find output chunk`);
       }

@@ -38,6 +38,33 @@ test('builds the bundle and forks a child process', async (t) => {
   t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
 });
 
+test('takes input from the latest options', async (t) => {
+  const bundle = await rollup({
+    input: 'incorrect',
+    plugins: [
+      run(),
+      {
+        options(options) {
+          options.input = input;
+          return options;
+        }
+      }
+    ]
+  });
+  await bundle.write(outputOptions);
+  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+});
+
+test('checks entry point facade module', async (t) => {
+  const bundle = await rollup({
+    input: join(cwd, 'facade-entry/index.js'),
+    plugins: [run()]
+  });
+  const outputDir = join(cwd, 'output');
+  await bundle.write({ dir: outputDir, format: 'cjs' });
+  t.true(mockChildProcess.calledWithExactly(join(outputDir, 'index.js'), [], {}));
+});
+
 test('allows pass-through options for child_process.fork', async (t) => {
   const forkOptions = {
     cwd,
@@ -48,7 +75,6 @@ test('allows pass-through options for child_process.fork', async (t) => {
     input,
     plugins: [run(forkOptions)]
   });
-
   await bundle.write(outputOptions);
   t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], forkOptions));
 });
