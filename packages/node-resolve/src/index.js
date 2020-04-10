@@ -17,7 +17,7 @@ import {
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
 const nullFn = () => null;
-export const defaults = {
+export const DEFAULT_OPTIONS = {
   customResolveOptions: {},
   dedupe: [],
   // It's important that .mjs is listed before .js so that Rollup will interpret npm modules
@@ -26,8 +26,8 @@ export const defaults = {
   resolveOnly: []
 };
 
-export default function nodeResolve(opts = {}) {
-  const options = Object.assign({}, defaults, opts);
+const mod = function nodeResolve(opts = {}) {
+  const options = Object.assign({}, DEFAULT_OPTIONS, opts);
   const { customResolveOptions, extensions, jail } = options;
   const warnings = [];
   const packageInfoCache = new Map();
@@ -250,4 +250,6 @@ export default function nodeResolve(opts = {}) {
       return idToPackageInfo.get(id);
     }
   };
-}
+};
+mod.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
+export default mod;
