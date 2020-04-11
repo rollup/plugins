@@ -6,7 +6,7 @@ import { SourceMapConsumer } from 'source-map';
 
 import { getCode } from '../../../util/test';
 
-import babelPlugin from '..';
+import { getBabelOutputPlugin, createBabelOutputPluginFactory } from '..';
 
 process.chdir(__dirname);
 
@@ -53,7 +53,7 @@ async function generate(input, babelOptions = {}, generateOptions = {}, rollupOp
 
   return getCode(bundle, {
     format: 'cjs',
-    plugins: [babelPlugin.generated(babelOptions)],
+    plugins: [getBabelOutputPlugin(babelOptions)],
     ...generateOptions
   });
 }
@@ -123,7 +123,7 @@ test('generates sourcemap by default', async (t) => {
     output: [{ code, map }]
   } = await bundle.generate({
     format: 'cjs',
-    plugins: [babelPlugin.generated()],
+    plugins: [getBabelOutputPlugin()],
     sourcemap: true
   });
 
@@ -202,7 +202,7 @@ test('transforms all chunks in a code-splitting setup', async (t) => {
     {
       format: 'esm',
       plugins: [
-        babelPlugin.generated({
+        getBabelOutputPlugin({
           plugins: ['@babel/syntax-dynamic-import'],
           presets: ['@babel/env']
         })
@@ -238,7 +238,7 @@ test('transforms all chunks when preserving modules', async (t) => {
     {
       format: 'esm',
       plugins: [
-        babelPlugin.generated({
+        getBabelOutputPlugin({
           presets: ['@babel/env']
         })
       ]
@@ -264,7 +264,7 @@ export default getResult;
 });
 
 test('supports customizing the loader', async (t) => {
-  const customBabelPlugin = babelPlugin.generated.custom(() => {
+  const customBabelPlugin = createBabelOutputPluginFactory(() => {
     return {
       config(cfg) {
         return Object.assign({}, cfg.options, {

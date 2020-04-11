@@ -215,9 +215,11 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
   };
 }
 
-const babelPluginFactory = createBabelInputPluginFactory();
-babelPluginFactory.custom = createBabelInputPluginFactory;
-babelPluginFactory.generated = createBabelOutputPluginFactory();
-babelPluginFactory.generated.custom = createBabelOutputPluginFactory;
+// export this for symmetry with output-related exports
+export const getBabelInputPlugin = createBabelInputPluginFactory();
+export const getBabelOutputPlugin = createBabelOutputPluginFactory();
+export { createBabelInputPluginFactory, createBabelOutputPluginFactory };
 
-export default babelPluginFactory;
+export default getBabelInputPlugin;
+// support `rollup -c —plugin babel`
+export { getBabelInputPlugin as babel };

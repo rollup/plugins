@@ -7,7 +7,7 @@ import jsonPlugin from '@rollup/plugin-json';
 
 import { getCode } from '../../../util/test';
 
-import babelPlugin from '..';
+import babelPlugin, { getBabelOutputPlugin, createBabelInputPluginFactory } from '..';
 
 process.chdir(__dirname);
 
@@ -340,7 +340,7 @@ test('works with minified bundled helpers', async (t) => {
 });
 
 test('supports customizing the loader', async (t) => {
-  const customBabelPlugin = babelPlugin.custom(() => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
     return {
       config(cfg) {
         return {
@@ -371,7 +371,7 @@ test('supports customizing the loader', async (t) => {
 });
 
 test('supports overriding the plugin options in custom loader', async (t) => {
-  const customBabelPlugin = babelPlugin.custom(() => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
     return {
       options(options) {
         // Ignore the js extension to test overriding the options
@@ -419,7 +419,7 @@ test('can be used as an input plugin while transforming the output', async (t) =
   const bundle = await rollup({
     input: 'fixtures/basic/main.js',
     plugins: [
-      babelPlugin.generated({
+      getBabelOutputPlugin({
         presets: ['@babel/env']
       })
     ]

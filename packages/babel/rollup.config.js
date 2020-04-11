@@ -1,5 +1,5 @@
 import pkg from './package.json';
-import babel from './src/index';
+import { babel } from './src/index';
 
 const externalDeps = Object.keys(Object.assign({}, pkg.dependencies, pkg.peerDependencies));
 const nodeDeps = ['path'];

@@ -146,16 +146,16 @@ If you have been pointed to this section by an error thrown by this plugin, plea
 
 ## Running Babel on the generated code
 
-You can run `@rollup/plugin-babel` on the output files instead of the input files by using `babel.generated(...)`. This can be used to perform code transformations on the resulting chunks and is the only way to transform Rollup's auto-generated code. By default, the plugin will be applied to all outputs:
+You can run `@rollup/plugin-babel` on the output files instead of the input files by using `getBabelOutputPlugin(...)`. This can be used to perform code transformations on the resulting chunks and is the only way to transform Rollup's auto-generated code. By default, the plugin will be applied to all outputs:
 
 ```js
 // rollup.config.js
-import babel from '@rollup/plugin-babel';
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 
 export default {
   input: 'main.js',
   plugins: [
-    babel.generated({
+    getBabelOutputPlugin({
       presets: ['@babel/preset-env']
     })
   ],
@@ -170,7 +170,7 @@ If you only want to apply it to specific outputs, you can use it as an output pl
 
 ```js
 // rollup.config.js
-import babel from '@rollup/plugin-babel';
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 
 export default {
   input: 'main.js',
@@ -179,19 +179,19 @@ export default {
     {
       file: 'bundle.es5.js',
       format: 'esm',
-      plugins: [babel.generated({ presets: ['@babel/preset-env'] })]
+      plugins: [getBabelOutputPlugin({ presets: ['@babel/preset-env'] })]
     }
   ]
 };
 ```
 
-The `include`, `exclude` and `extensions` options are ignored when the when using `.generated()` will produce warnings, and there are a few more points to note that users should be aware of.
+The `include`, `exclude` and `extensions` options are ignored when the when using `getBabelOutputPlugin` and `createBabelOutputPluginFactory` will produce warnings, and there are a few more points to note that users should be aware of.
 
 You can also run the plugin twice on the code, once when processing the input files to transpile special syntax to JavaScript and once on the output to transpile to a lower compatibility target:
 
 ```js
 // rollup.config.js
-import babel from '@rollup/plugin-babel';
+import babel, { getBabelOutputPlugin } from '@rollup/plugin-babel';
 
 export default {
   input: 'main.js',
@@ -200,7 +200,7 @@ export default {
     {
       file: 'bundle.js',
       format: 'esm',
-      plugins: [babel.generated({ presets: ['@babel/preset-env'] })]
+      plugins: [getBabelOutputPlugin({ presets: ['@babel/preset-env'] })]
     }
   ]
 };
@@ -208,27 +208,29 @@ export default {
 
 ### Babel configuration files
 
-Unlike the regular `babel` plugin, `babel.generated(...)` will **not** automatically search for [Babel configuration files](https://babeljs.io/docs/en/config-files). Besides passing in Babel options directly, however, you can specify a configuration file manually via Babel's [`configFile`](https://babeljs.io/docs/en/options#configfile) option:
+Unlike the regular `babel` plugin, `getBabelOutputPlugin(...)` will **not** automatically search for [Babel configuration files](https://babeljs.io/docs/en/config-files). Besides passing in Babel options directly, however, you can specify a configuration file manually via Babel's [`configFile`](https://babeljs.io/docs/en/options#configfile) option:
 
 ```js
-babel.generated({ configFile: path.resolve(__dirname, 'babel.config.js') });
+getBabelOutputPlugin({
+  configFile: path.resolve(__dirname, 'babel.config.js')
+});
 ```
 
 ### Using formats other than ES modules or CommonJS
 
-As `babel.generated(...)` will run _after_ Rollup has done all its transformations, it needs to make sure it preserves the semantics of Rollup's output format. This is especially important for Babel plugins that add, modify or remove imports or exports, but also for other transformations that add new variables as they can accidentally become global variables depending on the format. Therefore it is recommended that for formats other than `esm` or `cjs`, you set Rollup to use the `esm` output format and let Babel handle the transformation to another format, e.g. via
+As `getBabelOutputPlugin(...)` will run _after_ Rollup has done all its transformations, it needs to make sure it preserves the semantics of Rollup's output format. This is especially important for Babel plugins that add, modify or remove imports or exports, but also for other transformations that add new variables as they can accidentally become global variables depending on the format. Therefore it is recommended that for formats other than `esm` or `cjs`, you set Rollup to use the `esm` output format and let Babel handle the transformation to another format, e.g. via
 
 ```
 presets: [['@babel/preset-env', { modules: 'umd' }], ...]
 ```
 
-to create a UMD/IIFE compatible output. If you want to use `babel.generated(...)` with other formats, you need to specify `allowAllFormats: true` as plugin option:
+to create a UMD/IIFE compatible output. If you want to use `getBabelOutputPlugin(...)` with other formats, you need to specify `allowAllFormats: true` as plugin option:
 
 ```js
 rollup.rollup({...})
 .then(bundle => bundle.generate({
   format: 'iife',
-  plugins: [babel.generated({
+  plugins: [getBabelOutputPlugin({
     allowAllFormats: true,
     // ...
   })]
@@ -247,7 +249,7 @@ Note that this will only work for `esm` and `cjs` formats, and you need to make 
 rollup.rollup({...})
 .then(bundle => bundle.generate({
   format: 'esm',
-  plugins: [babel.generated({
+  plugins: [getBabelOutputPlugin({
     presets: ['@babel/preset-env'],
     plugins: [['@babel/plugin-transform-runtime', { useESModules: true }]]
   })]
@@ -274,7 +276,7 @@ And for CommonJS:
 rollup.rollup({...})
 .then(bundle => bundle.generate({
   format: 'cjs',
-  plugins: [babel.generated({
+  plugins: [getBabelOutputPlugin({
     presets: ['@babel/preset-env'],
     plugins: [['@babel/plugin-transform-runtime', { useESModules: false }]]
   })]
@@ -303,16 +305,16 @@ Another option is to use `@babel/plugin-external-helpers`, which will reference 
 
 `@rollup/plugin-babel` exposes a plugin-builder utility that allows users to add custom handling of Babel's configuration for each file that it processes.
 
-`.custom` accepts a callback that will be called with the loader's instance of `babel` so that tooling can ensure that it using exactly the same `@babel/core` instance as the loader itself.
+`createBabelInputPluginFactory` accepts a callback that will be called with the loader's instance of `babel` so that tooling can ensure that it using exactly the same `@babel/core` instance as the loader itself.
 
 It's main purpose is to allow other tools for configuration of transpilation without forcing people to add extra configuration but still allow for using their own babelrc / babel config files.
 
 ### Example
 
 ```js
-import babel from '@rollup/plugin-babel';
+import { createBabelInputPluginFactory } from '@rollup/plugin-babel';
 
-export default babel.custom(babelCore => {
+export default createBabelInputPluginFactory(babelCore => {
   function myPlugin() {
     return {
       visitor: {}
