@@ -44,12 +44,10 @@ import pkg from './package.json';
 
 const config = {
   input: 'src/index.js',
-  output: [
-    {
-      file: pkg.module,
-      format: 'esm'
-    }
-  ],
+  output: {
+    dir: 'output',
+    format: 'esm'
+  },
   plugins: [babel({ babelHelpers: 'bundled' })]
 };
 
