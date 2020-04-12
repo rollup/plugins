@@ -1,5 +1,18 @@
 # @rollup/plugin-auto-install ChangeLog
 
+## v2.1.0
+
+_2020-04-12_
+
+### Features
+
+- feat: Move to Typescript (#229)
+
+### Updates
+
+- chore: correct devDeps (dde1a83)
+- test: fix yarn tests (#147)
+
 ## 2.0.0
 
 - Move to monorepo
