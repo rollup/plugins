@@ -1,7 +1,7 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 
 function takeModule(name) {
-	return require(name);
+  return require(name);
 }
 
 t.is(takeModule('.'), 'same-directory');

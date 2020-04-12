@@ -55,7 +55,7 @@ interface RollupCommonJSOptions {
    *   far away from your project's folder, that may require replacing strings
    *   like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
    */
-  dynamicRequireTargets?: string|ReadonlyArray<string>;
+  dynamicRequireTargets?: string | ReadonlyArray<string>;
 }
 
 /**

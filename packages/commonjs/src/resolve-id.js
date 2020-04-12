@@ -48,9 +48,11 @@ export default function getResolveId(extensions) {
     if (isProxyModule) {
       importee = getIdFromProxyId(importee);
     } else if (importee.startsWith('\0')) {
-      if (importee === HELPERS_ID ||
+      if (
+        importee === HELPERS_ID ||
         importee === DYNAMIC_PACKAGES_ID ||
-        importee.startsWith(DYNAMIC_JSON_PREFIX)) {
+        importee.startsWith(DYNAMIC_JSON_PREFIX)
+      ) {
         return importee;
       }
       return null;

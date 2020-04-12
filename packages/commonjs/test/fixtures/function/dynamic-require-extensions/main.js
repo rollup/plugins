@@ -1,7 +1,7 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 
 function takeModule(withName) {
-	return require('./' + withName);
+  return require(`./${withName}`);
 }
 
 const withExtension = takeModule('submodule.js');

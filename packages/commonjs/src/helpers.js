@@ -8,8 +8,7 @@ export const getIdFromExternalProxyId = (proxyId) => proxyId.slice(1, -EXTERNAL_
 
 export const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
 export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
-  if (path.startsWith(commonDir))
-    return VIRTUAL_PATH_BASE + path.slice(commonDir.length);
+  if (path.startsWith(commonDir)) return VIRTUAL_PATH_BASE + path.slice(commonDir.length);
   return path;
 };
 

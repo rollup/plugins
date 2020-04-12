@@ -1,1 +1,1 @@
-module.exports = {name: 'submodule', value: null};
+module.exports = { name: 'submodule', value: null };
