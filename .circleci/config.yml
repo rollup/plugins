@@ -74,10 +74,6 @@ jobs:
           key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
           paths:
             - ./node_modules
-  node-v8-latest:
-    docker:
-      - image: rollupcabal/circleci-node-v8:latest
-    <<: *unit_tests
   node-v10-latest:
     docker:
       - image: rollupcabal/circleci-node-v10:latest
@@ -92,12 +88,6 @@ workflows:
   validate-test:
     jobs:
       - analysis:
-          filters:
-            tags:
-              only: /.*/
-      - node-v8-latest:
-          requires:
-            - analysis
           filters:
             tags:
               only: /.*/
