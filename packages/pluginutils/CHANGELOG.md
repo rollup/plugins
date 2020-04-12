@@ -1,5 +1,20 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.9
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: resolve relative paths starting with "./" (#180)
+
+### Updates
+
+- chore: Don't bundle micromatch (#220)
+- chore: add missing typescript devDep (238b140)
+- chore: Use readonly arrays, add TSDoc (#187)
+- chore: Use typechecking (2ae08eb)
+
 ## v3.0.8
 
 _2020-02-01_
