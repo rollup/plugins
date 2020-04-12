@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v4.1.0
+
+_2020-04-12_
+
+### Features
+
+- feat: Refine options interface (#284)
+
 ## v4.0.0
 
 ### Bugfixes
