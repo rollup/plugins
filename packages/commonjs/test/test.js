@@ -199,7 +199,8 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
         resolve({
           preserveSymlinks: false,
           preferBuiltins: false
-        })
+        }),
+        commonjs()
       ]
     })
       .then((v) => {
