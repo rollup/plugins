@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v7.1.3
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: resolve symlinked entry point properly (#291)
+
 ## v7.1.2
 
 _2020-04-12_
