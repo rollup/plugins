@@ -17,7 +17,7 @@ importers:
       husky: 3.1.0
       lint-staged: 9.5.0
       nyc: 14.1.1
-      pnpm: 4.7.2
+      pnpm: 4.13.0
       prettier: 1.19.1
       prettier-plugin-package: 0.3.1_prettier@1.19.1
       rollup: 2.2.0
@@ -40,7 +40,7 @@ importers:
       husky: ^3.1.0
       lint-staged: ^9.5.0
       nyc: ^14.1.1
-      pnpm: ^4.6.0
+      pnpm: ^4.13.0
       prettier: ^1.19.1
       prettier-plugin-package: ^0.3.1
       rollup: ^2.0.0
@@ -5604,13 +5604,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-t1Ax8KUvV3FFII8ltczPn2tJdjqbd1sIzu6t4JL7nQ3EyeL/lTrj5PWKb06ic5/6XYDr65rQ4uzQEGN70/6X5w==
-  /pnpm/4.7.2:
+  /pnpm/4.13.0:
     dev: true
     engines:
-      node: '>=10'
+      node: '>=10.13'
     hasBin: true
     resolution:
-      integrity: sha512-P2jaeeBOoHRa3SLMmNHQNRN2xtVt7+PpPWk5eujVjV5ti9Bbg2eXzhXV8bZ75FY7YVv2vjfBdOQ7CxwPlIqUFQ==
+      integrity: sha512-0zJwt+IxBCQECptU40AaUJOBOo830FV4wnSoUvIqVJpOg5HBa0mv/DTXRf/pjuvNYZcuO7KDoD2zXWuJk86khQ==
   /postcss-calc/7.0.1:
     dependencies:
       css-unit-converter: 1.1.1
