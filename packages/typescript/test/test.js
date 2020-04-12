@@ -662,6 +662,22 @@ test('prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options',
   );
 });
 
+test('should not emit null sourceContent', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', sourcemap: true }, true);
+  const sourcemap = output[0].map;
+  // eslint-disable-next-line no-undefined
+  t.false(sourcemap.sourcesContent.includes(undefined));
+});
+
 test('should not fail if source maps are off', async (t) => {
   await t.notThrowsAsync(
     rollup({
