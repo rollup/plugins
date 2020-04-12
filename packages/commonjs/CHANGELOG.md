@@ -1,5 +1,23 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v11.1.0
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: produce legal variable names from filenames containing hyphens. (#201)
+
+### Features
+
+- feat: support dynamic require (#206)
+- feat: export properties defined using Object.defineProperty(exports, ..) (#222)
+
+### Updates
+
+- chore: snapshot mismatch running tests before publish (d6bbfdd)
+- test: add snapshots to all "function" tests (#218)
+
 ## v11.0.2
 
 _2020-02-01_
