@@ -49,9 +49,9 @@
     "mime": "^2.4.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/preset-env": "^7.7.7",
-    "@babel/register": "^7.7.7",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/register": "^7.9.0",
     "del": "^5.1.0",
     "globby": "^10.0.1",
     "rollup": "^2.0.0",

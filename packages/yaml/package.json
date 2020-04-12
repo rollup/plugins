@@ -46,9 +46,9 @@
     "tosource": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/preset-env": "^7.7.7",
-    "@rollup/plugin-node-resolve": "^6.0.0",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@rollup/plugin-node-resolve": "^7.1.1",
     "del-cli": "^3.0.0",
     "rollup": "^2.0.0",
     "rollup-plugin-babel": "^4.3.3",
