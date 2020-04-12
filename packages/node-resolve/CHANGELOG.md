@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v7.1.2
+
+_2020-04-12_
+
+### Updates
+
+- docs: fix url (#289)
+
 ## v7.1.1
 
 _2020-02-03_
