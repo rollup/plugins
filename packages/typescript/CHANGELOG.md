@@ -1,5 +1,14 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v4.1.1
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: sourcemap generated as null (#276)
+- fix: use parsedOptions.fileNames for emit declaration files (#270) (#271)
+
 ## v4.1.0
 
 _2020-04-12_
