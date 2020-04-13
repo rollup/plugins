@@ -1,1 +1,0 @@
-exports.named = 2;
