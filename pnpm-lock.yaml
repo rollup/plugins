@@ -290,13 +290,12 @@ importers:
     dependencies:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
-      micromatch: 4.0.2
+      picomatch: 2.2.2
     devDependencies:
       '@rollup/plugin-commonjs': 11.0.2
       '@rollup/plugin-node-resolve': 7.1.1
       '@rollup/plugin-typescript': 3.0.0_typescript@3.7.5
       '@types/jest': 24.9.0
-      '@types/micromatch': 3.1.1
       '@types/node': 12.12.28
       typescript: 3.7.5
     specifiers:
@@ -305,10 +304,9 @@ importers:
       '@rollup/plugin-typescript': ^3.0.0
       '@types/estree': 0.0.39
       '@types/jest': ^24.9.0
-      '@types/micromatch': ^3.1.1
       '@types/node': ^12.12.25
       estree-walker: ^1.0.1
-      micromatch: ^4.0.2
+      picomatch: ^2.2.2
       typescript: ^3.7.5
   packages/replace:
     dependencies:
@@ -1771,10 +1769,6 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-XIB2XbzHTN6ieIjfIMV9hlVcfPU26s2vafYWQcZHWXHOxiaRZYEDKEwdl129Zyg50+foYV2jCgtrqSA6qNuNSA==
-  /@types/braces/3.0.0:
-    dev: true
-    resolution:
-      integrity: sha512-TbH79tcyi9FHwbyboOKeRachRq63mSuWYXOflsNO9ZyE5ClQ/JaozNKl+aWUq87qPNsXasXxi2AbgfwIJ+8GQw==
   /@types/buble/0.19.2:
     dependencies:
       magic-string: 0.25.6
@@ -1834,12 +1828,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
-  /@types/micromatch/3.1.1:
-    dependencies:
-      '@types/braces': 3.0.0
-    dev: true
-    resolution:
-      integrity: sha512-Wr5y4uv3r7JP4jEUqv7rZeYiMBGRHcbojDVsl11wq6gw1v/ZZQvJexd9rtvVx3EIVqw8dwtcRjSs8m2DV9qHjQ==
   /@types/minimatch/3.0.3:
     dev: true
     resolution:
@@ -2379,6 +2367,7 @@ packages:
   /braces/3.0.2:
     dependencies:
       fill-range: 7.0.1
+    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -3803,6 +3792,7 @@ packages:
   /fill-range/7.0.1:
     dependencies:
       to-regex-range: 5.0.1
+    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -4454,6 +4444,7 @@ packages:
     resolution:
       integrity: sha512-wsigDr1Kkschp2opC4G3yA6r9EgVA6NjRpWzIi9axXqeIaAATPRJc4uLujXe3Nd9uO8KoDyA4MD6aZSeXTADhA==
   /is-number/7.0.0:
+    dev: true
     engines:
       node: '>=0.12.0'
     resolution:
@@ -5224,6 +5215,7 @@ packages:
     dependencies:
       braces: 3.0.2
       picomatch: 2.2.1
+    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -5811,10 +5803,17 @@ packages:
     resolution:
       integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
   /picomatch/2.2.1:
+    dev: true
     engines:
       node: '>=8.6'
     resolution:
       integrity: sha512-ISBaA8xQNmwELC7eOjqFKMESB2VIqt4PPDD0nsS95b/9dZXvVKOlz9keMSnoGGKcOHXfTvDD6WMaRoSc9UuhRA==
+  /picomatch/2.2.2:
+    dev: false
+    engines:
+      node: '>=8.6'
+    resolution:
+      integrity: sha512-q0M/9eZHzmr0AulXyPwNfZjtwZ/RBZlbN3K3CErVrk50T2ASYI7Bye0EvekFY3IP1Nt2DHu0re+V2ZHIpMkuWg==
   /pify/2.3.0:
     dev: true
     engines:
@@ -7491,6 +7490,7 @@ packages:
   /to-regex-range/5.0.1:
     dependencies:
       is-number: 7.0.0
+    dev: true
     engines:
       node: '>=8.0'
     resolution:
