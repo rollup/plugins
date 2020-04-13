@@ -3,26 +3,34 @@ import json from '@rollup/plugin-json';
 
 import pkg from './package.json';
 
-export default {
-  input: 'src/index.js',
-  plugins: [
-    json(),
-    babel({
-      presets: [
-        [
-          '@babel/preset-env',
-          {
-            targets: {
-              node: 6
-            }
+const plugins = [
+  json(),
+  babel({
+    presets: [
+      [
+        '@babel/preset-env',
+        {
+          targets: {
+            node: 6
           }
-        ]
+        }
       ]
-    })
-  ],
-  external: Object.keys(pkg.dependencies).concat(['fs', 'path', 'os', 'util']),
-  output: [
-    { file: pkg.main, format: 'cjs' },
-    { file: pkg.module, format: 'es' }
-  ]
-};
+    ]
+  })
+];
+const external = Object.keys(pkg.dependencies).concat(['fs', 'path', 'os', 'util']);
+
+export default [
+  {
+    input: 'src/index.js',
+    plugins,
+    external,
+    output: [{ file: pkg.module, format: 'es' }]
+  },
+  {
+    input: 'src/cjs-wrapper.js',
+    plugins,
+    external,
+    output: [{ file: pkg.main, format: 'cjs' }]
+  }
+];
