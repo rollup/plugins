@@ -17,14 +17,14 @@ import {
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
 const nullFn = () => null;
-export const defaults = {
+export const defaults = Object.freeze({
   customResolveOptions: {},
   dedupe: [],
   // It's important that .mjs is listed before .js so that Rollup will interpret npm modules
   // which deploy both ESM .mjs and CommonJS .js files as ESM.
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: []
-};
+});
 
 export const nodeResolve = (opts = {}) => {
   const options = Object.assign({}, defaults, opts);
