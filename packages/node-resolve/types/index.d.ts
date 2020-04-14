@@ -1,6 +1,13 @@
 import { Plugin } from 'rollup';
 import { AsyncOpts } from 'resolve';
 
+export const defaults: {
+  customResolveOptions: {};
+  dedupe: [];
+  extensions: ['.mjs', '.js', '.json', '.node'];
+  resolveOnly: [];
+};
+
 export interface Options {
   /**
    * If `true`, instructs the plugin to use the `"browser"` property in `package.json`
@@ -81,4 +88,4 @@ export interface Options {
 /**
  * Locate modules using the Node resolution algorithm, for using third party modules in node_modules
  */
-export default function nodeResolve(options?: Options): Plugin;
+export const nodeResolve: (options?: Options) => Plugin;
