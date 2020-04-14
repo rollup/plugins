@@ -62,6 +62,13 @@ _Note: If using the `es` / `esm` output format, `{ type: 'module'}` is automatic
 Type: `String`<br>
 Default: `'index.html'`
 
+### `meta`
+
+Type: `Array`<br>
+Default: `[{ charset: 'utf-8' }]`
+
+Specifies attributes used to create `meta` elements. For each array member, provide an object with key-value pairs that represent meta element attribute names and values.
+
 Specifies the name of the HTML to emit.
 
 ### `publicPath`
@@ -95,7 +102,7 @@ By default this is handled internally and produces HTML in the following format:
 <!DOCTYPE html>
 <html ${attributes}>
   <head>
-    <meta charset="utf-8" />
+    ${metas}
     <title>${title}</title>
     ${links}
   </head>

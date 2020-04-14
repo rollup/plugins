@@ -30,7 +30,11 @@ test.serial('options', async (t) => {
       html({
         fileName: 'batman.html',
         publicPath: 'batcave/',
-        title: 'Batcave'
+        title: 'Batcave',
+        meta: [
+          { charset: 'utf-8' },
+          { name: 'viewport', content: 'minimum-scale=1, initial-scale=1, width=device-width' }
+        ]
       })
     ]
   });
