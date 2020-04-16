@@ -1,7 +1,7 @@
 import { Plugin } from 'rollup';
 import { AsyncOpts } from 'resolve';
 
-export const defaults: {
+export const DEFAULTS: {
   customResolveOptions: {};
   dedupe: [];
   extensions: ['.mjs', '.js', '.json', '.node'];

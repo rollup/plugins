@@ -51,6 +51,7 @@
     "@rollup/pluginutils": "^3.0.8",
     "@types/resolve": "0.0.8",
     "builtin-modules": "^3.1.0",
+    "deep-freeze": "^0.0.1",
     "is-module": "^1.0.0",
     "resolve": "^1.14.2"
   },
