@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign, no-shadow, no-undefined */
 import { dirname, normalize, resolve, sep } from 'path';
 
-import deepFreeze from 'deep-freeze';
-
 import builtinList from 'builtin-modules';
+import deepFreeze from 'deep-freeze';
+import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
@@ -27,7 +27,7 @@ const defaults = {
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: []
 };
-export const DEFAULTS = deepFreeze(defaults);
+export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
 export const nodeResolve = (opts = {}) => {
   const options = Object.assign({}, defaults, opts);
