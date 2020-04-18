@@ -82,6 +82,42 @@ test('supports creating declaration files in subfolder', async (t) => {
   t.true(declarationSource.includes('//# sourceMappingURL=main.d.ts.map'), declarationSource);
 });
 
+test('supports creating declaration files for interface only source file', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/export-interface-only/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/export-interface-only/tsconfig.json',
+        declarationDir: 'fixtures/export-interface-only/dist/types',
+        declaration: true,
+        declarationMap: true
+      })
+    ],
+    onwarn
+  });
+
+  const output = await getCode(
+    bundle,
+    { format: 'esm', dir: 'fixtures/export-interface-only/dist' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    [
+      'main.js',
+      'types/interface.d.ts',
+      'types/interface.d.ts.map',
+      'types/main.d.ts',
+      'types/main.d.ts.map'
+    ]
+  );
+
+  const declarationSource = output[1].source;
+  t.true(declarationSource.includes('export interface ITest'), declarationSource);
+  t.true(declarationSource.includes('//# sourceMappingURL=interface.d.ts.map'), declarationSource);
+});
+
 test('supports creating declaration files in declarationDir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -624,6 +660,22 @@ test('prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options',
       onwarn
     })
   );
+});
+
+test('should not emit null sourceContent', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', sourcemap: true }, true);
+  const sourcemap = output[0].map;
+  // eslint-disable-next-line no-undefined
+  t.false(sourcemap.sourcesContent.includes(undefined));
 });
 
 test('should not fail if source maps are off', async (t) => {

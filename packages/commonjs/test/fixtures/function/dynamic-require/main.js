@@ -3,14 +3,14 @@
 let message;
 
 function takeModule(withName) {
-	return require('./' + withName);
+  return require(`./${withName}`);
 }
 
 try {
-	const submodule = takeModule('submodule');
-	message = submodule();
-} catch ( err ) {
+  const submodule = takeModule('submodule');
+  message = submodule();
+} catch (err) {
   ({ message } = err);
 }
 
-t.is( message, 'Hello there' );
+t.is(message, 'Hello there');

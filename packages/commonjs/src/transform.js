@@ -1,7 +1,11 @@
 /* eslint-disable no-param-reassign, no-shadow, no-underscore-dangle, no-continue */
+import { resolve, dirname } from 'path';
+
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
+
+import { sync as nodeResolveSync } from 'resolve';
 
 import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
 import {
@@ -9,12 +13,10 @@ import {
   getVirtualPathForDynamicRequirePath,
   HELPERS_ID,
   DYNAMIC_REGISTER_PREFIX,
-  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_JSON_PREFIX
 } from './helpers';
 import { getName } from './utils';
-import { resolve, dirname } from 'path';
 // TODO can this be async?
-import { sync as nodeResolveSync } from 'resolve';
 
 const reserved = 'process location abstract arguments boolean break byte case catch char class const continue debugger default delete do double else enum eval export extends false final finally float for from function goto if implements import in instanceof int interface let long native new null package private protected public return short static super switch synchronized this throw throws transient true try typeof var void volatile while with yield'.split(
   ' '
@@ -236,9 +238,11 @@ export function transformCommonjs(
   }
 
   function shouldUseSimulatedRequire(required) {
-    return hasDynamicModuleForPath(required.source) &&
+    return (
+      hasDynamicModuleForPath(required.source) &&
       // We only do `commonjsRequire` for json if it's the `commonjsRegister` call.
-      (required.source.startsWith(DYNAMIC_REGISTER_PREFIX) || !required.source.endsWith('.json'));
+      (required.source.startsWith(DYNAMIC_REGISTER_PREFIX) || !required.source.endsWith('.json'))
+    );
   }
 
   // do a first pass, see which names are assigned to. This is necessary to prevent
@@ -329,19 +333,21 @@ export function transformCommonjs(
               if (isDynamicRequireModulesEnabled && isRequireStatement(parent)) {
                 magicString.appendLeft(
                   parent.end - 1,
-                  ',' +
-                  JSON.stringify(
+                  `,${JSON.stringify(
                     dirname(id) === '.'
                       ? null /* default behavior */
-                      : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
-                  )
+                      : getVirtualPathForDynamicRequirePath(
+                          normalizePathSlashes(dirname(id)),
+                          commonDir
+                        )
+                  )}`
                 );
               }
 
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
                 storeName: true
               });
-              usesDynamicHelpers = true
+              usesDynamicHelpers = true;
             }
 
             uses[node.name] = true;

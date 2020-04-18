@@ -15,7 +15,6 @@ import createWatchProgram from './watchProgram';
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
   const emittedFiles = new Map<string, string>();
-  const declarationFiles = new Set<string>();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
@@ -82,22 +81,24 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       if (!filter(id)) return null;
 
       const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
-      output.declarations.forEach((declaration) => declarationFiles.add(declaration));
 
       return output.code ? (output as SourceDescription) : null;
     },
 
     generateBundle(outputOptions) {
-      for (const id of declarationFiles) {
-        const code = emittedFiles.get(id);
-        if (code) {
+      parsedOptions.fileNames.forEach((fileName) => {
+        const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles);
+        output.declarations.forEach((id) => {
+          const code = emittedFiles.get(id);
+          if (!code) return;
+
           this.emitFile({
             type: 'asset',
             fileName: normalizePath(path.relative(outputOptions.dir!, id)),
             source: code
           });
-        }
-      }
+        });
+      });
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
       if (tsBuildInfoPath) {

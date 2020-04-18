@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v3.0.9
+
+_2020-04-12_
+
+### Updates
+
+- chore: support Rollup v2
+
 ## v3.0.8
 
 _2020-02-01_

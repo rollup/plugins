@@ -1,5 +1,17 @@
 # @rollup/plugin-run ChangeLog
 
+## v2.0.2
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: use correct hook for reading options, handle facade chunks (#292)
+
+### Updates
+
+- refactor: use Typescript (#237)
+
 ## v2.0.1
 
 _2020-03-30_

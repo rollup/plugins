@@ -171,7 +171,12 @@ export function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
         return value;
       }
 
-      return resolveId(importSpecifierList[i], resolveOptions);
+      return resolveId(importSpecifierList[i], resolveOptions).then((result) => {
+        if (!resolveOptions.preserveSymlinks) {
+          result = realpathSync(result);
+        }
+        return result;
+      });
     });
 
     if (i < importSpecifierList.length - 1) {

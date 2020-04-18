@@ -96,7 +96,7 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
         return customResolver(updatedId, importerId);
       }
 
-      return this.resolve(updatedId, importer!, { skipSelf: true }).then((resolved) => {
+      return this.resolve(updatedId, importer, { skipSelf: true }).then((resolved) => {
         let finalResult: PartialResolvedId | null = resolved;
         if (!finalResult) {
           finalResult = { id: updatedId };

@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [ '10', '8' ]
+        node: [ '12', '10' ]
 
     name: ${{ matrix.node }} (Windows)
     steps:
