@@ -1,13 +1,11 @@
 import * as babel from '@babel/core';
-import pluginUtils from '@rollup/pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 
 import { RUNTIME, EXTERNAL, BUNDLED, INLINE, HELPERS } from './constants';
 import bundledHelpersPlugin from './bundledHelpersPlugin';
 import preflightCheck from './preflightCheck';
 import transformCode from './transformCode';
 import { addBabelPlugin, escapeRegExpCharacters, warnOnce } from './utils';
-
-const { createFilter } = pluginUtils;
 
 const unpackOptions = ({
   extensions = babel.DEFAULT_EXTENSIONS,
