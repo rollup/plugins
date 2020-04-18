@@ -8,25 +8,36 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "Rich Harris",
-  "homepage": "https://github.com/rollup/plugins/tree/master/packages/babel",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/babel#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "./dist/rollup-plugin-babel.cjs.js",
+  "main": "dist/index.js",
   "engines": {
     "node": ">= 8.0.0"
   },
   "scripts": {
     "build": "rollup -c",
-    "prebuild": "rimraf dist",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:js": "eslint --fix --cache src test",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint && pnpm run test",
     "pretest": "pnpm run build",
-    "preversion": "pnpm run test",
     "test": "ava"
   },
   "files": [
     "dist",
-    "src"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
+    "rollup",
+    "plugin",
     "rollup-plugin",
     "babel",
     "es2015",
@@ -48,9 +59,7 @@
     "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "@rollup/plugin-json": "^4.0.0",
-    "ava": "^2.4.0",
-    "rimraf": "^2.6.3",
-    "rollup": "^1.27.5",
+    "rollup": "^2.0.0",
     "source-map": "^0.6.1"
   },
   "ava": {
@@ -65,5 +74,5 @@
     "Bogdan Chadkin <trysound@yandex.ru>",
     "Mateusz Burzyński <mateuszburzynski@gmail.com> (https://github.com/Andarist)"
   ],
-  "module": "./dist/rollup-plugin-babel.esm.js"
+  "module": "dist/index.es.js"
 }
