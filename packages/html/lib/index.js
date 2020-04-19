@@ -7,7 +7,8 @@ const getFiles = (bundle) => {
   const result = {};
   for (const file of files) {
     const { fileName } = file;
-    const extension = extname(fileName).substring(1);
+    let extension = extname(fileName).substring(1);
+    if (extension === 'mjs') extension = 'js';
     result[extension] = (result[extension] || []).concat(file);
   }
 
