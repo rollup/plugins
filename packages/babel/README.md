@@ -88,7 +88,14 @@ An array of file extensions that Babel should transpile. If you want to tranpile
 Type: `'bundled' | 'runtime' | 'inline' | 'external'`<br>
 Default: `'bundled'`
 
-TODO: write proper docs
+It is recommended to configure this option explicitly (even if with its default value) so an informed decision is taken on how those babel helpers are inserted into the code.
+
+We recommend to follow those guidelines for each possible value:
+
+- `'runtime'` - you should use it especially when building libraries with rollup. It has to be used in combination with `@babel/plugin-transform-runtime` and you should also specify `@babel/runtime` as dependency of your package (don't forget to tell rollup to treat it is your external dependency when bundling for `cjs` & `es` formats).
+- `'bundled'` - you should use it if you want your resulting bundle to contain those helpers (at most one copy of each). Useful especially if you bundle an application code.
+- `'external'` - use it only if you know what you are doing. It will reference helpers on **global** `babelHelpers` object. Used in combination with `@babel/plugin-external-helpers`.
+- `'inline'` - this is not recommended. Helpers will be inserted in each file using them. This can cause serious code duplication (this is the default Babel behaviour).
 
 ### `skipPreflightCheck`
 
@@ -111,30 +118,7 @@ In some cases Babel uses _helpers_ to avoid repeating chunks of code – for ex
 
 By default, those helpers will be inserted at the top of the file being transformed, which can lead to duplication. This rollup plugin automatically deduplicates those helpers, keeping only one copy of each one used in the output bundle. Rollup will combine the helpers in a single block at the top of your bundle.
 
-Alternatively, if you know what you're doing, you can use the `@babel/plugin-transform-runtime` plugin. If you do this, use `babelHelpers: 'runtime'`:
-
-```js
-rollup.rollup({
-  ...,
-  plugins: [
-    babel({ babelHelpers: 'runtime' })
-  ]
-}).then(...)
-```
-
-If you do not wish the babel helpers to be included in your bundle at all (but instead reference the global `babelHelpers` object), you may set the `babelHelpers` option to `'external'`:
-
-```js
-rollup.rollup({
-  ...,
-  plugins: [
-    babel({
-      plugins: ['@babel/plugin-external-helpers'],
-      babelHelpers: 'external'
-    })
-  ]
-}).then(...)
-```
+You can customize how those helpers are being inserted into the transformed file with [`babelHelpers`](#babelhelpers) option.
 
 ### Modules
 
