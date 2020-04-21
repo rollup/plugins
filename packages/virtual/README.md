@@ -56,6 +56,22 @@ export default {
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
+It's also possible to provide Rollup with a string of code as entry like this:
+
+```js
+import virtual from '@rollup/plugin-virtual';
+
+export default {
+  input: 'hello',
+  // ...
+  plugins: [
+    virtual({
+      hello: `console.log('Hello!')`
+    })
+  ]
+};
+```
+
 ## Options
 
 This plugin has no formal options. The lone parameter for this plugin is an `Object` containing properties that correspond to a `String` containing the virtual module's code.
