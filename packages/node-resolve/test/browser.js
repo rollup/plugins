@@ -6,7 +6,7 @@ const commonjs = require('rollup-plugin-commonjs');
 
 const { testBundle } = require('../../../util/test');
 
-const nodeResolve = require('..');
+const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
 
