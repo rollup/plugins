@@ -106,47 +106,6 @@ Default: `true`
 
 If false, skips source map generation for CommonJS modules.
 
-### `namedExports`
-
-Type: `Object`<br>
-Default: `null`
-
-Explicitly specify unresolvable named exports.
-
-This plugin will attempt to create named exports, where appropriate, so you can do this...
-
-```js
-// importer.js
-import { named } from './exporter.js';
-
-// exporter.js
-module.exports = { named: 42 }; // or `exports.named = 42;`
-```
-
-...but that's not always possible:
-
-```js
-// importer.js
-import { named } from 'my-lib';
-
-// my-lib.js
-var myLib = exports;
-myLib.named = "you can't see me";
-```
-
-In those cases, you can specify custom named exports:
-
-```js
-commonjs({
-  namedExports: {
-    // left-hand side can be an absolute path, a path
-    // relative to the current directory, or the name
-    // of a module in node_modules
-    'my-lib': ['named']
-  }
-});
-```
-
 ### `ignore`
 
 Type: `Array[...String | (String) => Boolean]`<br>
