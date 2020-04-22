@@ -146,10 +146,28 @@ export function transformCommonjs(
   function isRequireStatement(node) {
     if (!node) return false;
     if (node.type !== 'CallExpression') return false;
-    if (node.callee.name !== 'require' || scope.contains('require')) return false;
-    // Weird case of require() without arguments
-    if (node.arguments.length === 0) return false;
-    return true;
+
+    const { callee } = node;
+
+    if (callee.type === 'Identifier' && callee.name === 'require') {
+      if (scope.contains('require')) return false;
+      // Weird case of require() without arguments
+      if (node.arguments.length === 0) return false;
+      return true;
+    } else if (callee.type === 'MemberExpression') {
+      if (
+        callee.object.type !== 'Identifier' ||
+        callee.object.name !== 'module' ||
+        scope.contains('module')
+      )
+        return false;
+
+      if (callee.property.type !== 'Identifier' || callee.property.name !== 'require') return false;
+
+      return true;
+    }
+
+    return false;
   }
 
   function hasDynamicArguments(node) {
