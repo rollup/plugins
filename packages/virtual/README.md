@@ -60,6 +60,27 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 This plugin has no formal options. The lone parameter for this plugin is an `Object` containing properties that correspond to a `String` containing the virtual module's code.
 
+## Using the Plugin for Bundle Input
+
+It's possible to use the plugin to specify an entry point for a bundle. To do so, implement a pattern simple to what is shown below:
+
+```js
+import virtual from '@rollup/plugin-virtual';
+
+export default {
+  input: 'entry',
+  // ...
+  plugins: [
+    virtual({
+      entry: `
+import batman from 'batcave';
+console.log(batman);
+`
+    })
+  ]
+};
+```
+
 ## License
 
 [MIT](LICENSE)
