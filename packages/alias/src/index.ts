@@ -61,6 +61,18 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
   return {
     name: 'alias',
+    buildStart (rollupOpts) {
+      if (typeof options.customResolver === 'object' &&
+        typeof options.customResolver!.buildStart === 'function') {
+          options.customResolver!.buildStart(rollupOpts)
+      }
+      entries.forEach((entry) => {
+        if (typeof entry.customResolver === 'object' &&
+          typeof entry.customResolver!.buildStart === 'function') {
+            entry.customResolver!.buildStart(rollupOpts)
+        }
+      })
+    },
     resolveId(importee, importer) {
       const importeeId = normalizeId(importee);
       const importerId = normalizeId(importer);
