@@ -73,9 +73,9 @@ export default {
   plugins: [
     virtual({
       entry: `
-        import batman from 'batcave';
-        console.log(batman);
-      `
+import batman from 'batcave';
+console.log(batman);
+`
     })
   ]
 };
