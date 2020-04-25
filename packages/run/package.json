@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^3.0.0",
+    "@rollup/plugin-virtual": "^2.0.1",
     "del": "^5.1.0",
     "rollup": "^2.0.0",
     "sinon": "8.0.4"

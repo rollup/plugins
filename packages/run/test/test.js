@@ -14,6 +14,8 @@ const sinon = require('sinon');
 
 const run = require('../');
 
+const virtual = require('../../virtual');
+
 const cwd = join(__dirname, 'fixtures/');
 const file = join(cwd, 'output/bundle.js');
 const input = join(cwd, 'input.js');
@@ -49,6 +51,20 @@ test('takes input from the latest options', async (t) => {
           return options;
         }
       }
+    ]
+  });
+  await bundle.write(outputOptions);
+  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+});
+
+test('uses resolved input path if it refers to an existing file', async (t) => {
+  const bundle = await rollup({
+    input: 'entry',
+    plugins: [
+      virtual({
+        entry: 'console.log("No real path example")'
+      }),
+      run()
     ]
   });
   await bundle.write(outputOptions);

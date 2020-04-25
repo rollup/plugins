@@ -1,5 +1,6 @@
 import { ChildProcess, fork } from 'child_process';
 import * as path from 'path';
+import * as fs from 'fs';
 
 import { Plugin, RenderedChunk } from 'rollup';
 
@@ -31,7 +32,13 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
         throw new Error(`@rollup/plugin-run only works with a single entry point`);
       }
 
-      input = path.resolve(inputs[0]);
+      // eslint-disable-next-line prefer-destructuring
+      input = inputs[0];
+
+      const resolvedInputPath = path.resolve(input);
+      if (fs.existsSync(resolvedInputPath)) {
+        input = resolvedInputPath;
+      }
     },
 
     generateBundle(_outputOptions, _bundle, isWrite) {

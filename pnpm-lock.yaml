@@ -339,11 +339,13 @@ importers:
       '@types/node': 13.1.6
     devDependencies:
       '@rollup/plugin-typescript': 3.0.0_rollup@2.2.0
+      '@rollup/plugin-virtual': 2.0.1_rollup@2.2.0
       del: 5.1.0
       rollup: 2.2.0
       sinon: 8.0.4
     specifiers:
       '@rollup/plugin-typescript': ^3.0.0
+      '@rollup/plugin-virtual': ^2.0.1
       '@types/node': 13.1.6
       del: ^5.1.0
       rollup: ^2.0.0
@@ -1733,6 +1735,14 @@ packages:
       typescript: '>=2.1.0'
     resolution:
       integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
+  /@rollup/plugin-virtual/2.0.1_rollup@2.2.0:
+    dependencies:
+      rollup: 2.2.0
+    dev: true
+    peerDependencies:
+      rollup: ^1.20.0
+    resolution:
+      integrity: sha512-p1OmbadojpfF1olZ0YS0SQE256+0eiTTJYeBURtsWuahTRcNpjLELvI87cwx1gOe4OwVUom+Mvl9tiUy5T2p2Q==
   /@rollup/pluginutils/3.0.8:
     dependencies:
       estree-walker: 1.0.1
