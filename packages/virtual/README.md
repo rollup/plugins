@@ -43,12 +43,12 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 import virtual from '@rollup/plugin-virtual';
 
 export default {
-  entry: 'src/entry.js',
+  input: 'src/input.js',
   // ...
   plugins: [
     virtual({
-      batman: `export default 'na na na na na'`,
-      'src/robin.js': `export default 'batmannnnn'`
+      batman: `export default 'na na na na na';`,
+      'src/robin.js': `export default 'batmannnnn';`
     })
   ]
 };
@@ -73,9 +73,9 @@ export default {
   plugins: [
     virtual({
       entry: `
-import batman from 'batcave';
-console.log(batman);
-`
+        import batman from 'batcave';
+        console.log(batman);
+      `
     })
   ]
 };
