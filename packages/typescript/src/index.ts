@@ -86,19 +86,19 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     generateBundle(outputOptions) {
-      parsedOptions.fileNames.forEach(fileName => {
+      parsedOptions.fileNames.forEach((fileName) => {
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles);
         output.declarations.forEach((id) => {
           const code = emittedFiles.get(id);
           if (!code) return;
 
           this.emitFile({
-              type: 'asset',
-              fileName: normalizePath(path.relative(outputOptions.dir!, id)),
-              source: code
+            type: 'asset',
+            fileName: normalizePath(path.relative(outputOptions.dir!, id)),
+            source: code
           });
-        })
-      })
+        });
+      });
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
       if (tsBuildInfoPath) {
