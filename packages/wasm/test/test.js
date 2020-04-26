@@ -4,8 +4,6 @@ import test from 'ava';
 // eslint-disable-next-line no-unused-vars, import/no-unresolved, import/extensions
 import wasm from '../dist/index';
 
-const { Worker } = require('worker_threads');
-
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
 const generateCode = async (bundle) => {
@@ -68,23 +66,28 @@ test('imports', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('worker', async (t) => {
-  t.plan(2);
+try {
+  const { Worker } = require('worker_threads');
+  test('worker', async (t) => {
+    t.plan(2);
 
-  const bundle = await rollup({
-    input: 'test/fixtures/worker.js',
-    plugins: [wasm()]
-  });
-  const code = await generateCode(bundle);
-  const executeWorker = () => {
-    const worker = new Worker(code, { eval: true });
-    return new Promise((resolve, reject) => {
-      worker.on('error', (err) => reject(err));
-      worker.on('exit', (exitCode) => resolve(exitCode));
+    const bundle = await rollup({
+      input: 'test/fixtures/worker.js',
+      plugins: [wasm()]
     });
-  };
-  await t.notThrowsAsync(async () => {
-    const result = await executeWorker();
-    t.true(result === 0);
+    const code = await generateCode(bundle);
+    const executeWorker = () => {
+      const worker = new Worker(code, { eval: true });
+      return new Promise((resolve, reject) => {
+        worker.on('error', (err) => reject(err));
+        worker.on('exit', (exitCode) => resolve(exitCode));
+      });
+    };
+    await t.notThrowsAsync(async () => {
+      const result = await executeWorker();
+      t.true(result === 0);
+    });
   });
-});
+} catch (err) {
+  // worker threads aren't fully supported in Node versions before 11.7.0
+}
