@@ -5,7 +5,7 @@ const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
 
-const nodeResolve = require('..');
+const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
 

@@ -13,7 +13,6 @@ const config: import('rollup').RollupOptions = {
       extensions: ['.js', '.coffee'],
       ignoreGlobal: false,
       sourceMap: false,
-      namedExports: { './module.js': ['foo', 'bar'] },
       ignore: ['conditional-runtime-dependency'],
       dynamicRequireTargets: ['node_modules/logform/*.js']
     })
