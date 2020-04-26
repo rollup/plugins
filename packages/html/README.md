@@ -64,10 +64,10 @@ Default: `'index.html'`
 
 ### `meta`
 
-Type: `Array`<br>
+Type: `Array[...object]`<br>
 Default: `[{ charset: 'utf-8' }]`
 
-Specifies attributes used to create `meta` elements. For each array member, provide an object with key-value pairs that represent meta element attribute names and values.
+Specifies attributes used to create `<meta>` elements. For each array item, provide an object with key-value pairs that represent `<meta>` element attribute names and values.
 
 Specifies the name of the HTML to emit.
 
