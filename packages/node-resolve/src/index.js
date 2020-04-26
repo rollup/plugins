@@ -111,6 +111,7 @@ export const nodeResolve = (opts = {}) => {
 
       const parts = importee.split(/[/\\]/);
       let id = parts.shift();
+      let isRelativeImport = false;
 
       if (id[0] === '@' && parts.length > 0) {
         // scoped packages
@@ -118,11 +119,15 @@ export const nodeResolve = (opts = {}) => {
       } else if (id[0] === '.') {
         // an import relative to the parent dir of the importer
         id = resolve(basedir, importee);
+        isRelativeImport = true;
       }
 
       const input = normalizeInput(rollupOptions.input);
-
-      if (resolveOnly.length && !resolveOnly.some((pattern) => pattern.test(id))) {
+      if (
+        !isRelativeImport &&
+        resolveOnly.length &&
+        !resolveOnly.some((pattern) => pattern.test(id))
+      ) {
         if (input.includes(id)) {
           return null;
         }
