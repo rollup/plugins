@@ -30,7 +30,7 @@ export default function wasm(options = {}) {
         if (isNode) {
           buf = Buffer.from(src, 'base64')
         } else {
-          var raw = window.atob(src)
+          var raw = globalThis.atob(src)
           var rawLength = raw.length
           buf = new Uint8Array(new ArrayBuffer(rawLength))
           for(var i = 0; i < rawLength; i++) {
