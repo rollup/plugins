@@ -92,7 +92,7 @@ const template = ({ attributes, bundle, files, publicPath, title }) => { ... }
 
 - `attributes`: Corresponds to the `attributes` option passed to the plugin
 - `bundle`: An `Object` containing key-value pairs of [`AssetInfo` or `ChunkInfo`](https://rollupjs.org/guide/en/#generatebundle)
-- `files`: An `Array` of `AssetInfo` or `ChunkInfo` containing any entry (`isEntry: true`) files, and any asset (`isAsset: true`) files in the bundle that will be emitted
+- `files`: An `Object` mapping file types to `Array`s of `AssetInfo` or `ChunkInfo` of entry (`isEntry: true`) files, and asset (`isAsset: true`) files in the bundle that will be emitted
 - `publicPath`: Corresponds to the `publicPath` option passed to the plugin
 - `title`: Corresponds to the `title` option passed to the plugin
 
@@ -134,7 +134,7 @@ Consumes an object with key-value pairs that represent an HTML element attribute
 const { makeHtmlAttributes } = require('@rollup/plugin-html');
 
 makeHtmlAttributes({ lang: 'en', 'data-batcave': 'secret' });
-// -> 'lang="en" data-batcave="secret"'
+// -> ' lang="en" data-batcave="secret"'
 ```
 
 ## Supported Output Formats
