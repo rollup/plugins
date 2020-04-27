@@ -146,22 +146,24 @@ export function transformCommonjs(
   function isRequireStatement(node) {
     if (!node) return false;
     if (node.type !== 'CallExpression') return false;
-
     const { callee } = node;
 
-    if (callee.type === 'Identifier' && callee.name === 'require') {
-      if (scope.contains('require')) return false;
-      // Weird case of require() without arguments
-      if (node.arguments.length === 0) return false;
-      return true;
-    } else if (callee.type === 'MemberExpression') {
-      if (
-        callee.object.type !== 'Identifier' ||
-        callee.object.name !== 'module' ||
-        scope.contains('module')
-      )
-        return false;
+    // Weird case of `require()` or `module.require()` without arguments
+    if (node.arguments.length === 0) return false;
 
+    if (callee.type === 'Identifier' && callee.name === 'require' /* `require` */) {
+      // `require` is hidden by a variable in local scope
+      if (scope.contains('require')) return false;
+
+      return true;
+    } else if (callee.type === 'MemberExpression' /* `[something].[something]` */) {
+      // `module.[something]`
+      if (callee.object.type !== 'Identifier' || callee.object.name !== 'module') return false;
+
+      // `module` is hidden by a variable in local scope
+      if (scope.contains('module')) return false;
+
+      // `module.require(...)`
       if (callee.property.type !== 'Identifier' || callee.property.name !== 'require') return false;
 
       return true;
