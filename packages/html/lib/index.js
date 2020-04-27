@@ -19,9 +19,9 @@ const makeHtmlAttributes = (attributes) => {
     return '';
   }
 
-  const keys = Object.keys(attributes);
-  // eslint-disable-next-line no-param-reassign
-  return keys.reduce((result, key) => (result += ` ${key}="${attributes[key]}"`), '');
+  return Object.entries(attributes)
+    .map(([key, value]) => ` ${key}="${value}"`)
+    .join('');
 };
 
 const defaultTemplate = async ({ attributes, files, meta, publicPath, title }) => {
