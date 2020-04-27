@@ -57,12 +57,26 @@ Specifies additional attributes for `html`, `link`, and `script` elements. For e
 
 _Note: If using the `es` / `esm` output format, `{ type: 'module'}` is automatically added to `attributes.script`._
 
+### `body`
+
+Type: `String`<br>
+Default: `''`
+
+Specifies any extra HTML to insert into the `<body>` tag.
+
 ### `fileName`
 
 Type: `String`<br>
 Default: `'index.html'`
 
 Specifies the name of the HTML to emit.
+
+### `head`
+
+Type: `String`<br>
+Default: `''`
+
+Specifies any extra HTML to insert into the `<head>` tag.
 
 ### `meta`
 
@@ -91,7 +105,9 @@ const template = ({ attributes, bundle, files, publicPath, title }) => { ... }
 ```
 
 - `attributes`: Corresponds to the `attributes` option passed to the plugin
+- `body`: Corresponds to the `body` option passed to the plugin
 - `bundle`: An `Object` containing key-value pairs of [`AssetInfo` or `ChunkInfo`](https://rollupjs.org/guide/en/#generatebundle)
+- `head`: Corresponds to the `head` option passed to the plugin
 - `files`: An `Object` mapping file types to `Array`s of `AssetInfo` or `ChunkInfo` of entry (`isEntry: true`) files, and asset (`isAsset: true`) files in the bundle that will be emitted
 - `publicPath`: Corresponds to the `publicPath` option passed to the plugin
 - `title`: Corresponds to the `title` option passed to the plugin
@@ -104,10 +120,10 @@ By default this is handled internally and produces HTML in the following format:
   <head>
     ${metas}
     <title>${title}</title>
-    ${links}
+    ${links}${head}
   </head>
   <body>
-    ${scripts}
+    ${scripts}${body}
   </body>
 </html>
 ```

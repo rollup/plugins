@@ -34,7 +34,9 @@ test.serial('options', async (t) => {
         meta: [
           { charset: 'utf-8' },
           { name: 'viewport', content: 'minimum-scale=1, initial-scale=1, width=device-width' }
-        ]
+        ],
+        head: '<link rel="icon" href="favicon.ico" type="image/x-icon">',
+        body: '<script type="application/json">{}</script>'
       })
     ]
   });

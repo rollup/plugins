@@ -24,7 +24,7 @@ const makeHtmlAttributes = (attributes) => {
     .join('');
 };
 
-const defaultTemplate = async ({ attributes, files, meta, publicPath, title }) => {
+const defaultTemplate = async ({ attributes, body, files, head, meta, publicPath, title }) => {
   const scripts = (files.js || [])
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
@@ -52,10 +52,10 @@ const defaultTemplate = async ({ attributes, files, meta, publicPath, title }) =
   <head>
     ${metas}
     <title>${title}</title>
-    ${links}
+    ${links}${head}
   </head>
   <body>
-    ${scripts}
+    ${scripts}${body}
   </body>
 </html>`;
 };
@@ -68,7 +68,9 @@ const defaults = {
     html: { lang: 'en' },
     script: null
   },
+  body: '',
   fileName: 'index.html',
+  head: '',
   meta: [{ charset: 'utf-8' }],
   publicPath: '',
   template: defaultTemplate,
@@ -76,7 +78,7 @@ const defaults = {
 };
 
 const html = (opts = {}) => {
-  const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
+  const { attributes, body, fileName, head, meta, publicPath, template, title } = Object.assign(
     {},
     defaults,
     opts
@@ -101,7 +103,16 @@ const html = (opts = {}) => {
       }
 
       const files = getFiles(bundle);
-      const source = await template({ attributes, bundle, files, meta, publicPath, title });
+      const source = await template({
+        attributes,
+        body,
+        bundle,
+        files,
+        head,
+        meta,
+        publicPath,
+        title
+      });
 
       const htmlFile = {
         type: 'asset',
