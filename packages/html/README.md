@@ -62,14 +62,14 @@ _Note: If using the `es` / `esm` output format, `{ type: 'module'}` is automatic
 Type: `String`<br>
 Default: `'index.html'`
 
+Specifies the name of the HTML to emit.
+
 ### `meta`
 
 Type: `Array[...object]`<br>
 Default: `[{ charset: 'utf-8' }]`
 
 Specifies attributes used to create `<meta>` elements. For each array item, provide an object with key-value pairs that represent `<meta>` element attribute names and values.
-
-Specifies the name of the HTML to emit.
 
 ### `publicPath`
 
