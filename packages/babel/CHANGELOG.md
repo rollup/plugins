@@ -2,14 +2,24 @@
 
 ## 5.0.0
 
-- **Breaking:** Minimum compatible Rollup version is 1.2.0
-- **Breaking:** Minimum supported Node version is 8.0.0
-- **Breaking:** `.custom` factory is now available as separate `createBabelInputPluginFactory` export
-- **Breaking:** Removed `externalHelpers` & `externalHelpers` options. There is now a single `babelHelpers` option which can take one of `'bundled'`, `'inline'`, `'runtime'` and `'external'` as a value. The default is `'bundled'` which matches 4.x behavior, but it is recommended to configure this option explicitly.
+_2020-04-27_
+
+### Features
+
 - Added `getBabelOutputPlugin` and `createBabelOutputPluginFactory` exports which can be used to transform generated code
-- Default export got also exported as `getBabelInputPlugin` for symmetry with `getBabelOutputPlugin`
 - Added `skipPreflightCheck` option. The plugin performs some extra checks to see if the passed configuration is correct and matching its expectations. This comes with some runtime overhead and can slow down builds. If you know what you are doing and you are confident that you have configured things correctly you can disable those checks with this option.
 - Published as `@rollup/plugin-babel`
+
+### Updates
+
+- Default export exported as `getBabelInputPlugin` for symmetry with `getBabelOutputPlugin`
+
+### Breaking Changes
+
+- Minimum compatible Rollup version is 1.2.0
+- Minimum supported Node version is 10.0.0
+- `.custom` factory is now available as separate `createBabelInputPluginFactory` export
+- Removed `externalHelpers` & `externalHelpers` options. There is now a single `babelHelpers` option which can take one of `'bundled'`, `'inline'`, `'runtime'` and `'external'` as a value. The default is `'bundled'` which matches 4.x behavior, but it is recommended to configure this option explicitly.
 
 ## 4.3.2
 

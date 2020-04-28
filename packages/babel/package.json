@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-babel",
-  "version": "5.0.0-alpha.1",
+  "version": "5.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -12,7 +12,7 @@
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 10.0.0"
   },
   "scripts": {
     "build": "rollup -c",
