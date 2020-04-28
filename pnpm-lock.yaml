@@ -297,6 +297,7 @@ importers:
       '@rollup/plugin-typescript': 3.0.0_typescript@3.7.5
       '@types/jest': 24.9.0
       '@types/node': 12.12.28
+      '@types/picomatch': 2.2.1
       typescript: 3.7.5
     specifiers:
       '@rollup/plugin-commonjs': ^11.0.2
@@ -305,6 +306,7 @@ importers:
       '@types/estree': 0.0.39
       '@types/jest': ^24.9.0
       '@types/node': ^12.12.25
+      '@types/picomatch': ^2.2.1
       estree-walker: ^1.0.1
       picomatch: ^2.2.2
       typescript: ^3.7.5
@@ -1851,6 +1853,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
+  /@types/picomatch/2.2.1:
+    dev: true
+    resolution:
+      integrity: sha512-26/tQcDmJXYHiaWAAIjnTVL5nwrT+IVaqFZIbBImAuKk/r/j1r/1hmZ7uaOzG6IknqP3QHcNNQ6QO8Vp28lUoA==
   /@types/q/1.5.2:
     dev: true
     resolution:

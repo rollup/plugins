@@ -57,6 +57,7 @@
     "@rollup/plugin-typescript": "^3.0.0",
     "@types/jest": "^24.9.0",
     "@types/node": "^12.12.25",
+    "@types/picomatch": "^2.2.1",
     "typescript": "^3.7.5"
   },
   "ava": {
