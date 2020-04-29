@@ -34,14 +34,17 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
-      program = createWatchProgram(ts, this, {
-        formatHost,
-        resolveModule,
-        parsedOptions,
-        writeFile(fileName, data) {
-          emittedFiles.set(fileName, data);
-        }
-      });
+      // Fixes a memory leak https://github.com/rollup/plugins/issues/322
+      if (!program) {
+        program = createWatchProgram(ts, this, {
+          formatHost,
+          resolveModule,
+          parsedOptions,
+          writeFile(fileName, data) {
+            emittedFiles.set(fileName, data);
+          }
+        });
+      }
     },
 
     buildEnd() {
