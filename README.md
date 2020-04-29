@@ -18,14 +18,14 @@ This repository houses plugins that Rollup considers critical to every day use o
 |                                       |                                                                                           |
 | ------------------------------------- | ----------------------------------------------------------------------------------------- |
 | [alias](packages/alias)               | Define and resolve aliases for bundle dependencies                                        |
-| [auto-install](packages/auto-install) | Automatically install dependencies that are imported by a bundle.                         |
-| [babel](packages/babel)               | Compile your filed with Babel                                                             |
+| [auto-install](packages/auto-install) | Automatically install dependencies that are imported by a bundle                         |
+| [babel](packages/babel)               | Compile your files with Babel                                                             |
 | [beep](packages/beep)                 | System beeps on errors and warnings                                                       |
 | [buble](packages/buble)               | Compile ES2015 with buble                                                                 |
 | [commonjs](packages/commonjs)         | Convert CommonJS modules to ES6                                                           |
 | [data-uri](packages/data-uri)         | Import modules from Data URIs                                                             |
 | [dsv](packages/dsv)                   | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
-| [html](packages/html)                 | Creates HTML files to serve Rollup bundles                                                |
+| [html](packages/html)                 | Create HTML files to serve Rollup bundles                                                |
 | [image](packages/image)               | Import JPG, PNG, GIF, SVG, and WebP files                                                 |
 | [inject](packages/inject)             | Scan modules for global variables and injects `import` statements where necessary         |
 | [json](packages/json)                 | Convert .json files to ES6 modules                                                        |
