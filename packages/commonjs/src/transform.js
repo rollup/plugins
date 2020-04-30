@@ -141,7 +141,7 @@ export function transformCommonjs(
 
   // TODO handle transpiled modules
   let shouldWrap = /__esModule/.test(code);
-  let usesDynamicHelpers = false;
+  let usesCommonjsHelpers = false;
 
   function isRequireStatement(node) {
     if (!node) return false;
@@ -316,10 +316,12 @@ export function transformCommonjs(
       // rewrite `this` as `commonjsHelpers.commonjsGlobal`
       if (node.type === 'ThisExpression' && lexicalDepth === 0) {
         uses.global = true;
-        if (!ignoreGlobal)
+        if (!ignoreGlobal) {
           magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
             storeName: true
           });
+          usesCommonjsHelpers = true;
+        }
         return;
       }
 
@@ -366,7 +368,7 @@ export function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
                 storeName: true
               });
-              usesDynamicHelpers = true;
+              usesCommonjsHelpers = true;
             }
 
             uses[node.name] = true;
@@ -374,6 +376,7 @@ export function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                 storeName: true
               });
+              usesCommonjsHelpers = true;
             }
 
             // if module or exports are used outside the context of an assignment
@@ -474,7 +477,7 @@ export function transformCommonjs(
                 : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
             )})`
           );
-          usesDynamicHelpers = true;
+          usesCommonjsHelpers = true;
         } else {
           magicString.overwrite(node.start, node.end, required.name);
         }
@@ -530,8 +533,13 @@ export function transformCommonjs(
     return null;
   }
 
-  const includeHelpers = usesDynamicHelpers || shouldWrap || uses.global || uses.require;
-  const importBlock = `${(includeHelpers
+  // If `isEsModule` is on, it means it has ES6 import/export statements,
+  //   which just can't be wrapped in a function.
+  if (isEsModule) shouldWrap = false;
+
+  usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
+
+  const importBlock = `${(usesCommonjsHelpers
     ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
     : []
   )
