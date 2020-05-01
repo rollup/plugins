@@ -5,7 +5,8 @@ import { rollup } from 'rollup';
 
 import { testBundle } from '../../../util/test';
 
-import dataUri from '..';
+// eslint-disable-next-line import/no-unresolved, import/extensions
+import dataUri from '../';
 
 process.chdir(join(__dirname, 'fixtures'));
 
