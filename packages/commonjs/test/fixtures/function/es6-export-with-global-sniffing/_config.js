@@ -4,5 +4,7 @@ module.exports = {
   options: {
     plugins: [nodeResolve()]
   },
-  pluginOptions: {}
+  pluginOptions: {
+    transformMixedEsModules: true
+  }
 };

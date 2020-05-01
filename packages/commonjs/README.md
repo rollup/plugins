@@ -106,6 +106,13 @@ Default: `true`
 
 If false, skips source map generation for CommonJS modules.
 
+### `transformMixedEsModules`
+
+Type: `Boolean`<br>
+Default: `false`
+
+In case of modules that contain commonjs code you can enable/disable the transformer. Set it to `true` if you know that `require` calls should be transformed, or `false` if you know that the code contains env detection and the `require` should survive the transform.
+
 ### `ignore`
 
 Type: `Array[...String | (String) => Boolean]`<br>

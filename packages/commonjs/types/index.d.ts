@@ -31,6 +31,11 @@ interface RollupCommonJSOptions {
    */
   sourceMap?: boolean;
   /**
+   * In case of modules that contain commonjs code you can enable/disable the transformer. Set it to `true` if you know that `require` calls should be transformed, or `false` if you know that the code contains env detection and the `require` should survive the transform.
+   * @default false
+   */
+  transformMixedEsModules?: boolean;
+  /**
    * explicitly specify unresolvable named exports
    * ([see below for more details](https://github.com/rollup/plugins/tree/master/packages/commonjs#named-exports))
    * @default undefined

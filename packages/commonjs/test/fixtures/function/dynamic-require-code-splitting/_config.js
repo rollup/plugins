@@ -7,6 +7,7 @@ module.exports = {
     ]
   },
   pluginOptions: {
-    dynamicRequireTargets: ['fixtures/function/dynamic-require-code-splitting/target?.js']
+    dynamicRequireTargets: ['fixtures/function/dynamic-require-code-splitting/target?.js'],
+    transformMixedEsModules: true
   }
 };
