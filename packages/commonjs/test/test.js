@@ -180,39 +180,6 @@ test('handles successive builds', async (t) => {
   t.is(module.exports, 'foobar', code);
 });
 
-test('allows named exports to be added explicitly via config', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/samples/custom-named-exports/main.js',
-    plugins: [
-      resolve(),
-      commonjs({
-        namedExports: {
-          'fixtures/samples/custom-named-exports/secret-named-exporter.js': ['named'],
-          external: ['message']
-        }
-      })
-    ]
-  });
-
-  await t.notThrowsAsync(executeBundle(bundle, t));
-});
-
-test('handles warnings without error when resolving named exports', async (t) => {
-  await t.notThrowsAsync(
-    rollup({
-      input: 'fixtures/samples/custom-named-exports-warn-builtins/main.js',
-      plugins: [
-        resolve(),
-        commonjs({
-          namedExports: {
-            events: ['message']
-          }
-        })
-      ]
-    })
-  );
-});
-
 test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) => {
   const cwd = process.cwd();
 
@@ -233,11 +200,7 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
           preserveSymlinks: false,
           preferBuiltins: false
         }),
-        commonjs({
-          namedExports: {
-            events: ['foo']
-          }
-        })
+        commonjs()
       ]
     })
       .then((v) => {
@@ -249,40 +212,6 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
         throw err;
       })
   );
-});
-
-test('handles named exports for built-in shims', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/samples/custom-named-exports-browser-shims/main.js',
-    plugins: [
-      resolve({
-        preferBuiltins: false
-      }),
-      commonjs({
-        namedExports: {
-          events: ['foo']
-        }
-      })
-    ]
-  });
-
-  await t.notThrowsAsync(executeBundle(bundle, t));
-});
-
-test('ignores false positives with namedExports (#36)', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/samples/custom-named-exports-false-positive/main.js',
-    plugins: [
-      resolve(),
-      commonjs({
-        namedExports: {
-          irrelevant: ['lol']
-        }
-      })
-    ]
-  });
-
-  await t.notThrowsAsync(executeBundle(bundle, t));
 });
 
 test('converts a CommonJS module with custom file extension', async (t) => {
@@ -393,30 +322,6 @@ test('does not process the entry file when it has a leading "." (issue #63)', as
   });
 
   await t.notThrowsAsync(executeBundle(bundle, t));
-});
-
-test('does not reexport named contents', async (t) => {
-  try {
-    await rollup({
-      input: 'fixtures/samples/reexport/main.js',
-      plugins: [commonjs()]
-    });
-  } catch (error) {
-    t.is(
-      error.message,
-      `'named' is not exported by fixtures${path.sep}samples${path.sep}reexport${path.sep}reexport.js, ` +
-        `imported by fixtures${path.sep}samples${path.sep}reexport${path.sep}main.js`
-    );
-  }
-});
-
-test(`exports props defined by 'Object.defineProperty'`, async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/samples/define-property/main.js',
-    plugins: [commonjs()]
-  });
-  const m = await executeBundle(bundle, t);
-  t.is(m.exports.foo, 'bar');
 });
 
 test('respects other plugins', async (t) => {
@@ -716,40 +621,6 @@ exports.shuffleArray = shuffleArray_1;
   );
 });
 
-test('normalizes paths used in the named export map', async (t) => {
-  // Deliberately denormalizes file paths and ensures named exports
-  // continue to work.
-  function hookedResolve() {
-    const resolvePlugin = resolve();
-    const oldResolve = resolvePlugin.resolveId;
-    resolvePlugin.resolveId = async (...args) => {
-      const result = await oldResolve.apply(resolvePlugin, args);
-      if (result) {
-        result.id = result.id.replace(/\/|\\/, path.sep);
-      }
-
-      return result;
-    };
-
-    return resolvePlugin;
-  }
-
-  const bundle = await rollup({
-    input: 'fixtures/samples/custom-named-exports/main.js',
-    plugins: [
-      hookedResolve(),
-      commonjs({
-        namedExports: {
-          'fixtures/samples/custom-named-exports/secret-named-exporter.js': ['named'],
-          external: ['message']
-        }
-      })
-    ]
-  });
-
-  await t.notThrowsAsync(executeBundle(bundle, t));
-});
-
 test('can spread an object into module.exports', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/module-exports-spread/main.js',
@@ -757,4 +628,21 @@ test('can spread an object into module.exports', async (t) => {
   });
   const code = await getCodeFromBundle(bundle);
   t.snapshot(code);
+});
+
+test('logs a warning when the deprecated namedExports option is used', async (t) => {
+  let message;
+  const bundle = await rollup({
+    onwarn(warning) {
+      message = warning.message;
+    },
+    input: 'fixtures/samples/sourcemap/main.js',
+    plugins: [commonjs({ namedExports: { foo: ['bar'] } })]
+  });
+
+  await getCodeFromBundle(bundle);
+  t.is(
+    message,
+    'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
+  );
 });

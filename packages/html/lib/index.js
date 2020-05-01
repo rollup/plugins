@@ -24,7 +24,7 @@ const makeHtmlAttributes = (attributes) => {
   return keys.reduce((result, key) => (result += ` ${key}="${attributes[key]}"`), '');
 };
 
-const defaultTemplate = async ({ attributes, files, publicPath, title }) => {
+const defaultTemplate = async ({ attributes, files, meta, publicPath, title }) => {
   const scripts = (files.js || [])
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
@@ -39,11 +39,18 @@ const defaultTemplate = async ({ attributes, files, publicPath, title }) => {
     })
     .join('\n');
 
+  const metas = meta
+    .map((input) => {
+      const attrs = makeHtmlAttributes(input);
+      return `<meta${attrs}>`;
+    })
+    .join('\n');
+
   return `
 <!doctype html>
 <html${makeHtmlAttributes(attributes.html)}>
   <head>
-    <meta charset="utf-8">
+    ${metas}
     <title>${title}</title>
     ${links}
   </head>
@@ -62,13 +69,19 @@ const defaults = {
     script: null
   },
   fileName: 'index.html',
+  meta: [{ charset: 'utf-8' }],
   publicPath: '',
   template: defaultTemplate,
   title: 'Rollup Bundle'
 };
 
 const html = (opts = {}) => {
-  const { attributes, fileName, publicPath, template, title } = Object.assign({}, defaults, opts);
+  const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
+    {},
+    defaults,
+    opts
+  );
+
   return {
     name: 'html',
 
@@ -88,7 +101,7 @@ const html = (opts = {}) => {
       }
 
       const files = getFiles(bundle);
-      const source = await template({ attributes, bundle, files, publicPath, title });
+      const source = await template({ attributes, bundle, files, meta, publicPath, title });
 
       const htmlFile = {
         type: 'asset',

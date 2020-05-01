@@ -27,8 +27,14 @@ export function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-export function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
+export function createCommonjsModule(fn, basedir, module) {
+	return module = {
+	  path: basedir,
+	  exports: {},
+	  require: function (path, base) {
+      return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+    }
+	}, fn(module, module.exports), module.exports;
 }
 
 export function getCjsExportFromNamespace (n) {
@@ -93,7 +99,7 @@ function join () {
 	}
 	if (joined === undefined)
 	  return '.';
-  
+
 	return joined;
 }
 
@@ -106,6 +112,27 @@ function isPossibleNodeModulesPath (modulePath) {
 	if (c1 === ':' && (c2 === '/' || c2 === '\\\\'))
 		return false;
 	return true;
+}
+
+function dirname (path) {
+  if (path.length === 0)
+    return '.';
+
+  let i = path.length - 1;
+  while (i > 0) {
+    const c = path.charCodeAt(i);
+    if ((c === 47 || c === 92) && i !== path.length - 1)
+      break;
+    i--;
+  }
+
+  if (i > 0)
+    return path.substr(0, i);
+
+  if (path.chartCodeAt(0) === 47 || path.chartCodeAt(0) === 92)
+    return path.charAt(0);
+
+  return '.';
 }
 
 export function commonjsRequire (path, originalModuleDir) {
@@ -129,11 +156,15 @@ export function commonjsRequire (path, originalModuleDir) {
 				DYNAMIC_REQUIRE_CACHE[resolvedPath] = cachedModule = {
 					id: resolvedPath,
 					filename: resolvedPath,
+					path: dirname(resolvedPath),
 					exports: {},
 					parent: DEFAULT_PARENT_MODULE,
 					loaded: false,
 					children: [],
-					paths: []
+					paths: [],
+					require: function (path, base) {
+					  return commonjsRequire(path, (base === undefined || base === null) ? cachedModule.path : base);
+					}
 				};
 				try {
 					loader.call(commonjsGlobal, cachedModule, cachedModule.exports);

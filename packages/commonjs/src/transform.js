@@ -109,7 +109,6 @@ export function transformCommonjs(
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
-  customNamedExports,
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
@@ -142,15 +141,40 @@ export function transformCommonjs(
 
   // TODO handle transpiled modules
   let shouldWrap = /__esModule/.test(code);
-  let usesDynamicHelpers = false;
+  let usesCommonjsHelpers = false;
 
   function isRequireStatement(node) {
     if (!node) return false;
     if (node.type !== 'CallExpression') return false;
-    if (node.callee.name !== 'require' || scope.contains('require')) return false;
-    // Weird case of require() without arguments
+
+    // Weird case of `require()` or `module.require()` without arguments
     if (node.arguments.length === 0) return false;
-    return true;
+
+    return isRequireIdentifier(node.callee);
+  }
+
+  function isRequireIdentifier(node) {
+    if (!node) return false;
+
+    if (node.type === 'Identifier' && node.name === 'require' /* `require` */) {
+      // `require` is hidden by a variable in local scope
+      if (scope.contains('require')) return false;
+
+      return true;
+    } else if (node.type === 'MemberExpression' /* `[something].[something]` */) {
+      // `module.[something]`
+      if (node.object.type !== 'Identifier' || node.object.name !== 'module') return false;
+
+      // `module` is hidden by a variable in local scope
+      if (scope.contains('module')) return false;
+
+      // `module.require(...)`
+      if (node.property.type !== 'Identifier' || node.property.name !== 'require') return false;
+
+      return true;
+    }
+
+    return false;
   }
 
   function hasDynamicArguments(node) {
@@ -297,10 +321,12 @@ export function transformCommonjs(
       // rewrite `this` as `commonjsHelpers.commonjsGlobal`
       if (node.type === 'ThisExpression' && lexicalDepth === 0) {
         uses.global = true;
-        if (!ignoreGlobal)
+        if (!ignoreGlobal) {
           magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
             storeName: true
           });
+          usesCommonjsHelpers = true;
+        }
         return;
       }
 
@@ -325,7 +351,7 @@ export function transformCommonjs(
       if (node.type === 'Identifier') {
         if (isReference(node, parent) && !scope.contains(node.name)) {
           if (node.name in uses) {
-            if (node.name === 'require') {
+            if (isRequireIdentifier(node)) {
               if (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent)) {
                 return;
               }
@@ -347,7 +373,7 @@ export function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
                 storeName: true
               });
-              usesDynamicHelpers = true;
+              usesCommonjsHelpers = true;
             }
 
             uses[node.name] = true;
@@ -355,6 +381,7 @@ export function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                 storeName: true
               });
+              usesCommonjsHelpers = true;
             }
 
             // if module or exports are used outside the context of an assignment
@@ -455,7 +482,7 @@ export function transformCommonjs(
                 : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
             )})`
           );
-          usesDynamicHelpers = true;
+          usesCommonjsHelpers = true;
         } else {
           magicString.overwrite(node.start, node.end, required.name);
         }
@@ -511,8 +538,13 @@ export function transformCommonjs(
     return null;
   }
 
-  const includeHelpers = usesDynamicHelpers || shouldWrap || uses.global || uses.require;
-  const importBlock = `${(includeHelpers
+  // If `isEsModule` is on, it means it has ES6 import/export statements,
+  //   which just can't be wrapped in a function.
+  if (isEsModule) shouldWrap = false;
+
+  usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
+
+  const importBlock = `${(usesCommonjsHelpers
     ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
     : []
   )
@@ -562,8 +594,6 @@ export function transformCommonjs(
     });
   }
 
-  if (customNamedExports) customNamedExports.forEach(addExport);
-
   const defaultExportPropertyAssignments = [];
   let hasDefaultExport = false;
 
@@ -571,7 +601,15 @@ export function transformCommonjs(
     const args = `module${uses.exports ? ', exports' : ''}`;
 
     wrapperStart = `var ${moduleName} = ${HELPERS_NAME}.createCommonjsModule(function (${args}) {\n`;
-    wrapperEnd = `\n});`;
+
+    wrapperEnd = `\n}`;
+    if (isDynamicRequireModulesEnabled) {
+      wrapperEnd += `, ${JSON.stringify(
+        getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
+      )}`;
+    }
+
+    wrapperEnd += `);`;
   } else {
     const names = [];
 
@@ -648,12 +686,13 @@ export function transformCommonjs(
     .trim()
     .append(wrapperEnd);
 
-  if (hasDefaultExport || named.length > 0 || shouldWrap || (!isEntry && !isEsModule)) {
+  const injectExportBlock = hasDefaultExport || named.length > 0 || shouldWrap || !isEntry;
+  if (injectExportBlock) {
     magicString.append(exportBlock);
   }
 
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
 
-  return { code, map };
+  return { code, map, syntheticNamedExports: injectExportBlock };
 }

@@ -1,0 +1,6 @@
+{
+  "presets": [ "@babel/env" ],
+  "plugins": [
+    ["@babel/proposal-decorators", { "legacy": true }]
+  ]
+}

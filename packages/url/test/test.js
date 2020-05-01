@@ -63,6 +63,16 @@ test.serial('use publicPath', async (t) => {
   await run(t, 'png', { limit: 10, publicPath: '/batman/' });
 });
 
+test.serial('use publicPath with file that has empty dirname', async (t) => {
+  await run(t, 'png', {
+    limit: 10,
+    publicPath: '/batman/',
+    emitFiles: true,
+    fileName: '[dirname][hash][extname]',
+    sourceDir: join(__dirname, './fixtures')
+  });
+});
+
 test.serial('create a nested directory for the output, if required', async (t) => {
   await run(t, 'png', { limit: 10, emitFiles: true, fileName: 'joker/[hash][extname]' });
 });
