@@ -146,25 +146,30 @@ export function transformCommonjs(
   function isRequireStatement(node) {
     if (!node) return false;
     if (node.type !== 'CallExpression') return false;
-    const { callee } = node;
 
     // Weird case of `require()` or `module.require()` without arguments
     if (node.arguments.length === 0) return false;
 
-    if (callee.type === 'Identifier' && callee.name === 'require' /* `require` */) {
+    return isRequireIdentifier(node.callee);
+  }
+
+  function isRequireIdentifier(node) {
+    if (!node) return false;
+
+    if (node.type === 'Identifier' && node.name === 'require' /* `require` */) {
       // `require` is hidden by a variable in local scope
       if (scope.contains('require')) return false;
 
       return true;
-    } else if (callee.type === 'MemberExpression' /* `[something].[something]` */) {
+    } else if (node.type === 'MemberExpression' /* `[something].[something]` */) {
       // `module.[something]`
-      if (callee.object.type !== 'Identifier' || callee.object.name !== 'module') return false;
+      if (node.object.type !== 'Identifier' || node.object.name !== 'module') return false;
 
       // `module` is hidden by a variable in local scope
       if (scope.contains('module')) return false;
 
       // `module.require(...)`
-      if (callee.property.type !== 'Identifier' || callee.property.name !== 'require') return false;
+      if (node.property.type !== 'Identifier' || node.property.name !== 'require') return false;
 
       return true;
     }
@@ -346,7 +351,7 @@ export function transformCommonjs(
       if (node.type === 'Identifier') {
         if (isReference(node, parent) && !scope.contains(node.name)) {
           if (node.name in uses) {
-            if (node.name === 'require') {
+            if (isRequireIdentifier(node)) {
               if (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent)) {
                 return;
               }
@@ -596,7 +601,15 @@ export function transformCommonjs(
     const args = `module${uses.exports ? ', exports' : ''}`;
 
     wrapperStart = `var ${moduleName} = ${HELPERS_NAME}.createCommonjsModule(function (${args}) {\n`;
-    wrapperEnd = `\n});`;
+
+    wrapperEnd = `\n}`;
+    if (isDynamicRequireModulesEnabled) {
+      wrapperEnd += `, ${JSON.stringify(
+        getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
+      )}`;
+    }
+
+    wrapperEnd += `);`;
   } else {
     const names = [];
 
