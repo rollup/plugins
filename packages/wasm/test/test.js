@@ -1,19 +1,14 @@
 import { rollup } from 'rollup';
 import test from 'ava';
 
-// eslint-disable-next-line no-unused-vars, import/no-unresolved, import/extensions
-import wasm from '../dist/index';
+import { getCode } from '../../../util/test';
+
+import wasm from '../';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
-const generateCode = async (bundle) => {
-  const { output } = await bundle.generate({ format: 'cjs' });
-  const [{ code }] = output;
-  return code;
-};
-
 const testBundle = async (t, bundle) => {
-  const code = await generateCode(bundle);
+  const code = await getCode(bundle);
   const func = new AsyncFunction('t', `let result;\n\n${code}\n\nreturn result;`);
   return func(t);
 };
@@ -75,7 +70,7 @@ try {
       input: 'test/fixtures/worker.js',
       plugins: [wasm()]
     });
-    const code = await generateCode(bundle);
+    const code = await getCode(bundle);
     const executeWorker = () => {
       const worker = new Worker(code, { eval: true });
       return new Promise((resolve, reject) => {
