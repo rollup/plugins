@@ -17,6 +17,8 @@ export const getCode: GetCode;
 
 export function getImports(bundle: RollupBuild): Promise<string[]>;
 
+export function getResolvedModules(bundle: RollupBuild): Promise<Record<string, string>>;
+
 export function testBundle(
   t: Assertions,
   bundle: RollupBuild,
