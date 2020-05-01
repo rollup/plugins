@@ -8,7 +8,8 @@ export default async function transformCode(
   ctx,
   finalizeOptions
 ) {
-  const config = babel.loadPartialConfig(babelOptions);
+  // loadPartialConfigAsync has become available in @babel/core@7.8.0
+  const config = await (babel.loadPartialConfigAsync || babel.loadPartialConfig)(babelOptions);
 
   // file is ignored by babel
   if (!config) {
