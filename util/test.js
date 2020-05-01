@@ -23,6 +23,13 @@ const getImports = async (bundle) => {
   return imports;
 };
 
+const getResolvedModules = async (bundle) => {
+  const {
+    output: [{ modules }]
+  } = await bundle.generate({ format: 'esm' });
+  return modules;
+};
+
 /**
  * @param {import('ava').Assertions} t
  * @param {import('rollup').RollupBuild} bundle
@@ -55,5 +62,6 @@ const testBundle = async (t, bundle, args = {}) => {
 module.exports = {
   getCode,
   getImports,
+  getResolvedModules,
   testBundle
 };
