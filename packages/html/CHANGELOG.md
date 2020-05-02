@@ -1,5 +1,17 @@
 # @rollup/plugin-html ChangeLog
 
+## v0.2.0
+
+_2020-05-02_
+
+### Features
+
+- feat: support custom meta element creation (#308)
+
+### Updates
+
+- test: update snapshots for rollup v2 (c09509f)
+
 ## v0.1.1
 
 _2020-01-04_
