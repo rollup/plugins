@@ -49,15 +49,15 @@
   "dependencies": {
     "@types/estree": "0.0.39",
     "estree-walker": "^1.0.1",
-    "micromatch": "^4.0.2"
+    "picomatch": "^2.2.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@rollup/plugin-typescript": "^3.0.0",
     "@types/jest": "^24.9.0",
-    "@types/micromatch": "^3.1.1",
     "@types/node": "^12.12.25",
+    "@types/picomatch": "^2.2.1",
     "typescript": "^3.7.5"
   },
   "ava": {

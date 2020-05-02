@@ -1,6 +1,6 @@
 import { resolve, sep, posix } from 'path';
 
-import mm from 'micromatch';
+import pm from 'picomatch';
 
 import { CreateFilter } from '../types';
 
@@ -34,7 +34,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
           test: (what: string) => {
             // this refactor is a tad overly verbose but makes for easy debugging
             const pattern = getMatcherString(id, resolutionBase);
-            const fn = mm.matcher(pattern, { dot: true });
+            const fn = pm(pattern, { dot: true });
             const result = fn(what);
 
             return result;
