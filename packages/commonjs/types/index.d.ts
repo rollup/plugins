@@ -31,7 +31,7 @@ interface RollupCommonJSOptions {
    */
   sourceMap?: boolean;
   /**
-   * In case of modules that contain commonjs code you can enable/disable the transformer. Set it to `true` if you know that `require` calls should be transformed, or `false` if you know that the code contains env detection and the `require` should survive the transform.
+   * Instructs the plugin whether or not to enable mixed module transformations. This is useful in scenarios with mixed ES and CommonJS modules. Set to `true` if it's known that `require` calls should be transformed, or `false` if the code contains env detection and the `require` should survive a transformation.
    * @default false
    */
   transformMixedEsModules?: boolean;
