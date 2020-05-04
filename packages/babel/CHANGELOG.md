@@ -19,7 +19,7 @@ _2020-04-27_
 - Minimum compatible Rollup version is 1.2.0
 - Minimum supported Node version is 10.0.0
 - `.custom` factory is now available as separate `createBabelInputPluginFactory` export
-- Removed `externalHelpers` & `externalHelpers` options. There is now a single `babelHelpers` option which can take one of `'bundled'`, `'inline'`, `'runtime'` and `'external'` as a value. The default is `'bundled'` which matches 4.x behavior, but it is recommended to configure this option explicitly.
+- Removed `externalHelpers` & `runtimeHelpers` options. There is now a single `babelHelpers` option which can take one of `'bundled'`, `'inline'`, `'runtime'` and `'external'` as a value. The default is `'bundled'` which matches 4.x behavior, but it is recommended to configure this option explicitly.
 
 ## 4.3.2
 
