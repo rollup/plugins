@@ -106,6 +106,13 @@ Default: `true`
 
 If false, skips source map generation for CommonJS modules.
 
+### `transformMixedEsModules`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Instructs the plugin whether or not to enable mixed module transformations. This is useful in scenarios with mixed ES and CommonJS modules. Set to `true` if it's known that `require` calls should be transformed, or `false` if the code contains env detection and the `require` should survive a transformation.
+
 ### `ignore`
 
 Type: `Array[...String | (String) => Boolean]`<br>

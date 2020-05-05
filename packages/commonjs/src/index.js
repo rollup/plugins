@@ -66,10 +66,14 @@ export default function commonjs(options = {}) {
 
     const isDynamicRequireModule = dynamicRequireModuleSet.has(normalizePathSlashes(id));
 
-    if (isEsModule && !isDynamicRequireModule) {
+    if (isEsModule && (!isDynamicRequireModule || !options.transformMixedEsModules)) {
       (hasDefaultExport ? esModulesWithDefaultExport : esModulesWithoutDefaultExport).add(id);
+      if (!options.transformMixedEsModules) {
+        setIsCjsPromise(id, false);
+        return null;
+      }
     }
-    // it is not an ES module but it does not have CJS-specific elements.
+    // it is not an ES module AND it does not have CJS-specific elements.
     else if (!hasCjsKeywords(code, ignoreGlobal)) {
       esModulesWithoutDefaultExport.add(id);
       setIsCjsPromise(id, false);
