@@ -27,7 +27,7 @@ Note that both `typescript` and `tslib` are peer dependencies of this plugin tha
 
 ## Why?
 
-See [rollup-plugin-babel](https://github.com/rollup/rollup-plugin-babel).
+See [@rollup/plugin-babel](https://github.com/rollup/plugins/tree/master/packages/babel).
 
 ## Usage
 
