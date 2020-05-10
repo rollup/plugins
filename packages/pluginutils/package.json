@@ -6,7 +6,11 @@
   },
   "description": "A set of utility functions commonly used by Rollup plugins",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/pluginutils"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/pluginutils#readme",
   "bugs": {

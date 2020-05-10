@@ -6,7 +6,11 @@
   },
   "description": "Use multiple entry points for a bundle",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/multi-entry"
+  },
   "author": "rollup",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/multi-entry/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

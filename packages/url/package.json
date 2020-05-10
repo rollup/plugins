@@ -6,7 +6,11 @@
   },
   "description": "Import files as data-URIs or ES Modules",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/url"
+  },
   "author": "Arpad Borsos <arpad.borsos@googlemail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/url/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

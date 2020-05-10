@@ -6,7 +6,11 @@
   },
   "description": "A Rollup plugin which beeps on errors and warnings",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/beep"
+  },
   "author": "shellscape",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/beep",
   "bugs": "https://github.com/rollup/plugins/issues",

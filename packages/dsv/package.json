@@ -6,7 +6,11 @@
   },
   "description": "Convert .csv and .tsv files into JavaScript modules with d3-dsv",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/dsv"
+  },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/dsv#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

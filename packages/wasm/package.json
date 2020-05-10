@@ -6,7 +6,11 @@
   },
   "description": "Import WebAssembly code with Rollup",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/wasm"
+  },
   "author": "Jamen Marz <jamenmarz+gh@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/wasm/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

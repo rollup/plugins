@@ -6,7 +6,11 @@
   },
   "description": "Seamless integration between Rollup and Babel.",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/babel"
+  },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/babel#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

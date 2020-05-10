@@ -6,7 +6,11 @@
   },
   "description": "Convert CommonJS modules to ES2015",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/commonjs"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/commonjs/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

@@ -6,7 +6,11 @@
   },
   "description": "Define and resolve aliases for bundle dependencies",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/alias"
+  },
   "author": "Johannes Stein",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/alias#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

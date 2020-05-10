@@ -6,7 +6,11 @@
   },
   "description": "Compile ES2015 with buble",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/buble"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/buble/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

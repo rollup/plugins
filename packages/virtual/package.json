@@ -6,7 +6,11 @@
   },
   "description": "Load virtual modules from memory",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/virtual"
+  },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/virtual#readme",
   "bugs": "https://github.com/rollup/rollup-plugin-virtual/issues",

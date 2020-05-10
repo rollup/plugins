@@ -6,7 +6,11 @@
   },
   "description": "Creates HTML files to serve Rollup bundles",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/html"
+  },
   "author": "Andrew Powell <andrew@shellscape.org>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/html#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

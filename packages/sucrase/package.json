@@ -6,7 +6,11 @@
   },
   "description": "Compile TypeScript, Flow, JSX, etc with Sucrase",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/sucrase"
+  },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/sucrase/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

@@ -6,7 +6,11 @@
   },
   "description": "Locate and bundle third-party dependencies in node_modules",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rollup/plugins.git",
+    "directory": "packages/node-resolve"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/node-resolve/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
