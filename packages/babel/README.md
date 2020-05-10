@@ -60,7 +60,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 This plugin respects Babel [configuration files](https://babeljs.io/docs/en/configuration) by default and they are generally the best place to put your configuration.
 
-You can also run Babel on the generated chunks instead of the input files. Even though this is slower, it is the only way to transpile Rollup's auto-generated wrapper code to lower compatibility targets than ES5 (or most likely ES6 when Rollup 2 will be released), see [Running Babel on the generated code](#running-babel-on-the-generated-code) for details.
+You can also run Babel on the generated chunks instead of the input files. Even though this is slower, it is the only way to transpile Rollup's auto-generated wrapper code to lower compatibility targets than ES5, see [Running Babel on the generated code](#running-babel-on-the-generated-code) for details.
 
 All options are as per the [Babel documentation](https://babeljs.io/docs/en/options), plus the following:
 
@@ -106,7 +106,7 @@ Before transpiling your input files this plugin also transpile a short piece of 
 
 ### External dependencies
 
-Ideally, you should only be transforming your source code, rather than running all of your external dependencies through Babel – hence the `exclude: 'node_modules/**'` in the example above. If you have a dependency that exposes untranspiled ES6 source code that doesn't run in your target environment, then you may need to break this rule, but it often causes problems with unusual `.babelrc` files or mismatched versions of Babel.
+Ideally, you should only be transforming your source code, rather than running all of your external dependencies through Babel (to ignore external dependencies from being handled by this plugin you might use `exclude: 'node_modules/**'` option). If you have a dependency that exposes untranspiled ES6 source code that doesn't run in your target environment, then you may need to break this rule, but it often causes problems with unusual `.babelrc` files or mismatched versions of Babel.
 
 We encourage library authors not to distribute code that uses untranspiled ES6 features (other than modules) for this reason. Consumers of your library should _not_ have to transpile your ES6 code, any more than they should have to transpile your CoffeeScript, ClojureScript or TypeScript.
 
