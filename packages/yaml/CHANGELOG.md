@@ -1,5 +1,13 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v2.1.1
+
+_2020-05-11_
+
+### Updates
+
+- chore: rollup v2 peerDep. (dupe for pub) (74281cf)
+
 ## v2.1.0
 
 _2020-01-07_
