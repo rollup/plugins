@@ -1,5 +1,13 @@
 # @rollup/plugin-strip ChangeLog
 
+## v1.3.3
+
+_2020-05-11_
+
+### Updates
+
+- chore: rollup v2 peerDep. (dupe for pub) (628f8c7)
+
 ## v1.3.2
 
 _2020-02-01_
