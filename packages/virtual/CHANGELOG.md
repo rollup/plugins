@@ -1,5 +1,13 @@
 # @rollup/plugin-virtual ChangeLog
 
+## v2.0.2
+
+_2020-05-11_
+
+### Updates
+
+- docs: example use for bundle input (#323)
+
 ## v2.0.1
 
 _2020-02-01_
