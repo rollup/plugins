@@ -1,5 +1,13 @@
 # @rollup/plugin-image ChangeLog
 
+## v2.0.5
+
+_2020-05-11_
+
+### Updates
+
+- chore: rollup v2 peerDep. (dupe for pub) (a3f3205)
+
 ## v2.0.4
 
 _2020-02-04_
