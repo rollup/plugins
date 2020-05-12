@@ -51,6 +51,7 @@
     "sucrase": "^3.10.1"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^3.1.0",
     "rollup": "^2.0.0"
   },
   "ava": {

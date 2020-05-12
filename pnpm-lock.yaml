@@ -390,11 +390,13 @@ importers:
       rollup: ^2.0.0
   packages/sucrase:
     dependencies:
-      '@rollup/pluginutils': 3.0.8_rollup@2.2.0
+      '@rollup/pluginutils': 3.0.10_rollup@2.2.0
       sucrase: 3.12.1
     devDependencies:
+      '@rollup/plugin-alias': 3.1.0_rollup@2.2.0
       rollup: 2.2.0
     specifiers:
+      '@rollup/plugin-alias': ^3.1.0
       '@rollup/pluginutils': ^3.0.1
       rollup: ^2.0.0
       sucrase: ^3.10.1
@@ -2054,6 +2056,17 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-1V9XOY4rDW0rehzbrcqAmHnz8e7SKvX27gh8Gt2WgB0+pdzdiLV83p72kZPU+jvMbS1qU5mauP2iOvO8rhmurQ==
+  /@rollup/plugin-alias/3.1.0_rollup@2.2.0:
+    dependencies:
+      rollup: 2.2.0
+      slash: 3.0.0
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    resolution:
+      integrity: sha512-IzoejtAqdfwAvx4D0bztAJFoL5Js36kJgnbO00zfI1B9jf9G80vWysyG0C4+E6w5uG5hz0EeetPpoBWKdNktCQ==
   /@rollup/plugin-buble/0.20.0_rollup@2.2.0:
     dependencies:
       buble: 0.19.8
@@ -2236,6 +2249,19 @@ packages:
       typescript: '>=2.1.0'
     resolution:
       integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
+  /@rollup/pluginutils/3.0.10_rollup@2.2.0:
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.2.2
+      rollup: 2.2.0
+    dev: false
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    resolution:
+      integrity: sha512-d44M7t+PjmMrASHbhgpSbVgtL6EFyX7J4mYxwQ/c5eoaE6N2VgCgEcWVzNnwycIloti+/MpwFr8qfw+nRw00sw==
   /@rollup/pluginutils/3.0.8:
     dependencies:
       estree-walker: 1.0.1
@@ -2248,7 +2274,6 @@ packages:
   /@rollup/pluginutils/3.0.8_rollup@2.2.0:
     dependencies:
       estree-walker: 1.0.1
-      rollup: 2.2.0
     engines:
       node: '>= 8.0.0'
     peerDependencies:
