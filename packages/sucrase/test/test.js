@@ -3,10 +3,12 @@ const path = require('path');
 const test = require('ava');
 const { rollup } = require('rollup');
 
+// eslint-disable-next-line import/no-unresolved, import/extensions
+const alias = require('@rollup/plugin-alias');
+
 const { testBundle } = require('../../../util/test');
 
 const sucrase = require('..');
-const alias = require('../../alias');
 
 require('source-map-support').install();
 
