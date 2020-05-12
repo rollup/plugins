@@ -1,9 +1,12 @@
+const path = require('path');
+
 const test = require('ava');
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
 
 const sucrase = require('..');
+const alias = require('../../alias');
 
 require('source-map-support').install();
 
@@ -42,6 +45,27 @@ test('converts typescript', async (t) => {
     plugins: [
       sucrase({
         transforms: ['typescript']
+      })
+    ]
+  });
+  t.plan(1);
+  return testBundle(t, bundle);
+});
+
+test('converts typescript with aliases', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/typescript-with-aliases/main.js',
+    plugins: [
+      sucrase({
+        transforms: ['typescript']
+      }),
+      alias({
+        entries: [
+          {
+            find: '~src',
+            replacement: path.resolve(__dirname, 'fixtures', 'typescript-with-aliases', 'src')
+          }
+        ]
       })
     ]
   });

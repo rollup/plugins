@@ -12,7 +12,7 @@ module.exports = function sucrase(opts = {}) {
 
     // eslint-disable-next-line consistent-return
     resolveId(importee, importer) {
-      if (importer && importee[0] === '.') {
+      if (importer && /^[./]/.test(importee)) {
         const resolved = path.resolve(importer ? path.dirname(importer) : process.cwd(), importee);
 
         if (!fs.existsSync(resolved) && fs.existsSync(`${resolved}.ts`)) {
