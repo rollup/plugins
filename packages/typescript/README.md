@@ -144,8 +144,8 @@ Though it is not recommended, it is possible to configure this plugin to handle 
 
 ```js
 // rollup.config.js
-import typescript from 'rollup-plugin-typescript';
-import commonjs from 'rollup-plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
+import commonjs from '@rollup/plugin-commonjs';
 
 export default {
   input: './main.ts',
@@ -175,7 +175,7 @@ After adding `acorn-jsx` plugin, your Rollup config would look like the followin
 
 ```js
 import jsx from 'acorn-jsx';
-import typescript from 'rollup-plugin-typescript';
+import typescript from '@rollup/plugin-typescript';
 
 export default {
   // … other options …
