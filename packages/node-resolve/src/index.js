@@ -29,7 +29,7 @@ const defaults = {
 };
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
-export const nodeResolve = (opts = {}) => {
+export function nodeResolve(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { customResolveOptions, extensions, jail } = options;
   const warnings = [];
@@ -258,4 +258,6 @@ export const nodeResolve = (opts = {}) => {
       return idToPackageInfo.get(id);
     }
   };
-};
+}
+
+export default nodeResolve;
