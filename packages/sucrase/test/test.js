@@ -48,3 +48,16 @@ test('converts typescript', async (t) => {
   t.plan(1);
   return testBundle(t, bundle);
 });
+
+test('resolves typescript directory imports', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/typescript-resolve-directory/main.js',
+    plugins: [
+      sucrase({
+        transforms: ['typescript']
+      })
+    ]
+  });
+  t.plan(2);
+  return testBundle(t, bundle);
+});
