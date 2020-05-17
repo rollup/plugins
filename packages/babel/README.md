@@ -93,9 +93,9 @@ It is recommended to configure this option explicitly (even if with its default 
 We recommend to follow those guidelines for each possible value:
 
 - `'runtime'` - you should use it especially when building libraries with rollup. It has to be used in combination with `@babel/plugin-transform-runtime` and you should also specify `@babel/runtime` as dependency of your package (don't forget to tell rollup to treat it as your external dependency when bundling for `cjs` & `es` formats).
-- `'bundled'` - you should use it if you want your resulting bundle to contain those helpers (at most one copy of each). Useful especially if you bundle an application code.
+- `'bundled'` - you should use it if you want your resulting bundle to contain those helpers (at most one copy of each). Useful especially if you bundle an application code **(this is the default Babel behaviour)**.
 - `'external'` - use it only if you know what you are doing. It will reference helpers on **global** `babelHelpers` object. Used in combination with `@babel/plugin-external-helpers`.
-- `'inline'` - this is not recommended. Helpers will be inserted in each file using them. This can cause serious code duplication (this is the default Babel behaviour).
+- `'inline'` - this is not recommended. Helpers will be inserted in each file using them. This can cause serious code duplication.
 
 ### `skipPreflightCheck`
 
