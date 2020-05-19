@@ -3,8 +3,8 @@ import { RollupBuild, OutputOptions, OutputChunk, OutputAsset } from 'rollup';
 import { Assertions } from 'ava';
 
 interface GetCode {
-  (bundle: RollupBuild, outputOptions: OutputOptions, allFiles?: false): Promise<string>;
-  (bundle: RollupBuild, outputOptions: OutputOptions, allFiles: true): Promise<
+  (bundle: RollupBuild, outputOptions?: OutputOptions | null, allFiles?: false): Promise<string>;
+  (bundle: RollupBuild, outputOptions: OutputOptions | null | undefined, allFiles: true): Promise<
     Array<{
       code: OutputChunk['code'] | undefined;
       fileName: OutputChunk['fileName'] | OutputAsset['fileName'];

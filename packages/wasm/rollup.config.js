@@ -1,13 +1,9 @@
-const { builtinModules } = require('module');
+import typescript from '@rollup/plugin-typescript';
+import { createConfig } from '../../shared/rollup.config';
 
-const pkg = require('./package.json');
+import pkg from './package.json';
 
-const dependencies = Object.keys(pkg.dependencies || {});
-
-export default [
-  {
-    input: 'src/index.js',
-    output: { exports: 'named', file: 'dist/index.js', format: 'cjs' },
-    external: [...builtinModules, ...dependencies]
-  }
-];
+export default {
+  ...createConfig(pkg),
+  plugins: [typescript()],
+}

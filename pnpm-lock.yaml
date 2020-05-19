@@ -453,10 +453,12 @@ importers:
       rollup: ^2.0.0
   packages/wasm:
     devDependencies:
+      '@rollup/plugin-typescript': 4.1.1_rollup@2.2.0
       del-cli: 3.0.0
       rollup: 2.2.0
       source-map: 0.7.3
     specifiers:
+      '@rollup/plugin-typescript': ^4.1.1
       del-cli: ^3.0.0
       rollup: ^2.0.0
       source-map: ^0.7.3
@@ -2236,6 +2238,20 @@ packages:
       typescript: '>=2.1.0'
     resolution:
       integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
+  /@rollup/plugin-typescript/4.1.1_rollup@2.2.0:
+    dependencies:
+      '@rollup/pluginutils': 3.0.9_rollup@2.2.0
+      resolve: 1.17.0
+      rollup: 2.2.0
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+      tslib: '*'
+      typescript: '>=2.1.0'
+    resolution:
+      integrity: sha512-KYZCn1Iw9hZWkeEPqPs5YjlmvSjR7UdezVca8z0e8rm/29wU24UD9Y4IZHhnc9tm749hzsgBTiOUxA85gfShEQ==
   /@rollup/pluginutils/3.0.8:
     dependencies:
       estree-walker: 1.0.1
@@ -2265,6 +2281,19 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-rYGeAc4sxcZ+kPG/Tw4/fwJODC3IXHYDH4qusdN/b6aLw5LPUbzpecYbEJh4sVQGPFJxd2dBU4kc1H3oy9/bnw==
+  /@rollup/pluginutils/3.0.9_rollup@2.2.0:
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      micromatch: 4.0.2
+      rollup: 2.2.0
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    resolution:
+      integrity: sha512-TLZavlfPAZYI7v33wQh4mTP6zojne14yok3DNSLcjoG/Hirxfkonn6icP5rrNWRn8nZsirJBFFpijVOJzkUHDg==
   /@samverschueren/stream-to-observable/0.3.0:
     dependencies:
       any-observable: 0.3.0
