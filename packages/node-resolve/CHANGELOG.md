@@ -1,5 +1,22 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v8.0.0
+
+_2020-05-20_
+
+### Breaking Changes
+
+- feat: Add default export (#361)
+- feat: export defaults (#301)
+
+### Bugfixes
+
+- fix: resolve local files if `resolveOption` is set (#337)
+
+### Updates
+
+- docs: correct misspelling (#343)
+
 ## v7.1.3
 
 _2020-04-12_
