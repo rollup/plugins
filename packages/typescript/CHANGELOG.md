@@ -1,5 +1,18 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v4.1.2
+
+_2020-05-20_
+
+### Bugfixes
+
+- fix: memory leak. fixes #322 (#352)
+
+### Updates
+
+- docs: update readme examples (#391)
+- docs: update link to @rollup/plugin-babel in README.md (#372)
+
 ## v4.1.1
 
 _2020-04-12_
