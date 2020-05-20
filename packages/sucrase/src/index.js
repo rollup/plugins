@@ -12,7 +12,7 @@ module.exports = function sucrase(opts = {}) {
 
     // eslint-disable-next-line consistent-return
     resolveId(importee, importer) {
-      if (importer && importee[0] === '.') {
+      if (importer && /^[./]/.test(importee)) {
         const resolved = path.resolve(importer ? path.dirname(importer) : process.cwd(), importee);
         // resolve in the same order that TypeScript resolves modules
         const resolvedFilename = [`${resolved}.ts`, `${resolved}/index.ts`].find((filename) =>
