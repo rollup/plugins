@@ -18,7 +18,7 @@
     "test": "node scripts/run-changed.js test"
   },
   "dependencies": {
-    "conventional-commits-parser": "^3.0.8",
+    "conventional-commits-parser": "^3.1.0",
     "semver": "^7.1.1",
     "write-pkg": "^4.0.0"
   },
