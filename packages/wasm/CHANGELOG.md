@@ -1,5 +1,17 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v5.0.0
+
+_2020-05-20_
+
+### Breaking Changes
+
+- chore!: drop node 8 support (ba32053)
+
+### Features
+
+- feat: Switch to TypeScript & named exports (#363)
+
 ## v4.0.0
 
 _2020-05-02_
