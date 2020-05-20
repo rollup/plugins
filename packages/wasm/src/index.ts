@@ -1,9 +1,11 @@
 import { readFile } from 'fs';
 import { resolve } from 'path';
 
-export default function wasm(options = {}) {
-  options = Object.assign({}, options); // eslint-disable-line no-param-reassign
+import { Plugin } from 'rollup';
 
+import { RollupWasmOptions } from '../types';
+
+export function wasm(options: RollupWasmOptions = {}): Plugin {
   const syncFiles = (options.sync || []).map((x) => resolve(x));
 
   return {
@@ -49,13 +51,15 @@ export default function wasm(options = {}) {
       }
     `.trim(),
 
-    // eslint-disable-next-line consistent-return
     transform(code, id) {
       if (code && /\.wasm$/.test(id)) {
         const src = Buffer.from(code, 'binary').toString('base64');
         const sync = syncFiles.indexOf(id) !== -1;
         return `export default function(imports){return _loadWasmModule(${+sync}, '${src}', imports)}`;
       }
+      return null;
     }
   };
 }
+
+export default wasm;

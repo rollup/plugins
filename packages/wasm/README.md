@@ -30,7 +30,7 @@ npm install @rollup/plugin-wasm --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import wasm from '@rollup/plugin-wasm';
+import { wasm } from '@rollup/plugin-wasm';
 
 export default {
   input: 'src/index.js',
@@ -66,9 +66,9 @@ int main() {
 Compile the file using `emscripten`, or the online [WasmFiddle](https://wasdk.github.io/WasmFiddle//) tool. Then import and instantiate the resulting file:
 
 ```js
-import wasm from './sample.wasm';
+import sample from './sample.wasm';
 
-wasm({ ...imports }).then(({ instance }) => {
+sample({ ...imports }).then(({ instance }) => {
   console.log(instance.exports.main());
 });
 ```
@@ -90,7 +90,7 @@ wasm({
 This means that the exports can be accessed immediately.
 
 ```js
-import module from './sample.wasm';
+import sample from './sample.wasm';
 
 const instance = sample({ ...imports });
 

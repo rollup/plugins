@@ -8,7 +8,7 @@ export const DEFAULTS: {
   resolveOnly: [];
 };
 
-export interface Options {
+export interface RollupNodeResolveOptions {
   /**
    * If `true`, instructs the plugin to use the `"browser"` property in `package.json`
    * files to specify alternative files to load for bundling. This is useful when
@@ -88,4 +88,5 @@ export interface Options {
 /**
  * Locate modules using the Node resolution algorithm, for using third party modules in node_modules
  */
-export const nodeResolve: (options?: Options) => Plugin;
+export function nodeResolve(options?: RollupNodeResolveOptions): Plugin;
+export default nodeResolve;

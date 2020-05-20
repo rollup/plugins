@@ -1,6 +1,6 @@
 /**
  * @param {import('rollup').RollupBuild} bundle
- * @param {import('rollup').OutputOptions} outputOptions
+ * @param {import('rollup').OutputOptions} [outputOptions]
  */
 const getCode = async (bundle, outputOptions, allFiles = false) => {
   const { output } = await bundle.generate(outputOptions || { format: 'cjs' });
