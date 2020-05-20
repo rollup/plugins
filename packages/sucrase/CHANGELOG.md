@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v3.0.2
+
+_2020-05-20_
+
+### Bugfixes
+
+- fix: fix aliases not resolving (#387)
+
 ## v3.0.1
 
 _2020-05-11_
