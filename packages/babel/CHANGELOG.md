@@ -1,3 +1,18 @@
+# @rollup/plugin-babel ChangeLog
+
+## v5.0.1
+
+_2020-05-20_
+
+### Bugfixes
+
+- fix: use loadPartialConfigAsync when it is available (#359)
+
+### Updates
+
+- docs: Cleanup misleading leftovers in the README (#377)
+- docs: correct breaking change note in v5 CHANGELOG (#368)
+
 # @rollup/plugin-babel changelog
 
 ## 5.0.0
