@@ -1,5 +1,23 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v12.0.0
+
+_2020-05-20_
+
+### Breaking Changes
+
+- feat: add kill-switch for mixed es-cjs modules (#358)
+- feat: set syntheticNamedExports for commonjs modules (#149)
+
+### Bugfixes
+
+- fix: expose the virtual `require` function on mock `module`. fixes #307 (#326)
+- fix: improved shouldWrap logic. fixes #304 (#355)
+
+### Features
+
+- feat: support for explicit module.require calls. fixes #310 (#325)
+
 ## v11.1.0
 
 _2020-04-12_
