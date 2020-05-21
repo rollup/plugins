@@ -90,12 +90,12 @@ Default: `'bundled'`
 
 It is recommended to configure this option explicitly (even if with its default value) so an informed decision is taken on how those babel helpers are inserted into the code.
 
-We recommend to follow those guidelines for each possible value:
+We recommend to follow these guidelines to determine the most appropriate value for your project:
 
-- `'runtime'` - you should use it especially when building libraries with rollup. It has to be used in combination with `@babel/plugin-transform-runtime` and you should also specify `@babel/runtime` as dependency of your package (don't forget to tell rollup to treat it as your external dependency when bundling for `cjs` & `es` formats).
-- `'bundled'` - you should use it if you want your resulting bundle to contain those helpers (at most one copy of each). Useful especially if you bundle an application code.
-- `'external'` - use it only if you know what you are doing. It will reference helpers on **global** `babelHelpers` object. Used in combination with `@babel/plugin-external-helpers`.
-- `'inline'` - this is not recommended. Helpers will be inserted in each file using them. This can cause serious code duplication (this is the default Babel behaviour).
+- `'runtime'` - you should use this especially when building libraries with Rollup. It has to be used in combination with `@babel/plugin-transform-runtime` and you should also specify `@babel/runtime` as dependency of your package (don't forget to tell Rollup to treat it as your external dependency when bundling for `cjs` & `es` formats).
+- `'bundled'` - you should use this if you want your resulting bundle to contain those helpers (at most one copy of each). Useful especially if you bundle an application code.
+- `'external'` - use this only if you know what you are doing. It will reference helpers on **global** `babelHelpers` object. Used in combination with `@babel/plugin-external-helpers`.
+- `'inline'` - this is not recommended. Helpers will be inserted in each file using this option. This can cause serious code duplication. This is the default Babel behavior as Babel operates on isolated files - however, as Rollup is a bundler and is project-aware (and therefore likely operating across multiple input files), the default of this plugin is `"bundled"`.
 
 ### `skipPreflightCheck`
 
