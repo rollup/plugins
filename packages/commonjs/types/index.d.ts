@@ -36,12 +36,6 @@ interface RollupCommonJSOptions {
    */
   transformMixedEsModules?: boolean;
   /**
-   * explicitly specify unresolvable named exports
-   * ([see below for more details](https://github.com/rollup/plugins/tree/master/packages/commonjs#named-exports))
-   * @default undefined
-   */
-  namedExports?: { [package: string]: ReadonlyArray<string> };
-  /**
    * sometimes you have to leave require statements
    * unconverted. Pass an array containing the IDs
    * or a `id => boolean` function. Only use this
