@@ -17,11 +17,12 @@ import {
   EXTERNAL_SUFFIX,
   getIdFromExternalProxyId,
   getIdFromProxyId,
+  isProxyModuleId,
+  isNamedProxyModuleId,
   HELPERS,
   HELPERS_ID,
   HELPER_NON_DYNAMIC,
-  HELPERS_DYNAMIC,
-  PROXY_SUFFIX
+  HELPERS_DYNAMIC
 } from './helpers';
 
 import { getIsCjsPromise, setIsCjsPromise } from './is-cjs';
@@ -49,6 +50,7 @@ export default function commonjs(options = {}) {
 
   const esModulesWithoutDefaultExport = new Set();
   const esModulesWithDefaultExport = new Set();
+  const esModulesWithDefaultAndNamedExport = new Set();
 
   const ignoreRequire =
     typeof options.ignore === 'function'
@@ -62,12 +64,21 @@ export default function commonjs(options = {}) {
   const sourceMap = options.sourceMap !== false;
 
   function transformAndCheckExports(code, id) {
-    const { isEsModule, hasDefaultExport, ast } = checkEsModule(this.parse, code, id);
+    const { isEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
+      this.parse,
+      code,
+      id
+    );
 
     const isDynamicRequireModule = dynamicRequireModuleSet.has(normalizePathSlashes(id));
 
     if (isEsModule && (!isDynamicRequireModule || !options.transformMixedEsModules)) {
       (hasDefaultExport ? esModulesWithDefaultExport : esModulesWithoutDefaultExport).add(id);
+
+      if (hasNamedExports && hasDefaultExport) {
+        esModulesWithDefaultAndNamedExport.add(id);
+      }
+
       if (!options.transformMixedEsModules) {
         setIsCjsPromise(id, false);
         return null;
@@ -202,7 +213,8 @@ export default function commonjs(options = {}) {
 });`;
       }
 
-      if (actualId.endsWith(PROXY_SUFFIX)) {
+      if (isProxyModuleId(actualId) || isNamedProxyModuleId(actualId)) {
+        const isForNamedExports = isNamedProxyModuleId(actualId);
         actualId = getIdFromProxyId(actualId);
         const name = getName(actualId);
 
@@ -210,16 +222,30 @@ export default function commonjs(options = {}) {
           if (
             dynamicRequireModuleSet.has(normalizePathSlashes(actualId)) &&
             !actualId.endsWith('.json')
-          )
-            return `import {commonjsRequire} from '${HELPERS_ID}'; const ${name} = commonjsRequire(${JSON.stringify(
+          ) {
+            let exports = `import {commonjsRequire} from '${HELPERS_ID}'; const ${name} = commonjsRequire(${JSON.stringify(
               getVirtualPathForDynamicRequirePath(normalizePathSlashes(actualId), commonDir)
-            )}); export default (${name} && ${name}['default']) || ${name}`;
-          else if (isCjs)
+            )});`;
+
+            if (isForNamedExports) {
+              exports += ` export default ((${name} && Object.keys(${name}).length === 1 && ${name}['default']) ? ${name}['default'] : ${name})`;
+            } else {
+              exports += ` export default (${name} && ${name}['default']) || ${name}`;
+            }
+
+            return exports;
+          } else if (isCjs)
             return `import { __moduleExports } from ${JSON.stringify(
               actualId
             )}; export default __moduleExports;`;
           else if (esModulesWithoutDefaultExport.has(actualId))
             return `import * as ${name} from ${JSON.stringify(actualId)}; export default ${name};`;
+          else if (isForNamedExports && esModulesWithDefaultAndNamedExport.has(actualId))
+            return `import ${name}_def, * as ${name} from ${JSON.stringify(actualId)};
+            export default (${name}_def !== undefined ? {
+              default: ${name}_def,
+              ...${name},
+            } : ${name});`;
           else if (esModulesWithDefaultExport.has(actualId)) {
             return `export {default} from ${JSON.stringify(actualId)};`;
           }

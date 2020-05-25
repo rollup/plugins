@@ -1,6 +1,17 @@
 export const PROXY_SUFFIX = '?commonjs-proxy';
 export const getProxyId = (id) => `\0${id}${PROXY_SUFFIX}`;
-export const getIdFromProxyId = (proxyId) => proxyId.slice(1, -PROXY_SUFFIX.length);
+
+export const PROXY_NAMED_SUFFIX = '?commonjs-named-proxy';
+export const getNamedProxyId = (id) => `\0${id}${PROXY_NAMED_SUFFIX}`;
+
+export const isProxyModuleId = (proxyId) => proxyId.endsWith(PROXY_SUFFIX);
+export const isNamedProxyModuleId = (proxyId) => proxyId.endsWith(PROXY_NAMED_SUFFIX);
+
+export const getIdFromProxyId = (proxyId) =>
+  proxyId.slice(
+    1,
+    -(proxyId.endsWith(PROXY_NAMED_SUFFIX) ? PROXY_NAMED_SUFFIX.length : PROXY_SUFFIX.length)
+  );
 
 export const EXTERNAL_SUFFIX = '?commonjs-external';
 export const getExternalProxyId = (id) => `\0${id}${EXTERNAL_SUFFIX}`;

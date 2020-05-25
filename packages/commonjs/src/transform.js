@@ -13,7 +13,8 @@ import {
   getVirtualPathForDynamicRequirePath,
   HELPERS_ID,
   DYNAMIC_REGISTER_PREFIX,
-  DYNAMIC_JSON_PREFIX
+  DYNAMIC_JSON_PREFIX,
+  getNamedProxyId
 } from './helpers';
 import { getName } from './utils';
 // TODO can this be async?
@@ -28,8 +29,9 @@ const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/
 
 const firstpassGlobal = /\b(?:require|module|exports|global)\b/;
 const firstpassNoGlobal = /\b(?:require|module|exports)\b/;
-const importExportDeclaration = /^(?:Import|Export(?:Named|Default))Declaration/;
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
+
+const NAMED_IMPORT_SUFFIX = '$$named';
 
 function deconflict(scope, globals, identifier) {
   let i = 1;
@@ -66,20 +68,27 @@ export function checkEsModule(parse, code, id) {
   const ast = tryParse(parse, code, id);
 
   let isEsModule = false;
+  let hasNamedExports = false;
+  let hasDefaultExport = false;
+
   for (const node of ast.body) {
-    if (node.type === 'ExportDefaultDeclaration')
-      return { isEsModule: true, hasDefaultExport: true, ast };
-    if (node.type === 'ExportNamedDeclaration') {
+    if (node.type === 'ExportDefaultDeclaration') {
       isEsModule = true;
-      for (const specifier of node.specifiers) {
-        if (specifier.exported.name === 'default') {
-          return { isEsModule: true, hasDefaultExport: true, ast };
-        }
-      }
-    } else if (importExportDeclaration.test(node.type)) isEsModule = true;
+      hasDefaultExport = true;
+    } else if (node.type === 'ExportNamedDeclaration') {
+      isEsModule = true;
+      hasNamedExports = node.specifiers.some((s) => s.exported.name !== 'default');
+      hasDefaultExport = node.specifiers.some((s) => s.exported.name === 'default');
+    } else if (node.type === 'ExportAllDeclaration') {
+      isEsModule = true;
+      hasNamedExports = true;
+      hasDefaultExport = true;
+    } else if (node.type === 'ImportDeclaration') {
+      isEsModule = true;
+    }
   }
 
-  return { isEsModule, hasDefaultExport: false, ast };
+  return { isEsModule, hasDefaultExport, hasNamedExports, ast };
 }
 
 function getDefinePropertyCallName(node, targetName) {
@@ -228,7 +237,13 @@ export function transformCommonjs(
         sources.push([sourceId, !isDynamicRegister]);
       }
 
-      required[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
+      required[sourceId] = {
+        source: sourceId,
+        name,
+        importsDefault: false,
+        importsNamed: false,
+        isDynamic
+      };
     }
 
     return required[sourceId];
@@ -467,25 +482,32 @@ export function transformCommonjs(
       if (parent.type === 'ExpressionStatement') {
         // is a bare import, e.g. `require('foo');`
         magicString.remove(parent.start, parent.end);
-      } else {
+      } else if (shouldUseSimulatedRequire(required)) {
         required.importsDefault = true;
 
-        if (shouldUseSimulatedRequire(required)) {
-          magicString.overwrite(
-            node.start,
-            node.end,
-            `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-              getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
-            )}, ${JSON.stringify(
-              dirname(id) === '.'
-                ? null /* default behavior */
-                : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
-            )})`
-          );
-          usesCommonjsHelpers = true;
-        } else {
-          magicString.overwrite(node.start, node.end, required.name);
-        }
+        magicString.overwrite(
+          node.start,
+          node.end,
+          `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
+            getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
+          )}, ${JSON.stringify(
+            dirname(id) === '.'
+              ? null /* default behavior */
+              : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
+          )})`
+        );
+        usesCommonjsHelpers = true;
+      } else if (
+        parent &&
+        parent.type === 'VariableDeclarator' &&
+        parent.id.type === 'ObjectPattern'
+      ) {
+        // destructuring, simulate named exports
+        required.importsNamed = true;
+        magicString.overwrite(node.start, node.end, required.name + NAMED_IMPORT_SUFFIX);
+      } else {
+        required.importsDefault = true;
+        magicString.overwrite(node.start, node.end, required.name);
       }
 
       node.callee._skip = true;
@@ -558,8 +580,19 @@ export function transformCommonjs(
       sources
         .filter(([, importProxy]) => importProxy)
         .map(([source]) => {
-          const { name, importsDefault } = required[source];
-          return `import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`;
+          const { name, importsDefault, importsNamed } = required[source];
+
+          const exports = [];
+
+          if (importsNamed) {
+            exports.push(`import ${name}${NAMED_IMPORT_SUFFIX} from '${getNamedProxyId(source)}';`);
+          }
+
+          if (importsDefault || !importsNamed) {
+            exports.push(`import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`);
+          }
+
+          return exports.join('\n');
         })
     )
     .join('\n')}\n\n`;

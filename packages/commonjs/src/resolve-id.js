@@ -8,8 +8,10 @@ import {
   getExternalProxyId,
   getIdFromProxyId,
   getProxyId,
-  HELPERS_ID,
-  PROXY_SUFFIX
+  getNamedProxyId,
+  isProxyModuleId,
+  isNamedProxyModuleId,
+  HELPERS_ID
 } from './helpers';
 
 function getCandidatesForExtension(resolved, extension) {
@@ -44,7 +46,8 @@ export default function getResolveId(extensions) {
   }
 
   function resolveId(importee, importer) {
-    const isProxyModule = importee.endsWith(PROXY_SUFFIX);
+    const isProxyModule = isProxyModuleId(importee) || isNamedProxyModuleId(importee);
+
     if (isProxyModule) {
       importee = getIdFromProxyId(importee);
     } else if (importee.startsWith('\0')) {
@@ -62,7 +65,7 @@ export default function getResolveId(extensions) {
       return importee;
     }
 
-    if (importer && importer.endsWith(PROXY_SUFFIX)) {
+    if (importer && (isProxyModuleId(importer) || isNamedProxyModuleId(importer))) {
       importer = getIdFromProxyId(importer);
     }
 
@@ -74,7 +77,11 @@ export default function getResolveId(extensions) {
         if (!resolved) {
           return { id: getExternalProxyId(importee), external: false };
         }
-        resolved.id = (resolved.external ? getExternalProxyId : getProxyId)(resolved.id);
+        resolved.id = (resolved.external
+          ? getExternalProxyId
+          : isNamedProxyModuleId
+          ? getNamedProxyId
+          : getProxyId)(resolved.id);
         resolved.external = false;
         return resolved;
       }
