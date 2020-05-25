@@ -4,6 +4,19 @@ import typescript from '@rollup/plugin-typescript';
 
 import pkg from './package.json';
 
+function emitModulePackageFile() {
+  return {
+    name: 'emit-module-package-file',
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'package.json',
+        source: `{"type":"module"}`
+      });
+    }
+  };
+}
+
 export default {
   input: 'src/index.ts',
   plugins: [
@@ -13,14 +26,7 @@ export default {
   ],
   external: Object.keys(pkg.dependencies).concat('path', 'util'),
   output: [
-    {
-      format: 'cjs',
-      file: pkg.main,
-      exports: 'named'
-    },
-    {
-      format: 'es',
-      file: pkg.module
-    }
+    { format: 'cjs', file: pkg.main, exports: 'named' },
+    { file: pkg.module, format: 'es', plugins: [emitModulePackageFile()] }
   ]
 };
