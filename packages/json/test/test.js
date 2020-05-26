@@ -73,14 +73,21 @@ test('handles JSON objects with no valid keys (#19)', async (t) => {
 });
 
 test('handles garbage', async (t) => {
-  const bundle = async () =>
-    rollup({
-      input: 'fixtures/garbage/main.js',
-      plugins: [json()]
-    });
+  const warns = [];
 
-  const error = await t.throwsAsync(bundle);
-  t.is(error.message.indexOf('Unexpected token o'), 0);
+  await rollup({
+    input: 'fixtures/garbage/main.js',
+    plugins: [json()],
+    onwarn: (warning) => warns.push(warning)
+  }).catch(() => {});
+
+  const [{ message, id, position, plugin }] = warns;
+
+  t.is(warns.length, 1);
+  t.is(plugin, 'json');
+  t.is(position, 1);
+  t.is(message, 'Could not parse JSON file');
+  t.regex(id, /(.*)bad.json$/);
 });
 
 test('does not generate an AST', async (t) => {
