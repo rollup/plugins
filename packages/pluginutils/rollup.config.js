@@ -17,7 +17,7 @@ export default {
   ],
   external: [...builtinModules, 'picomatch'],
   output: [
-    { format: 'cjs', file: pkg.main, exports: 'named' },
+    { file: pkg.main, format: 'cjs', exports: 'named' },
     { file: pkg.module, format: 'es', plugins: [emitModulePackageFile()] }
   ]
 };
