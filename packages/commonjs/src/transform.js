@@ -529,11 +529,6 @@ export function transformCommonjs(
     !uses.require &&
     (ignoreGlobal || !uses.global)
   ) {
-    if (Object.keys(namedExports).length) {
-      throw new Error(
-        `Custom named exports were specified for ${id} but it does not appear to be a CommonJS module`
-      );
-    }
     // not a CommonJS module
     return null;
   }
