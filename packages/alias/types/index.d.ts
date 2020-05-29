@@ -1,4 +1,4 @@
-import { Plugin, ResolveIdResult } from 'rollup';
+import { Plugin, PluginHooks } from 'rollup';
 
 export interface Alias {
   find: string | RegExp;
@@ -6,12 +6,10 @@ export interface Alias {
   customResolver?: ResolverFunction | ResolverObject | null;
 }
 
-export type ResolverFunction = (
-  source: string,
-  importer: string | undefined
-) => Promise<ResolveIdResult> | ResolveIdResult;
+export type ResolverFunction = PluginHooks['resolveId'];
 
 export interface ResolverObject {
+  buildStart?: PluginHooks['buildStart'];
   resolveId: ResolverFunction;
 }
 

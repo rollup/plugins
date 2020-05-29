@@ -311,9 +311,33 @@ test('Local customResolver plugin-like object', (t) => {
   ).then((result) => t.deepEqual(result, [localCustomResult]));
 });
 
-/** @TODO
- *  Needs to be modified after rollup-plugin-node-resolve would became a part of rollup-plugins monorepo
- */
+test('supports node-resolve as a custom resolver', (t) =>
+  resolveAliasWithRollup(
+    {
+      entries: [
+        {
+          find: 'local-resolver',
+          replacement: path.resolve(DIRNAME, 'fixtures'),
+          customResolver: nodeResolvePlugin()
+        },
+        {
+          find: 'global-resolver',
+          replacement: path.resolve(DIRNAME, 'fixtures', 'folder')
+        }
+      ],
+      customResolver: nodeResolvePlugin()
+    },
+    [
+      { source: 'local-resolver', importer: posix.resolve(DIRNAME, './files/index.js') },
+      { source: 'global-resolver', importer: posix.resolve(DIRNAME, './files/index.js') }
+    ]
+  ).then((result) =>
+    t.deepEqual(result, [
+      path.resolve(DIRNAME, 'fixtures', 'index.js'),
+      path.resolve(DIRNAME, 'fixtures', 'folder', 'index.js')
+    ])
+  ));
+
 test('Alias + rollup-plugin-node-resolve', (t) =>
   rollup({
     input: './test/fixtures/index.js',
