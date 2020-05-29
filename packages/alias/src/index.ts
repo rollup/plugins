@@ -88,7 +88,9 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
             typeof customResolver.buildStart === 'function' &&
             customResolver.buildStart.call(this, inputOptions)
         )
-      ).then(() => {});
+      ).then(() => {
+        // enforce void return value
+      });
     },
     resolveId(importee, importer) {
       const importeeId = normalizeId(importee);
