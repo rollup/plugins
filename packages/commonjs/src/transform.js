@@ -578,22 +578,6 @@ export function transformCommonjs(
     namedExportDeclarations.push(exportModuleExports);
   }
 
-  const name = getName(id);
-
-  function addExport(x) {
-    const deconflicted = deconflict(scope, globals, name);
-
-    const declaration =
-      deconflicted === name
-        ? `export var ${x} = ${moduleName}.${x};`
-        : `var ${deconflicted} = ${moduleName}.${x};\nexport { ${deconflicted} as ${x} };`;
-
-    namedExportDeclarations.push({
-      str: declaration,
-      name: x
-    });
-  }
-
   const defaultExportPropertyAssignments = [];
   let hasDefaultExport = false;
 
@@ -648,7 +632,6 @@ export function transformCommonjs(
               str: declaration,
               name
             });
-            delete namedExports[name];
           }
 
           defaultExportPropertyAssignments.push(`${moduleName}.${name} = ${deconflicted};`);
@@ -663,12 +646,8 @@ export function transformCommonjs(
     }
   }
 
-  Object.keys(namedExports)
-    .filter((key) => !blacklist[key])
-    .forEach(addExport);
-
   const defaultExport = /__esModule/.test(code)
-    ? `export default ${HELPERS_NAME}.unwrapExports(${moduleName});`
+    ? `export default /*@__PURE__*/${HELPERS_NAME}.unwrapExports(${moduleName});`
     : `export default ${moduleName};`;
 
   const named = namedExportDeclarations
