@@ -156,7 +156,7 @@ export function normalizeInput(input) {
   }
 
   // otherwise it's a string
-  return input;
+  return [input];
 }
 
 // Resolve module specifiers in order. Promise resolves to the first module that resolves

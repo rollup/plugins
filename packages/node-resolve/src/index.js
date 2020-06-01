@@ -122,13 +122,12 @@ export function nodeResolve(opts = {}) {
         isRelativeImport = true;
       }
 
-      const input = normalizeInput(rollupOptions.input);
       if (
         !isRelativeImport &&
         resolveOnly.length &&
         !resolveOnly.some((pattern) => pattern.test(id))
       ) {
-        if (input.includes(id)) {
+        if (normalizeInput(rollupOptions.input).includes(importee)) {
           return null;
         }
         return false;

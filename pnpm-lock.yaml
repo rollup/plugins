@@ -282,7 +282,7 @@ importers:
       rollup-plugin-babel: ^4.4.0
   packages/node-resolve:
     dependencies:
-      '@rollup/pluginutils': 3.0.8_rollup@2.2.0
+      '@rollup/pluginutils': 3.0.10_rollup@2.12.0
       '@types/resolve': 0.0.8
       builtin-modules: 3.1.0
       deep-freeze: 0.0.1
@@ -292,11 +292,11 @@ importers:
     devDependencies:
       '@babel/core': 7.9.0
       '@babel/preset-env': 7.9.5_@babel+core@7.9.0
-      '@rollup/plugin-json': 4.0.1_rollup@2.2.0
+      '@rollup/plugin-json': 4.0.3_rollup@2.12.0
       es5-ext: 0.10.53
-      rollup: 2.2.0
-      rollup-plugin-babel: 4.3.3_@babel+core@7.9.0+rollup@2.2.0
-      rollup-plugin-commonjs: 10.1.0_rollup@2.2.0
+      rollup: 2.12.0
+      rollup-plugin-babel: 4.3.3_@babel+core@7.9.0+rollup@2.12.0
+      rollup-plugin-commonjs: 10.1.0_rollup@2.12.0
       source-map: 0.7.3
       string-capitalize: 1.0.1
     specifiers:
@@ -311,7 +311,7 @@ importers:
       es5-ext: ^0.10.53
       is-module: ^1.0.0
       resolve: ^1.14.2
-      rollup: ^2.0.0
+      rollup: ^2.12.0
       rollup-plugin-babel: ^4.3.3
       rollup-plugin-commonjs: ^10.1.0
       source-map: ^0.7.3
@@ -2146,6 +2146,15 @@ packages:
       rollup: ^1.20.0
     resolution:
       integrity: sha512-soxllkhOGgchswBAAaTe7X9G80U2tjjHvXv0sBrriLJcC/89PkP59iTrKPOfbz3SjX088mKDmMhAscuyLz8ZSg==
+  /@rollup/plugin-json/4.0.3_rollup@2.12.0:
+    dependencies:
+      '@rollup/pluginutils': 3.0.10_rollup@2.12.0
+      rollup: 2.12.0
+    dev: true
+    peerDependencies:
+      rollup: ^1.20.0 || ^2.0.0
+    resolution:
+      integrity: sha512-QMUT0HZNf4CX17LMdwaslzlYHUKTYGuuk34yYIgZrNdu+pMEfqMS55gck7HEeHBKXHM4cz5Dg1OVwythDdbbuQ==
   /@rollup/plugin-node-resolve/7.1.1:
     dependencies:
       '@rollup/pluginutils': 3.0.8
@@ -2263,6 +2272,18 @@ packages:
       typescript: '>=2.1.0'
     resolution:
       integrity: sha512-KYZCn1Iw9hZWkeEPqPs5YjlmvSjR7UdezVca8z0e8rm/29wU24UD9Y4IZHhnc9tm749hzsgBTiOUxA85gfShEQ==
+  /@rollup/pluginutils/3.0.10_rollup@2.12.0:
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.2.2
+      rollup: 2.12.0
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    resolution:
+      integrity: sha512-d44M7t+PjmMrASHbhgpSbVgtL6EFyX7J4mYxwQ/c5eoaE6N2VgCgEcWVzNnwycIloti+/MpwFr8qfw+nRw00sw==
   /@rollup/pluginutils/3.0.10_rollup@2.2.0:
     dependencies:
       '@types/estree': 0.0.39
@@ -4518,7 +4539,6 @@ packages:
     resolution:
       integrity: sha512-R4wDiBwZ0KzpgOWetKDug1FZcYhqYnUYKtfZYt4mD5SBz76q0KR4Q9o7GIPamsVPGmW3EYPPJ0dOOjvx32ldZA==
   /fsevents/2.1.3:
-    dev: true
     engines:
       node: ^8.16.0 || ^10.6.0 || >=11.0.0
     optional: true
@@ -7524,6 +7544,18 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-NDGVxTsjqfunkds7CqsOiEnxln4Bo7Nddl3XhS4pXg5OzwkLqJ971ZVAAnB+DDLnF76N+VnDEiBHaVV8I06SUg==
+  /rollup-plugin-babel/4.3.3_@babel+core@7.9.0+rollup@2.12.0:
+    dependencies:
+      '@babel/core': 7.9.0
+      '@babel/helper-module-imports': 7.8.3
+      rollup: 2.12.0
+      rollup-pluginutils: 2.8.2
+    dev: true
+    peerDependencies:
+      '@babel/core': 7 || ^7.0.0-rc.2
+      rollup: '>=0.60.0 <2'
+    resolution:
+      integrity: sha512-tKzWOCmIJD/6aKNz0H1GMM+lW1q9KyFubbWzGiOG540zxPPifnEAHTZwjo0g991Y+DyOZcLqBgqOdqazYE5fkw==
   /rollup-plugin-babel/4.3.3_@babel+core@7.9.0+rollup@2.2.0:
     dependencies:
       '@babel/core': 7.9.0
@@ -7560,13 +7592,13 @@ packages:
       rollup: '>=0.60.0 <3'
     resolution:
       integrity: sha512-Lek/TYp1+7g7I+uMfJnnSJ7YWoD58ajo6Oarhlex7lvUce+RCKRuGRSgztDO3/MF/PuGKmUL5iTHKf208UNszw==
-  /rollup-plugin-commonjs/10.1.0_rollup@2.2.0:
+  /rollup-plugin-commonjs/10.1.0_rollup@2.12.0:
     dependencies:
       estree-walker: 0.6.1
       is-reference: 1.1.4
       magic-string: 0.25.7
       resolve: 1.15.0
-      rollup: 2.2.0
+      rollup: 2.12.0
       rollup-pluginutils: 2.8.2
     deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-commonjs.
     dev: true
@@ -7601,6 +7633,14 @@ packages:
     dev: true
     resolution:
       integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
+  /rollup/2.12.0:
+    engines:
+      node: '>=10.0.0'
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.1.3
+    resolution:
+      integrity: sha512-vKwc/xFkZGM9DRai3Eztpr/4g0yYDgNKVq8tLXhq/aSLbR+/EVL6rTjEW9bgWgeYEIKoN66/5w2Bjv1gzyHR/w==
   /rollup/2.2.0:
     engines:
       node: '>=10.0.0'
