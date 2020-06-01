@@ -106,6 +106,7 @@ export function transformCommonjs(
   code,
   id,
   isEntry,
+  hasImporters,
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
@@ -564,7 +565,7 @@ export function transformCommonjs(
   let wrapperEnd = '';
 
   const moduleName = deconflict(scope, globals, getName(id));
-  if (!isEntry && !isEsModule) {
+  if ((!isEntry || hasImporters) && !isEsModule) {
     const exportModuleExports = {
       str: `export { ${moduleName} as __moduleExports };`,
       name: '__moduleExports'
@@ -634,7 +635,7 @@ export function transformCommonjs(
       }
     }
 
-    if (!hasDefaultExport && (names.length || (!isEntry && !isEsModule))) {
+    if (!hasDefaultExport && (names.length || ((!isEntry || hasImporters) && !isEsModule))) {
       wrapperEnd = `\n\nvar ${moduleName} = {\n${names
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n};`;
@@ -660,7 +661,8 @@ export function transformCommonjs(
     .trim()
     .append(wrapperEnd);
 
-  const injectExportBlock = hasDefaultExport || named.length > 0 || shouldWrap || !isEntry;
+  const injectExportBlock =
+    hasDefaultExport || named.length > 0 || shouldWrap || !isEntry || hasImporters;
   if (injectExportBlock) {
     magicString.append(exportBlock);
   }

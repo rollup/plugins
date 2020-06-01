@@ -80,11 +80,14 @@ export default function commonjs(options = {}) {
       return null;
     }
 
+    const moduleInfo = this.getModuleInfo(id);
+
     const transformed = transformCommonjs(
       this.parse,
       code,
       id,
-      this.getModuleInfo(id).isEntry,
+      moduleInfo.isEntry,
+      moduleInfo.importers && moduleInfo.importers.length > 0,
       isEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
