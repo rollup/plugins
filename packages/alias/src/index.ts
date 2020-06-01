@@ -8,8 +8,8 @@ import { Alias, ResolverFunction, RollupAliasOptions } from '../types';
 const VOLUME = /^([A-Z]:)/i;
 const IS_WINDOWS = platform() === 'win32';
 
-// Helper functions
 const noop = () => null;
+
 function matches(pattern: string | RegExp, importee: string) {
   if (pattern instanceof RegExp) {
     return pattern.test(importee);
@@ -48,10 +48,28 @@ function getEntries({ entries }: RollupAliasOptions): Alias[] {
   });
 }
 
+function getCustomResolver(
+  { customResolver }: Alias,
+  options: RollupAliasOptions
+): ResolverFunction | null {
+  if (typeof customResolver === 'function') {
+    return customResolver;
+  }
+  if (customResolver && typeof customResolver.resolveId === 'function') {
+    return customResolver.resolveId;
+  }
+  if (typeof options.customResolver === 'function') {
+    return options.customResolver;
+  }
+  if (options.customResolver && typeof options.customResolver.resolveId === 'function') {
+    return options.customResolver.resolveId;
+  }
+  return null;
+}
+
 export default function alias(options: RollupAliasOptions = {}): Plugin {
   const entries = getEntries(options);
 
-  // No aliases?
   if (entries.length === 0) {
     return {
       name: 'alias',
@@ -61,6 +79,19 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
   return {
     name: 'alias',
+    buildStart(inputOptions) {
+      return Promise.all(
+        [...entries, options].map(
+          ({ customResolver }) =>
+            customResolver &&
+            typeof customResolver === 'object' &&
+            typeof customResolver.buildStart === 'function' &&
+            customResolver.buildStart.call(this, inputOptions)
+        )
+      ).then(() => {
+        // enforce void return value
+      });
+    },
     resolveId(importee, importer) {
       const importeeId = normalizeId(importee);
       const importerId = normalizeId(importer);
@@ -75,25 +106,9 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
         importeeId.replace(matchedEntry.find, matchedEntry.replacement)
       );
 
-      let customResolver: ResolverFunction | null = null;
-      if (typeof matchedEntry.customResolver === 'function') {
-        ({ customResolver } = matchedEntry);
-      } else if (
-        typeof matchedEntry.customResolver === 'object' &&
-        typeof matchedEntry.customResolver!.resolveId === 'function'
-      ) {
-        customResolver = matchedEntry.customResolver!.resolveId;
-      } else if (typeof options.customResolver === 'function') {
-        ({ customResolver } = options);
-      } else if (
-        typeof options.customResolver === 'object' &&
-        typeof options.customResolver!.resolveId === 'function'
-      ) {
-        customResolver = options.customResolver!.resolveId;
-      }
-
+      const customResolver = getCustomResolver(matchedEntry, options);
       if (customResolver) {
-        return customResolver(updatedId, importerId);
+        return customResolver.call(this, updatedId, importerId);
       }
 
       return this.resolve(updatedId, importer, { skipSelf: true }).then((resolved) => {
