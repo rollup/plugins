@@ -71,16 +71,24 @@ export default function url(options = {}) {
         return `export default "${data}"`;
       });
     },
-    generateBundle: async function write(outputOptions) {
+    generateBundle: async function write(outputOptions, bundle) {
       // Allow skipping saving files for server side builds.
       if (!emitFiles) return;
 
       const base = options.destDir || outputOptions.dir || path.dirname(outputOptions.file);
 
       await makeDir(base);
+      
+      const modules = Object.assign({},
+        ...Object
+          .values(bundle)
+          .map(asset => asset.modules || {})
+      );
 
       await Promise.all(
         Object.keys(copies).map(async (name) => {
+          if (!(name in modules)) return
+
           const output = copies[name];
           // Create a nested directory if the fileName pattern contains
           // a directory structure
