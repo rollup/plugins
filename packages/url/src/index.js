@@ -10,7 +10,7 @@ import { createFilter } from '@rollup/pluginutils';
 const fsStatPromise = util.promisify(fs.stat);
 const fsReadFilePromise = util.promisify(fs.readFile);
 const { posix, sep } = path;
-export const defaultInclude = ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif'];
+const defaultInclude = ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif'];
 
 export default function url(options = {}) {
   const {
