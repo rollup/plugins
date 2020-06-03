@@ -10,7 +10,7 @@ import { createFilter } from '@rollup/pluginutils';
 const fsStatPromise = util.promisify(fs.stat);
 const fsReadFilePromise = util.promisify(fs.readFile);
 const { posix, sep } = path;
-const defaultInclude = ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif'];
+export const defaultInclude = ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif'];
 
 export default function url(options = {}) {
   const {
@@ -26,6 +26,7 @@ export default function url(options = {}) {
   const copies = Object.create(null);
 
   return {
+    name: "url",
     load(id) {
       if (!filter(id)) {
         return null;
