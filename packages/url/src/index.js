@@ -86,9 +86,7 @@ export default function url(options = {}) {
       );
 
       await Promise.all(
-        Object.keys(copies).map(async (name) => {
-          if (!(name in modules)) return
-
+        Object.keys(copies).filter(name => name in modules).map(async (name) => {
           const output = copies[name];
           // Create a nested directory if the fileName pattern contains
           // a directory structure
