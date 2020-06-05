@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v2.3.3
+
+_2020-06-05_
+
+### Updates
+
+- docs: clarify options for allowed replacement values (#422)
+
 ## v2.3.2
 
 _2020-04-19_
