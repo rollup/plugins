@@ -1,5 +1,13 @@
 # @rollup/plugin-url ChangeLog
 
+## v5.0.1
+
+_2020-06-05_
+
+### Bugfixes
+
+- fix: add name property to plugin (#433)
+
 ## v5.0.0
 
 _2020-05-11_
