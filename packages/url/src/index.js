@@ -26,6 +26,7 @@ export default function url(options = {}) {
   const copies = Object.create(null);
 
   return {
+    name: "url",
     load(id) {
       if (!filter(id)) {
         return null;
