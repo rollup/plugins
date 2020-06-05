@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v8.0.1
+
+_2020-06-05_
+
+### Bugfixes
+
+- fix: handle nested entry modules with the resolveOnly option (#430)
+
 ## v8.0.0
 
 _2020-05-20_
