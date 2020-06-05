@@ -1,5 +1,18 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v13.0.0
+
+_2020-06-05_
+
+### Breaking Changes
+
+- fix!: remove namedExports from types (#410)
+- fix!: do not create fake named exports (#427)
+
+### Bugfixes
+
+- fix: \_\_moduleExports in multi entry + inter dependencies (#415)
+
 ## v12.0.0
 
 _2020-05-20_
