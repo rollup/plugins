@@ -1,5 +1,13 @@
 # @rollup/plugin-json ChangeLog
 
+## v4.1.0
+
+_2020-06-05_
+
+### Features
+
+- feat: log the filename when JSON.parse fails (#417)
+
 ## v4.0.3
 
 _2020-04-19_
