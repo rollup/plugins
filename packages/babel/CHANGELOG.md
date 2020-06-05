@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.0.3
+
+_2020-06-05_
+
+### Updates
+
+- docs: update `babelHelpers` description (#397)
+
 ## v5.0.2
 
 _2020-05-20_
