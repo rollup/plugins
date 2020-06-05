@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.1
+
+_2020-06-05_
+
+### Bugfixes
+
+- fix: properly initialize custom resolvers (#426)
+
 ## v3.1.0
 
 _2020-04-12_
