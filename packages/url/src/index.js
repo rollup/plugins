@@ -78,22 +78,23 @@ export default function url(options = {}) {
       const base = options.destDir || outputOptions.dir || path.dirname(outputOptions.file);
 
       await makeDir(base);
-      
-      const modules = Object.assign({},
-        ...Object
-          .values(bundle)
-          .map(asset => asset.modules || {})
+
+      const modules = Object.assign(
+        {},
+        ...Object.values(bundle).map((asset) => asset.modules || {})
       );
 
       await Promise.all(
-        Object.keys(copies).filter(name => name in modules).map(async (name) => {
-          const output = copies[name];
-          // Create a nested directory if the fileName pattern contains
-          // a directory structure
-          const outputDirectory = path.join(base, path.dirname(output));
-          await makeDir(outputDirectory);
-          return copy(name, path.join(base, output));
-        })
+        Object.keys(copies)
+          .filter((name) => name in modules)
+          .map(async (name) => {
+            const output = copies[name];
+            // Create a nested directory if the fileName pattern contains
+            // a directory structure
+            const outputDirectory = path.join(base, path.dirname(output));
+            await makeDir(outputDirectory);
+            return copy(name, path.join(base, output));
+          })
       );
     }
   };

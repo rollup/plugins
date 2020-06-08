@@ -15,17 +15,17 @@ process.chdir(__dirname);
 const outputFile = 'output/bundle.js';
 const outputDir = 'output/';
 
-const run = async (t, type, opts) => {
+const run = async (t, entry, opts) => {
   const defaults = { emitFiles: false, publicPath: '' };
   const options = { ...defaults, ...opts };
   const bundle = await rollup({
-    input: `fixtures/${type}.js`,
+    input: `fixtures/${entry}.js`,
     plugins: [url(options)]
   });
   await bundle.write({ format: 'es', file: outputFile });
   const code = readFileSync(outputFile, 'utf-8');
   // Windows fix, glob paths must be in unix format
-  const glob = join(outputDir, `**/*.${type}`)
+  const glob = join(outputDir, `**/*.{png,svg}`)
     .split(sep)
     .join(posix.sep);
 
@@ -108,4 +108,8 @@ test.serial('copy the file according to destDir option', async (t) => {
     fileName: '[dirname][hash][extname]',
     destDir: join(__dirname, 'output/dest')
   });
+});
+
+test.serial('does not copy files of modules tree shaked by Rollup', async (t) => {
+  await run(t, 'treeshaking', { limit: 0, emitFiles: true });
 });
