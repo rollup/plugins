@@ -26,7 +26,7 @@ Using Rollup with `@rollup/plugin-babel` makes the process far easier.
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v10.0.0+) and Rollup v1.20.0+.
 
 ## Install
 
