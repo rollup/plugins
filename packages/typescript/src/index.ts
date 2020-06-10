@@ -93,7 +93,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     async load(id) {
       if (!filter(id)) return null;
 
-      await watchProgramHelper.wait()
+      await watchProgramHelper.wait();
 
       const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
 

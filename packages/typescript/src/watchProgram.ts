@@ -1,9 +1,10 @@
 import { PluginContext } from 'rollup';
 
+import { DiagnosticCategory } from 'typescript';
+
 import { buildDiagnosticReporter } from './diagnostics/emit';
 import { DiagnosticsHost } from './diagnostics/host';
 import { Resolver } from './moduleResolution';
-import { DiagnosticCategory } from 'typescript';
 
 type BuilderProgram = import('typescript').EmitAndSemanticDiagnosticsBuilderProgram;
 
@@ -27,24 +28,24 @@ interface CreateProgramOptions {
   resolveModule: Resolver;
 }
 
-type DeferredResolve = ((value?: boolean) => void) | (() => void)
+type DeferredResolve = ((value?: boolean) => void) | (() => void);
 
 interface Deferred {
   promise: Promise<boolean | void>;
   resolve: DeferredResolve;
 }
 
-function createDeferred (timeout?: number): Deferred {
-  let promise: Promise<boolean | void>
-  let resolve: DeferredResolve = () => {}
+function createDeferred(timeout?: number): Deferred {
+  let promise: Promise<boolean | void>;
+  let resolve: DeferredResolve = () => {};
 
   if (timeout) {
     promise = Promise.race<Promise<boolean>>([
-      new Promise(r => setTimeout(r, timeout, true)),
-      new Promise(r => resolve = r)
+      new Promise((r) => setTimeout(r, timeout, true)),
+      new Promise((r) => (resolve = r))
     ]);
   } else {
-    promise = new Promise(r => resolve = r);
+    promise = new Promise((r) => (resolve = r));
   }
 
   return { promise, resolve };
@@ -57,16 +58,16 @@ export class WatchProgramHelper {
   private _startDeferred: Deferred | null = null;
   private _finishDeferred: Deferred | null = null;
 
-  watch (timeout: number = 1000) {
+  watch(timeout = 1000) {
     // Race watcher start promise against a timeout in case Typescript and Rollup change detection is not in sync.
     this._startDeferred = createDeferred(timeout);
     this._finishDeferred = createDeferred();
   }
 
-  handleStatus (diagnostic: import('typescript').Diagnostic) {
+  handleStatus(diagnostic: import('typescript').Diagnostic) {
     // Fullfil deferred promises by Typescript diagnostic message codes.
     if (diagnostic.category === DiagnosticCategory.Message) {
-      switch(diagnostic.code) {
+      switch (diagnostic.code) {
         case DiagnosticCode.FILE_CHANGE_DETECTED:
           this.resolveStart();
           break;
@@ -81,21 +82,21 @@ export class WatchProgramHelper {
     }
   }
 
-  resolveStart () {
+  resolveStart() {
     if (this._startDeferred) {
       this._startDeferred.resolve(false);
       this._startDeferred = null;
     }
   }
 
-  resolveFinish () {
+  resolveFinish() {
     if (this._finishDeferred) {
       this._finishDeferred.resolve();
       this._finishDeferred = null;
     }
   }
 
-  async wait () {
+  async wait() {
     if (this._startDeferred) {
       const timeout = await this._startDeferred.promise;
 
