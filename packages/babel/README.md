@@ -81,7 +81,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 Type: `Array[...String]`<br>
 Default: `['.js', '.jsx', '.es6', '.es', '.mjs']`
 
-An array of file extensions that Babel should transpile. If you want to tranpile TypeScript files with this plugin it's essential to include `.ts` and `.tsx` in this option.
+An array of file extensions that Babel should transpile. If you want to transpile TypeScript files with this plugin it's essential to include `.ts` and `.tsx` in this option.
 
 ### `babelHelpers`
 
