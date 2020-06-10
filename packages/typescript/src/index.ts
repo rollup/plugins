@@ -10,11 +10,12 @@ import getPluginOptions from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
 import findTypescriptOutput from './outputFile';
-import createWatchProgram from './watchProgram';
+import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
   const emittedFiles = new Map<string, string>();
+  const watchProgramHelper = new WatchProgramHelper();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
@@ -42,9 +43,18 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           parsedOptions,
           writeFile(fileName, data) {
             emittedFiles.set(fileName, data);
+          },
+          status(diagnostic) {
+            watchProgramHelper.handleStatus(diagnostic);
           }
         });
       }
+    },
+
+    watchChange(id) {
+      if (!filter(id)) return;
+
+      watchProgramHelper.watch();
     },
 
     buildEnd() {
@@ -80,8 +90,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       return null;
     },
 
-    load(id) {
+    async load(id) {
       if (!filter(id)) return null;
+
+      await watchProgramHelper.wait()
 
       const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
 
