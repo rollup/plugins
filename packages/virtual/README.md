@@ -30,7 +30,7 @@ _Note. Use this plugin **before** any others such as node-resolve or commonjs, s
 Suppose an entry file containing the snippet below exists at `src/entry.js`, and attempts to load `batman` and `src/robin.js` from memory:
 
 ```js
-// src/input.js
+// src/entry.js
 import batman from 'batman';
 import robin from './robin.js';
 
