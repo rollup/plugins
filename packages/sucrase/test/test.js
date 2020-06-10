@@ -89,3 +89,17 @@ test('resolves typescript directory imports', async (t) => {
 
   return testBundle(t, bundle);
 });
+
+test('converts typescript jsx', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/typescript-with-tsx/main.js',
+    plugins: [
+      sucrase({
+        transforms: ['typescript', 'jsx']
+      })
+    ]
+  });
+  t.plan(1);
+
+  return testBundle(t, bundle);
+});
