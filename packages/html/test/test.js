@@ -120,3 +120,16 @@ test.serial('template', async (t) => {
   const code = await getCode(bundle, output, true);
   t.snapshot(code);
 });
+
+test.serial('templatePath', async (t) => {
+  const bundle = await rollup({
+    input: 'batman.js',
+    plugins: [
+      html({
+        templatePath: 'template.html'
+      })
+    ]
+  });
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
+});

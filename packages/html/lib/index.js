@@ -1,3 +1,4 @@
+const { readFile } = require('fs').promises;
 const { extname } = require('path');
 
 const getFiles = (bundle) => {
@@ -24,7 +25,7 @@ const makeHtmlAttributes = (attributes) => {
   return keys.reduce((result, key) => (result += ` ${key}="${attributes[key]}"`), '');
 };
 
-const defaultTemplate = async ({ attributes, files, meta, publicPath, title }) => {
+const getTemplateData = ({ attributes, files, meta, publicPath, title }) => {
   const scripts = (files.js || [])
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
@@ -46,9 +47,30 @@ const defaultTemplate = async ({ attributes, files, meta, publicPath, title }) =
     })
     .join('\n');
 
+  return {
+    scripts,
+    links,
+    metas,
+    publicPath,
+    title,
+    htmlAttributes: makeHtmlAttributes(attributes.html)
+  };
+};
+
+const fileTemplate = async ({ templatePath, ...rest }) => {
+  const template = await readFile(templatePath, { encoding: 'utf8' });
+  const templateData = getTemplateData(rest);
+
+  return template.replace(/%(\w+)%/g, (match, key) =>
+    key in templateData ? templateData[key] : match
+  );
+};
+
+const defaultTemplate = async (args) => {
+  const { htmlAttributes, metas, title, links, scripts } = getTemplateData(args);
   return `
 <!doctype html>
-<html${makeHtmlAttributes(attributes.html)}>
+<html${htmlAttributes}>
   <head>
     ${metas}
     <title>${title}</title>
@@ -72,11 +94,12 @@ const defaults = {
   meta: [{ charset: 'utf-8' }],
   publicPath: '',
   template: defaultTemplate,
+  templatePath: '',
   title: 'Rollup Bundle'
 };
 
 const html = (opts = {}) => {
-  const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
+  const { attributes, fileName, meta, publicPath, template, templatePath, title } = Object.assign(
     {},
     defaults,
     opts
@@ -101,7 +124,10 @@ const html = (opts = {}) => {
       }
 
       const files = getFiles(bundle);
-      const source = await template({ attributes, bundle, files, meta, publicPath, title });
+
+      const source = templatePath
+        ? await fileTemplate({ attributes, bundle, files, meta, publicPath, title, templatePath })
+        : await template({ attributes, bundle, files, meta, publicPath, title });
 
       const htmlFile = {
         type: 'asset',
