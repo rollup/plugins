@@ -28,7 +28,7 @@ npm install @rollup/plugin-node-resolve --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default {
   input: 'src/index.js',
@@ -36,7 +36,7 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [resolve()]
+  plugins: [nodeResolve()]
 };
 ```
 
