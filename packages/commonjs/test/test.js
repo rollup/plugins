@@ -153,7 +153,7 @@ test('handles transpiled CommonJS modules', async (t) => {
   const fn = new Function('module', 'exports', code);
   fn(module, module.exports);
 
-  t.is(module.exports, 'foobar', code);
+  t.deepEqual(module.exports, { __esModule: true, default: 'foobar' }, code);
 });
 
 test('handles successive builds', async (t) => {
@@ -177,7 +177,7 @@ test('handles successive builds', async (t) => {
   const fn = new Function('module', 'exports', code);
   fn(module, module.exports);
 
-  t.is(module.exports, 'foobar', code);
+  t.deepEqual(module.exports, { __esModule: true, default: 'foobar' }, code);
 });
 
 test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) => {
