@@ -25,12 +25,14 @@
     "lint:js": "eslint --fix --cache src test",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
-    "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run build",
+    "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run build && pnpm run test:ts",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
     "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -58,6 +60,7 @@
     "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/preset-env": "^7.9.0",
     "@rollup/plugin-json": "^4.0.0",
+    "@types/babel__core": "^7.1.8",
     "rollup": "^2.0.0",
     "source-map": "^0.6.1"
   },
@@ -73,5 +76,6 @@
     "Bogdan Chadkin <trysound@yandex.ru>",
     "Mateusz Burzyński <mateuszburzynski@gmail.com> (https://github.com/Andarist)"
   ],
-  "module": "dist/index.es.js"
+  "module": "dist/index.es.js",
+  "types": "types/index.d.ts"
 }
