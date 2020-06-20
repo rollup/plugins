@@ -127,4 +127,5 @@ export function createBabelOutputPluginFactory(
  * @param options - Plugin options.
  * @returns Plugin instance.
  */
-export default function babel(options?: RollupBabelInputPluginOptions): Plugin;
+export function babel(options?: RollupBabelInputPluginOptions): Plugin;
+export default babel;

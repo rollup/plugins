@@ -1,6 +1,7 @@
 /** eslint-disable @typescript-eslint/no-unused-vars */
 
-import babel, {
+import babelPlugin, {
+  babel,
   getBabelInputPlugin,
   getBabelOutputPlugin,
   createBabelInputPluginFactory,
@@ -14,6 +15,15 @@ const rollipConfig: import('rollup').RollupOptions = {
     format: 'iife'
   },
   plugins: [
+    babelPlugin({
+      include: 'node_modules/**',
+      exclude: ['node_modules/foo/**', 'node_modules/bar/**', /node_modules/],
+      extensions: ['.js', '.coffee'],
+      babelHelpers: 'runtime',
+      skipPreflightCheck: true,
+      babelrc: false,
+      plugins: []
+    }),
     babel({
       include: 'node_modules/**',
       exclude: ['node_modules/foo/**', 'node_modules/bar/**', /node_modules/],

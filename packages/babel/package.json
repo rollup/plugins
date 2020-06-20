@@ -61,6 +61,7 @@
     "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/preset-env": "^7.9.0",
     "@rollup/plugin-json": "^4.0.0",
+    "@types/babel__core": "^7.1.8",
     "rollup": "^2.0.0",
     "source-map": "^0.6.1"
   },
