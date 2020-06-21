@@ -38,21 +38,34 @@ export default function strip(options = {}) {
   const sourceMap = options.sourceMap !== false;
 
   const removeDebuggerStatements = options.debugger !== false;
-  const functions = (options.functions || ['console.*', 'assert.*']).map((keypath) =>
-    keypath.replace(/\./g, '\\.').replace(/\*/g, '\\w+')
-  );
 
+  const functions = options.functions || ['console.*', 'assert.*'];
   const labels = options.labels || [];
 
-  const firstpass = new RegExp(`\\b(?:${functions.join('|')}|debugger)\\b`);
-  const pattern = new RegExp(`^(?:${functions.join('|')})$`);
+  const functionsPatterns = functions.map((f) =>
+    f.replace(/\*/g, '\\w+').replace(/\./g, '\\.\\s*')
+  );
+  const labelsPatterns = labels.map((l) => `${l}\\s*:`);
+
+  const firstPassPatterns = removeDebuggerStatements
+    ? [...functionsPatterns, ...labelsPatterns, 'debugger\\b']
+    : [...functionsPatterns, ...labelsPatterns];
+
+  const functionsRE = new RegExp(`^(?:${functionsPatterns.join('|')})$`);
+  const firstpassRE = new RegExp(`\\b(?:${firstPassPatterns.join('|')})`);
+
+  const firstPassFilter =
+    firstPassPatterns.length > 0 ? (code) => firstpassRE.test(code) : () => false;
+
+  const UNCHANGED = null;
 
   return {
     name: 'strip',
 
     transform(code, id) {
-      if (!filter(id)) return null;
-      if (functions.length > 0 && !firstpass.test(code)) return null;
+      if (!filter(id) || !firstPassFilter(code)) {
+        return UNCHANGED;
+      }
 
       let ast;
 
@@ -81,7 +94,7 @@ export default function strip(options = {}) {
         if (parent.type === 'ExpressionStatement') {
           removeStatement(parent);
         } else {
-          magicString.overwrite(node.start, node.end, 'void 0');
+          magicString.overwrite(node.start, node.end, '(void 0)');
         }
 
         edited = true;
@@ -93,7 +106,7 @@ export default function strip(options = {}) {
         if (isBlock(parent)) {
           remove(node.start, node.end);
         } else {
-          magicString.overwrite(node.start, node.end, 'void 0;');
+          magicString.overwrite(node.start, node.end, '(void 0);');
         }
 
         edited = true;
@@ -114,13 +127,15 @@ export default function strip(options = {}) {
 
           if (removeDebuggerStatements && node.type === 'DebuggerStatement') {
             removeStatement(node);
+            this.skip();
           } else if (node.type === 'LabeledStatement') {
             if (node.label && labels.includes(node.label.name)) {
               removeStatement(node);
+              this.skip();
             }
           } else if (node.type === 'CallExpression') {
             const keypath = flatten(node.callee);
-            if (keypath && pattern.test(keypath)) {
+            if (keypath && functionsRE.test(keypath)) {
               removeExpression(node);
               this.skip();
             }
@@ -128,7 +143,9 @@ export default function strip(options = {}) {
         }
       });
 
-      if (!edited) return null;
+      if (!edited) {
+        return UNCHANGED;
+      }
 
       code = magicString.toString();
       const map = sourceMap ? magicString.generateMap() : null;

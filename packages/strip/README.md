@@ -36,59 +36,88 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [
-    strip({
-      labels: ['unittest']
-    })
-  ]
+  plugins: [strip({})]
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
+
+### Default Options
+
+By default the **strip** plugin applies the following options, you can override by specifing options manually.
+
+> consider files matching **'\*\*/\*.js'**  
+> remove functions matching '**console.\***' and '**assert.\***'  
+> remove any **debugger** statements
+
+### Custom Options Example
+
+```js
+plugins: [
+  strip({
+    include: '**/*.(mjs|js)',
+    exclude: 'tests/**/*',
+    debugger: true,
+    functions: ['console.log', 'assert.*'],
+    labels: ['unittest'],
+    sourceMap: true
+  })
+];
+```
 
 ## Options
 
 ### `include`
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
-Default: `['**/*.js']`
+Default: `['**/*.js']`<br>
+Example: `include: '**/*.(mjs|js)',`<br>
 
 A pattern, or array of patterns, which specify the files in the build the plugin should operate on.
 
 ### `exclude`
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
-Default: `[]`
+Default: `[]`<br>
+Example: `exlude: 'tests/**/*',`<br>
 
 A pattern, or array of patterns, which specify the files in the build the plugin should _ignore_.
 
 ### `debugger`
 
 Type: `Boolean`<br>
-Default: `true`
+Default: `true`<br>
+Example: `debugger: false,`<br>
 
-If `true`, instructs the plugin to remove debugger statements.
+If `true` or unspecified, instructs the plugin to remove debugger statements.
 
 ### `functions`
 
 Type: `Array[...String]`<br>
-Default: `[ 'console.*', 'assert.*' ]`
+Default: `[ 'console.*', 'assert.*' ]`<br>
+Example: `functions: [ 'console.log', 'MyClass.Test' ],`<br>
 
 Specifies the functions that the plugin will target and remove.
+
+_Note: specifying functions that are used at the begining of a chain, such as 'a().b().c()', will result in '(void 0).b().c()' which will generate an error at runtime._
 
 ### `labels`
 
 Type: `Array[...String]`<br>
-Default: `[]`
+Default: `[]`<br>
+Example: `labels: ['unittest'],`<br>
 
-Specifies the [labeled blocks](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/label) that the plugin will target and remove.
+Specifies the [labeled blocks or statements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/label) that the plugin will target and remove.
+
+_Note: the '**:**' is implied and should not be specified in the config._
 
 ### `sourceMap`
 
 Type: `Boolean`<br>
-Default: `true`
+Default: `true`<br>
+Example: `sourceMap: false,`<br>
 
-If `true`, instructs the plugin to update source maps accordingly after removing configured targets from the bundle.
+If `true` or unspecified, instructs the plugin to update source maps accordingly after removing configured targets from the bundle.
 
 ## Meta
 
