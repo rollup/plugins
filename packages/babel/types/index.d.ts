@@ -2,7 +2,7 @@ import { Plugin } from 'rollup';
 import { FilterPattern } from '@rollup/pluginutils';
 import * as babelCore from '@babel/core';
 
-interface RollupBabelInputPluginOptions
+export interface RollupBabelInputPluginOptions
   extends Omit<babelCore.TransformOptions, 'include' | 'exclude'> {
   /**
    * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
@@ -31,37 +31,8 @@ interface RollupBabelInputPluginOptions
   skipPreflightCheck?: boolean;
 }
 
-interface RollupBabelOutputPluginOptions
+export interface RollupBabelOutputPluginOptions
   extends Omit<babelCore.TransformOptions, 'include' | 'exclude'> {
-  /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
-   * @default undefined;
-   */
-  include?: FilterPattern;
-  /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin should ignore. When relaying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
-   * @default undefined;
-   */
-  exclude?: FilterPattern;
-  /**
-   * An array of file extensions that Babel should transpile. If you want to transpile TypeScript files with this plugin it's essential to include .ts and .tsx in this option.
-   * @default ['.js', '.jsx', '.es6', '.es', '.mjs']
-   */
-  extensions?: string[];
-  /**
-   * A boolean value indicating whether to bundle in the Babel helpers.
-   * @default false
-   */
-  externalHelpers?: boolean;
-  /**
-   * An array which gives explicit control over which babelHelper functions are allowed in the bundle.
-   * @default undefined
-   */
-  externalHelpersWhitelist?: string[];
-  /**
-   * @default false
-   */
-  runtimeHelpers?: boolean;
   /**
    * Use with other formats than UMD/IIFE.
    * @default false
@@ -69,23 +40,23 @@ interface RollupBabelOutputPluginOptions
   allowAllFormats?: boolean;
 }
 
-type CustomInputPluginOptions = (
+export type CustomInputPluginOptions = (
   options: RollupBabelInputPluginOptions & Record<string, any>
 ) => {
   customOptions: Record<string, any>;
   pluginOptions: RollupBabelInputPluginOptions;
 };
-type CustomOutputPluginOptions = (
+export type CustomOutputPluginOptions = (
   options: RollupBabelOutputPluginOptions & Record<string, any>
 ) => {
   customOptions: Record<string, any>;
   pluginOptions: RollupBabelOutputPluginOptions;
 };
-type CustomPluginConfig = (
+export type CustomPluginConfig = (
   cfg: babelCore.PartialConfig,
   options: { code: string; customOptions: Record<string, any> }
 ) => babelCore.TransformOptions;
-type CustomPluginResult = (
+export type CustomPluginResult = (
   result: babelCore.BabelFileResult,
   options: {
     code: string;
@@ -94,18 +65,18 @@ type CustomPluginResult = (
     transformOptions: babelCore.TransformOptions;
   }
 ) => babelCore.BabelFileResult;
-interface CustomInputPlugin {
+export interface CustomInputPlugin {
   options?: CustomInputPluginOptions;
   config?: CustomPluginConfig;
   result?: CustomPluginResult;
 }
-interface CustomOutputPlugin {
+export interface CustomOutputPlugin {
   options?: CustomOutputPluginOptions;
   config?: CustomPluginConfig;
   result?: CustomPluginResult;
 }
-type CustomInputPluginBuilder = (babel: typeof babelCore) => CustomInputPlugin;
-type CustomOutputPluginBuilder = (babel: typeof babelCore) => CustomOutputPlugin;
+export type CustomInputPluginBuilder = (babel: typeof babelCore) => CustomInputPlugin;
+export type CustomOutputPluginBuilder = (babel: typeof babelCore) => CustomOutputPlugin;
 
 /**
  * A Rollup plugin for seamless integration between Rollup and Babel.
