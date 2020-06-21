@@ -43,12 +43,6 @@ const rollipConfig: import('rollup').RollupOptions = {
       plugins: []
     }),
     getBabelOutputPlugin({
-      include: 'node_modules/**',
-      exclude: ['node_modules/foo/**', 'node_modules/bar/**', /node_modules/],
-      extensions: ['.js', '.coffee'],
-      runtimeHelpers: true,
-      externalHelpers: true,
-      externalHelpersWhitelist: ['example'],
       allowAllFormats: true,
       babelrc: false,
       plugins: []
