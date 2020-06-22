@@ -1,5 +1,17 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v5.0.0
+
+_2020-06-22_
+
+### Breaking Changes
+
+- fix!: sync rollup and typescript file watch (#425)
+
+### Bugfixes
+
+- fix: Fix peer dep version (#461)
+
 ## v4.1.2
 
 _2020-05-20_
