@@ -40,7 +40,6 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 
 ```js
 import babel from '@rollup/plugin-babel';
-import pkg from './package.json';
 
 const config = {
   input: 'src/index.js',
