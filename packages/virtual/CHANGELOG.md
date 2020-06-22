@@ -1,5 +1,13 @@
 # @rollup/plugin-virtual ChangeLog
 
+## v2.0.3
+
+_2020-06-22_
+
+### Updates
+
+- docs: fix file name in readme (#444)
+
 ## v2.0.2
 
 _2020-05-11_
