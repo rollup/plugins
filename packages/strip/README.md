@@ -48,6 +48,20 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
+### `include`
+
+Type: `String | RegExp | Array[...String|RegExp]`<br>
+Default: `['**/*.js']`
+
+A pattern, or array of patterns, which specify the files in the build the plugin should operate on.
+
+### `exclude`
+
+Type: `String | RegExp | Array[...String|RegExp]`<br>
+Default: `[]`
+
+A pattern, or array of patterns, which specify the files in the build the plugin should _ignore_.
+
 ### `debugger`
 
 Type: `Boolean`<br>
