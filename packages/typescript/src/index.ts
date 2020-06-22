@@ -58,7 +58,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     buildEnd() {
-      if (process.env.ROLLUP_WATCH !== 'true') {
+      if (this.meta.watchMode !== true) {
         // ESLint doesn't understand optional chaining
         // eslint-disable-next-line
         program?.close();
