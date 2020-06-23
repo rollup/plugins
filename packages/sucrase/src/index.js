@@ -17,8 +17,9 @@ module.exports = function sucrase(opts = {}) {
         // resolve in the same order that TypeScript resolves modules
         const resolvedFilename = [
           `${resolved}.ts`,
+          `${resolved}.tsx`,
           `${resolved}/index.ts`,
-          `${resolved}.tsx`
+          `${resolved}/index.tsx`
         ].find((filename) => fs.existsSync(filename));
 
         if (resolvedFilename) {

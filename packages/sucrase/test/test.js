@@ -90,7 +90,7 @@ test('resolves typescript directory imports', async (t) => {
   return testBundle(t, bundle);
 });
 
-test('converts typescript jsx', async (t) => {
+test('converts typescript jsx ("tsx")', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/typescript-with-tsx/main.js',
     plugins: [
@@ -99,7 +99,7 @@ test('converts typescript jsx', async (t) => {
       })
     ]
   });
-  t.plan(1);
+  t.plan(2);
 
   return testBundle(t, bundle);
 });
