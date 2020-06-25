@@ -641,7 +641,14 @@ test('creates _tslib.js file when preserveModules is used', async (t) => {
 test('should handle re-exporting types', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/reexport-type/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/reexport-type/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/reexport-type/tsconfig.json',
+        // Make sure the transpiled files are empty
+        inlineSourceMap: false,
+        sourceMap: false
+      })
+    ],
     onwarn
   });
   await t.notThrowsAsync(getCode(bundle, outputOptions));
