@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v5.0.1
+
+_2020-06-28_
+
+### Bugfixes
+
+- fix: load empty emitted files (#476)
+
 ## v5.0.0
 
 _2020-06-22_
