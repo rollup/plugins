@@ -642,9 +642,7 @@ export function transformCommonjs(
     }
   }
 
-  const defaultExport = /__esModule/.test(code)
-    ? `export default /*@__PURE__*/${HELPERS_NAME}.unwrapExports(${moduleName});`
-    : `export default ${moduleName};`;
+  const defaultExport = `export default ${moduleName};`;
 
   const named = namedExportDeclarations
     .filter((x) => x.name !== 'default' || !hasDefaultExport)
