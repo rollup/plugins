@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+
 const { join } = require('path');
 
 const test = require('ava');

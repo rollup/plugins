@@ -1,4 +1,5 @@
-/* eslint-disable no-template-curly-in-string */
+/* eslint-disable import/extensions, import/no-unresolved, no-template-curly-in-string */
+
 import { Parser } from 'acorn';
 import dynamicImport from 'acorn-dynamic-import';
 import test from 'ava';
