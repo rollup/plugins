@@ -36,11 +36,13 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [replace({ 
-    __buildEnv__: 'production',
-    __buildDate__: () => new Date(),
-    __buildVersion: 15
-  })]
+  plugins: [
+    replace({
+      __buildEnv__: 'production',
+      __buildDate__: () => new Date(),
+      __buildVersion: 15
+    })
+  ]
 };
 ```
 
