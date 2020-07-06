@@ -90,6 +90,12 @@ export function nodeResolve(opts = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
+      // strip hash and query params from import
+      const [withoutHash, hash] = importee.split('#');
+      const [importPath, params] = withoutHash.split('?');
+      const importSuffix = `${params ? `?${params}` : ''}${hash ? `#${hash}` : ''}`;
+      importee = importPath;
+
       const basedir = !importer || dedupe(importee) ? rootDir : dirname(importer);
 
       // https://github.com/defunctzombie/package-browser-field-spec
@@ -235,11 +241,17 @@ export function nodeResolve(opts = {}) {
         if (resolved && options.modulesOnly) {
           const code = await readFile(resolved, 'utf-8');
           if (isModule(code)) {
-            return { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
+            return {
+              id: `${resolved}${importSuffix}`,
+              moduleSideEffects: hasModuleSideEffects(resolved)
+            };
           }
           return null;
         }
-        const result = { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
+        const result = {
+          id: `${resolved}${importSuffix}`,
+          moduleSideEffects: hasModuleSideEffects(resolved)
+        };
         return result;
       } catch (error) {
         return null;
