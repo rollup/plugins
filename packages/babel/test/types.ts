@@ -8,7 +8,7 @@ import babelPlugin, {
   createBabelOutputPluginFactory
 } from '../types';
 
-const rollipConfig: import('rollup').RollupOptions = {
+const rollupConfig: import('rollup').RollupOptions = {
   input: 'main.js',
   output: {
     file: 'bundle.js',
@@ -50,7 +50,7 @@ const rollipConfig: import('rollup').RollupOptions = {
   ]
 };
 
-export default rollipConfig;
+export default rollupConfig;
 
 createBabelInputPluginFactory((babelCore) => {
   function myPlugin() {
