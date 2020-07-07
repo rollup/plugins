@@ -23,7 +23,7 @@ export interface RollupBabelInputPluginOptions
    * It is recommended to configure this option explicitly (even if with its default value) so an informed decision is taken on how those babel helpers are inserted into the code.
    * @default 'bundled'
    */
-  babelHelpers?: 'bundled' | 'runtime' | 'inline' | 'extends';
+  babelHelpers?: 'bundled' | 'runtime' | 'inline' | 'external';
   /**
    * Before transpiling your input files this plugin also transpile a short piece of code for each input file. This is used to validate some misconfiguration errors, but for sufficiently big projects it can slow your build times so if you are confident about your configuration then you might disable those checks with this option.
    * @default false
@@ -40,23 +40,23 @@ export interface RollupBabelOutputPluginOptions
   allowAllFormats?: boolean;
 }
 
-export type CustomInputPluginOptions = (
+export type RollupBabelCustomInputPluginOptions = (
   options: RollupBabelInputPluginOptions & Record<string, any>
 ) => {
   customOptions: Record<string, any>;
   pluginOptions: RollupBabelInputPluginOptions;
 };
-export type CustomOutputPluginOptions = (
+export type RollupBabelCustomOutputPluginOptions = (
   options: RollupBabelOutputPluginOptions & Record<string, any>
 ) => {
   customOptions: Record<string, any>;
   pluginOptions: RollupBabelOutputPluginOptions;
 };
-export type CustomPluginConfig = (
+export type RollupBabelCustomPluginConfig = (
   cfg: babelCore.PartialConfig,
   options: { code: string; customOptions: Record<string, any> }
 ) => babelCore.TransformOptions;
-export type CustomPluginResult = (
+export type RollupBabelCustomPluginResult = (
   result: babelCore.BabelFileResult,
   options: {
     code: string;
@@ -65,18 +65,22 @@ export type CustomPluginResult = (
     transformOptions: babelCore.TransformOptions;
   }
 ) => babelCore.BabelFileResult;
-export interface CustomInputPlugin {
-  options?: CustomInputPluginOptions;
-  config?: CustomPluginConfig;
-  result?: CustomPluginResult;
+export interface RollupBabelCustomInputPlugin {
+  options?: RollupBabelCustomInputPluginOptions;
+  config?: RollupBabelCustomPluginConfig;
+  result?: RollupBabelCustomPluginResult;
 }
-export interface CustomOutputPlugin {
-  options?: CustomOutputPluginOptions;
-  config?: CustomPluginConfig;
-  result?: CustomPluginResult;
+export interface RollupBabelCustomOutputPlugin {
+  options?: RollupBabelCustomOutputPluginOptions;
+  config?: RollupBabelCustomPluginConfig;
+  result?: RollupBabelCustomPluginResult;
 }
-export type CustomInputPluginBuilder = (babel: typeof babelCore) => CustomInputPlugin;
-export type CustomOutputPluginBuilder = (babel: typeof babelCore) => CustomOutputPlugin;
+export type RollupBabelCustomInputPluginBuilder = (
+  babel: typeof babelCore
+) => RollupBabelCustomInputPlugin;
+export type RollupBabelCustomOutputPluginBuilder = (
+  babel: typeof babelCore
+) => RollupBabelCustomOutputPlugin;
 
 /**
  * A Rollup plugin for seamless integration between Rollup and Babel.
@@ -87,10 +91,10 @@ export function getBabelInputPlugin(options?: RollupBabelInputPluginOptions): Pl
 export function getBabelOutputPlugin(options?: RollupBabelOutputPluginOptions): Plugin;
 
 export function createBabelInputPluginFactory(
-  customCallback?: CustomInputPluginBuilder
+  customCallback?: RollupBabelCustomInputPluginBuilder
 ): typeof getBabelInputPlugin;
 export function createBabelOutputPluginFactory(
-  customCallback?: CustomOutputPluginBuilder
+  customCallback?: RollupBabelCustomOutputPluginBuilder
 ): typeof getBabelOutputPlugin;
 
 /**
