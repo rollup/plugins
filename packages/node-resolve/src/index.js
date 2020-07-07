@@ -191,6 +191,15 @@ export function nodeResolve(opts = {}) {
         importSpecifierList.push(`${importee}/`);
       }
 
+      // TypeScript files may import '.js' to refer to either '.ts' or '.tsx'
+      if (importer && importee.endsWith('.js')) {
+        for (const ext of ['.ts', '.tsx']) {
+          if (importer.endsWith(ext) && extensions.includes(ext)) {
+            importSpecifierList.push(importee.replace(/.js$/, ext));
+          }
+        }
+      }
+
       importSpecifierList.push(importee);
       resolveOptions = Object.assign(resolveOptions, customResolveOptions);
 
