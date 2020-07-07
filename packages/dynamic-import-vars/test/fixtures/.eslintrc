@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "class-methods-use-this": "off",
+    "import/extensions": "off",
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "line-comment-position": "off",
+    "no-undef": "off",
+    "no-useless-concat": "off"
+  }
+}

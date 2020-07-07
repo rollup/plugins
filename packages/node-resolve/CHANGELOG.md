@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v8.1.0
+
+_2020-06-22_
+
+### Features
+
+- feat: add native node es modules support (#413)
+
 ## v8.0.1
 
 _2020-06-05_

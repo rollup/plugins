@@ -1,5 +1,15 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.0.4
+
+_2020-06-22_
+
+### Updates
+
+- docs: remove unused import in "Usage" example (#460)
+- docs: update node requirement in readme (#443)
+- docs: fix typo in readme (#447)
+
 ## v5.0.3
 
 _2020-06-05_

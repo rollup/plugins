@@ -58,7 +58,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     buildEnd() {
-      if (process.env.ROLLUP_WATCH !== 'true') {
+      if (this.meta.watchMode !== true) {
         // ESLint doesn't understand optional chaining
         // eslint-disable-next-line
         program?.close();
@@ -93,11 +93,11 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     async load(id) {
       if (!filter(id)) return null;
 
-      await watchProgramHelper.wait()
+      await watchProgramHelper.wait();
 
       const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
 
-      return output.code ? (output as SourceDescription) : null;
+      return output.code != null ? (output as SourceDescription) : null;
     },
 
     generateBundle(outputOptions) {

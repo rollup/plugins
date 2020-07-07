@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v3.1.0
+
+_2020-06-28_
+
+### Features
+
+- feat: resolve .tsx files (#448)
+
 ## v3.0.2
 
 _2020-05-20_

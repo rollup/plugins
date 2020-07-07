@@ -28,7 +28,7 @@ npm install @rollup/plugin-node-resolve --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default {
   input: 'src/index.js',
@@ -36,7 +36,7 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [resolve()]
+  plugins: [nodeResolve()]
 };
 ```
 
@@ -107,7 +107,7 @@ Locks the module search within specified path (e.g. chroot). Modules defined out
 
 Type: `Array[...String]`<br>
 Default: `['module', 'main']`<br>
-Valid values: `['browser', 'jsnext', 'module', 'main']`
+Valid values: `['browser', 'jsnext:main', 'module', 'main']`
 
 Specifies the properties to scan within a `package.json`, used to determine the bundle entry point. The order of property names is significant, as the first-found property is used as the resolved entry point. If the array contains `'browser'`, key/values specified in the `package.json` `browser` property will be used.
 

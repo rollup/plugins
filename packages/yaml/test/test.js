@@ -5,9 +5,9 @@ const yamlParser = require('js-yaml');
 
 const { testBundle } = require('../../../util/test');
 
-const spec = require('./fixtures/spec.json');
-
 const yaml = require('..');
+
+const spec = require('./fixtures/spec.json');
 
 require('source-map-support').install();
 
