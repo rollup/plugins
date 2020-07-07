@@ -2,7 +2,7 @@ const { join } = require('path');
 
 const test = require('ava');
 const { rollup } = require('rollup');
-const commonjs = require('rollup-plugin-commonjs');
+const commonjs = require('@rollup/plugin-commonjs');
 
 const { testBundle } = require('../../../util/test');
 
