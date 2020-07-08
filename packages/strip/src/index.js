@@ -39,23 +39,23 @@ export default function strip(options = {}) {
 
   const removeDebuggerStatements = options.debugger !== false;
 
-  const functions = options.functions || ['console.*', 'assert.*'];
+  const functions = (options.functions || ['console.*', 'assert.*']).map((keypath) =>
+    keypath.replace(/\./g, '\\.').replace(/\*/g, '\\w+')
+  );
+
   const labels = options.labels || [];
 
-  const functionsPatterns = functions.map((f) =>
-    f.replace(/\*/g, '\\w+').replace(/\./g, '\\.\\s*')
-  );
   const labelsPatterns = labels.map((l) => `${l}\\s*:`);
 
-  const firstPassPatterns = removeDebuggerStatements
-    ? [...functionsPatterns, ...labelsPatterns, 'debugger\\b']
-    : [...functionsPatterns, ...labelsPatterns];
+  const firstPass = [...functions, ...labelsPatterns];
+  if (removeDebuggerStatements) {
+    firstPass.push('debugger\\b');
+  }
 
-  const functionsRE = new RegExp(`^(?:${functionsPatterns.join('|')})$`);
-  const firstpassRE = new RegExp(`\\b(?:${firstPassPatterns.join('|')})`);
+  const reFunctions = new RegExp(`^(?:${functions.join('|')})$`);
+  const reFirstpass = new RegExp(`\\b(?:${firstPass.join('|')})`);
 
-  const firstPassFilter =
-    firstPassPatterns.length > 0 ? (code) => firstpassRE.test(code) : () => false;
+  const firstPassFilter = firstPass.length > 0 ? (code) => reFirstpass.test(code) : () => false;
 
   const UNCHANGED = null;
 
@@ -135,7 +135,7 @@ export default function strip(options = {}) {
             }
           } else if (node.type === 'CallExpression') {
             const keypath = flatten(node.callee);
-            if (keypath && functionsRE.test(keypath)) {
+            if (keypath && reFunctions.test(keypath)) {
               removeExpression(node);
               this.skip();
             }

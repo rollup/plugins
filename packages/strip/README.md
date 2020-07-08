@@ -36,34 +36,15 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [strip({})]
+  plugins: [
+    strip({
+      labels: ['unittest']
+    })
+  ]
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
-
-### Default Options
-
-By default the **strip** plugin applies the following options, you can override by specifing options manually.
-
-> consider files matching **'\*\*/\*.js'**  
-> remove functions matching '**console.\***' and '**assert.\***'  
-> remove any **debugger** statements
-
-### Custom Options Example
-
-```js
-plugins: [
-  strip({
-    include: '**/*.(mjs|js)',
-    exclude: 'tests/**/*',
-    debugger: true,
-    functions: ['console.log', 'assert.*'],
-    labels: ['unittest'],
-    sourceMap: true
-  })
-];
-```
 
 ## Options
 
@@ -89,7 +70,7 @@ Type: `Boolean`<br>
 Default: `true`<br>
 Example: `debugger: false,`<br>
 
-If `true` or unspecified, instructs the plugin to remove debugger statements.
+If `true` instructs the plugin to remove debugger statements.
 
 ### `functions`
 
@@ -117,7 +98,7 @@ Type: `Boolean`<br>
 Default: `true`<br>
 Example: `sourceMap: false,`<br>
 
-If `true` or unspecified, instructs the plugin to update source maps accordingly after removing configured targets from the bundle.
+If `true` instructs the plugin to update source maps accordingly after removing configured targets from the bundle.
 
 ## Meta
 
