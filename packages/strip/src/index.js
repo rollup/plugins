@@ -40,7 +40,7 @@ export default function strip(options = {}) {
   const removeDebuggerStatements = options.debugger !== false;
 
   const functions = (options.functions || ['console.*', 'assert.*']).map((keypath) =>
-    keypath.replace(/\./g, '\\.').replace(/\*/g, '\\w+')
+    keypath.replace(/\*/g, '\\w+').replace(/\./g, '\\s*\\.\\s*')
   );
 
   const labels = options.labels || [];
