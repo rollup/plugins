@@ -38,7 +38,6 @@ export default function strip(options = {}) {
   const sourceMap = options.sourceMap !== false;
 
   const removeDebuggerStatements = options.debugger !== false;
-
   const functions = (options.functions || ['console.*', 'assert.*']).map((keypath) =>
     keypath.replace(/\*/g, '\\w+').replace(/\./g, '\\s*\\.\\s*')
   );
