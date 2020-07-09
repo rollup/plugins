@@ -53,9 +53,7 @@ export default function strip(options = {}) {
 
   const reFunctions = new RegExp(`^(?:${functions.join('|')})$`);
   const reFirstpass = new RegExp(`\\b(?:${firstPass.join('|')})`);
-
   const firstPassFilter = firstPass.length > 0 ? (code) => reFirstpass.test(code) : () => false;
-
   const UNCHANGED = null;
 
   return {
