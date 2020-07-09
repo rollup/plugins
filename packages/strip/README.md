@@ -98,7 +98,7 @@ Type: `Boolean`<br>
 Default: `true`<br>
 Example: `sourceMap: false,`<br>
 
-If `true` instructs the plugin to update source maps accordingly after removing configured targets from the bundle.
+If `true`, instructs the plugin to update source maps accordingly after removing configured targets from the bundle.
 
 ## Meta
 
