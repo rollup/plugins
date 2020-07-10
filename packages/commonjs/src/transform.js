@@ -192,6 +192,14 @@ export function transformCommonjs(
     return true;
   }
 
+  function isNodeRequireStatement(parent) {
+    const reservedMethod = ['resolve', 'cache', 'main'];
+    if (parent && parent.property && reservedMethod.indexOf(parent.property.name) > -1) {
+      return true;
+    }
+    return false;
+  }
+
   function isIgnoredRequireStatement(requiredNode) {
     return ignoreRequire(requiredNode.arguments[0].value);
   }
@@ -353,6 +361,10 @@ export function transformCommonjs(
         if (isReference(node, parent) && !scope.contains(node.name)) {
           if (node.name in uses) {
             if (isRequireIdentifier(node)) {
+              if (isNodeRequireStatement(parent)) {
+                return;
+              }
+
               if (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent)) {
                 return;
               }
