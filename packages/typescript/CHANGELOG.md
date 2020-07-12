@@ -1,5 +1,17 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v5.0.2
+
+_2020-07-12_
+
+### Bugfixes
+
+- fix: utilize 'this.meta.watchMode' (#449)
+
+### Updates
+
+- chore: linting update (410ceb8)
+
 ## v5.0.1
 
 _2020-06-28_
