@@ -1,5 +1,17 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.1.0
+
+_2020-07-12_
+
+### Features
+
+- feat: add typings (#462)
+
+### Updates
+
+- docs: add note about excluding @babel/runtime helpers via regex (#483)
+
 ## v5.0.4
 
 _2020-06-22_
