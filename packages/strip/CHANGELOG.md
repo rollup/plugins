@@ -1,5 +1,17 @@
 # @rollup/plugin-strip ChangeLog
 
+## v2.0.0
+
+_2020-07-12_
+
+### Breaking Changes
+
+- feat!: support specifying both functions and labels (#471)
+
+### Updates
+
+- docs: update README (#458)
+
 ## v1.3.3
 
 _2020-05-11_
