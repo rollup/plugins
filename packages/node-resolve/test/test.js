@@ -239,3 +239,78 @@ test('handles package side-effects', async (t) => {
 
   delete global.sideEffects;
 });
+
+test('can resolve imports with hashes', async (t) => {
+  const bundle = await rollup({
+    input: 'hash.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      {
+        load(id) {
+          if (id === resolve(__dirname, 'fixtures', 'node_modules', 'test', 'index.js#foo')) {
+            return 'export default "resolved with hash"';
+          }
+          return null;
+        }
+      }
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'resolved with hash');
+});
+
+test('can resolve imports with search params', async (t) => {
+  const bundle = await rollup({
+    input: 'search-params.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      {
+        load(id) {
+          if (
+            id ===
+            resolve(__dirname, 'fixtures', 'node_modules', 'test', 'index.js?foo=bar&lorem=ipsum')
+          ) {
+            return 'export default "resolved with search params"';
+          }
+          return null;
+        }
+      }
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'resolved with search params');
+});
+
+test('can resolve imports with search params and hash', async (t) => {
+  const bundle = await rollup({
+    input: 'search-params-and-hash.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      {
+        load(id) {
+          if (
+            id ===
+            resolve(
+              __dirname,
+              'fixtures',
+              'node_modules',
+              'test',
+              'index.js?foo=bar&lorem=ipsum#foo'
+            )
+          ) {
+            return 'export default "resolved with search params and hash"';
+          }
+          return null;
+        }
+      }
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'resolved with search params and hash');
+});
