@@ -14,34 +14,6 @@ _2020-07-12_
 - docs: fix named export use in readme (#456)
 - docs: correct mainFields valid values (#469)
 
-## v8.3.0
-
-_2020-07-12_
-
-### Features
-
-- feat: preserve search params and hashes (#487)
-- feat: support .js imports in TypeScript (#480)
-
-### Updates
-
-- docs: fix named export use in readme (#456)
-- docs: correct mainFields valid values (#469)
-
-## v8.2.0
-
-_2020-07-12_
-
-### Features
-
-- feat: preserve search params and hashes (#487)
-- feat: support .js imports in TypeScript (#480)
-
-### Updates
-
-- docs: fix named export use in readme (#456)
-- docs: correct mainFields valid values (#469)
-
 ## v8.1.0
 
 _2020-06-22_
