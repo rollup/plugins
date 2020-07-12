@@ -1,5 +1,14 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v13.0.1
+
+_2020-07-12_
+
+### Bugfixes
+
+- fix: prevent rewrite require.resolve (#446)
+- fix: Support \_\_esModule packages with a default export (#465)
+
 ## v13.0.0
 
 _2020-06-05_
