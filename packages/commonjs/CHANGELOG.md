@@ -1,5 +1,21 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v14.0.0
+
+_2020-07-13_
+
+### Release Notes
+
+This restores the fixes from v13.0.1, but as a semver compliant major version.
+
+## v13.0.2
+
+_2020-07-13_
+
+### Rollback
+
+Rolls back breaking change in v13.0.1 whereby the exported `unwrapExports` method was removed.
+
 ## v13.0.1
 
 _2020-07-12_
