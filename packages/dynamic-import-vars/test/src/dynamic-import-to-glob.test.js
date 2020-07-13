@@ -35,6 +35,33 @@ test('template literal with multiple variables', (t) => {
   t.is(glob, './*/*.js');
 });
 
+test('dynamic expression with variable filename', (t) => {
+  const ast = CustomParser.parse('import("./foo/".concat(bar,".js"));', {
+    sourceType: 'module',
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  t.is(glob, './foo/*.js');
+});
+
+test('dynamic expression with variable directory', (t) => {
+  const ast = CustomParser.parse('import("./foo/".concat(bar, "/x.js"));', {
+    sourceType: 'module',
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  t.is(glob, './foo/*/x.js');
+});
+
+test('dynamic expression with multiple variables', (t) => {
+  const ast = CustomParser.parse('import("./".concat(foo, "/").concat(bar,".js"));', {
+    sourceType: 'module',
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  t.is(glob, './*/*.js');
+});
+
 test('string concatenation', (t) => {
   const ast = CustomParser.parse('import("./foo/" + bar + ".js");', {
     sourceType: 'module'
