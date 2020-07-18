@@ -141,6 +141,11 @@ export default function commonjs(options = {}) {
         return code;
       }
 
+      // commonjsHelpers?commonjsRegister
+      if (id.startsWith(HELPERS_ID)) {
+        return `export {${id.split('?')[1]} as default} from '${HELPERS_ID}';`;
+      }
+
       // generate proxy modules
       if (id.endsWith(EXTERNAL_SUFFIX)) {
         const actualId = getIdFromExternalProxyId(id);
@@ -154,7 +159,7 @@ export default function commonjs(options = {}) {
       }
 
       if (id === DYNAMIC_PACKAGES_ID) {
-        let code = `const { commonjsRegister } = require('${HELPERS_ID}');`;
+        let code = `const commonjsRegister = require('${HELPERS_ID}?commonjsRegister');`;
         for (const dir of dynamicRequireModuleDirPaths) {
           let entryPoint = 'index.js';
 
@@ -187,7 +192,7 @@ export default function commonjs(options = {}) {
       const normalizedPath = normalizePathSlashes(actualId);
 
       if (isDynamicJson) {
-        return `require('${HELPERS_ID}').commonjsRegister(${JSON.stringify(
+        return `const commonjsRegister = require('${HELPERS_ID}?commonjsRegister');\ncommonjsRegister(${JSON.stringify(
           getVirtualPathForDynamicRequirePath(normalizedPath, commonDir)
         )}, function (module, exports) {
   module.exports = require(${JSON.stringify(normalizedPath)});
@@ -198,7 +203,7 @@ export default function commonjs(options = {}) {
         // Try our best to still export the module fully.
         // The commonjs polyfill should take care of circular references.
 
-        return `require('${HELPERS_ID}').commonjsRegister(${JSON.stringify(
+        return `const commonjsRegister = require('${HELPERS_ID}?commonjsRegister');\ncommonjsRegister(${JSON.stringify(
           getVirtualPathForDynamicRequirePath(normalizedPath, commonDir)
         )}, function (module, exports) {
   ${readFileSync(normalizedPath, { encoding: 'utf8' })}
