@@ -6,3 +6,10 @@ var foo = function () {
 };
 
 var input = 42;
+
+var input_1 = {
+
+};
+
+export default input_1;
+export { input_1 as __moduleExports };

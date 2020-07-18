@@ -105,8 +105,6 @@ export function transformCommonjs(
   parse,
   code,
   id,
-  isEntry,
-  hasImporters,
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
@@ -577,7 +575,7 @@ export function transformCommonjs(
   let wrapperEnd = '';
 
   const moduleName = deconflict(scope, globals, getName(id));
-  if ((!isEntry || hasImporters) && !isEsModule) {
+  if (!isEsModule) {
     const exportModuleExports = {
       str: `export { ${moduleName} as __moduleExports };`,
       name: '__moduleExports'
@@ -647,23 +645,12 @@ export function transformCommonjs(
       }
     }
 
-    if (!hasDefaultExport && (names.length || ((!isEntry || hasImporters) && !isEsModule))) {
+    if (!(isEsModule || hasDefaultExport)) {
       wrapperEnd = `\n\nvar ${moduleName} = {\n${names
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n};`;
     }
   }
-
-  const defaultExport = `export default ${moduleName};`;
-
-  const named = namedExportDeclarations
-    .filter((x) => x.name !== 'default' || !hasDefaultExport)
-    .map((x) => x.str);
-
-  const exportBlock = `\n\n${(isEsModule ? [] : [defaultExport])
-    .concat(named)
-    .concat(hasDefaultExport ? defaultExportPropertyAssignments : [])
-    .join('\n')}`;
 
   magicString
     .trim()
@@ -671,14 +658,24 @@ export function transformCommonjs(
     .trim()
     .append(wrapperEnd);
 
-  const injectExportBlock =
-    hasDefaultExport || named.length > 0 || shouldWrap || !isEntry || hasImporters;
-  if (injectExportBlock) {
-    magicString.append(exportBlock);
-  }
+  const defaultExport =
+    code.indexOf('__esModule') >= 0
+      ? `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
+      : `export default ${moduleName};`;
+
+  const named = namedExportDeclarations
+    .filter((x) => x.name !== 'default' || !hasDefaultExport)
+    .map((x) => x.str);
+
+  magicString.append(
+    `\n\n${(isEsModule ? [] : [defaultExport])
+      .concat(named)
+      .concat(hasDefaultExport ? defaultExportPropertyAssignments : [])
+      .join('\n')}`
+  );
 
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
 
-  return { code, map, syntheticNamedExports: injectExportBlock };
+  return { code, map, syntheticNamedExports: '__moduleExports' };
 }
