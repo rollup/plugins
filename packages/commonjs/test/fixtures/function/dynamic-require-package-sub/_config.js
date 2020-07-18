@@ -1,10 +1,12 @@
+const path = require('path');
+
 const json = require('@rollup/plugin-json');
-const nodeResolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
 module.exports = {
-  input: 'sub/entry.js',
   description: 'resolves imports of node_modules from subdirectories',
   options: {
+    input: path.join(__dirname, 'sub/entry.js'),
     plugins: [nodeResolve(), json()]
   },
   pluginOptions: {

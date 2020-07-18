@@ -1,5 +1,5 @@
 const json = require('@rollup/plugin-json');
-const nodeResolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
 module.exports = {
   description: 'resolves imports of directories via package.json files',

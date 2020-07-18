@@ -26,6 +26,7 @@ test('generates a sourcemap', async (t) => {
   const {
     output: [{ code, map }]
   } = await bundle.generate({
+    exports: 'auto',
     format: 'cjs',
     sourcemap: true,
     sourcemapFile: path.resolve('bundle.js')
@@ -57,6 +58,7 @@ test('supports an array of multiple entry points', async (t) => {
   });
 
   const { output } = await bundle.generate({
+    exports: 'auto',
     format: 'cjs',
     chunkFileNames: '[name].js'
   });
@@ -81,6 +83,7 @@ test('supports an object of multiple entry points', async (t) => {
   });
 
   const { output } = await bundle.generate({
+    exports: 'auto',
     format: 'cjs',
     chunkFileNames: '[name].js'
   });
@@ -163,6 +166,7 @@ test('handles successive builds', async (t) => {
     plugins: [plugin]
   });
   await bundle.generate({
+    exports: 'auto',
     format: 'cjs'
   });
 
@@ -634,7 +638,7 @@ test('logs a warning when the deprecated namedExports option is used', async (t)
   let message;
   const bundle = await rollup({
     onwarn(warning) {
-      message = warning.message;
+      ({ message } = warning);
     },
     input: 'fixtures/samples/sourcemap/main.js',
     plugins: [commonjs({ namedExports: { foo: ['bar'] } })]
