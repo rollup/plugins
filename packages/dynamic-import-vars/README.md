@@ -106,6 +106,14 @@ Some example patterns and the glob they produce:
 './locales/' + `${foo + bar}.js` -> './locales/*.js'
 ```
 
+```js
+'./locales/'.concat(locale, '.js') -> './locales/*.js'
+```
+
+```js
+'./'.concat(folder, '/').concat(name, '.js') -> './*/*.js'
+```
+
 Code that looks like this:
 
 ```js
