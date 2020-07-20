@@ -14,4 +14,4 @@ closeComment: >
   Hey folks. This issue hasn't received any traction for 60 days, so we're going to close this for housekeeping.
   If this is still an ongoing issue, please do consider contributing a Pull Request to resolve it. Further
   discussion is always welcome even with the issue closed. If anything actionable is posted in the comments,
-  we'll consider reopening it.# Comment to post when closing a stale issue.  [ⓘ](https://github.com/probot/stale#is-closing-stale-issues-really-a-good-idea)
+  we'll consider reopening it.  [ⓘ](https://github.com/probot/stale#is-closing-stale-issues-really-a-good-idea)
