@@ -1,4 +1,4 @@
-const nodeResolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
 module.exports = {
   description: 'returns the same module instance if required directly or via package.json/index.js',

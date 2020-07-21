@@ -26,6 +26,7 @@ test('generates a sourcemap', async (t) => {
   const {
     output: [{ code, map }]
   } = await bundle.generate({
+    exports: 'auto',
     format: 'cjs',
     sourcemap: true,
     sourcemapFile: path.resolve('bundle.js')
@@ -57,6 +58,7 @@ test('supports an array of multiple entry points', async (t) => {
   });
 
   const { output } = await bundle.generate({
+    exports: 'auto',
     format: 'cjs',
     chunkFileNames: '[name].js'
   });
@@ -81,6 +83,7 @@ test('supports an object of multiple entry points', async (t) => {
   });
 
   const { output } = await bundle.generate({
+    exports: 'auto',
     format: 'cjs',
     chunkFileNames: '[name].js'
   });
@@ -153,7 +156,7 @@ test('handles transpiled CommonJS modules', async (t) => {
   const fn = new Function('module', 'exports', code);
   fn(module, module.exports);
 
-  t.deepEqual(module.exports, { __esModule: true, default: 'foobar' }, code);
+  t.is(module.exports, 'foobar', code);
 });
 
 test('handles successive builds', async (t) => {
@@ -163,6 +166,7 @@ test('handles successive builds', async (t) => {
     plugins: [plugin]
   });
   await bundle.generate({
+    exports: 'auto',
     format: 'cjs'
   });
 
@@ -177,7 +181,7 @@ test('handles successive builds', async (t) => {
   const fn = new Function('module', 'exports', code);
   fn(module, module.exports);
 
-  t.deepEqual(module.exports, { __esModule: true, default: 'foobar' }, code);
+  t.is(module.exports, 'foobar', code);
 });
 
 test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) => {
@@ -384,19 +388,7 @@ test('prefers to set name using directory for index files', async (t) => {
   t.not(code.indexOf('var nonIndex'), -1);
 });
 
-test('does not misassign default when consuming rollup output', async (t) => {
-  // Issue #224
-  const bundle = await rollup({
-    input: 'fixtures/samples/use-own-output/main.js',
-    plugins: [commonjs()]
-  });
-
-  const window = {};
-  await executeBundle(bundle, t, { context: { window } });
-  t.not(window.b.default, undefined);
-});
-
-test('does not warn even if the ES module not export "default"', async (t) => {
+test('does not warn even if the ES module does not export "default"', async (t) => {
   const warns = [];
   await rollup({
     input: 'fixtures/samples/es-modules-without-default-export/main.js',
@@ -634,7 +626,7 @@ test('logs a warning when the deprecated namedExports option is used', async (t)
   let message;
   const bundle = await rollup({
     onwarn(warning) {
-      message = warning.message;
+      ({ message } = warning);
     },
     input: 'fixtures/samples/sourcemap/main.js',
     plugins: [commonjs({ namedExports: { foo: ['bar'] } })]
