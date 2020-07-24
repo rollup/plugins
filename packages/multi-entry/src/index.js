@@ -2,7 +2,13 @@
 
 import matched from 'matched';
 
-const entry = '\0rollup:plugin-multi-entry:entry-point';
+let entry;
+if (process.platform === "win32") {
+  // the colon is different
+	entry = '\0rollup꞉plugin-multi-entry꞉entry-point';
+} else {
+	entry = '\0rollup:plugin-multi-entry:entry-point';
+}
 
 export default function multiEntry(conf) {
   let include = [];
