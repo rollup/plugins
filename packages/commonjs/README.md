@@ -46,7 +46,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ### `dynamicRequireTargets`
 
-Type: `String|Array[String]`<br>
+Type: `string | string[]`<br>
 Default: `[]`
 
 Some modules contain dynamic `require` calls, or require modules that contain circular dependencies, which are not handled well by static imports.
@@ -73,52 +73,148 @@ commonjs({
 
 ### `exclude`
 
-Type: `String` | `Array[...String]`<br>
+Type: `string | string[]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default non-CommonJS modules are ignored.
 
 ### `include`
 
-Type: `String` | `Array[...String]`<br>
+Type: `string | string[]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default CommonJS modules are targeted.
 
 ### `extensions`
 
-Type: `Array[...String]`<br>
+Type: `string[]`<br>
 Default: `['.js']`
 
 Search for extensions other than .js in the order specified.
 
 ### `ignoreGlobal`
 
-Type: `Boolean`<br>
+Type: `boolean`<br>
 Default: `false`
 
 If true, uses of `global` won't be dealt with by this plugin.
 
 ### `sourceMap`
 
-Type: `Boolean`<br>
+Type: `boolean`<br>
 Default: `true`
 
 If false, skips source map generation for CommonJS modules.
 
 ### `transformMixedEsModules`
 
-Type: `Boolean`<br>
+Type: `boolean`<br>
 Default: `false`
 
 Instructs the plugin whether or not to enable mixed module transformations. This is useful in scenarios with mixed ES and CommonJS modules. Set to `true` if it's known that `require` calls should be transformed, or `false` if the code contains env detection and the `require` should survive a transformation.
 
 ### `ignore`
 
-Type: `Array[...String | (String) => Boolean]`<br>
+Type: `string[] | (id: string) => boolean`<br>
 Default: `[]`
 
 Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function. Only use this option if you know what you're doing!
+
+### `requireReturnsDefault`
+
+Type: `boolean | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>
+Default: `false`
+
+Controls what is returned when requiring an ES module or external dependency from a CommonJS file. By default, this plugin will render it as a namespace import, i.e.
+
+```js
+// input
+const foo = require('foo');
+
+// output
+import * as foo from 'foo';
+```
+
+This is in line with how other bundlers handle this situation and is also the most likely behaviour in case Node should ever support this. However there are some situations where this may not be desired:
+  
+- There is code in an external dependency that cannot be changed where a `require` statement expects the default export to be returned.
+- You want to import an external dependency that is actually CommonJS and want your generated code to be able to run natively in NodeJS 14+. Node can only import a default export from a CommonJS file so rendering a namespace import would not work.
+- If the imported module is in the same bundle, Rollup will generate a namespace object for the imported module which can increase bundle size unnecessarily:
+
+  ```js
+  // input: main.js
+  const dep = require('./dep.js');
+  console.log(dep.default);
+
+  // input: dep.js
+  export default 'foo';
+  
+  // output
+  var dep = 'foo';
+  
+  var dep$1 = /*#__PURE__*/Object.freeze({
+  	__proto__: null,
+  	'default': dep
+  });
+  
+  console.log(dep$1.default);
+  ```
+
+For these situations, you can change Rollup's behaviour either globally or per module. To change it globally, set the `requireReturnsDefault` option to one of the following values:
+
+- `false`: This is the default, requiring an ES module returns its namespace. For external dependencies, no additional interop code is generated:
+
+  ```js
+  // input
+  const dep = require('dep');
+  console.log(dep);
+
+  // output
+  import * as dep from 'dep';
+  
+  console.log(dep);
+  ```
+  
+- `"auto"`: This is complementary to how [`output.exports`](https://rollupjs.org/guide/en/#outputexports): `"auto"` works in Rollup: If a module has a default export and no named exports, requiring that module returns the default export. In all other cases, the namespace is returned. For external dependencies, a corresponding interop helper is added:
+
+  ```js
+  // output
+  import * as dep$1 from 'dep';
+  
+  function getDefaultExportFromNamespaceIfNotNamed (n) {
+    return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
+  }
+  
+  var dep = getDefaultExportFromNamespaceIfNotNamed(dep$1);
+  
+  console.log(dep);
+  ```
+
+- `"preferred"`: If a module has a default export, requiring that module always returns the default export, no matter whether additional named exports exist. This is similar to how previous versions of this plugin worked. Again for external dependencies, an interop helper is added:
+
+  ```js
+  // output
+  import * as dep$1 from 'dep';
+  
+  function getDefaultExportFromNamespaceIfPresent (n) {
+    return n && Object.prototype.hasOwnProperty.call(n, 'default') ? n['default'] : n;
+  }
+  
+  var dep = getDefaultExportFromNamespaceIfPresent(dep$1);
+  
+  console.log(dep);
+  ```
+
+- `true`: This will always try to return the default export on require without checking if it actually exists. This can throw at build time if there is no default export. The advantage over the other options is that, like `false`, this does not add an interop helper for external dependencies, keeping the code lean:
+
+  ```js
+  // output
+  import dep from 'dep';
+  
+  console.log(dep);
+  ```
+
+To change this for individual modules, you can supply a function for `requireReturnsDefault` instead. This function will then be called once for each required ES module or external dependency with the corresponding id and allows you to return different values for different modules.
 
 ## Using with @rollup/plugin-node-resolve
 

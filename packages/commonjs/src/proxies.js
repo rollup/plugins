@@ -18,9 +18,9 @@ export function getUnknownRequireProxy(id, requireReturnsDefault) {
   const name = getName(id);
   const exported =
     requireReturnsDefault === 'auto'
-      ? `import {getDefaultExportFromNamespaceIfNotNamed} from "${HELPERS_ID}"; export default getDefaultExportFromNamespaceIfNotNamed(${name})`
+      ? `import {getDefaultExportFromNamespaceIfNotNamed} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(${name})`
       : requireReturnsDefault === 'preferred'
-      ? `import {getDefaultExportFromNamespaceIfPresent} from "${HELPERS_ID}"; export default getDefaultExportFromNamespaceIfPresent(${name})`
+      ? `import {getDefaultExportFromNamespaceIfPresent} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfPresent(${name})`
       : `export default ${name}`;
   return `import * as ${name} from ${JSON.stringify(id)}; ${exported}`;
 }

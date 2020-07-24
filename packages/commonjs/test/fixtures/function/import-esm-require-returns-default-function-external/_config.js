@@ -1,4 +1,3 @@
-// TODO Lukas do the same with externals
 module.exports = {
   description: 'allows configuring requireReturnsDefault for externals with a function',
   options: {
