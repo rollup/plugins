@@ -1,6 +1,7 @@
-import * as x from './dep';
+import * as external from 'external-esm-named';
+import * as dep from './dep';
 
-t.deepEqual(x, {
+t.deepEqual(dep, {
   named: 'named',
   // Technically, this should ideally not exist, or if we cannot avoid it due
   // to runtime default export detection, it should probably be undefined. We
@@ -8,4 +9,8 @@ t.deepEqual(x, {
   // rollup/rollup-plugin-commonjs#224 until the remaining Rollup interop has
   // been updated
   default: { named: 'named' }
+});
+
+t.deepEqual(external, {
+  foo: 'foo'
 });

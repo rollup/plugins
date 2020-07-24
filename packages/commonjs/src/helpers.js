@@ -45,8 +45,12 @@ export function createCommonjsModule(fn, basedir, module) {
 	}, fn(module, module.exports), module.exports;
 }
 
-export function getCjsExportFromNamespace (n) {
-	return n && n['default'] || n;
+export function getDefaultExportFromNamespaceIfPresent (n) {
+	return n && Object.prototype.hasOwnProperty.call(n, 'default') ? n['default'] : n;
+}
+
+export function getDefaultExportFromNamespaceIfNotNamed (n) {
+	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
 }
 `;
 
