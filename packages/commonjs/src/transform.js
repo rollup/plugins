@@ -1,19 +1,19 @@
 /* eslint-disable no-param-reassign, no-shadow, no-underscore-dangle, no-continue */
-import { resolve, dirname } from 'path';
 
+import { dirname, resolve } from 'path';
+
+import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
-import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
-
 import { sync as nodeResolveSync } from 'resolve';
 
 import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
 import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_REGISTER_PREFIX,
   getProxyId,
   getVirtualPathForDynamicRequirePath,
-  HELPERS_ID,
-  DYNAMIC_REGISTER_PREFIX,
-  DYNAMIC_JSON_PREFIX
+  HELPERS_ID
 } from './helpers';
 import { getName } from './utils';
 
@@ -203,16 +203,12 @@ export function transformCommonjs(
 
   function isStaticRequireStatement(node) {
     if (!isRequireStatement(node)) return false;
-    if (hasDynamicArguments(node)) return false;
-    return true;
+    return !hasDynamicArguments(node);
   }
 
   function isNodeRequireStatement(parent) {
     const reservedMethod = ['resolve', 'cache', 'main'];
-    if (parent && parent.property && reservedMethod.indexOf(parent.property.name) > -1) {
-      return true;
-    }
-    return false;
+    return !!(parent && parent.property && reservedMethod.indexOf(parent.property.name) > -1);
   }
 
   function isIgnoredRequireStatement(requiredNode) {

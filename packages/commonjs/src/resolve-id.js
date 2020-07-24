@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign, no-undefined */
+
 import { statSync } from 'fs';
 import { dirname, resolve, sep } from 'path';
 
