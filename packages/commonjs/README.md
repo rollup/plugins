@@ -115,10 +115,31 @@ Instructs the plugin whether or not to enable mixed module transformations. This
 
 ### `ignore`
 
-Type: `string[] | (id: string) => boolean`<br>
+Type: `string[] | ((id: string) => boolean)`<br>
 Default: `[]`
 
 Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function. Only use this option if you know what you're doing!
+
+### `esmExternals`
+
+Type: `boolean | string[] || ((id: string) => boolean)`
+Default: `false`
+
+Controls how imports from external dependencies are rendered. By default, all external dependencies are assumed to be CommonJS. This means they are rendered as default imports to be compatible with e.g. NodeJS where ES modules can only import a default export from a CommonJS dependency:
+
+```js
+// input
+const foo = require('foo');
+
+// output
+import foo from 'foo';
+```
+
+This is likely not desired for ES module dependencies: Here `require` should usually return the namespace to be compatible with how bundled modules are handled.
+
+If you set `esmExternals` to `true`, all external dependencies are assumed to be ES modules and will adhere to the `requireReturnsDefault` option. If that option is not set, they will be rendered as namespace imports.
+
+You can also supply an array of ids that are to be treated as ES modules, or a function that will be passed each external id to determine if it is an ES module.
 
 ### `requireReturnsDefault`
 
@@ -137,8 +158,7 @@ import * as foo from 'foo';
 
 This is in line with how other bundlers handle this situation and is also the most likely behaviour in case Node should ever support this. However there are some situations where this may not be desired:
   
-- There is code in an external dependency that cannot be changed where a `require` statement expects the default export to be returned.
-- You want to import an external dependency that is actually CommonJS and want your generated code to be able to run natively in NodeJS 14+. Node can only import a default export from a CommonJS file so rendering a namespace import would not work.
+- There is code in an external dependency that cannot be changed where a `require` statement expects the default export to be returned from an ES module.
 - If the imported module is in the same bundle, Rollup will generate a namespace object for the imported module which can increase bundle size unnecessarily:
 
   ```js
@@ -162,7 +182,7 @@ This is in line with how other bundlers handle this situation and is also the mo
 
 For these situations, you can change Rollup's behaviour either globally or per module. To change it globally, set the `requireReturnsDefault` option to one of the following values:
 
-- `false`: This is the default, requiring an ES module returns its namespace. For external dependencies, no additional interop code is generated:
+- `false`: This is the default, requiring an ES module returns its namespace. For external dependencies when using `esmExternals: true`, no additional interop code is generated:
 
   ```js
   // input
@@ -175,7 +195,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
   console.log(dep);
   ```
   
-- `"auto"`: This is complementary to how [`output.exports`](https://rollupjs.org/guide/en/#outputexports): `"auto"` works in Rollup: If a module has a default export and no named exports, requiring that module returns the default export. In all other cases, the namespace is returned. For external dependencies, a corresponding interop helper is added:
+- `"auto"`: This is complementary to how [`output.exports`](https://rollupjs.org/guide/en/#outputexports): `"auto"` works in Rollup: If a module has a default export and no named exports, requiring that module returns the default export. In all other cases, the namespace is returned. For external dependencies when using `esmExternals: true`, a corresponding interop helper is added:
 
   ```js
   // output
@@ -190,7 +210,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
   console.log(dep);
   ```
 
-- `"preferred"`: If a module has a default export, requiring that module always returns the default export, no matter whether additional named exports exist. This is similar to how previous versions of this plugin worked. Again for external dependencies, an interop helper is added:
+- `"preferred"`: If a module has a default export, requiring that module always returns the default export, no matter whether additional named exports exist. This is similar to how previous versions of this plugin worked. Again for external dependencies when using `esmExternals: true`, an interop helper is added:
 
   ```js
   // output
@@ -205,7 +225,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
   console.log(dep);
   ```
 
-- `true`: This will always try to return the default export on require without checking if it actually exists. This can throw at build time if there is no default export. The advantage over the other options is that, like `false`, this does not add an interop helper for external dependencies, keeping the code lean:
+- `true`: This will always try to return the default export on require without checking if it actually exists. This can throw at build time if there is no default export. This is how external dependencies are handled when `esmExternals` is not used. The advantage over the other options is that, like `false`, this does not add an interop helper for external dependencies, keeping the code lean:
 
   ```js
   // output

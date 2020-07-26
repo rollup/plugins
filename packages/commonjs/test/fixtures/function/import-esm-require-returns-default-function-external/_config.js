@@ -8,6 +8,7 @@ module.exports = {
       if (id === 'external-esm-mixed') return true;
       if (id === 'external-esm-default') return false;
       return 'auto';
-    }
+    },
+    esmExternals: true
   }
 };

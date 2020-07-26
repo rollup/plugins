@@ -1,10 +1,6 @@
 const assert = require('assert');
 
-const called = {
-  'main.js': 0,
-  'both.js': 0,
-  'other.js': 0
-};
+const called = {};
 
 module.exports = {
   description: 'only calls a requireReturnsDefault function once per id',
@@ -37,7 +33,7 @@ module.exports = {
     requireReturnsDefault: (id) => {
       const [prefix, name] = id.split('_');
       if (prefix === 'dep') {
-        called[name] += 1;
+        called[name] = (called[name] || 0) + 1;
         return 'preferred';
       }
       return false;

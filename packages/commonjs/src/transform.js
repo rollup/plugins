@@ -85,7 +85,6 @@ export function checkEsModule(parse, code, id) {
       }
     } else if (node.type === 'ExportAllDeclaration') {
       isEsModule = true;
-      // TODO Lukas test
       if (node.exported && node.exported.name === 'default') {
         hasDefaultExport = true;
       } else {

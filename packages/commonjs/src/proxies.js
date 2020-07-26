@@ -11,7 +11,6 @@ export function getSpecificHelperProxy(id) {
 }
 
 export function getUnknownRequireProxy(id, requireReturnsDefault) {
-  // TODO Lukas test!
   if (requireReturnsDefault === true || id.endsWith('.json')) {
     return `export {default} from ${JSON.stringify(id)};`;
   }
@@ -46,18 +45,11 @@ export async function getStaticRequireProxy(
   id,
   requireReturnsDefault,
   esModulesWithDefaultExport,
-  esModulesWithNamedExports,
-  dynamicRequireModuleSet,
-  commonDir
+  esModulesWithNamedExports
 ) {
   const name = getName(id);
   const isCjs = await getIsCjsPromise(id);
-  // TODO Lukas make sure all sub-cases are covered
-  if (dynamicRequireModuleSet.has(normalizePathSlashes(id)) && !id.endsWith('.json')) {
-    return `import {commonjsRequire} from '${HELPERS_ID}'; const ${name} = commonjsRequire(${JSON.stringify(
-      getVirtualPathForDynamicRequirePath(normalizePathSlashes(id), commonDir)
-    )}); export default (${name} && ${name}['default']) || ${name}`;
-  } else if (isCjs) {
+  if (isCjs) {
     return `import { __moduleExports } from ${JSON.stringify(id)}; export default __moduleExports;`;
   } else if (isCjs === null) {
     return getUnknownRequireProxy(id, requireReturnsDefault);

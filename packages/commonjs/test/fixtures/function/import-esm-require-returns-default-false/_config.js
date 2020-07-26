@@ -5,6 +5,7 @@ module.exports = {
     external: ['external-esm-named', 'external-esm-mixed', 'external-esm-default']
   },
   pluginOptions: {
-    requireReturnsDefault: false
+    requireReturnsDefault: false,
+    esmExternals: true
   }
 };

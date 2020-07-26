@@ -36,12 +36,22 @@ import {
 export default function commonjs(options = {}) {
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
-  // TODO Lukas document values: true, 'preferred', 'auto', false
-  const { ignoreGlobal, requireReturnsDefault: requireReturnsDefaultOption } = options;
+  const {
+    ignoreGlobal,
+    requireReturnsDefault: requireReturnsDefaultOption,
+    esmExternals
+  } = options;
   const getRequireReturnsDefault =
     typeof requireReturnsDefaultOption === 'function'
       ? requireReturnsDefaultOption
       : () => requireReturnsDefaultOption;
+  let esmExternalIds;
+  const isEsmExternal =
+    typeof esmExternals === 'function'
+      ? esmExternals
+      : Array.isArray(esmExternals)
+      ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
+      : () => esmExternals;
 
   const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
     options.dynamicRequireTargets
@@ -137,7 +147,10 @@ export default function commonjs(options = {}) {
 
       if (id.endsWith(EXTERNAL_SUFFIX)) {
         const actualId = getIdFromExternalProxyId(id);
-        return getUnknownRequireProxy(actualId, getRequireReturnsDefault(actualId));
+        return getUnknownRequireProxy(
+          actualId,
+          isEsmExternal(actualId) ? getRequireReturnsDefault(actualId) : true
+        );
       }
 
       if (id === DYNAMIC_PACKAGES_ID) {
@@ -159,9 +172,7 @@ export default function commonjs(options = {}) {
           actualId,
           getRequireReturnsDefault(actualId),
           esModulesWithDefaultExport,
-          esModulesWithNamedExports,
-          dynamicRequireModuleSet,
-          commonDir
+          esModulesWithNamedExports
         );
       }
 
