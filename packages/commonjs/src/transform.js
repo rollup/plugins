@@ -691,5 +691,5 @@ export function transformCommonjs(
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
 
-  return { code, map, syntheticNamedExports: '__moduleExports' };
+  return { code, map, syntheticNamedExports: isEsModule ? false : '__moduleExports' };
 }
