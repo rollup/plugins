@@ -45,6 +45,7 @@ const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
       supportsStaticESM: true,
       supportsDynamicImport: true,
       supportsTopLevelAwait: true,
+      supportsExportNamespaceFrom: true,
       ...rest.caller
     }
   });
