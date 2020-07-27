@@ -45,9 +45,7 @@ export default function getResolveId(extensions) {
 
   function resolveId(importee, importer) {
     const isProxyModule = importee.endsWith(PROXY_SUFFIX);
-    if (isProxyModule) {
-      importee = getIdFromProxyId(importee);
-    } else if (importee.startsWith('\0')) {
+    if (importee.startsWith('\0')) {
       if (
         importee.startsWith(HELPERS_ID) ||
         importee === DYNAMIC_PACKAGES_ID ||
@@ -56,6 +54,8 @@ export default function getResolveId(extensions) {
         return importee;
       }
       return null;
+    } else if (isProxyModule) {
+      importee = getIdFromProxyId(importee);
     }
 
     if (importee.startsWith(DYNAMIC_JSON_PREFIX)) {
