@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/rollup/plugins/issues"
   },
-  "main": "./dist/cjs/index.js",
+  "main": "./dist/index.js",
   "engines": {
     "node": ">= 8.0.0"
   },
@@ -76,10 +76,10 @@
     ]
   },
   "exports": {
-    "require": "./dist/cjs/index.js",
-    "import": "./dist/es/index.js"
+    "require": "./dist/index.js",
+    "import": "./dist/pluginutils.mjs"
   },
-  "module": "./dist/es/index.js",
+  "module": "./dist/pluginutils.mjs",
   "nyc": {
     "extension": [
       ".js",

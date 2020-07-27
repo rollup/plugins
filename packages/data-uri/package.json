@@ -69,6 +69,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js",
+  "module": "dist/data-uri.mjs",
   "types": "types/index.d.ts"
 }

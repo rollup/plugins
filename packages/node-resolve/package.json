@@ -10,7 +10,7 @@
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/node-resolve/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "./dist/cjs/index.js",
+  "main": "./dist/index.js",
   "engines": {
     "node": ">= 8.0.0"
   },
@@ -77,10 +77,10 @@
     ]
   },
   "exports": {
-    "require": "./dist/cjs/index.js",
-    "import": "./dist/es/index.js"
+    "require": "./dist/index.js",
+    "import": "./dist/node-resolve.mjs"
   },
-  "module": "./dist/es/index.js",
+  "module": "./dist/node-resolve.mjs",
   "type": "commonjs",
   "types": "types/index.d.ts"
 }

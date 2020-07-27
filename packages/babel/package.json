@@ -77,7 +77,7 @@
     "Bogdan Chadkin <trysound@yandex.ru>",
     "Mateusz Burzyński <mateuszburzynski@gmail.com> (https://github.com/Andarist)"
   ],
-  "module": "dist/index.es.js",
+  "module": "dist/babel.mjs",
   "peerDependenciesMeta": {
     "@types/babel__core": {
       "optional": true

@@ -78,6 +78,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js",
+  "module": "dist/commonjs.mjs",
   "types": "types/index.d.ts"
 }

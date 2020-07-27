@@ -77,6 +77,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js",
+  "module": "dist/itypescript.mjs",
   "types": "types/index.d.ts"
 }

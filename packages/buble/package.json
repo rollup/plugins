@@ -76,6 +76,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/rollup-plugin-buble.es.js",
+  "module": "dist/rollup-plugin-buble.mjs",
   "types": "types/index.d.ts"
 }

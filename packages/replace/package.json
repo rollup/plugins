@@ -10,7 +10,7 @@
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/replace#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/rollup-plugin-replace.cjs.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -65,6 +65,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/rollup-plugin-replace.es.js",
+  "module": "dist/replace.mjs",
   "types": "types/index.d.ts"
 }

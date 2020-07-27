@@ -67,6 +67,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js",
+  "module": "dist/auto-install.mjs",
   "types": "types/index.d.ts"
 }

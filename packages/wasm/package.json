@@ -67,6 +67,6 @@
     "Jamen Marz <jamenmarz+gh@gmail.com>",
     "Colin Eberhardt <colin.eberhardt@gmail.com>"
   ],
-  "module": "dist/index.es.js",
+  "module": "dist/wasm.mjs",
   "types": "types/index.d.ts"
 }

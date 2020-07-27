@@ -64,6 +64,6 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js",
+  "module": "dist/run.mjs",
   "types": "types/index.d.ts"
 }

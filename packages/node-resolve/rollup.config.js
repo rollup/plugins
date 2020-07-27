@@ -25,6 +25,6 @@ export default {
   external: Object.keys(pkg.dependencies).concat(['fs', 'path', 'os', 'util']),
   output: [
     { file: pkg.main, format: 'cjs', exports: 'named' },
-    { file: pkg.module, format: 'es', plugins: [emitModulePackageFile()] }
+    { file: pkg.module, format: 'es', plugins: [] }
   ]
 };

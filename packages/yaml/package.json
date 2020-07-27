@@ -62,5 +62,5 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js"
+  "module": "dist/yaml.mjs"
 }

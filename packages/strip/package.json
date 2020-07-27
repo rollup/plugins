@@ -53,5 +53,5 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js"
+  "module": "dist/strip.mjs"
 }

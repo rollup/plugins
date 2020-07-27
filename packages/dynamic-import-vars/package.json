@@ -68,5 +68,5 @@
       "!**/snapshots/**"
     ]
   },
-  "module": "dist/index.es.js"
+  "module": "dist/dynamic-import-vars.mjs"
 }
