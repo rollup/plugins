@@ -173,15 +173,13 @@ importers:
       typescript: ^3.9.7
   packages/data-uri:
     devDependencies:
-      '@rollup/plugin-typescript': 3.0.0_rollup@2.2.0+typescript@3.7.5
-      '@rollup/pluginutils': 3.1.0_rollup@2.2.0
-      rollup: 2.2.0
-      typescript: 3.7.5
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.23.0
+      '@rollup/pluginutils': 3.1.0_rollup@2.23.0
+      rollup: 2.23.0
     specifiers:
-      '@rollup/plugin-typescript': ^3.0.0
+      '@rollup/plugin-typescript': ^5.0.2
       '@rollup/pluginutils': ^3.0.1
-      rollup: ^2.0.0
-      typescript: ^3.7.4
+      rollup: ^2.23.0
   packages/dsv:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.23.0
@@ -1774,21 +1772,6 @@ packages:
       '@rollup/pluginutils': 3.0.8_rollup@2.2.0
       resolve: 1.15.0
       rollup: 2.2.0
-    dev: true
-    engines:
-      node: '>=8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-      tslib: '*'
-      typescript: '>=2.1.0'
-    resolution:
-      integrity: sha512-O6915Ril3+Q0B4P898PULAcPFZfPuatEB/4nox7bnK48ekGrmamMYhMB5tOqWjihEWrw4oz/NL+c+/kS3Fk95g==
-  /@rollup/plugin-typescript/3.0.0_rollup@2.2.0+typescript@3.7.5:
-    dependencies:
-      '@rollup/pluginutils': 3.0.8_rollup@2.2.0
-      resolve: 1.15.0
-      rollup: 2.2.0
-      typescript: 3.7.5
     dev: true
     engines:
       node: '>=8.0.0'
