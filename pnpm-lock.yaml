@@ -411,21 +411,17 @@ importers:
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@2.23.0
       '@rollup/plugin-commonjs': 11.1.0_rollup@2.23.0
-      '@rollup/plugin-typescript': 3.1.1_60bfa7538fbe764c4bb3afdf832138ad
-      buble: 0.19.8
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.23.0
+      buble: 0.20.0
       rollup: 2.23.0
-      tslib: 1.13.0
-      typescript: 3.9.7
     specifiers:
       '@rollup/plugin-buble': ^0.21.3
       '@rollup/plugin-commonjs': ^11.1.0
-      '@rollup/plugin-typescript': ^3.1.1
+      '@rollup/plugin-typescript': ^5.0.2
       '@rollup/pluginutils': ^3.1.0
-      buble: ^0.19.8
+      buble: ^0.20.0
       resolve: ^1.17.0
       rollup: ^2.14.0
-      tslib: ^1.13.0
-      typescript: ^3.9.7
   packages/url:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.23.0
@@ -1686,22 +1682,6 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-LFqKdRLn0ShtQyf6SBYO69bGE1upV6wUhBX0vFOUnLAyzx5cwp8svA0eHUnu8+YU57XOkrMtfG63QOpQx25pHQ==
-  /@rollup/plugin-typescript/3.1.1_60bfa7538fbe764c4bb3afdf832138ad:
-    dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.23.0
-      resolve: 1.17.0
-      rollup: 2.23.0
-      tslib: 1.13.0
-      typescript: 3.9.7
-    dev: true
-    engines:
-      node: '>=8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-      tslib: '*'
-      typescript: '>=2.1.0'
-    resolution:
-      integrity: sha512-VPY1MbzIJT+obpav9Kns4MlipVJ1FuefwzO4s1uCVXAzVWya+bhhNauOmmqR/hy1zj7tePfh3t9iBN+HbIzyRA==
   /@rollup/plugin-typescript/4.1.2_rollup@2.23.0:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.23.0
@@ -2446,20 +2426,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-MINatJ5ZNrLnQ6blGvePd/QOz9Xtu+Ne+x29iQSCHfkU5BugKVJwZKn/iiL8UbpIpa3JhviKjz+XxMo0m2caFQ==
-  /buble/0.19.8:
-    dependencies:
-      acorn: 6.4.1
-      acorn-dynamic-import: 4.0.0_acorn@6.4.1
-      acorn-jsx: 5.2.0_acorn@6.4.1
-      chalk: 2.4.2
-      magic-string: 0.25.7
-      minimist: 1.2.5
-      os-homedir: 2.0.0
-      regexpu-core: 4.7.0
-    dev: true
-    hasBin: true
-    resolution:
-      integrity: sha512-IoGZzrUTY5fKXVkgGHw3QeXFMUNBFv+9l8a4QJKG1JhG3nCMHTdEX1DCOg8568E2Q9qvAQIiSokv6Jsgx8p2cA==
   /buble/0.20.0:
     dependencies:
       acorn: 6.4.1
@@ -5465,13 +5431,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-jCDgm9DqvRcNIAEv2wZPrh7E5PcQiDUnbnWbAfu4NGAE2ZNqPFbDixmWldy1YG2QfLeQhuiu6/h5VRrk6cG50w==
-  /os-homedir/2.0.0:
-    deprecated: This is not needed anymore. Use `require('os').homedir()` instead.
-    dev: true
-    engines:
-      node: '>=0.10.0'
-    resolution:
-      integrity: sha512-saRNz0DSC5C/I++gFIaJTXoFJMRwiP5zHar5vV3xQ2TkgEw6hDCcU5F272JjUylpiVgBrZNQHnfjkLabTfb92Q==
   /os-tmpdir/1.0.2:
     dev: true
     engines:
