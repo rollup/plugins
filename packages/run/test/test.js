@@ -58,6 +58,7 @@ test('takes input from the latest options', async (t) => {
 test('checks entry point facade module', async (t) => {
   const bundle = await rollup({
     input: join(cwd, 'facade-entry/index.js'),
+    preserveEntrySignatures: 'strict',
     plugins: [run()]
   });
   const outputDir = join(cwd, 'output');
