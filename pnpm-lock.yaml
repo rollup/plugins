@@ -447,12 +447,12 @@ importers:
       rollup: ^2.23.0
   packages/wasm:
     devDependencies:
-      '@rollup/plugin-typescript': 4.1.2_rollup@2.23.0
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.23.0
       del-cli: 3.0.1
       rollup: 2.23.0
       source-map: 0.7.3
     specifiers:
-      '@rollup/plugin-typescript': ^4.1.2
+      '@rollup/plugin-typescript': ^5.0.2
       del-cli: ^3.0.1
       rollup: ^2.23.0
       source-map: ^0.7.3
@@ -1646,20 +1646,6 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-LFqKdRLn0ShtQyf6SBYO69bGE1upV6wUhBX0vFOUnLAyzx5cwp8svA0eHUnu8+YU57XOkrMtfG63QOpQx25pHQ==
-  /@rollup/plugin-typescript/4.1.2_rollup@2.23.0:
-    dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.23.0
-      resolve: 1.17.0
-      rollup: 2.23.0
-    dev: true
-    engines:
-      node: '>=8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0
-      tslib: '*'
-      typescript: '>=2.1.0'
-    resolution:
-      integrity: sha512-+7UlGat/99e2JbmGNnIauxwEhYLwrL7adO/tSJxUN57xrrS3Ps+ZzYpLCDGPZJ57j+ZJTZLLN89KXW9JMEB+jg==
   /@rollup/plugin-typescript/5.0.2:
     dependencies:
       '@rollup/pluginutils': 3.1.0

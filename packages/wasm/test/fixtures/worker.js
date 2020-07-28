@@ -8,4 +8,6 @@ const realProcess = process;
 // eslint-disable-next-line no-global-assign, no-undefined
 process = undefined;
 sample({});
+// eslint-disable-next-line no-global-assign
+process = realProcess;
 realProcess.exit(0);
