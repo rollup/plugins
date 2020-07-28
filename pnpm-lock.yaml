@@ -300,7 +300,7 @@ importers:
       '@babel/plugin-transform-typescript': 7.10.5_@babel+core@7.10.5
       '@babel/preset-env': 7.10.4_@babel+core@7.10.5
       '@rollup/plugin-babel': 5.1.0_@babel+core@7.10.5+rollup@2.23.0
-      '@rollup/plugin-commonjs': 13.0.2_rollup@2.23.0
+      '@rollup/plugin-commonjs': 14.0.0_rollup@2.23.0
       '@rollup/plugin-json': 4.1.0_rollup@2.23.0
       es5-ext: 0.10.53
       rollup: 2.23.0
@@ -311,7 +311,7 @@ importers:
       '@babel/plugin-transform-typescript': ^7.10.5
       '@babel/preset-env': ^7.10.4
       '@rollup/plugin-babel': ^5.1.0
-      '@rollup/plugin-commonjs': ^13.0.2
+      '@rollup/plugin-commonjs': ^14.0.0
       '@rollup/plugin-json': ^4.1.0
       '@rollup/pluginutils': ^3.1.0
       '@types/resolve': 1.17.1
@@ -1609,7 +1609,7 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-Ycr12N3ZPN96Fw2STurD21jMqzKwL9QuFhms3SD7KKRK7oaXUsBU9Zt0jL/rOPHiPYisI21/rXGO3jr9BnLHUA==
-  /@rollup/plugin-commonjs/13.0.2_rollup@2.23.0:
+  /@rollup/plugin-commonjs/14.0.0_rollup@2.23.0:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.23.0
       commondir: 1.0.1
@@ -1625,7 +1625,7 @@ packages:
     peerDependencies:
       rollup: ^2.3.4
     resolution:
-      integrity: sha512-9JXf2k8xqvMYfqmhgtB6eCgMN9fbxwF1XDF3mGKJc6pkAmt0jnsqurxQ0tC1akQKNSXCm7c3unQxa3zuxtZ7mQ==
+      integrity: sha512-+PSmD9ePwTAeU106i9FRdc+Zb3XUWyW26mo5Atr2mk82hor8+nPwkztEjFo8/B1fJKfaQDg9aM2bzQkjhi7zOw==
   /@rollup/plugin-json/4.1.0_rollup@2.23.0:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.23.0
