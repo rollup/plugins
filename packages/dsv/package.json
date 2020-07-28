@@ -11,6 +11,7 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/dsv#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -18,7 +19,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --write README.md",
     "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -33,21 +34,23 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@rollup/pluginutils": "^3.0.4",
+    "@rollup/pluginutils": "^3.1.0",
     "d3-dsv": "1.2.0",
     "tosource": "^1.0.0"
   },
   "devDependencies": {
-    "del-cli": "^3.0.0",
-    "rollup": "^2.0.0"
+    "del-cli": "^3.0.1",
+    "rollup": "^2.23.0"
   },
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "module": "dist/index.es.js"
+  }
 }
