@@ -1,1 +1,1 @@
-import noop from 'node-noop'; // eslint-disable-line
+import 'node-noop'; // eslint-disable-line

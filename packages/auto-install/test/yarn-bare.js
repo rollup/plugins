@@ -3,7 +3,7 @@ const { join } = require('path');
 
 const test = require('ava');
 const del = require('del');
-const resolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const { rollup } = require('rollup');
 
 const autoInstall = require('..');
@@ -15,6 +15,7 @@ const input = join(cwd, '../input.js');
 process.chdir(cwd);
 
 test('yarn, bare', async (t) => {
+  t.timeout(30000);
   await rollup({
     input,
     output: {
@@ -24,7 +25,7 @@ test('yarn, bare', async (t) => {
     plugins: [
       // mock the call to yarn here. yarn has had consistent issues in this test env
       autoInstall({ manager: 'yarn', commands: { yarn: 'echo yarn.bare > yarn.lock' } }),
-      resolve()
+      nodeResolve()
     ]
   });
   const lockFile = readFileSync('yarn.lock', 'utf-8');

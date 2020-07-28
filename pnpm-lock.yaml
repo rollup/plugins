@@ -67,17 +67,17 @@ importers:
       slash: ^3.0.0
   packages/auto-install:
     devDependencies:
-      '@rollup/plugin-node-resolve': 7.1.1_rollup@2.2.0
-      '@rollup/plugin-typescript': 3.0.0_rollup@2.2.0
+      '@rollup/plugin-node-resolve': 8.4.0_rollup@2.23.0
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.23.0
       del: 5.1.0
       node-noop: 1.0.0
-      rollup: 2.2.0
+      rollup: 2.23.0
     specifiers:
-      '@rollup/plugin-node-resolve': ^7.0.0
-      '@rollup/plugin-typescript': ^3.0.0
+      '@rollup/plugin-node-resolve': ^8.4.0
+      '@rollup/plugin-typescript': ^5.0.2
       del: ^5.1.0
       node-noop: ^1.0.0
-      rollup: ^2.0.0
+      rollup: ^2.23.0
   packages/babel:
     dependencies:
       '@babel/helper-module-imports': 7.10.4
