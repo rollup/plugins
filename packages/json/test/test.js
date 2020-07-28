@@ -3,7 +3,7 @@ const { readFileSync } = require('fs');
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const resolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
 const { testBundle } = require('../../../util/test');
 
@@ -57,7 +57,7 @@ test('generates named exports', async (t) => {
 test('resolves extensionless imports in conjunction with the node-resolve plugin', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/extensionless/main.js',
-    plugins: [resolve({ extensions: ['.js', '.json'] }), json()]
+    plugins: [nodeResolve({ extensions: ['.js', '.json'] }), json()]
   });
   t.plan(2);
   return testBundle(t, bundle);
