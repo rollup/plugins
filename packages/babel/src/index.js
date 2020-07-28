@@ -203,7 +203,13 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
         } = unpackOutputPluginOptions(pluginOptionsWithOverrides, outputOptions);
         /* eslint-enable no-unused-vars */
 
-        return transformCode(code, babelOptions, overrides, customOptions, this);
+        return transformCode(
+          code,
+          { ...babelOptions, filename: chunk.fileName },
+          overrides,
+          customOptions,
+          this
+        );
       }
     };
   };

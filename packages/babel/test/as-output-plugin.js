@@ -332,7 +332,7 @@ test('allows using Babel to transform to other formats', async (t) => {
       exports: {}
     };
     factory();
-    global.unknown = mod.exports;
+    global.main = mod.exports;
   }
 })(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
@@ -356,4 +356,21 @@ const answer = Math.pow(42, 2);
 console.log(\`the answer is \${answer}\`);
 `
   );
+});
+
+test('passes chunk filename to transform', async (t) => {
+  t.plan(2);
+
+  const customOutputPlugin = createBabelOutputPluginFactory(() => {
+    return {
+      config(cfg) {
+        // eslint-disable-next-line no-undefined
+        t.not(cfg.options.filename, undefined, 'cfg.options.filename wasn’t set');
+        t.is(nodePath.relative(cfg.options.cwd, cfg.options.filename), 'main.js');
+        return cfg.options;
+      }
+    };
+  });
+  const bundle = await rollup({ input: 'fixtures/basic/main.js' });
+  await getCode(bundle, { format: 'cjs', plugins: [customOutputPlugin()] });
 });
