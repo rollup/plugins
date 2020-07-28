@@ -92,7 +92,7 @@ importers:
       '@rollup/plugin-json': 4.1.0_rollup@2.23.0
       '@types/babel__core': 7.1.9
       rollup: 2.23.0
-      source-map: 0.6.1
+      source-map: 0.7.3
     specifiers:
       '@babel/core': ^7.10.5
       '@babel/helper-module-imports': ^7.10.4
@@ -105,7 +105,7 @@ importers:
       '@rollup/pluginutils': ^3.1.0
       '@types/babel__core': ^7.1.9
       rollup: ^2.23.0
-      source-map: ^0.6.1
+      source-map: ^0.7.3
   packages/beep:
     devDependencies:
       rollup: 2.2.0
