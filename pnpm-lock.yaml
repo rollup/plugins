@@ -428,24 +428,16 @@ importers:
       make-dir: 3.1.0
       mime: 2.4.6
     devDependencies:
-      '@babel/core': 7.10.5
-      '@babel/preset-env': 7.10.4_@babel+core@7.10.5
-      '@babel/register': 7.10.5_@babel+core@7.10.5
       del: 5.1.0
-      globby: 10.0.2
+      globby: 11.0.1
       rollup: 2.23.0
-      rollup-plugin-babel: 4.4.0_@babel+core@7.10.5+rollup@2.23.0
     specifiers:
-      '@babel/core': ^7.10.5
-      '@babel/preset-env': ^7.10.4
-      '@babel/register': ^7.10.5
       '@rollup/pluginutils': ^3.1.0
       del: ^5.1.0
-      globby: ^10.0.2
+      globby: ^11.0.1
       make-dir: ^3.1.0
       mime: ^2.4.6
       rollup: ^2.23.0
-      rollup-plugin-babel: ^4.4.0
   packages/virtual:
     devDependencies:
       '@rollup/plugin-node-resolve': 7.1.1_rollup@2.2.0
@@ -1423,19 +1415,6 @@ packages:
       '@babel/core': ^7.0.0-0
     resolution:
       integrity: sha512-Ra3JXOHBq2xd56xSF7lMKXdjBn3T772Y1Wet3yWnkDly9zHvJki029tAFzvAAK5cf4YV3yoxuP61crYRol6SVg==
-  /@babel/register/7.10.5_@babel+core@7.10.5:
-    dependencies:
-      '@babel/core': 7.10.5
-      find-cache-dir: 2.1.0
-      lodash: 4.17.19
-      make-dir: 2.1.0
-      pirates: 4.0.1
-      source-map-support: 0.5.19
-    dev: true
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-    resolution:
-      integrity: sha512-eYHdLv43nyvmPn9bfNfrcC4+iYNwdQ8Pxk1MFJuU/U5LpSYl/PH4dFMazCYZDFVi8ueG3shvO+AQfLrxpYulQw==
   /@babel/runtime/7.10.5:
     dependencies:
       regenerator-runtime: 0.13.7
@@ -3810,16 +3789,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==
-  /find-cache-dir/2.1.0:
-    dependencies:
-      commondir: 1.0.1
-      make-dir: 2.1.0
-      pkg-dir: 3.0.0
-    dev: true
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-Tq6PixE0w/VMFfCgbONnkiQIVol/JJL7nRMi20fqzA4NRs9AfeqMGeRdPi3wIhYkxjeBaWh2rxwapn5Tu3IqOQ==
   /find-cache-dir/3.3.1:
     dependencies:
       commondir: 1.0.1
@@ -4985,6 +4954,7 @@ packages:
     dependencies:
       pify: 4.0.1
       semver: 5.7.1
+    dev: false
     engines:
       node: '>=6'
     resolution:
@@ -5234,6 +5204,7 @@ packages:
     resolution:
       integrity: sha512-bTTRUNlemx6deJa+ZyoCUTRvH3liK5+N6VQZ4NIw90AgDXY6iPnsqplNFf6STcj+ePk0H/xqxnP75Lr0J0Fq3A==
   /node-modules-regexp/1.0.0:
+    dev: false
     engines:
       node: '>=0.10.0'
     resolution:
@@ -5689,6 +5660,7 @@ packages:
   /pirates/4.0.1:
     dependencies:
       node-modules-regexp: 1.0.0
+    dev: false
     engines:
       node: '>= 6'
     resolution:
@@ -5710,14 +5682,6 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-9tXREJ4Z1j7fQo4L1X4Sd3YVM0s=
-  /pkg-dir/3.0.0:
-    dependencies:
-      find-up: 3.0.0
-    dev: true
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-/E57AYkoeQ25qkxMj5PBOVgF8Kiu/h7cYS30Z5+R7WaiCCBfLq58ZI/dSeaEKb9WVJV5n/03QwrN3IeWIFllvw==
   /pkg-dir/4.2.0:
     dependencies:
       find-up: 4.1.0
