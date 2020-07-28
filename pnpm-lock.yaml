@@ -440,11 +440,11 @@ importers:
       rollup: ^2.23.0
   packages/virtual:
     devDependencies:
-      '@rollup/plugin-node-resolve': 7.1.1_rollup@2.2.0
-      rollup: 2.2.0
+      '@rollup/plugin-node-resolve': 8.4.0_rollup@2.23.0
+      rollup: 2.23.0
     specifiers:
-      '@rollup/plugin-node-resolve': ^7.0.0
-      rollup: ^2.0.0
+      '@rollup/plugin-node-resolve': ^8.4.0
+      rollup: ^2.23.0
   packages/wasm:
     devDependencies:
       '@rollup/plugin-typescript': 4.1.2_rollup@2.23.0
@@ -1598,21 +1598,6 @@ packages:
       rollup: ^1.20.0 || ^2.0.0
     resolution:
       integrity: sha512-yfLbTdNS6amI/2OpmbiBoW12vngr5NW2jCJVZSBEz+H5KfUJZ2M7sDjk0U6GOOdCWFVScShte29o9NezJ53TPw==
-  /@rollup/plugin-node-resolve/7.1.1_rollup@2.2.0:
-    dependencies:
-      '@rollup/pluginutils': 3.0.8_rollup@2.2.0
-      '@types/resolve': 0.0.8
-      builtin-modules: 3.1.0
-      is-module: 1.0.0
-      resolve: 1.15.0
-      rollup: 2.2.0
-    dev: true
-    engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-    resolution:
-      integrity: sha512-14ddhD7TnemeHE97a4rLOhobfYvUVcaYuqTnL8Ti7Jxi9V9Jr5LY7Gko4HZ5k4h4vqQM0gBQt6tsp9xXW94WPA==
   /@rollup/plugin-node-resolve/7.1.3_rollup@2.23.0:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.23.0
@@ -1717,17 +1702,6 @@ packages:
       typescript: '>=3.4.0'
     resolution:
       integrity: sha512-CkS028Itwjqm1uLbFVfpJgtVtnNvZ+og/m6UlNRR5wOOnNTWPcVQzOu5xGdEX+WWJxdvWIqUq2uR/RBt2ZipWg==
-  /@rollup/pluginutils/3.0.8_rollup@2.2.0:
-    dependencies:
-      estree-walker: 1.0.1
-      rollup: 2.2.0
-    dev: true
-    engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0
-    resolution:
-      integrity: sha512-rYGeAc4sxcZ+kPG/Tw4/fwJODC3IXHYDH4qusdN/b6aLw5LPUbzpecYbEJh4sVQGPFJxd2dBU4kc1H3oy9/bnw==
   /@rollup/pluginutils/3.1.0:
     dependencies:
       '@types/estree': 0.0.39
@@ -3861,15 +3835,6 @@ packages:
   /fs.realpath/1.0.0:
     resolution:
       integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
-  /fsevents/2.1.2:
-    dev: true
-    engines:
-      node: ^8.16.0 || ^10.6.0 || >=11.0.0
-    optional: true
-    os:
-      - darwin
-    resolution:
-      integrity: sha512-R4wDiBwZ0KzpgOWetKDug1FZcYhqYnUYKtfZYt4mD5SBz76q0KR4Q9o7GIPamsVPGmW3EYPPJ0dOOjvx32ldZA==
   /fsevents/2.1.3:
     engines:
       node: ^8.16.0 || ^10.6.0 || >=11.0.0
@@ -6419,12 +6384,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==
-  /resolve/1.15.0:
-    dependencies:
-      path-parse: 1.0.6
-    dev: true
-    resolution:
-      integrity: sha512-+hTmAldEGE80U2wJJDC1lebb5jWqvTYAfm3YZ1ckk1gBr0MnCqUKlwK1e+anaFljIl+F5tR5IoZcm4ZDA1zMQw==
   /resolve/1.17.0:
     dependencies:
       path-parse: 1.0.6
@@ -6519,15 +6478,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
-  /rollup/2.2.0:
-    dev: true
-    engines:
-      node: '>=10.0.0'
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.1.2
-    resolution:
-      integrity: sha512-iAu/j9/WJ0i+zT0sAMuQnsEbmOKzdQ4Yxu5rbPs9aUCyqveI1Kw3H4Fi9NWfCOpb8luEySD2lDyFWL9CrLE8iw==
   /rollup/2.23.0:
     engines:
       node: '>=10.0.0'
