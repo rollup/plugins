@@ -124,3 +124,16 @@ test('handles relative paths', (t) => {
   t.truthy(filter(resolve('a.js')));
   t.falsy(filter(resolve('foo/a.js')));
 });
+
+test('does not add current working directory when pattern is an absolute path', (t) => {
+  const filter = createFilter([resolve('..', '..', '*')]);
+  t.truthy(filter(resolve('..', '..', 'a')));
+  t.truthy(filter(resolve('..', '..', 'b')));
+  t.falsy(filter(resolve('..', 'c')));
+});
+
+test('does not add current working directory when pattern starts with a glob', (t) => {
+  const filter = createFilter(['**/*']);
+  t.truthy(filter(resolve('a')));
+  t.truthy(filter(resolve('..', '..', 'a')));
+});
