@@ -1,4 +1,5 @@
 import * as babel from '@babel/core';
+import { version } from "rollup/package.json";
 import { createFilter } from '@rollup/pluginutils';
 
 import { BUNDLED, HELPERS } from './constants';
@@ -45,7 +46,8 @@ const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
       supportsStaticESM: true,
       supportsDynamicImport: true,
       supportsTopLevelAwait: true,
-      supportsExportNamespaceFrom: true,
+      // todo: remove version checks for 1.20 - 1.25 when we bump peer deps
+      supportsExportNamespaceFrom: !version.match(/^1\.2[0-5]/),
       ...rest.caller
     }
   });
