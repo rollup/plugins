@@ -1,5 +1,4 @@
 import * as babel from '@babel/core';
-import { VERSION } from "rollup";
 import { createFilter } from '@rollup/pluginutils';
 
 import { BUNDLED, HELPERS } from './constants';
@@ -30,7 +29,7 @@ const unpackOptions = ({
   };
 };
 
-const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
+const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }, rollupVersion) => {
   if (!rest.babelHelpers) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -47,7 +46,7 @@ const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
       supportsDynamicImport: true,
       supportsTopLevelAwait: true,
       // todo: remove version checks for 1.20 - 1.25 when we bump peer deps
-      supportsExportNamespaceFrom: !VERSION.match(/^1\.2[0-5]\./),
+      supportsExportNamespaceFrom: !rollupVersion.match(/^1\.2[0-5]\./),
       ...rest.caller
     }
   });
@@ -93,21 +92,29 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
       overrides
     );
 
-    const {
-      exclude,
-      extensions,
-      babelHelpers,
-      include,
-      skipPreflightCheck,
-      ...babelOptions
-    } = unpackInputPluginOptions(pluginOptionsWithOverrides);
-
-    const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
-    const includeExcludeFilter = createFilter(include, exclude);
-    const filter = (id) => extensionRegExp.test(id) && includeExcludeFilter(id);
-
+    let babelHelpers, babelOptions, filter, skipPreflightCheck;
     return {
       name: 'babel',
+
+      options() {
+        //todo: remove options hook and hoist declarations when version checks are removed
+        let exclude, include, extensions;
+
+        ({
+          exclude,
+          extensions,
+          babelHelpers,
+          include,
+          skipPreflightCheck,
+          ...babelOptions
+        } = unpackInputPluginOptions(pluginOptionsWithOverrides, this.meta.rollupVersion));
+
+        const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
+        const includeExcludeFilter = createFilter(include, exclude);
+        filter = (id) => extensionRegExp.test(id) && includeExcludeFilter(id);
+
+        return null;
+      },
 
       resolveId(id) {
         if (id !== HELPERS) {
