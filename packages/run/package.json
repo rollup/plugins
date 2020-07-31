@@ -11,6 +11,7 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/run/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "engines": {
     "node": ">=8.0.0"
   },
@@ -21,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:json && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:json": "prettier --write tsconfig.json",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
@@ -46,16 +47,19 @@
     "rollup": "^2.0.0"
   },
   "dependencies": {
-    "@types/node": "13.1.6"
+    "@types/node": "14.0.26"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^3.0.0",
+    "@rollup/plugin-typescript": "^5.0.2",
     "del": "^5.1.0",
-    "rollup": "^2.0.0",
-    "sinon": "8.0.4"
+    "rollup": "^2.23.0",
+    "sinon": "9.0.2"
   },
+  "types": "types/index.d.ts",
   "ava": {
-    "compileEnhancements": false,
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/output/**",
@@ -63,7 +67,5 @@
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "module": "dist/index.es.js",
-  "types": "types/index.d.ts"
+  }
 }

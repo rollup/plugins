@@ -11,6 +11,7 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/sucrase/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "engines": {
     "node": ">=8.0.0"
   },
@@ -21,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --write README.md",
     "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -47,14 +48,17 @@
     "rollup": "^1.20.0 || ^2.0.0"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.0.1",
-    "sucrase": "^3.10.1"
+    "@rollup/pluginutils": "^3.1.0",
+    "sucrase": "^3.15.0"
   },
   "devDependencies": {
-    "@rollup/plugin-alias": "^3.1.0",
-    "rollup": "^2.0.0"
+    "@rollup/plugin-alias": "^3.1.1",
+    "rollup": "^2.23.0"
   },
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/output/**",
@@ -62,6 +66,5 @@
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "module": "dist/index.es.js"
+  }
 }

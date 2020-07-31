@@ -1,6 +1,6 @@
 const test = require('ava');
 const rollup = require('rollup');
-const nodeResolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const yamlParser = require('js-yaml');
 
 const { testBundle } = require('../../../util/test');

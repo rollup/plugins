@@ -26,8 +26,12 @@ function templateLiteralToGlob(node) {
 }
 
 function callExpressionToGlob(node) {
-  const callee = node.callee;
-  if (callee.type === 'MemberExpression' && callee.property.type === 'Identifier' && callee.property.name === 'concat') {
+  const { callee } = node;
+  if (
+    callee.type === 'MemberExpression' &&
+    callee.property.type === 'Identifier' &&
+    callee.property.name === 'concat'
+  ) {
     return `${expressionToGlob(callee.object)}${node.arguments.map(expressionToGlob).join('')}`;
   }
   return '*';

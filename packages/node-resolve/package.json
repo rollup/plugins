@@ -11,8 +11,9 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/node-resolve/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 10.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -21,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -57,18 +58,21 @@
     "resolve": "^1.17.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@babel/plugin-transform-typescript": "^7.10.4",
-    "@babel/preset-env": "^7.10.4",
-    "@rollup/plugin-babel": "^5.0.4",
-    "@rollup/plugin-commonjs": "^13.0.0",
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-transform-typescript": "^7.10.5",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "es5-ext": "^0.10.53",
-    "rollup": "^2.12.0",
+    "rollup": "^2.23.0",
     "source-map": "^0.7.3",
     "string-capitalize": "^1.0.1"
   },
+  "types": "types/index.d.ts",
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
@@ -80,7 +84,5 @@
     "require": "./dist/cjs/index.js",
     "import": "./dist/es/index.js"
   },
-  "module": "./dist/es/index.js",
-  "type": "commonjs",
-  "types": "types/index.d.ts"
+  "type": "commonjs"
 }

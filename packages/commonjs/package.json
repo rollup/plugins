@@ -11,6 +11,7 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/commonjs/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "engines": {
     "node": ">= 8.0.0"
   },
@@ -21,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -62,22 +63,23 @@
     "@rollup/plugin-node-resolve": "^8.4.0",
     "acorn": "^7.3.1",
     "locate-character": "^2.0.5",
-    "prettier": "^1.19.1",
     "require-relative": "^0.8.7",
-    "rollup": "^2.22.0",
+    "rollup": "^2.23.0",
     "shx": "^0.3.2",
-    "source-map": "^0.6.1",
+    "source-map": "^0.7.3",
     "source-map-support": "^0.5.19",
     "typescript": "^3.9.7"
   },
+  "types": "types/index.d.ts",
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "module": "dist/index.es.js",
-  "types": "types/index.d.ts"
+  }
 }

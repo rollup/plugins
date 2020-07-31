@@ -76,10 +76,10 @@ It's usually easy enough to convert these to modules. But why bother? You can ju
 ```js
 // vendor/some-library.js
 var someLibrary = {
-  square: function(n) {
+  square: function (n) {
     return n * n;
   },
-  cube: function(n) {
+  cube: function (n) {
     return n * n * n;
   }
 };

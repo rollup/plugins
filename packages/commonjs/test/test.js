@@ -32,7 +32,7 @@ test('generates a sourcemap', async (t) => {
     sourcemapFile: path.resolve('bundle.js')
   });
 
-  const smc = new SourceMapConsumer(map);
+  const smc = await new SourceMapConsumer(map);
   const locator = getLocator(code, { offsetLine: 1 });
 
   let generatedLoc = locator('42');
@@ -315,7 +315,7 @@ test('deconflicts reserved keywords', async (t) => {
     plugins: [commonjs()]
   });
 
-  const reservedProp = (await executeBundle(bundle, { exports: 'named' })).exports.delete;
+  const reservedProp = (await executeBundle(bundle, t, { exports: 'named' })).exports.delete;
   t.is(reservedProp, 'foo');
 });
 
@@ -586,7 +586,7 @@ test('handles array destructuring assignment', async (t) => {
     plugins: [commonjs({ sourceMap: true })]
   });
 
-  const code = await getCodeFromBundle(bundle);
+  const code = await getCodeFromBundle(bundle, { exports: 'named' });
   t.is(
     code,
     `'use strict';

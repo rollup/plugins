@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return, no-param-reassign */
 
-import { promise as matched } from 'matched';
+import matched from 'matched';
 
 const entry = '\0rollup:plugin-multi-entry:entry-point';
 

@@ -13,6 +13,7 @@
     "url": "https://github.com/rollup/plugins/issues"
   },
   "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
   "engines": {
     "node": ">= 8.0.0"
   },
@@ -23,7 +24,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -47,21 +48,23 @@
     "rollup": "^1.20.0||^2.0.0"
   },
   "dependencies": {
-    "@types/estree": "0.0.39",
-    "estree-walker": "^1.0.1",
+    "@types/estree": "0.0.45",
+    "estree-walker": "^2.0.1",
     "picomatch": "^2.2.2"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^11.0.2",
-    "@rollup/plugin-node-resolve": "^7.1.1",
-    "@rollup/plugin-typescript": "^3.0.0",
-    "@types/jest": "^24.9.0",
-    "@types/node": "^12.12.25",
+    "@rollup/plugin-commonjs": "^14.0.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@rollup/plugin-typescript": "^5.0.2",
+    "@types/node": "^14.0.26",
     "@types/picomatch": "^2.2.1",
-    "typescript": "^3.7.5"
+    "rollup": "^2.23.0"
   },
+  "types": "types/index.d.ts",
   "ava": {
-    "compileEnhancements": false,
+    "babel": {
+      "compileEnhancements": false
+    },
     "extensions": [
       "ts"
     ],
@@ -79,13 +82,11 @@
     "require": "./dist/cjs/index.js",
     "import": "./dist/es/index.js"
   },
-  "module": "./dist/es/index.js",
   "nyc": {
     "extension": [
       ".js",
       ".ts"
     ]
   },
-  "type": "commonjs",
-  "types": "types/index.d.ts"
+  "type": "commonjs"
 }

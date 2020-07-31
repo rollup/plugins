@@ -53,6 +53,7 @@ async function generate(input, babelOptions = {}, generateOptions = {}, rollupOp
 
   return getCode(bundle, {
     format: 'cjs',
+    exports: 'auto',
     plugins: [getBabelOutputPlugin(babelOptions)],
     ...generateOptions
   });
@@ -123,12 +124,13 @@ test('generates sourcemap by default', async (t) => {
     output: [{ code, map }]
   } = await bundle.generate({
     format: 'cjs',
+    exports: 'auto',
     plugins: [getBabelOutputPlugin()],
     sourcemap: true
   });
 
   const target = 'log';
-  const smc = new SourceMapConsumer(map);
+  const smc = await new SourceMapConsumer(map);
   const loc = getLocation(code, code.indexOf(target));
   const original = smc.originalPositionFor(loc);
 

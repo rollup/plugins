@@ -3,7 +3,7 @@
  * @param {import('rollup').OutputOptions} [outputOptions]
  */
 const getCode = async (bundle, outputOptions, allFiles = false) => {
-  const { output } = await bundle.generate(outputOptions || { format: 'cjs' });
+  const { output } = await bundle.generate(outputOptions || { format: 'cjs', exports: 'auto' });
 
   if (allFiles) {
     return output.map(({ code, fileName, source, map }) => {
@@ -36,7 +36,7 @@ const getResolvedModules = async (bundle) => {
  * @param {object} args
  */
 const testBundle = async (t, bundle, args = {}) => {
-  const { output } = await bundle.generate({ format: 'cjs' });
+  const { output } = await bundle.generate({ format: 'cjs', exports: 'auto' });
   const [{ code }] = output;
   const module = { exports: {} };
   // as of 1/2/2020 Github Actions + Windows has changed in a way that we must now escape backslashes

@@ -4,7 +4,8 @@ module.exports = {
   input: 'fixtures/error.js',
   output: {
     file: 'output/bundle.js',
-    format: 'cjs'
+    format: 'cjs',
+    exports: 'auto'
   },
   plugins: [beep()]
 };

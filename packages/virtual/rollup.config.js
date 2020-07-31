@@ -7,7 +7,7 @@ export default {
   plugins: [resolve()],
   external: ['path'],
   output: [
-    { format: 'cjs', file: pkg.main },
+    { format: 'cjs', file: pkg.main, exports: 'auto' },
     { format: 'esm', file: pkg.module }
   ]
 };
