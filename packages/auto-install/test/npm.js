@@ -17,7 +17,7 @@ const pkgFile = join(cwd, 'package.json');
 process.chdir(cwd);
 
 test('invalid manager', (t) => {
-  t.timeout(30000);
+  t.timeout(50000);
   const error = t.throws(
     () =>
       rollup({
@@ -36,7 +36,7 @@ test('invalid manager', (t) => {
 });
 
 test('npm', async (t) => {
-  t.timeout(30000);
+  t.timeout(50000);
   await rollup({
     input,
     output: {

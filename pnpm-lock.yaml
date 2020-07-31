@@ -145,7 +145,6 @@ importers:
     devDependencies:
       '@rollup/plugin-json': 4.1.0_rollup@2.23.0
       '@rollup/plugin-node-resolve': 8.4.0_rollup@2.23.0
-      acorn: 7.3.1
       locate-character: 2.0.5
       require-relative: 0.8.7
       rollup: 2.23.0
@@ -157,7 +156,6 @@ importers:
       '@rollup/plugin-json': ^4.1.0
       '@rollup/plugin-node-resolve': ^8.4.0
       '@rollup/pluginutils': ^3.1.0
-      acorn: ^7.3.1
       commondir: ^1.0.1
       estree-walker: ^2.0.1
       glob: ^7.1.6

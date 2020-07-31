@@ -1,4 +1,5 @@
 import external, { foo } from 'external-esm-mixed';
+
 import dep, { named } from './dep';
 
 t.is(dep, 'default');

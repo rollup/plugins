@@ -17,7 +17,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
     name: 'run',
 
     buildStart(options) {
-      let inputs = options.input!;
+      let inputs = options.input;
 
       if (typeof inputs === 'string') {
         inputs = [inputs];

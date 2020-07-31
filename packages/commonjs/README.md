@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [commonjs()]
+  plugins: [commonjs()],
 };
 ```
 
@@ -66,8 +66,8 @@ commonjs({
     '!node_modules/logform/index.js',
     '!node_modules/logform/format.js',
     '!node_modules/logform/levels.js',
-    '!node_modules/logform/browser.js'
-  ]
+    '!node_modules/logform/browser.js',
+  ],
 });
 ```
 
@@ -157,7 +157,7 @@ import * as foo from 'foo';
 ```
 
 This is in line with how other bundlers handle this situation and is also the most likely behaviour in case Node should ever support this. However there are some situations where this may not be desired:
-  
+
 - There is code in an external dependency that cannot be changed where a `require` statement expects the default export to be returned from an ES module.
 - If the imported module is in the same bundle, Rollup will generate a namespace object for the imported module which can increase bundle size unnecessarily:
 
@@ -168,15 +168,15 @@ This is in line with how other bundlers handle this situation and is also the mo
 
   // input: dep.js
   export default 'foo';
-  
+
   // output
   var dep = 'foo';
-  
-  var dep$1 = /*#__PURE__*/Object.freeze({
-  	__proto__: null,
-  	'default': dep
+
+  var dep$1 = /*#__PURE__*/ Object.freeze({
+    __proto__: null,
+    default: dep,
   });
-  
+
   console.log(dep$1.default);
   ```
 
@@ -191,22 +191,26 @@ For these situations, you can change Rollup's behaviour either globally or per m
 
   // output
   import * as dep from 'dep';
-  
+
   console.log(dep);
   ```
-  
+
 - `"auto"`: This is complementary to how [`output.exports`](https://rollupjs.org/guide/en/#outputexports): `"auto"` works in Rollup: If a module has a default export and no named exports, requiring that module returns the default export. In all other cases, the namespace is returned. For external dependencies when using `esmExternals: true`, a corresponding interop helper is added:
 
   ```js
   // output
   import * as dep$1 from 'dep';
-  
-  function getDefaultExportFromNamespaceIfNotNamed (n) {
-    return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
+
+  function getDefaultExportFromNamespaceIfNotNamed(n) {
+    return n &&
+      Object.prototype.hasOwnProperty.call(n, 'default') &&
+      Object.keys(n).length === 1
+      ? n['default']
+      : n;
   }
-  
+
   var dep = getDefaultExportFromNamespaceIfNotNamed(dep$1);
-  
+
   console.log(dep);
   ```
 
@@ -215,13 +219,15 @@ For these situations, you can change Rollup's behaviour either globally or per m
   ```js
   // output
   import * as dep$1 from 'dep';
-  
-  function getDefaultExportFromNamespaceIfPresent (n) {
-    return n && Object.prototype.hasOwnProperty.call(n, 'default') ? n['default'] : n;
+
+  function getDefaultExportFromNamespaceIfPresent(n) {
+    return n && Object.prototype.hasOwnProperty.call(n, 'default')
+      ? n['default']
+      : n;
   }
-  
+
   var dep = getDefaultExportFromNamespaceIfPresent(dep$1);
-  
+
   console.log(dep);
   ```
 
@@ -230,7 +236,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
   ```js
   // output
   import dep from 'dep';
-  
+
   console.log(dep);
   ```
 
@@ -250,9 +256,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule'
+    name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()]
+  plugins: [resolve(), commonjs()],
 };
 ```
 
@@ -262,7 +268,7 @@ Symlinks are common in monorepos and are also created by the `npm link` command.
 
 ```js
 commonjs({
-  include: /node_modules/
+  include: /node_modules/,
 });
 ```
 

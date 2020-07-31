@@ -1,1 +1,3 @@
-export * as default from './other.js';
+import * as other from './other.js';
+
+export default other;
