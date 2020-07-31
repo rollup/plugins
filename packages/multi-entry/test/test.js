@@ -3,6 +3,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import del from 'del';
+
 import test from 'ava';
 import { rollup } from 'rollup';
 
@@ -98,6 +100,6 @@ test('allows to prevent exporting', async (t) => {
 async function isBundleWritten(bundle, outputOptions, outputPath) {
   await bundle.write(outputOptions);
   const iswritten = fs.existsSync(outputPath);
-  fs.rmdirSync(testDistDir, { recursive: true });
+  del.sync([testDistDir], { force: true, onlyFiles: true });
   return iswritten;
 }

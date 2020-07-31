@@ -51,6 +51,7 @@
     "matched": "^5.0.0"
   },
   "devDependencies": {
+    "del": "^5.1.0",
     "rollup": "^2.23.0"
   },
   "ava": {
