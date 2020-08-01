@@ -1,6 +1,13 @@
-import * as x from './dep';
+import * as external from 'external-esm-mixed';
 
-t.deepEqual(x, {
+import * as dep from './dep';
+
+t.deepEqual(dep, {
   default: 'default',
   named: 'named'
+});
+
+t.deepEqual(external, {
+  default: 'bar',
+  foo: 'foo'
 });

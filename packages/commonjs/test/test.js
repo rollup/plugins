@@ -315,7 +315,7 @@ test('deconflicts reserved keywords', async (t) => {
     plugins: [commonjs()]
   });
 
-  const reservedProp = (await executeBundle(bundle, t, { exports: 'named' })).exports.delete;
+  const reservedProp = (await executeBundle(bundle, t)).exports.delete;
   t.is(reservedProp, 'foo');
 });
 
@@ -357,7 +357,7 @@ test('rewrites top-level defines', async (t) => {
 
   define.amd = true;
 
-  const { exports } = await executeBundle(bundle, { context: { define } });
+  const { exports } = await executeBundle(bundle, t, { context: { define } });
   t.is(exports, 42);
 });
 
@@ -445,6 +445,7 @@ test('creates an error with a code frame when parsing fails', async (t) => {
   }
 });
 
+// Virtual modules are treated as "requireReturnsDefault: 'always'" to avoid interop
 test('ignores virtual modules', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/ignore-virtual-modules/main.js',
@@ -509,7 +510,7 @@ test('produces optimized code when importing esm with a known default export', a
   const bundle = await rollup({
     input: 'main.js',
     plugins: [
-      commonjs(),
+      commonjs({ requireReturnsDefault: true }),
       {
         load(id) {
           if (id === 'main.js') {

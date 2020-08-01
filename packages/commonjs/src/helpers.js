@@ -28,7 +28,7 @@ export const HELPERS_ID = '\0commonjsHelpers.js';
 // rollup/rollup-plugin-commonjs#224
 // We should remove it once Rollup core and this plugin are updated to not use
 // this pattern any more
-export const HELPERS = `
+const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 export function getDefaultExportFromCjs (x) {
@@ -45,18 +45,22 @@ export function createCommonjsModule(fn, basedir, module) {
 	}, fn(module, module.exports), module.exports;
 }
 
-export function getCjsExportFromNamespace (n) {
-	return n && n['default'] || n;
+export function getDefaultExportFromNamespaceIfPresent (n) {
+	return n && Object.prototype.hasOwnProperty.call(n, 'default') ? n['default'] : n;
+}
+
+export function getDefaultExportFromNamespaceIfNotNamed (n) {
+	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
 }
 `;
 
-export const HELPER_NON_DYNAMIC = `
+const HELPER_NON_DYNAMIC = `
 export function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
 }
 `;
 
-export const HELPERS_DYNAMIC = `
+const HELPERS_DYNAMIC = `
 export function commonjsRegister (path, loader) {
 	DYNAMIC_REQUIRE_LOADERS[path] = loader;
 }
@@ -194,3 +198,7 @@ export function commonjsRequire (path, originalModuleDir) {
 
 commonjsRequire.cache = DYNAMIC_REQUIRE_CACHE;
 `;
+
+export function getHelpersModule(isDynamicRequireModulesEnabled) {
+  return `${HELPERS}${isDynamicRequireModulesEnabled ? HELPERS_DYNAMIC : HELPER_NON_DYNAMIC}`;
+}

@@ -1,22 +1,21 @@
 /* eslint-disable no-param-reassign, no-shadow, no-underscore-dangle, no-continue */
-import { resolve, dirname } from 'path';
 
+import { dirname, resolve } from 'path';
+
+import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
-import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
-
 import { sync as nodeResolveSync } from 'resolve';
 
 import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
 import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_REGISTER_PREFIX,
   getProxyId,
   getVirtualPathForDynamicRequirePath,
-  HELPERS_ID,
-  DYNAMIC_REGISTER_PREFIX,
-  DYNAMIC_JSON_PREFIX
+  HELPERS_ID
 } from './helpers';
 import { getName } from './utils';
-// TODO can this be async?
 
 const reserved = 'process location abstract arguments boolean break byte case catch char class const continue debugger default delete do double else enum eval export extends false final finally float for from function goto if implements import in instanceof int interface let long native new null package private protected public return short static super switch synchronized this throw throws transient true try typeof var void volatile while with yield'.split(
   ' '
@@ -28,7 +27,6 @@ const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/
 
 const firstpassGlobal = /\b(?:require|module|exports|global)\b/;
 const firstpassNoGlobal = /\b(?:require|module|exports)\b/;
-const importExportDeclaration = /^(?:Import|Export(?:Named|Default))Declaration/;
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
 
 function deconflict(scope, globals, identifier) {
@@ -66,20 +64,38 @@ export function checkEsModule(parse, code, id) {
   const ast = tryParse(parse, code, id);
 
   let isEsModule = false;
+  let hasDefaultExport = false;
+  let hasNamedExports = false;
   for (const node of ast.body) {
-    if (node.type === 'ExportDefaultDeclaration')
-      return { isEsModule: true, hasDefaultExport: true, ast };
-    if (node.type === 'ExportNamedDeclaration') {
+    if (node.type === 'ExportDefaultDeclaration') {
       isEsModule = true;
-      for (const specifier of node.specifiers) {
-        if (specifier.exported.name === 'default') {
-          return { isEsModule: true, hasDefaultExport: true, ast };
+      hasDefaultExport = true;
+    } else if (node.type === 'ExportNamedDeclaration') {
+      isEsModule = true;
+      if (node.declaration) {
+        hasNamedExports = true;
+      } else {
+        for (const specifier of node.specifiers) {
+          if (specifier.exported.name === 'default') {
+            hasDefaultExport = true;
+          } else {
+            hasNamedExports = true;
+          }
         }
       }
-    } else if (importExportDeclaration.test(node.type)) isEsModule = true;
+    } else if (node.type === 'ExportAllDeclaration') {
+      isEsModule = true;
+      if (node.exported && node.exported.name === 'default') {
+        hasDefaultExport = true;
+      } else {
+        hasNamedExports = true;
+      }
+    } else if (node.type === 'ImportDeclaration') {
+      isEsModule = true;
+    }
   }
 
-  return { isEsModule, hasDefaultExport: false, ast };
+  return { isEsModule, hasDefaultExport, hasNamedExports, ast };
 }
 
 function getDefinePropertyCallName(node, targetName) {
@@ -186,16 +202,12 @@ export function transformCommonjs(
 
   function isStaticRequireStatement(node) {
     if (!isRequireStatement(node)) return false;
-    if (hasDynamicArguments(node)) return false;
-    return true;
+    return !hasDynamicArguments(node);
   }
 
   function isNodeRequireStatement(parent) {
     const reservedMethod = ['resolve', 'cache', 'main'];
-    if (parent && parent.property && reservedMethod.indexOf(parent.property.name) > -1) {
-      return true;
-    }
-    return false;
+    return !!(parent && parent.property && reservedMethod.indexOf(parent.property.name) > -1);
   }
 
   function isIgnoredRequireStatement(requiredNode) {
@@ -565,7 +577,9 @@ export function transformCommonjs(
         .filter(([, importProxy]) => importProxy)
         .map(([source]) => {
           const { name, importsDefault } = required[source];
-          return `import ${importsDefault ? `${name} from ` : ``}'${getProxyId(source)}';`;
+          return `import ${importsDefault ? `${name} from ` : ``}'${
+            source.startsWith('\0') ? source : getProxyId(source)
+          }';`;
         })
     )
     .join('\n')}\n\n`;
@@ -677,5 +691,5 @@ export function transformCommonjs(
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
 
-  return { code, map, syntheticNamedExports: '__moduleExports' };
+  return { code, map, syntheticNamedExports: isEsModule ? false : '__moduleExports' };
 }

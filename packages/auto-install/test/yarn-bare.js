@@ -15,7 +15,7 @@ const input = join(cwd, '../input.js');
 process.chdir(cwd);
 
 test('yarn, bare', async (t) => {
-  t.timeout(30000);
+  t.timeout(50000);
   await rollup({
     input,
     output: {

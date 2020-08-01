@@ -1,5 +1,11 @@
-import * as x from './dep';
+import * as external from 'external-esm-default';
 
-t.deepEqual(x, {
+import * as dep from './dep';
+
+t.deepEqual(dep, {
   default: 'default'
+});
+
+t.deepEqual(external, {
+  default: 'bar'
 });
