@@ -639,3 +639,12 @@ test('logs a warning when the deprecated namedExports option is used', async (t)
     'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
   );
 });
+
+test('imports .cjs file extension by default', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/cjs-extension/main.js',
+    plugins: [commonjs()]
+  });
+  const code = await getCodeFromBundle(bundle);
+  t.snapshot(code);
+});
