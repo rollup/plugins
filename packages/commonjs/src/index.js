@@ -34,7 +34,7 @@ import {
 } from './transform';
 
 export default function commonjs(options = {}) {
-  const extensions = options.extensions || ['.js', '.cjs', '.mjs'];
+  const extensions = options.extensions || ['.js', '.cjs'];
   const filter = createFilter(options.include, options.exclude);
   const {
     ignoreGlobal,
