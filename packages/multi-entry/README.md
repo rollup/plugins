@@ -17,7 +17,7 @@ _Note: `default` exports cannot be combined and exported by this plugin. Only na
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.3.0+) and Rollup v1.20.0+.
 
 ## Install
 
@@ -72,6 +72,13 @@ Type: `Boolean`<br>
 Default: `true`
 
 If `true`, instructs the plugin to export named exports to the bundle from all entries. If `false`, the plugin will not export any entry exports to the bundle. This can be useful when wanting to combine code from multiple entry files, but not necessarily to export each entry file's exports.
+
+### `entryFileName`
+
+Type: `String`<br>
+Default: `'multi-entry.js'`
+
+`entryFileName` changes the name of the generated entry file. By default, it will override `outputOptions.entryFileNames` to be `'multi-entry.js'`.
 
 ## Supported Input Types
 
