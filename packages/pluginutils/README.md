@@ -99,14 +99,16 @@ export default function myPlugin(options = {}) {
 
 Constructs a filter function which can be used to determine whether or not certain modules should be operated upon.
 
-Parameters: `(include?: <minmatch>, exclude?: <minmatch>, options?: Object)`<br>
+Parameters: `(include?: <picomatch>, exclude?: <picomatch>, options?: Object)`<br>
 Returns: `String`
 
 #### `include` and `exclude`
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
 
-A valid [`minimatch`](https://www.npmjs.com/package/minimatch) pattern, or array of patterns. If `options.include` is omitted or has zero length, filter will return `true` by default. Otherwise, an ID must match one or more of the `minimatch` patterns, and must not match any of the `options.exclude` patterns.
+A valid [`picomatch`](https://github.com/micromatch/picomatch#globbing-features) pattern, or array of patterns. If `options.include` is omitted or has zero length, filter will return `true` by default. Otherwise, an ID must match one or more of the `picomatch` patterns, and must not match any of the `options.exclude` patterns.
+
+Note that `picomatch` patterns are very similar to [`minimatch`](https://github.com/isaacs/minimatch#readme) patterns, and in most use cases, they are interchangeable. If you have more specific pattern matching needs, you can view [this comparison table](https://github.com/micromatch/picomatch#library-comparisons) to learn more about where the libraries differ.
 
 #### `options`
 
