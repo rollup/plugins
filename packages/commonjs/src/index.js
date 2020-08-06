@@ -188,8 +188,9 @@ export default function commonjs(options = {}) {
     },
 
     transform(code, id) {
-      if (id !== DYNAMIC_PACKAGES_ID && !id.startsWith(DYNAMIC_JSON_PREFIX)) {
-        if (!filter(id) || extensions.indexOf(extname(id)) === -1) {
+      const extName = extname(id);
+      if (extName !== '.cjs' && id !== DYNAMIC_PACKAGES_ID && !id.startsWith(DYNAMIC_JSON_PREFIX)) {
+        if (!filter(id) || !extensions.includes(extName)) {
           setIsCjsPromise(id, null);
           return null;
         }
