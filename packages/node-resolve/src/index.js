@@ -2,7 +2,6 @@
 import { dirname, normalize, resolve, sep } from 'path';
 
 import builtinList from 'builtin-modules';
-import deepFreeze from 'deep-freeze';
 import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
@@ -19,6 +18,17 @@ import {
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
 const nullFn = () => null;
+const deepFreeze = object => {
+  Object.freeze(object);
+
+  for (const value of Object.values(object)) {
+    if (typeof value === 'object' && !Object.isFrozen(value)) {
+      deepFreeze(value);
+    }
+  }
+
+  return object;
+};
 const defaults = {
   customResolveOptions: {},
   dedupe: [],
