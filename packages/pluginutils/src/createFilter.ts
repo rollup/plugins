@@ -1,4 +1,4 @@
-import { resolve, sep, posix } from 'path';
+import { resolve, sep, posix, isAbsolute } from 'path';
 
 import pm from 'picomatch';
 
@@ -7,7 +7,7 @@ import { CreateFilter } from '../types';
 import ensureArray from './utils/ensureArray';
 
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
-  if (resolutionBase === false) {
+  if (resolutionBase === false || isAbsolute(id) || id.startsWith('*')) {
     return id;
   }
 
