@@ -30,6 +30,21 @@ const unpackOptions = ({
 };
 
 const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }, rollupVersion) => {
+  if ('runtimeHelpers' in rest) {
+    const valueAsString = `runtimeHelpers: ${rest.runtimeHelpers}`;
+    const suggestion =
+      rest.runtimeHelpers === true
+        ? `try changing your configuration to babelHelpers: 'runtime'. `
+        : '';
+    // eslint-disable-next-line no-console
+    console.warn(
+      '"runtimeHelpers" is now called "babelHelpers". ' +
+        `At the moment, your configuration is set as ${valueAsString}. ` +
+        suggestion +
+        'Refer to the documentation to adjust to your use-case. ' +
+        'https://rollupjs.org/guide/en/#babel'
+    );
+  }
   if (!rest.babelHelpers) {
     // eslint-disable-next-line no-console
     console.warn(
