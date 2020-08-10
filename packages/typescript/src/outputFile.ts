@@ -54,7 +54,7 @@ export default function findTypescriptOutput(
   parsedOptions: import('typescript').ParsedCommandLine,
   id: string,
   emittedFiles: ReadonlyMap<string, string>,
-  tsCache: TSCache,
+  tsCache: TSCache
 ): TypescriptSourceDescription {
   const emittedFileNames = ts.getOutputFileNames(
     parsedOptions,

@@ -4,7 +4,7 @@ import { CompilerOptions } from 'typescript';
 
 export interface RollupTypescriptPluginOptions {
   /**
-   * If using `incremental` this is the folder where the cached
+   * If using incremental this is the folder where the cached
    * files will be created and kept for Typescript incremental
    * compilation.
    */
@@ -33,7 +33,7 @@ export interface RollupTypescriptPluginOptions {
    * Overrides the injected TypeScript helpers with a custom version.
    */
   tslib?: Promise<string> | string;
-}
+};
 
 /** Properties of `CompilerOptions` that are normally enums */
 export type EnumCompilerOptions = 'module' | 'moduleResolution' | 'newLine' | 'jsx' | 'target';

@@ -16,7 +16,7 @@ export default class TSCache {
 
   /** Returns the path to the cached file */
   cachedFilename(fileName: string): string {
-    return path.join(this._cacheFolder, fileName);
+    return path.join(this._cacheFolder, fileName.replace(/^([A-Z]+):/, '$1'));
   }
 
   /** Emits a file in the cache folder */
