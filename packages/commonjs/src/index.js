@@ -85,7 +85,7 @@ export default function commonjs(options = {}) {
         getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
     }
 
-    const { isEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
+    const { isEsModule, isCompiledEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
       this.parse,
       code,
       id
@@ -107,11 +107,13 @@ export default function commonjs(options = {}) {
     // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
     const disableWrap = isModuleRegistrationProxy(id, dynamicRequireModuleSet);
 
+    // TODO Lukas in the other version, this is treating is isCompiledEsModule like esModule with regard to the promise
     return transformCommonjs(
       this.parse,
       code,
       id,
       isEsModule,
+      isCompiledEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
       sourceMap,

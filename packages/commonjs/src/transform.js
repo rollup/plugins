@@ -19,10 +19,11 @@ import {
 } from './helpers';
 import { getName } from './utils';
 
+const KEY_COMPILED_ESM = '__esModule';
 const reserved = 'process location abstract arguments boolean break byte case catch char class const continue debugger default delete do double else enum eval export extends false final finally float for from function goto if implements import in instanceof int interface let long native new null package private protected public return short static super switch synchronized this throw throws transient true try typeof var void volatile while with yield'.split(
   ' '
 );
-const blacklist = { __esModule: true };
+const blacklist = { [KEY_COMPILED_ESM]: true };
 reserved.forEach((word) => (blacklist[word] = true));
 
 const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/;
@@ -62,10 +63,51 @@ export function hasCjsKeywords(code, ignoreGlobal) {
   return firstpass.test(code);
 }
 
+function isTrueNode(node) {
+  if (!node) return false;
+
+  switch (node.type) {
+    case 'Literal':
+      return node.value;
+    case 'UnaryExpression':
+      return node.operator === '!' && node.argument && node.argument.value === 0;
+    default:
+      return false;
+  }
+}
+
+function getAssignedMember(node) {
+  const { left, operator, right } = node.expression;
+  if (operator !== '=' || left.type !== 'MemberExpression') {
+    return null;
+  }
+  let assignedIdentifier;
+  if (left.object.type === 'Identifier') {
+    // exports.foo = ...
+    assignedIdentifier = left.object;
+  } else if (
+    left.object.type === 'MemberExpression' &&
+    left.object.property.type === 'Identifier'
+  ) {
+    // module.exports.foo = ...
+    assignedIdentifier = left.object.property;
+  } else {
+    return null;
+  }
+
+  if (assignedIdentifier.name !== 'exports') {
+    return null;
+  }
+
+  const key = left.property ? left.property.name : null;
+  return { key, value: right };
+}
+
 export function checkEsModule(parse, code, id) {
   const ast = tryParse(parse, code, id);
 
   let isEsModule = false;
+  let isCompiledEsModule = false;
   let hasDefaultExport = false;
   let hasNamedExports = false;
   for (const node of ast.body) {
@@ -95,9 +137,36 @@ export function checkEsModule(parse, code, id) {
     } else if (node.type === 'ImportDeclaration') {
       isEsModule = true;
     }
+
+    if (node.type === 'ExpressionStatement' && node.expression) {
+      let compiledEsmValueNode;
+
+      if (node.expression.type === 'CallExpression') {
+        // detect Object.defineProperty(exports, '__esModule', { value: true });
+        const p = getDefinePropertyCallName(node.expression, 'exports');
+        if (p && p.key === KEY_COMPILED_ESM) {
+          compiledEsmValueNode = p.value;
+        }
+      } else if (node.expression.type === 'AssignmentExpression') {
+        // detect exports.__esModule = true;
+        const assignedMember = getAssignedMember(node);
+        if (assignedMember && assignedMember.key === KEY_COMPILED_ESM) {
+          compiledEsmValueNode = assignedMember.value;
+        }
+      }
+
+      if (compiledEsmValueNode) {
+        isCompiledEsModule = isTrueNode(compiledEsmValueNode);
+      }
+    }
   }
 
-  return { isEsModule, hasDefaultExport, hasNamedExports, ast };
+  // don't treat mixed es modules as compiled es mdoules
+  if (isEsModule) {
+    isCompiledEsModule = false;
+  }
+
+  return { isEsModule, isCompiledEsModule, hasDefaultExport, hasNamedExports, ast };
 }
 
 function getDefinePropertyCallName(node, targetName) {
@@ -113,10 +182,15 @@ function getDefinePropertyCallName(node, targetName) {
 
   if (node.arguments.length !== 3) return;
 
-  const [target, val] = node.arguments;
+  const [target, key, value] = node.arguments;
   if (target.type !== 'Identifier' || target.name !== targetName) return;
+
+  if (value.type !== 'ObjectExpression' || !value.properties) return;
+  const valueProperty = value.properties.find((p) => p.key && p.key.name === 'value');
+  if (!valueProperty || !valueProperty.value) return;
+
   // eslint-disable-next-line consistent-return
-  return val.value;
+  return { key: key.value, value: valueProperty.value };
 }
 
 export function transformCommonjs(
@@ -124,6 +198,7 @@ export function transformCommonjs(
   code,
   id,
   isEsModule,
+  isCompiledEsModule,
   ignoreGlobal,
   ignoreRequire,
   sourceMap,
@@ -158,8 +233,7 @@ export function transformCommonjs(
 
   const namedExports = {};
 
-  // TODO handle transpiled modules
-  let shouldWrap = /__esModule/.test(code);
+  let shouldWrap = false;
   let usesCommonjsHelpers = false;
 
   function isRequireStatement(node) {
@@ -463,8 +537,11 @@ export function transformCommonjs(
         return;
       }
 
-      const name = getDefinePropertyCallName(node, 'exports');
-      if (name && name === makeLegalIdentifier(name)) namedExports[name] = true;
+      if (node.type === 'ExpressionStatement' && node.expression) {
+        const p = getDefinePropertyCallName(node.expression, 'exports');
+        if (p && p.key === makeLegalIdentifier(p.key)) namedExports[p.key] = true;
+        if (p && p.key === KEY_COMPILED_ESM) node._shouldRemove = true;
+      }
 
       // if this is `var x = require('x')`, we can do `import x from 'x'`
       if (
@@ -547,13 +624,17 @@ export function transformCommonjs(
         if (!keepDeclaration) {
           magicString.remove(node.start, node.end);
         }
+      } else if (node.type === 'ExpressionStatement') {
+        if (node._shouldRemove) {
+          magicString.remove(node.start, node.end);
+        }
       }
     }
   });
 
   // If `isEsModule` is on, it means it has ES6 import/export statements,
   //   which just can't be wrapped in a function.
-  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
+  shouldWrap = shouldWrap && !disableWrap && !isEsModule && !isCompiledEsModule;
 
   usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
 
@@ -598,7 +679,7 @@ export function transformCommonjs(
   let wrapperEnd = '';
 
   const moduleName = deconflict(scope, globals, getName(id));
-  if (!isEsModule) {
+  if (!isEsModule && !isCompiledEsModule) {
     const exportModuleExports = {
       str: `export { ${moduleName} as __moduleExports };`,
       name: '__moduleExports'
@@ -609,6 +690,7 @@ export function transformCommonjs(
 
   const defaultExportPropertyAssignments = [];
   let hasDefaultExport = false;
+  let deconflictedDefaultExportName;
 
   if (shouldWrap) {
     const args = `module${uses.exports ? ', exports' : ''}`;
@@ -645,30 +727,37 @@ export function transformCommonjs(
           magicString.overwrite(left.start, left.end, `var ${moduleName}`);
         } else {
           const [, name] = match;
-          const deconflicted = deconflict(scope, globals, name);
 
-          names.push({ name, deconflicted });
+          if (name !== KEY_COMPILED_ESM) {
+            const deconflicted = deconflict(scope, globals, name);
 
-          magicString.overwrite(node.start, left.end, `var ${deconflicted}`);
+            names.push({ name, deconflicted });
 
-          const declaration =
-            name === deconflicted
-              ? `export { ${name} };`
-              : `export { ${deconflicted} as ${name} };`;
+            magicString.overwrite(node.start, left.end, `var ${deconflicted}`);
 
-          if (name !== 'default') {
-            namedExportDeclarations.push({
-              str: declaration,
-              name
-            });
+            const declaration =
+              name === deconflicted
+                ? `export { ${name} };`
+                : `export { ${deconflicted} as ${name} };`;
+
+            if (name !== 'default') {
+              namedExportDeclarations.push({
+                str: declaration,
+                name
+              });
+            } else {
+              deconflictedDefaultExportName = deconflicted;
+            }
+
+            defaultExportPropertyAssignments.push(`${moduleName}.${name} = ${deconflicted};`);
+          } else {
+            magicString.remove(node.start, node.end);
           }
-
-          defaultExportPropertyAssignments.push(`${moduleName}.${name} = ${deconflicted};`);
         }
       }
     }
 
-    if (!(isEsModule || hasDefaultExport)) {
+    if (!(isEsModule || isCompiledEsModule || hasDefaultExport)) {
       wrapperEnd = `\n\nvar ${moduleName} = {\n${names
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n};`;
@@ -681,17 +770,21 @@ export function transformCommonjs(
     .trim()
     .append(wrapperEnd);
 
-  const defaultExport =
-    code.indexOf('__esModule') >= 0
-      ? `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
-      : `export default ${moduleName};`;
+  const defaultExport = [];
+  if (isCompiledEsModule) {
+    if (deconflictedDefaultExportName) {
+      defaultExport.push(`export default ${deconflictedDefaultExportName};`);
+    }
+  } else if (!isEsModule) {
+    defaultExport.push(`export default ${moduleName};`);
+  }
 
   const named = namedExportDeclarations
     .filter((x) => x.name !== 'default' || !hasDefaultExport)
     .map((x) => x.str);
 
   magicString.append(
-    `\n\n${(isEsModule ? [] : [defaultExport])
+    `\n\n${defaultExport
       .concat(named)
       .concat(hasDefaultExport ? defaultExportPropertyAssignments : [])
       .join('\n')}`
@@ -703,7 +796,7 @@ export function transformCommonjs(
   return {
     code,
     map,
-    syntheticNamedExports: isEsModule ? false : '__moduleExports',
-    meta: { commonjs: { isCommonJS: !isEsModule } }
+    syntheticNamedExports: isEsModule || isCompiledEsModule ? false : '__moduleExports',
+    meta: { commonjs: { isCommonJS: !isEsModule && !isCompiledEsModule } }
   };
 }
