@@ -1,5 +1,17 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.2.0
+
+_2020-08-13_
+
+### Features
+
+- feat: `export * as ns` support (#511)
+
+### Updates
+
+- chore: update dependencies (13526d6)
+
 ## v5.1.0
 
 _2020-07-12_
