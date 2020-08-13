@@ -1,5 +1,22 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v15.0.0
+
+_2020-08-13_
+
+### Breaking Changes
+
+- feat!: return the namespace by default when requiring ESM  (#507)
+- fix!: fix interop when importing CJS that is transpiled ESM from an actual ESM (#501)
+
+### Bugfixes
+
+- fix: add .cjs to default file extensions. (#524)
+
+### Updates
+
+- chore: update dependencies (fe399e2)
+
 ## v14.0.0
 
 _2020-07-13_
