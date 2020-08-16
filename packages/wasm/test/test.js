@@ -13,8 +13,8 @@ const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
 process.chdir(__dirname);
 
-const outputFile = 'output/bundle.js';
-const outputDir = 'output/';
+const outputFile = './output/bundle.js';
+const outputDir = './output/';
 
 const testBundle = async (t, bundle) => {
   const code = await getCode(bundle);
@@ -33,6 +33,8 @@ test('async compiling', async (t) => {
 });
 
 test('fetching WASM from separate file', async (t) => {
+  t.plan(3);
+
   const bundle = await rollup({
     input: 'fixtures/complex.js',
     plugins: [
@@ -42,11 +44,16 @@ test('fetching WASM from separate file', async (t) => {
     ]
   });
 
-  await bundle.write({ format: 'es', file: outputFile });
+  await bundle.write({ format: 'cjs', file: outputFile });
   const glob = join(outputDir, `**/*.wasm`)
     .split(sep)
     .join(posix.sep);
 
+  global.result = null;
+  global.t = t;
+  require(outputFile);
+
+  await global.result;
   t.snapshot(await globby(glob));
   await del(outputDir);
 });
