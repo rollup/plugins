@@ -11,10 +11,10 @@ import wasm from '../';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
+process.chdir(__dirname);
+
 const outputFile = 'output/bundle.js';
 const outputDir = 'output/';
-
-test.beforeEach(() => del(outputDir));
 
 const testBundle = async (t, bundle) => {
   const code = await getCode(bundle);
@@ -26,7 +26,7 @@ test('async compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/async.js',
+    input: 'fixtures/async.js',
     plugins: [wasm()]
   });
   await testBundle(t, bundle);
@@ -34,7 +34,7 @@ test('async compiling', async (t) => {
 
 test('fetching WASM from separate file', async (t) => {
   const bundle = await rollup({
-    input: 'test/fixtures/complex.js',
+    input: 'fixtures/complex.js',
     plugins: [
       wasm({
         limit: 0
@@ -48,13 +48,14 @@ test('fetching WASM from separate file', async (t) => {
     .join(posix.sep);
 
   t.snapshot(await globby(glob));
+  await del(outputDir);
 });
 
 test('complex module decoding', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/complex.js',
+    input: 'fixtures/complex.js',
     plugins: [wasm()]
   });
   await testBundle(t, bundle);
@@ -64,10 +65,10 @@ test('sync compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/sync.js',
+    input: 'fixtures/sync.js',
     plugins: [
       wasm({
-        sync: ['test/fixtures/sample.wasm']
+        sync: ['fixtures/sample.wasm']
       })
     ]
   });
@@ -78,10 +79,10 @@ test('imports', async (t) => {
   t.plan(1);
 
   const bundle = await rollup({
-    input: 'test/fixtures/imports.js',
+    input: 'fixtures/imports.js',
     plugins: [
       wasm({
-        sync: ['test/fixtures/imports.wasm']
+        sync: ['fixtures/imports.wasm']
       })
     ]
   });
@@ -94,7 +95,7 @@ try {
     t.plan(2);
 
     const bundle = await rollup({
-      input: 'test/fixtures/worker.js',
+      input: 'fixtures/worker.js',
       plugins: [wasm()]
     });
     const code = await getCode(bundle);

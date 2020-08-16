@@ -13,7 +13,7 @@ const fsStatPromise = promisify(fs.stat);
 const fsReadFilePromise = promisify(fs.readFile);
 
 export function wasm(options: RollupWasmOptions = {}): Plugin {
-  const { limit = 14 * 1024, sync = [] } = options;
+  const { sync = [], limit = 14 * 1024, publicPath = '' } = options;
 
   const syncFiles = sync.map((x) => path.resolve(x));
   const copies = Object.create(null);
@@ -33,7 +33,10 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
             .digest('hex')
             .substr(0, 16);
 
-          copies[id] = `${hash}.wasm`;
+          // only copy if the file is not marked `sync`, `sync` files are always inlined
+          if (syncFiles.indexOf(id) === -1) {
+            copies[id] = `${publicPath}${hash}.wasm`;
+          }
         }
 
         return buffer.toString('binary');
@@ -57,8 +60,8 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
         var isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null
         
         if (filepath && isNode) {
-          fs = require('fs')
-          path = require('path')
+          var fs = eval('require("fs")')
+          var path = eval('require("path")')
 
           return new Promise((resolve, reject) => {
             fs.readFile(path.resolve(__dirname, filepath), (error, buffer) => {
@@ -96,14 +99,8 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
     transform(code, id) {
       if (code && /\.wasm$/.test(id)) {
         const isSync = syncFiles.indexOf(id) !== -1;
-        let filepath;
+        const filepath = copies[id] ? `'${copies[id]}'` : null;
         let src;
-
-        if (isSync) {
-          filepath = null;
-        } else {
-          filepath = copies[id] ? `'${copies[id]}'` : null;
-        }
 
         if (filepath === null) {
           src = Buffer.from(code, 'binary').toString('base64');
@@ -117,6 +114,11 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       return null;
     },
     generateBundle: async function write(outputOptions) {
+      // can't generate anything if we can't determine the output base
+      if (!outputOptions.dir && !outputOptions.file) {
+        return;
+      }
+
       const base = outputOptions.dir || path.dirname(outputOptions.file);
 
       await makeDir(base);
