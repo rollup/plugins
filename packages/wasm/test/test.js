@@ -39,7 +39,7 @@ test('fetching WASM from separate file', async (t) => {
     input: 'fixtures/complex.js',
     plugins: [
       wasm({
-        limit: 0
+        maxFileSize: 0
       })
     ]
   });

@@ -13,7 +13,7 @@ const fsStatPromise = promisify(fs.stat);
 const fsReadFilePromise = promisify(fs.readFile);
 
 export function wasm(options: RollupWasmOptions = {}): Plugin {
-  const { sync = [], limit = 14 * 1024, publicPath = '' } = options;
+  const { sync = [], maxFileSize = 14 * 1024, publicPath = '' } = options;
 
   const syncFiles = sync.map((x) => path.resolve(x));
   const copies = Object.create(null);
@@ -27,7 +27,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       }
 
       return Promise.all([fsStatPromise(id), fsReadFilePromise(id)]).then(([stats, buffer]) => {
-        if ((limit && stats.size > limit) || limit === 0) {
+        if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
           const hash = createHash('sha1')
             .update(buffer)
             .digest('hex')

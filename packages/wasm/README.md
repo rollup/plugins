@@ -53,12 +53,12 @@ Default: `null`
 
 Specifies an array of strings that each represent a WebAssembly file to load synchronously. See [Synchronous Modules](#synchronous-modules) for a functional example.
 
-### `limit`
+### `maxFileSize`
 
 Type: `Number`<br>
 Default: `14336` (14kb)
 
-The file size limit for inline files. If a file exceeds this limit, it will be copied to the destination folder and loaded from a separate file at runtime. If `limit` is set to `0` all files will be copied.
+The maximum file size for inline files. If a file exceeds this limit, it will be copied to the destination folder and loaded from a separate file at runtime. If `maxFileSize` is set to `0` all files will be copied.
 
 Files specified in `sync` to load synchronously are always inlined, regardless of size.
 
