@@ -787,7 +787,8 @@ export function transformCommonjs(
       }
     }
 
-    if (!isEsModule && !hasDefaultExport && !deconflictedDefaultExportName) {
+    const exportsDefault = hasDefaultExport || !!deconflictedDefaultExportName;
+    if (!isEsModule && !hasDefaultExport && (!isCompiledEsModule || !exportsDefault)) {
       wrapperEnd = `\n\nvar ${moduleName} = {\n${names
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n};`;
