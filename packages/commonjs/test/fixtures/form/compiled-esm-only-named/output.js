@@ -1,5 +1,11 @@
-var foo = 'bar';
-var bar = 'foo';
+const foo = 'bar';
+const bar = 'foo';
 
+const input = {
+  foo,
+  bar
+};
+
+export default input;
 export { foo };
 export { bar };

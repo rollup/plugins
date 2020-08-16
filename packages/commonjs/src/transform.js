@@ -773,7 +773,7 @@ export function transformCommonjs(
       }
     }
 
-    if (!(isEsModule || isCompiledEsModule || hasDefaultExport)) {
+    if (!isEsModule && !hasDefaultExport && !deconflictedDefaultExportName) {
       wrapperEnd = `\n\nvar ${moduleName} = {\n${names
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n};`;
@@ -796,10 +796,8 @@ export function transformCommonjs(
     .append(wrapperEnd);
 
   const defaultExport = [];
-  if (isCompiledEsModule) {
-    if (deconflictedDefaultExportName) {
-      defaultExport.push(`export default ${deconflictedDefaultExportName};`);
-    }
+  if (isCompiledEsModule && deconflictedDefaultExportName) {
+    defaultExport.push(`export default ${deconflictedDefaultExportName};`);
   } else if (!isEsModule) {
     defaultExport.push(`export default ${moduleName};`);
   }

@@ -1,5 +1,5 @@
-var _default = 'x';
-var foo = 'foo';
+const _default = 'x';
+const foo = 'foo';
 
 export default _default;
 export { foo };
