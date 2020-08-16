@@ -6,7 +6,7 @@ export interface RollupWasmOptions {
    */
   sync?: readonly string[];
   /**
-   * The file size limit to inline WebAssembly. If a file exceeds this limit, it will be copied to the destination folder and the hashed filename will be provided instead.
+   * The file size limit for inline files. If a file exceeds this limit, it will be copied to the destination folder and loaded from a separate file at runtime.
    * If `limit` is set to `0` all files will be copied.
    * Files specified in `sync` to load synchronously are always inlined, regardless of size.
    */
