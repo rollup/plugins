@@ -3,8 +3,6 @@ import * as path from 'path';
 import { promisify } from 'util';
 import { createHash } from 'crypto';
 
-import { assert } from 'console';
-
 import { Plugin } from 'rollup';
 
 import { RollupWasmOptions } from '../types';
@@ -105,10 +103,12 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
         let src;
 
         if (filepath === null) {
-          assert(!isSync, 'non-inlined files can not be `sync`.');
           src = Buffer.from(code, 'binary').toString('base64');
           src = `'${src}'`;
         } else {
+          if (isSync) {
+            this.error('non-inlined files can not be `sync`.');
+          }
           src = null;
         }
 
