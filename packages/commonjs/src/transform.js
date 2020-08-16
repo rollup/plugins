@@ -139,24 +139,19 @@ export function checkEsModule(parse, code, id) {
     }
 
     if (node.type === 'ExpressionStatement' && node.expression) {
-      let compiledEsmValueNode;
-
       if (node.expression.type === 'CallExpression') {
         // detect Object.defineProperty(exports, '__esModule', { value: true });
-        const p = getDefinePropertyCallName(node.expression, 'exports');
-        if (p && p.key === KEY_COMPILED_ESM) {
-          compiledEsmValueNode = p.value;
+        if (isDefineCompiledEsm(node.expression)) {
+          isCompiledEsModule = true;
         }
       } else if (node.expression.type === 'AssignmentExpression') {
         // detect exports.__esModule = true;
         const assignedMember = getAssignedMember(node);
         if (assignedMember && assignedMember.key === KEY_COMPILED_ESM) {
-          compiledEsmValueNode = assignedMember.value;
+          if (isTrueNode(assignedMember.value)) {
+            isCompiledEsModule = true;
+          }
         }
-      }
-
-      if (compiledEsmValueNode) {
-        isCompiledEsModule = isTrueNode(compiledEsmValueNode);
       }
     }
   }
@@ -170,27 +165,49 @@ export function checkEsModule(parse, code, id) {
 }
 
 function getDefinePropertyCallName(node, targetName) {
+  const targetNames = targetName.split('.');
   if (node.type !== 'CallExpression') return;
 
   const {
     callee: { object, property }
   } = node;
-
   if (!object || object.type !== 'Identifier' || object.name !== 'Object') return;
-
   if (!property || property.type !== 'Identifier' || property.name !== 'defineProperty') return;
-
   if (node.arguments.length !== 3) return;
 
   const [target, key, value] = node.arguments;
-  if (target.type !== 'Identifier' || target.name !== targetName) return;
+  if (targetNames.length === 1) {
+    if (target.type !== 'Identifier' || target.name !== targetNames[0]) {
+      return;
+    }
+  }
+
+  if (targetNames.length === 2) {
+    if (
+      target.type !== 'MemberExpression' ||
+      target.object.name !== targetNames[0] ||
+      target.property.name !== targetNames[1]
+    ) {
+      return;
+    }
+  }
 
   if (value.type !== 'ObjectExpression' || !value.properties) return;
+
   const valueProperty = value.properties.find((p) => p.key && p.key.name === 'value');
   if (!valueProperty || !valueProperty.value) return;
 
   // eslint-disable-next-line consistent-return
   return { key: key.value, value: valueProperty.value };
+}
+
+function isDefineCompiledEsm(node) {
+  const definedProperty =
+    getDefinePropertyCallName(node, 'exports') || getDefinePropertyCallName(node, 'module.exports');
+  if (definedProperty && definedProperty.key === KEY_COMPILED_ESM) {
+    return isTrueNode(definedProperty.value);
+  }
+  return false;
 }
 
 export function transformCommonjs(
@@ -402,6 +419,13 @@ export function transformCommonjs(
         }
       }
 
+      // skip and remove expressions such as Object.defineProperty(exports, '__esModule', { value: true });
+      if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
+        magicString.remove(parent.start, parent.end);
+        this.skip();
+        return;
+      }
+
       if (node._skip) {
         this.skip();
         return;
@@ -520,7 +544,9 @@ export function transformCommonjs(
 
         // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
         // if this isn't top-level, we'll need to wrap the module
-        if (programDepth > 3) shouldWrap = true;
+        if (programDepth > 3) {
+          shouldWrap = true;
+        }
 
         node.left._skip = true;
 
@@ -537,11 +563,8 @@ export function transformCommonjs(
         return;
       }
 
-      if (node.type === 'ExpressionStatement' && node.expression) {
-        const p = getDefinePropertyCallName(node.expression, 'exports');
-        if (p && p.key === makeLegalIdentifier(p.key)) namedExports[p.key] = true;
-        if (p && p.key === KEY_COMPILED_ESM) node._shouldRemove = true;
-      }
+      const name = getDefinePropertyCallName(node, 'exports');
+      if (name && name === makeLegalIdentifier(name)) namedExports[name] = true;
 
       // if this is `var x = require('x')`, we can do `import x from 'x'`
       if (
@@ -679,15 +702,6 @@ export function transformCommonjs(
   let wrapperEnd = '';
 
   const moduleName = deconflict(scope, globals, getName(id));
-  if (!isEsModule && !isCompiledEsModule) {
-    const exportModuleExports = {
-      str: `export { ${moduleName} as __moduleExports };`,
-      name: '__moduleExports'
-    };
-
-    namedExportDeclarations.push(exportModuleExports);
-  }
-
   const defaultExportPropertyAssignments = [];
   let hasDefaultExport = false;
   let deconflictedDefaultExportName;
@@ -725,6 +739,8 @@ export function transformCommonjs(
         if (flattened.keypath === 'module.exports') {
           hasDefaultExport = true;
           magicString.overwrite(left.start, left.end, `var ${moduleName}`);
+          // direct assignment to module.exports overwrites any previously set __esModule value
+          isCompiledEsModule = false;
         } else {
           const [, name] = match;
 
@@ -762,6 +778,15 @@ export function transformCommonjs(
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n};`;
     }
+  }
+
+  if (!isEsModule && !isCompiledEsModule) {
+    const exportModuleExports = {
+      str: `export { ${moduleName} as __moduleExports };`,
+      name: '__moduleExports'
+    };
+
+    namedExportDeclarations.unshift(exportModuleExports);
   }
 
   magicString
