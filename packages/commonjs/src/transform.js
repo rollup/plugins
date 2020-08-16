@@ -95,21 +95,24 @@ function getAssignedMember(node) {
     return null;
   }
 
-  if (assignedIdentifier.name !== 'exports') {
+  if (!['module', 'exports'].includes(assignedIdentifier.name)) {
     return null;
   }
 
+  const object = left.object ? left.object.name : null;
   const key = left.property ? left.property.name : null;
-  return { key, value: right };
+  return { object, key, value: right };
 }
 
 export function checkEsModule(parse, code, id) {
   const ast = tryParse(parse, code, id);
 
   let isEsModule = false;
-  let isCompiledEsModule = false;
+  let __esModuleTrue = false;
   let hasDefaultExport = false;
   let hasNamedExports = false;
+  let reassignedExports = false;
+
   for (const node of ast.body) {
     if (node.type === 'ExportDefaultDeclaration') {
       isEsModule = true;
@@ -142,14 +145,24 @@ export function checkEsModule(parse, code, id) {
       if (node.expression.type === 'CallExpression') {
         // detect Object.defineProperty(exports, '__esModule', { value: true });
         if (isDefineCompiledEsm(node.expression)) {
-          isCompiledEsModule = true;
+          __esModuleTrue = true;
         }
-      } else if (node.expression.type === 'AssignmentExpression') {
+      }
+
+      if (node.expression.type === 'AssignmentExpression') {
         // detect exports.__esModule = true;
         const assignedMember = getAssignedMember(node);
-        if (assignedMember && assignedMember.key === KEY_COMPILED_ESM) {
-          if (isTrueNode(assignedMember.value)) {
-            isCompiledEsModule = true;
+
+        if (assignedMember) {
+          const { object, key, value } = assignedMember;
+          if (key === KEY_COMPILED_ESM) {
+            if (isTrueNode(value)) {
+              __esModuleTrue = true;
+            }
+          }
+
+          if (object === 'module' && key === 'exports') {
+            reassignedExports = true;
           }
         }
       }
@@ -158,9 +171,10 @@ export function checkEsModule(parse, code, id) {
 
   // don't treat mixed es modules as compiled es mdoules
   if (isEsModule) {
-    isCompiledEsModule = false;
+    __esModuleTrue = false;
   }
 
+  const isCompiledEsModule = !reassignedExports && __esModuleTrue;
   return { isEsModule, isCompiledEsModule, hasDefaultExport, hasNamedExports, ast };
 }
 

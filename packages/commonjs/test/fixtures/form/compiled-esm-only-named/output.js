@@ -1,9 +1,9 @@
-const foo = 'bar';
-const bar = 'foo';
+var foo = 'bar';
+var bar = 'foo';
 
-const input = {
-  foo,
-  bar
+var input = {
+	foo: foo,
+	bar: bar
 };
 
 export default input;

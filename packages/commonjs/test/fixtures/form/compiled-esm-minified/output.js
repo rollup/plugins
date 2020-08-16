@@ -1,7 +1,7 @@
-const foo = 'foo';
+var foo = 'foo';
 
-const input = {
-  foo
+var input = {
+	foo: foo
 };
 
 export default input;
