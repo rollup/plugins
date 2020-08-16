@@ -1,11 +1,20 @@
+import { sep, posix, join } from 'path';
+
 import { rollup } from 'rollup';
+import globby from 'globby';
 import test from 'ava';
+import del from 'del';
 
 import { getCode } from '../../../util/test';
 
 import wasm from '../';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
+
+const outputFile = 'output/bundle.js';
+const outputDir = 'output/';
+
+test.beforeEach(() => del(outputDir));
 
 const testBundle = async (t, bundle) => {
   const code = await getCode(bundle);
@@ -21,6 +30,24 @@ test('async compiling', async (t) => {
     plugins: [wasm()]
   });
   await testBundle(t, bundle);
+});
+
+test('fetching WASM from separate file', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/complex.js',
+    plugins: [
+      wasm({
+        limit: 0
+      })
+    ]
+  });
+
+  await bundle.write({ format: 'es', file: outputFile });
+  const glob = join(outputDir, `**/*.wasm`)
+    .split(sep)
+    .join(posix.sep);
+
+  t.snapshot(await globby(glob));
 });
 
 test('complex module decoding', async (t) => {

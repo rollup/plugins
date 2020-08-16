@@ -5,6 +5,7 @@ export interface RollupWasmOptions {
    * Specifies an array of strings that each represent a WebAssembly file to load synchronously.
    */
   sync?: readonly string[];
+  limit?: Number;
 }
 
 /**
