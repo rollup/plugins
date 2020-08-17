@@ -7,8 +7,6 @@ import { Plugin } from 'rollup';
 
 import { RollupWasmOptions } from '../types';
 
-const makeDir = require('make-dir');
-
 const fsStatPromise = promisify(fs.stat);
 const fsReadFilePromise = promisify(fs.readFile);
 
@@ -33,9 +31,16 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
             .digest('hex')
             .substr(0, 16);
 
+          const filename = `${hash}.wasm`;
+          const publicFilepath = `${publicPath}${filename}`;
+
           // only copy if the file is not marked `sync`, `sync` files are always inlined
           if (syncFiles.indexOf(id) === -1) {
-            copies[id] = `${publicPath}${hash}.wasm`;
+            copies[id] = {
+              filename,
+              publicFilepath,
+              buffer
+            };
           }
         }
 
@@ -99,10 +104,10 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
     transform(code, id) {
       if (code && /\.wasm$/.test(id)) {
         const isSync = syncFiles.indexOf(id) !== -1;
-        const filepath = copies[id] ? `'${copies[id]}'` : null;
+        const publicFilepath = copies[id] ? `'${copies[id].publicFilepath}'` : null;
         let src;
 
-        if (filepath === null) {
+        if (publicFilepath === null) {
           src = Buffer.from(code, 'binary').toString('base64');
           src = `'${src}'`;
         } else {
@@ -112,43 +117,25 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
           src = null;
         }
 
-        return `export default function(imports){return _loadWasmModule(${+isSync}, ${filepath}, ${src}, imports)}`;
+        return `export default function(imports){return _loadWasmModule(${+isSync}, ${publicFilepath}, ${src}, imports)}`;
       }
       return null;
     },
-    generateBundle: async function write(outputOptions) {
-      // can't generate anything if we can't determine the output base
-      if (!outputOptions.dir && !outputOptions.file) {
-        return;
-      }
-
-      const base = outputOptions.dir || path.dirname(outputOptions.file);
-
-      await makeDir(base);
-
+    generateBundle: async function write() {
       await Promise.all(
         Object.keys(copies).map(async (name) => {
-          const output = copies[name];
-          // Create a nested directory if the fileName pattern contains
-          // a directory structure
-          const outputDirectory = path.join(base, path.dirname(output));
-          await makeDir(outputDirectory);
-          return copy(name, path.join(base, output));
+          const copy = copies[name];
+
+          this.emitFile({
+            type: 'asset',
+            source: copy.buffer,
+            name: 'Rollup WASM Asset',
+            fileName: copy.filename
+          });
         })
       );
     }
   };
-}
-
-function copy(src, dest) {
-  return new Promise((resolve, reject) => {
-    const read = fs.createReadStream(src);
-    read.on('error', reject);
-    const write = fs.createWriteStream(dest);
-    write.on('error', reject);
-    write.on('finish', resolve);
-    read.pipe(write);
-  });
 }
 
 export default wasm;
