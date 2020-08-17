@@ -1,14 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { promisify } from 'util';
 import { createHash } from 'crypto';
 
 import { Plugin } from 'rollup';
 
 import { RollupWasmOptions } from '../types';
-
-const fsStatPromise = promisify(fs.stat);
-const fsReadFilePromise = promisify(fs.readFile);
 
 export function wasm(options: RollupWasmOptions = {}): Plugin {
   const { sync = [], maxFileSize = 14 * 1024, publicPath = '' } = options;
@@ -24,28 +20,30 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
         return null;
       }
 
-      return Promise.all([fsStatPromise(id), fsReadFilePromise(id)]).then(([stats, buffer]) => {
-        if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
-          const hash = createHash('sha1')
-            .update(buffer)
-            .digest('hex')
-            .substr(0, 16);
+      return Promise.all([fs.promises.stat(id), fs.promises.readFile(id)]).then(
+        ([stats, buffer]) => {
+          if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
+            const hash = createHash('sha1')
+              .update(buffer)
+              .digest('hex')
+              .substr(0, 16);
 
-          const filename = `${hash}.wasm`;
-          const publicFilepath = `${publicPath}${filename}`;
+            const filename = `${hash}.wasm`;
+            const publicFilepath = `${publicPath}${filename}`;
 
-          // only copy if the file is not marked `sync`, `sync` files are always inlined
-          if (syncFiles.indexOf(id) === -1) {
-            copies[id] = {
-              filename,
-              publicFilepath,
-              buffer
-            };
+            // only copy if the file is not marked `sync`, `sync` files are always inlined
+            if (syncFiles.indexOf(id) === -1) {
+              copies[id] = {
+                filename,
+                publicFilepath,
+                buffer
+              };
+            }
           }
-        }
 
-        return buffer.toString('binary');
-      });
+          return buffer.toString('binary');
+        }
+      );
     },
 
     banner: `
