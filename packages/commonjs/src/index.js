@@ -189,11 +189,14 @@ export default function commonjs(options = {}) {
 
     transform(code, id) {
       const extName = extname(id);
-      if (extName !== '.cjs' && id !== DYNAMIC_PACKAGES_ID && !id.startsWith(DYNAMIC_JSON_PREFIX)) {
-        if (!filter(id) || !extensions.includes(extName)) {
-          setIsCjsPromise(id, null);
-          return null;
-        }
+      if (
+        extName !== '.cjs' &&
+        id !== DYNAMIC_PACKAGES_ID &&
+        !id.startsWith(DYNAMIC_JSON_PREFIX) &&
+        (!filter(id) || !extensions.includes(extName))
+      ) {
+        setIsCjsPromise(id, null);
+        return null;
       }
 
       let transformed;

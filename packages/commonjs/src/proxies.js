@@ -59,7 +59,9 @@ export async function getStaticRequireProxy(
       !esModulesWithDefaultExport.has(id) ||
       (esModulesWithNamedExports.has(id) && requireReturnsDefault === 'auto'))
   ) {
-    return `import * as ${name} from ${JSON.stringify(id)}; export default ${name};`;
+    return `import {getAugmentedNamespace} from "${HELPERS_ID}"; import * as ${name} from ${JSON.stringify(
+      id
+    )}; export default /*@__PURE__*/getAugmentedNamespace(${name});`;
   }
   return `export {default} from ${JSON.stringify(id)};`;
 }

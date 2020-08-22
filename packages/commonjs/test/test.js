@@ -574,7 +574,23 @@ var esm = /*#__PURE__*/Object.freeze({
 	value: value
 });
 
-var main = esm;
+function getAugmentedNamespace(n) {
+	var a = Object.defineProperty({}, '__esModule', {value: true});
+	Object.keys(n).forEach(function (k) {
+		var d = Object.getOwnPropertyDescriptor(n, k);
+		Object.defineProperty(a, k, d.get ? d : {
+			enumerable: true,
+			get: function () {
+				return n[k];
+			}
+		});
+	});
+	return a;
+}
+
+var require$$0 = /*@__PURE__*/getAugmentedNamespace(esm);
+
+var main = require$$0;
 
 module.exports = main;
 `
