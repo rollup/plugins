@@ -82,6 +82,28 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
   t.true(declarationSource.includes('//# sourceMappingURL=main.d.ts.map'), declarationSource);
 });
 
+test.serial('supports creating declarations with non-default rootDir', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/declaration-root-dir/src/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/declaration-root-dir/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(
+    bundle,
+    { format: 'esm', dir: 'fixtures/declaration-root-dir/lib' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'main.d.ts']
+  );
+});
+
 test.serial('supports creating declaration files for interface only source file', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-interface-only/main.ts',
