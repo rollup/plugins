@@ -17,10 +17,12 @@ export function getUnknownRequireProxy(id, requireReturnsDefault) {
   const name = getName(id);
   const exported =
     requireReturnsDefault === 'auto'
-      ? `import {getDefaultExportFromNamespaceIfNotNamed} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(${name})`
+      ? `import {getDefaultExportFromNamespaceIfNotNamed} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(${name});`
       : requireReturnsDefault === 'preferred'
-      ? `import {getDefaultExportFromNamespaceIfPresent} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfPresent(${name})`
-      : `export default ${name}`;
+      ? `import {getDefaultExportFromNamespaceIfPresent} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfPresent(${name});`
+      : !requireReturnsDefault
+      ? `import {getAugmentedNamespace} from "${HELPERS_ID}"; export default /*@__PURE__*/getAugmentedNamespace(${name});`
+      : `export default ${name};`;
   return `import * as ${name} from ${JSON.stringify(id)}; ${exported}`;
 }
 
@@ -53,15 +55,17 @@ export async function getStaticRequireProxy(
     return `import { __moduleExports } from ${JSON.stringify(id)}; export default __moduleExports;`;
   } else if (isCjs === null) {
     return getUnknownRequireProxy(id, requireReturnsDefault);
-  } else if (
-    requireReturnsDefault !== true &&
-    (!requireReturnsDefault ||
-      !esModulesWithDefaultExport.has(id) ||
-      (esModulesWithNamedExports.has(id) && requireReturnsDefault === 'auto'))
-  ) {
+  } else if (!requireReturnsDefault) {
     return `import {getAugmentedNamespace} from "${HELPERS_ID}"; import * as ${name} from ${JSON.stringify(
       id
     )}; export default /*@__PURE__*/getAugmentedNamespace(${name});`;
+  } else if (
+    requireReturnsDefault !== true &&
+    (requireReturnsDefault === 'namespace' ||
+      !esModulesWithDefaultExport.has(id) ||
+      (requireReturnsDefault === 'auto' && esModulesWithNamedExports.has(id)))
+  ) {
+    return `import * as ${name} from ${JSON.stringify(id)}; export default ${name};`;
   }
   return `export {default} from ${JSON.stringify(id)};`;
 }

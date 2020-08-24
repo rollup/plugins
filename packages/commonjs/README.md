@@ -182,13 +182,44 @@ This is in line with how other bundlers handle this situation and is also the mo
 
 For these situations, you can change Rollup's behaviour either globally or per module. To change it globally, set the `requireReturnsDefault` option to one of the following values:
 
-- `false`: This is the default, requiring an ES module returns its namespace. For external dependencies when using `esmExternals: true`, no additional interop code is generated:
+- `false`: This is the default, requiring an ES module returns its namespace. This is the only option that will also add a marker `__esModule: true` to the namespace to support interop patterns in CommonJS modules that are transpiled ES modules.
 
   ```js
   // input
   const dep = require('dep');
   console.log(dep);
 
+  // output
+  import * as dep$1 from 'dep';
+
+  function getAugmentedNamespace(n) {
+    var a = Object.defineProperty({}, '__esModule', { value: true });
+    Object.keys(n).forEach(function (k) {
+      var d = Object.getOwnPropertyDescriptor(n, k);
+      Object.defineProperty(
+        a,
+        k,
+        d.get
+          ? d
+          : {
+              enumerable: true,
+              get: function () {
+                return n[k];
+              },
+            }
+      );
+    });
+    return a;
+  }
+
+  var dep = /*@__PURE__*/ getAugmentedNamespace(dep$1);
+
+  console.log(dep);
+  ```
+
+- `"namespace"`: Like `false`, requiring an ES module returns its namespace, but the plugin does not add the `__esModule` marker and thus creates more efficient code. For external dependencies when using `esmExternals: true`, no additional interop code is generated.
+
+  ```js
   // output
   import * as dep from 'dep';
 

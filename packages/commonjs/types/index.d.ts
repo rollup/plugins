@@ -1,7 +1,7 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
 
-type RequireReturnsDefaultOption = boolean | 'auto' | 'preferred';
+type RequireReturnsDefaultOption = boolean | 'auto' | 'preferred' | 'namespace';
 
 interface RollupCommonJSOptions {
   /**
@@ -85,24 +85,29 @@ interface RollupCommonJSOptions {
    * to one of the following values:
    *
    * - `false`: This is the default, requiring an ES module returns its
-   * namespace. For external dependencies when using `esmExternals: true`, no
-   * additional interop code is generated.
+   *   namespace. This is the only option that will also add a marker
+   *   `__esModule: true` to the namespace to support interop patterns in
+   *   CommonJS modules that are transpiled ES modules.
+   * - `"namespace"`: Like `false`, requiring an ES module returns its
+   *   namespace, but the plugin does not add the `__esModule` marker and thus
+   *   creates more efficient code. For external dependencies when using
+   *   `esmExternals: true`, no additional interop code is generated.
    * - `"auto"`: This is complementary to how `output.exports: "auto"` works in
-   * Rollup: If a module has a default export and no named exports, requiring
-   * that module returns the default export. In all other cases, the namespace
-   * is returned. For external dependencies when using `esmExternals: true`, a
-   * corresponding interop helper is added.
+   *   Rollup: If a module has a default export and no named exports, requiring
+   *   that module returns the default export. In all other cases, the namespace
+   *   is returned. For external dependencies when using `esmExternals: true`, a
+   *   corresponding interop helper is added.
    * - `"preferred"`: If a module has a default export, requiring that module
-   * always returns the default export, no matter whether additional named
-   * exports exist. This is similar to how previous versions of this plugin
-   * worked. Again for external dependencies when using `esmExternals: true`, an
-   * interop helper is added.
+   *   always returns the default export, no matter whether additional named
+   *   exports exist. This is similar to how previous versions of this plugin
+   *   worked. Again for external dependencies when using `esmExternals: true`,
+   *   an interop helper is added.
    * - `true`: This will always try to return the default export on require
-   * without checking if it actually exists. This can throw at build time if
-   * there is no default export. This is how external dependencies are handled
-   * when `esmExternals` is not used. The advantage over the other options is
-   * that, like `false`, this does not add an interop helper for external
-   * dependencies, keeping the code lean.
+   *   without checking if it actually exists. This can throw at build time if
+   *   there is no default export. This is how external dependencies are handled
+   *   when `esmExternals` is not used. The advantage over the other options is
+   *   that, like `false`, this does not add an interop helper for external
+   *   dependencies, keeping the code lean.
    *
    * To change this for individual modules, you can supply a function for
    * `requireReturnsDefault` instead. This function will then be called once for
