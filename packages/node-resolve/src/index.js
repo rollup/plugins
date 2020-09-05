@@ -221,8 +221,11 @@ export function nodeResolve(opts = {}) {
 
       try {
         let resolved = await resolveImportSpecifiers(importSpecifierList, resolveOptions);
+        if (!resolved) {
+          return null;
+        }
 
-        if (resolved && packageBrowserField) {
+        if (packageBrowserField) {
           if (Object.prototype.hasOwnProperty.call(packageBrowserField, resolved)) {
             if (!packageBrowserField[resolved]) {
               browserMapCache.set(resolved, packageBrowserField);
@@ -233,7 +236,7 @@ export function nodeResolve(opts = {}) {
           browserMapCache.set(resolved, packageBrowserField);
         }
 
-        if (hasPackageEntry && !preserveSymlinks && resolved) {
+        if (hasPackageEntry && !preserveSymlinks) {
           const fileExists = await exists(resolved);
           if (fileExists) {
             resolved = await realpath(resolved);
@@ -257,7 +260,7 @@ export function nodeResolve(opts = {}) {
           }
         }
 
-        if (resolved && options.modulesOnly) {
+        if (options.modulesOnly) {
           const code = await readFile(resolved, 'utf-8');
           if (isModule(code)) {
             return {
