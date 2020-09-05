@@ -183,14 +183,12 @@ export function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
       });
     });
 
-    if (i < importSpecifierList.length - 1) {
-      // swallow MODULE_NOT_FOUND errors from all but the last resolution
-      promise = promise.catch((error) => {
-        if (error.code !== 'MODULE_NOT_FOUND') {
-          throw error;
-        }
-      });
-    }
+    // swallow MODULE_NOT_FOUND errors
+    promise = promise.catch((error) => {
+      if (error.code !== 'MODULE_NOT_FOUND') {
+        throw error;
+      }
+    });
   }
 
   return promise;
