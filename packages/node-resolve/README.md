@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [nodeResolve()]
+  plugins: [nodeResolve()],
 };
 ```
 
@@ -118,9 +118,11 @@ DEPRECATED: use "resolveOnly" instead
 ### `preferBuiltins`
 
 Type: `Boolean`<br>
-Default: `true`
+Default: unset
 
 If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
+
+If unset the plugin will first look for modules of the same name, and then fall back to built-in modules.
 
 ### `modulesOnly`
 
@@ -164,28 +166,19 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule'
+    name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()]
+  plugins: [resolve(), commonjs()],
 };
 ```
 
 ## Resolving Built-Ins (like `fs`)
 
-This plugin won't resolve any builtins (e.g. `fs`). If you need to resolve builtins you can install local modules and set `preferBuiltins` to `false`, or install a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) which provides stubbed versions of these methods.
+By default this plugin will try and resolve everything to a local module. If that fails and the id matches a built-in module, then the module will be marked as external.
 
-If you want to silence warnings about builtins, you can add the list of builtins to the `externals` option; like so:
+See [`preferBuiltins`](#preferbuiltins).
 
-```js
-import resolve from '@rollup/plugin-node-resolve';
-import builtins from 'builtin-modules'
-export default ({
-  input: ...,
-  plugins: [resolve()],
-  external: builtins,
-  output: ...
-})
-```
+Use a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) to provide stubbed versions of built-ins.
 
 ## Meta
 
