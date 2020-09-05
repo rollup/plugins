@@ -18,7 +18,7 @@ import {
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
 const nullFn = () => null;
-const deepFreeze = object => {
+const deepFreeze = (object) => {
   Object.freeze(object);
 
   for (const value of Object.values(object)) {
@@ -273,7 +273,9 @@ export function nodeResolve(opts = {}) {
         };
         return result;
       } catch (error) {
-        return null;
+        // rethrow for now to prevent indentation changes
+        // TODO remove block
+        throw error;
       }
     },
 
