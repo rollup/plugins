@@ -100,6 +100,12 @@ export function nodeResolve(opts = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
+      if (/\0/.test(importer)) {
+        // handle cases like common-js plugin which has form
+        // \u0000<id>?commonjs-proxy
+        importer = importer.slice(1);
+      }
+
       // strip hash and query params from import
       const [withoutHash, hash] = importee.split('#');
       const [importPath, params] = withoutHash.split('?');
