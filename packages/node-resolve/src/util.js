@@ -173,7 +173,11 @@ export function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
 
       return resolveId(importSpecifierList[i], resolveOptions).then((result) => {
         if (!resolveOptions.preserveSymlinks) {
-          result = realpathSync(result);
+          try {
+            result = realpathSync(result);
+          } catch (e) {
+            // maybe the file does not exist. Might be a builtin
+          }
         }
         return result;
       });
