@@ -101,7 +101,7 @@ Specifies the extensions of files that the plugin will operate on.
 Type: `String`<br>
 Default: `'/'`
 
-Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be marked as external.
+Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be ignored by this plugin.
 
 ### `mainFields`
 
