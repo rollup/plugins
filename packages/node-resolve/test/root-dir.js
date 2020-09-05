@@ -7,11 +7,9 @@ const { testBundle } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
-process.chdir(join(__dirname, 'fixtures', 'monorepo-dedupe', 'packages', 'package-a'));
-
 test('deduplicates modules from the given root directory', async (t) => {
   const bundle = await rollup({
-    input: 'index.js',
+    input: './packages/package-a/index.js',
     plugins: [
       nodeResolve({
         dedupe: ['react'],
