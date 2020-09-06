@@ -1,11 +1,20 @@
+import { sep, posix, join } from 'path';
+
 import { rollup } from 'rollup';
+import globby from 'globby';
 import test from 'ava';
+import del from 'del';
 
 import { getCode } from '../../../util/test';
 
 import wasm from '../';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
+
+process.chdir(__dirname);
+
+const outputFile = './output/bundle.js';
+const outputDir = './output/';
 
 const testBundle = async (t, bundle) => {
   const code = await getCode(bundle);
@@ -17,17 +26,43 @@ test('async compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/async.js',
+    input: 'fixtures/async.js',
     plugins: [wasm()]
   });
   await testBundle(t, bundle);
+});
+
+test('fetching WASM from separate file', async (t) => {
+  t.plan(3);
+
+  const bundle = await rollup({
+    input: 'fixtures/complex.js',
+    plugins: [
+      wasm({
+        maxFileSize: 0
+      })
+    ]
+  });
+
+  await bundle.write({ format: 'cjs', file: outputFile });
+  const glob = join(outputDir, `**/*.wasm`)
+    .split(sep)
+    .join(posix.sep);
+
+  global.result = null;
+  global.t = t;
+  require(outputFile);
+
+  await global.result;
+  t.snapshot(await globby(glob));
+  await del(outputDir);
 });
 
 test('complex module decoding', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/complex.js',
+    input: 'fixtures/complex.js',
     plugins: [wasm()]
   });
   await testBundle(t, bundle);
@@ -37,10 +72,10 @@ test('sync compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/sync.js',
+    input: 'fixtures/sync.js',
     plugins: [
       wasm({
-        sync: ['test/fixtures/sample.wasm']
+        sync: ['fixtures/sample.wasm']
       })
     ]
   });
@@ -51,10 +86,10 @@ test('imports', async (t) => {
   t.plan(1);
 
   const bundle = await rollup({
-    input: 'test/fixtures/imports.js',
+    input: 'fixtures/imports.js',
     plugins: [
       wasm({
-        sync: ['test/fixtures/imports.wasm']
+        sync: ['fixtures/imports.wasm']
       })
     ]
   });
@@ -67,7 +102,7 @@ try {
     t.plan(2);
 
     const bundle = await rollup({
-      input: 'test/fixtures/worker.js',
+      input: 'fixtures/worker.js',
       plugins: [wasm()]
     });
     const code = await getCode(bundle);
