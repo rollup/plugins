@@ -8,7 +8,6 @@ export type CompilerOptions = import('typescript').CompilerOptions;
 
 export const DEFAULT_COMPILER_OPTIONS: PartialCompilerOptions = {
   module: 'esnext',
-  noEmitOnError: true,
   skipLibCheck: true
 };
 
