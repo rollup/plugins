@@ -1,13 +1,10 @@
-import { resolve as rawResolve, sep } from 'path';
+import { resolve as rawResolve } from 'path';
 
 import test from 'ava';
 
-import { createFilter } from '../';
+import { createFilter, normalizePath } from '../';
 
-const resolve = (...parts: string[]) =>
-  rawResolve(...parts)
-    .split(sep)
-    .join('/');
+const resolve = (...parts: string[]) => normalizePath(rawResolve(...parts));
 
 test.beforeEach(() => process.chdir(__dirname));
 
