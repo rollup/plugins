@@ -232,6 +232,22 @@ makeLegalIdentifier('foo-bar'); // 'foo_bar'
 makeLegalIdentifier('typeof'); // '_typeof'
 ```
 
+### normalizePath
+
+Converts path separators to forward slash.
+
+Parameters: `(filename: String)`<br>
+Returns: `String`
+
+#### Usage
+
+```js
+import { normalizePath } from '@rollup/pluginutils';
+
+normalizePath('foo\\bar'); // 'foo/bar'
+normalizePath('foo/bar'); // 'foo/bar'
+```
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
