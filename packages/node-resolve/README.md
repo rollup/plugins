@@ -34,15 +34,26 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [nodeResolve()]
+  plugins: [nodeResolve()],
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 ## Options
+
+### `exportConditions`
+
+Type: `Array[...String]`<br>
+Default: `[]`
+
+Additional conditions of the package.json exports field to match when resolving modules. By default, this plugin looks for the `['default', 'module', 'import']` conditions when resolving imports.
+
+When using `@rollup/plugin-commonjs` v16 or higher, this plugin will use the `['default', 'module', 'require']` conditions when resolving require statements.
+
+Setting this option will add extra conditions on top of the default conditions. See https://nodejs.org/api/packages.html#packages_conditional_exports for more information.
 
 ### `browser`
 
@@ -164,9 +175,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule'
+    name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()]
+  plugins: [resolve(), commonjs()],
 };
 ```
 
@@ -185,6 +196,19 @@ export default ({
   external: builtins,
   output: ...
 })
+```
+
+## Resolving require statements
+
+According to [NodeJS module resolution](https://nodejs.org/api/packages.html#packages_package_entry_points) `require` statements should resolve using the `require` condition in the package exports field, while es modules should use the `import` condition.
+
+The node resolve plugin uses `import` by default, you can opt into using the `require` semantics by passing an extra option to the resolve function:
+
+```js
+this.resolve(importee, importer, {
+  skipSelf: true,
+  custom: { 'node-resolve': { isRequire: true } },
+});
 ```
 
 ## Meta
