@@ -1,0 +1,45 @@
+{
+  "name": "rollup-plugin-eslint",
+  "version": "7.0.0",
+  "description": "Verify entry point and all imported files with ESLint",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "jest",
+    "prepublish": "yarn test",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TrySound/rollup-plugin-eslint.git"
+  },
+  "keywords": [
+    "rollup",
+    "rollup-plugin",
+    "es2015",
+    "eslint",
+    "lint"
+  ],
+  "author": "Bogdan Chadkin <trysound@yandex.ru>",
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^2.3.0",
+    "jest": "^24.8.0",
+    "lint-staged": "^8.1.7",
+    "prettier": "^1.17.1",
+    "rollup": "^1.12.3",
+    "rollup-plugin-node-resolve": "^5.0.0"
+  },
+  "dependencies": {
+    "eslint": "^6.0.0",
+    "rollup-pluginutils": "^2.7.1"
+  }
+}
