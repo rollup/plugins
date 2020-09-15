@@ -1,39 +1,51 @@
-const path = require("path");
-const { createFilter } = require("rollup-pluginutils");
-const { CLIEngine } = require("eslint");
+import * as path from 'path';
 
-function normalizePath(id) {
+import { Plugin } from 'rollup';
+import { createFilter } from 'rollup-pluginutils';
+import { CLIEngine } from 'eslint';
+
+import { RollupEslintOptions } from '../types';
+
+function normalizePath(id: string) {
   return path
     .relative(process.cwd(), id)
     .split(path.sep)
-    .join("/");
+    .join('/');
 }
 
-function eslint(options = {}) {
-  if (typeof options === "string") {
+export default function eslint(options = {} as RollupEslintOptions): Plugin {
+  if (typeof options === 'string') {
     const configFile = path.resolve(process.cwd(), options);
+    // eslint-disable-next-line global-require, import/no-dynamic-require, no-param-reassign
     options = require(configFile);
-    options.useEslintrc = false; // Tell eslint not to look for configuration files.
+    // Tell eslint not to look for configuration files.
+    // eslint-disable-next-line no-param-reassign
+    options.useEslintrc = false;
   }
 
   const cli = new CLIEngine(options);
-  let formatter = options.formatter;
+  let formatter: CLIEngine.Formatter;
 
-  if (typeof formatter !== "function") {
-    formatter = cli.getFormatter(formatter || "stylish");
+  switch (typeof options.formatter) {
+    case 'string':
+      formatter = cli.getFormatter(options.formatter);
+      break;
+    case 'function':
+      ({ formatter } = options);
+      break;
+    default:
+      formatter = cli.getFormatter('stylish');
   }
 
-  const filter = createFilter(
-    options.include,
-    options.exclude || /node_modules/
-  );
+  const filter = createFilter(options.include, options.exclude || /node_modules/);
 
   return {
-    name: "eslint",
+    name: 'eslint',
 
+    // eslint-disable-next-line consistent-return
     transform(code, id) {
       const file = normalizePath(id);
-      if (cli.isPathIgnored(file) || !filter(id)) {
+      if (!filter(id) || cli.isPathIgnored(file)) {
         return null;
       }
 
@@ -52,22 +64,21 @@ function eslint(options = {}) {
       const result = formatter(report.results);
 
       if (result) {
+        // eslint-disable-next-line no-console
         console.log(result);
       }
 
       if (hasWarnings && hasErrors) {
-        throw Error("Warnings or errors were found");
+        throw Error('Warnings or errors were found');
       }
 
       if (hasWarnings) {
-        throw Error("Warnings were found");
+        throw Error('Warnings were found');
       }
 
       if (hasErrors) {
-        throw Error("Errors were found");
+        throw Error('Errors were found');
       }
     }
   };
 }
-
-exports.eslint = eslint;

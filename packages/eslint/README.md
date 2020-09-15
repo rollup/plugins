@@ -1,31 +1,39 @@
-# rollup-plugin-eslint [![Travis Build Status][travis-img]][travis]
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-alias
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-alias
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-alias
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-alias
 
-[travis-img]: https://travis-ci.org/TrySound/rollup-plugin-eslint.svg
-[travis]: https://travis-ci.org/TrySound/rollup-plugin-eslint
-[rollup]: https://github.com/rollup/rollup
-[eslint-config]: http://eslint.org/docs/developer-guide/nodejs-api#cliengine
+[![npm][npm]][npm-url]
+[![size][size]][size-url]
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
-[Rollup] plugin to verify entry point and all imported files with ESLint.
+# @rollup/plugin-eslint
+
+🍣 A Rollup plugin to verify entry point and all imported files with ESLint.
 
 ## Install
 
-```sh
-yarn add rollup-plugin-eslint --dev
+Using npm:
+
+```console
+npm install @rollup/plugin-eslint --save-dev
+# or
+yarn add -D @rollup/plugin-eslint
 ```
 
 ## Usage
 
 ```js
-import { rollup } from "rollup";
-import { eslint } from "rollup-plugin-eslint";
+import { rollup } from 'rollup';
+import eslint from '@rollup/plugin-eslint';
 
 export default {
-  input: "main.js",
+  input: 'main.js',
   plugins: [
     eslint({
       /* your options */
-    })
-  ]
+    }),
+  ],
 };
 ```
 
@@ -77,6 +85,8 @@ Default: `stylish`
 
 Custom error formatter or the name of a built-in formatter.
 
-# License
+## Meta
 
-MIT © [Bogdan Chadkin](mailto:trysound@yandex.ru)
+[CONTRIBUTING](/.github/CONTRIBUTING.md)
+
+[LICENSE (MIT)](/LICENSE)

@@ -1,45 +1,83 @@
 {
-  "name": "rollup-plugin-eslint",
-  "version": "7.0.0",
+  "name": "@rollup/plugin-eslint",
+  "version": "8.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Verify entry point and all imported files with ESLint",
-  "main": "index.js",
-  "files": [
-    "index.js"
-  ],
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Bogdan Chadkin <trysound@yandex.ru>",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/eslint#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "engines": {
+    "node": ">= 10.0.0"
+  },
   "scripts": {
-    "test": "jest",
-    "prepublish": "yarn test",
-    "precommit": "lint-staged"
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
+    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint && pnpm run test",
+    "pretest": "pnpm run build",
+    "test": "ava"
   },
-  "lint-staged": {
-    "*.{js,md}": [
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TrySound/rollup-plugin-eslint.git"
-  },
+  "files": [
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "rollup",
+    "plugin",
     "rollup-plugin",
-    "es2015",
     "eslint",
+    "es2015",
+    "es6",
     "lint"
   ],
-  "author": "Bogdan Chadkin <trysound@yandex.ru>",
-  "license": "MIT",
-  "devDependencies": {
-    "husky": "^2.3.0",
-    "jest": "^24.8.0",
-    "lint-staged": "^8.1.7",
-    "prettier": "^1.17.1",
-    "rollup": "^1.12.3",
-    "rollup-plugin-node-resolve": "^5.0.0"
+  "peerDependencies": {
+    "rollup": "^1.20.0||^2.0.0"
   },
   "dependencies": {
     "eslint": "^6.0.0",
     "rollup-pluginutils": "^2.7.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@rollup/plugin-typescript": "5.0.2",
+    "@types/eslint": "^7.2.2",
+    "rollup": "^2.23.0"
+  },
+  "types": "types/index.d.ts",
+  "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ],
+    "contributors": [
+      "Mattias Ekstrand <mattias.ekstrand@gmail.com>"
+    ]
   }
 }
