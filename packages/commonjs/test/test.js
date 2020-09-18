@@ -575,6 +575,7 @@ var esm = /*#__PURE__*/Object.freeze({
 });
 
 function getAugmentedNamespace(n) {
+	if (n.__esModule) return n;
 	var a = Object.defineProperty({}, '__esModule', {value: true});
 	Object.keys(n).forEach(function (k) {
 		var d = Object.getOwnPropertyDescriptor(n, k);

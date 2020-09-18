@@ -79,7 +79,17 @@ interface RollupCommonJSOptions {
    * Controls what is returned when requiring an ES module from a CommonJS file.
    * When using the `esmExternals` option, this will also apply to external
    * modules. By default, this plugin will render those imports as namespace
-   * imports. However there are some situations where this may not be desired.
+   * imports i.e.
+   *
+   * ```js
+   * // input
+   * const foo = require('foo');
+   *
+   * // output
+   * import * as foo from 'foo';
+   * ```
+   *
+   * However there are some situations where this may not be desired.
    * For these situations, you can change Rollup's behaviour either globally or
    * per module. To change it globally, set the `requireReturnsDefault` option
    * to one of the following values:
@@ -132,22 +142,6 @@ interface RollupCommonJSOptions {
    * replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
    */
   dynamicRequireTargets?: string | ReadonlyArray<string>;
-  /**
-   * Controls what is returned when requiring an ES module or external dependency
-   * from a CommonJS file. By default, this plugin will render it as a namespace
-   * import, i.e.
-   *
-   * ```js
-   * // input
-   * const foo = require('foo');
-   *
-   * // output
-   * import * as foo from 'foo';
-   * ```
-   *
-   * @default false
-   */
-  requireReturnsDefault?: boolean | 'auto' | 'preferred' | ((id: string) => boolean | 'auto' | 'preferred');
 }
 
 /**
