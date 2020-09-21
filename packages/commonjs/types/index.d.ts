@@ -55,6 +55,22 @@ interface RollupCommonJSOptions {
    *   like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
    */
   dynamicRequireTargets?: string | ReadonlyArray<string>;
+  /**
+   * Controls what is returned when requiring an ES module or external dependency
+   * from a CommonJS file. By default, this plugin will render it as a namespace
+   * import, i.e.
+   *
+   * ```js
+   * // input
+   * const foo = require('foo');
+   *
+   * // output
+   * import * as foo from 'foo';
+   * ```
+   *
+   * @default false
+   */
+  requireReturnsDefault?: boolean | 'auto' | 'preferred' | ((id: string) => boolean | 'auto' | 'preferred');
 }
 
 /**
