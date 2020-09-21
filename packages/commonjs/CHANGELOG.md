@@ -1,12 +1,21 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v15.1.0
+
+_2020-09-21_
+
+### Features
+
+- feat: inject \_\_esModule marker into ES namespaces and add Object prototype (#552)
+- feat: add requireReturnsDefault to types (#579)
+
 ## v15.0.0
 
 _2020-08-13_
 
 ### Breaking Changes
 
-- feat!: return the namespace by default when requiring ESM  (#507)
+- feat!: return the namespace by default when requiring ESM (#507)
 - fix!: fix interop when importing CJS that is transpiled ESM from an actual ESM (#501)
 
 ### Bugfixes
