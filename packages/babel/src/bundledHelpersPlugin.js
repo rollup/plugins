@@ -2,7 +2,7 @@ import { addNamed } from '@babel/helper-module-imports';
 
 import { HELPERS } from './constants';
 
-export default function importHelperPlugin() {
+export default function importHelperPlugin({ types: t }) {
   return {
     pre(file) {
       const cachedHelpers = {};
@@ -12,7 +12,7 @@ export default function importHelperPlugin() {
         }
 
         if (cachedHelpers[name]) {
-          return cachedHelpers[name];
+          return t.cloneNode(cachedHelpers[name]);
         }
 
         return (cachedHelpers[name] = addNamed(file.path, name, HELPERS));
