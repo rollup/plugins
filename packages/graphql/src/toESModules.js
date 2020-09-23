@@ -1,9 +1,7 @@
-import {
-  EOL
-} from 'os';
+import { EOL } from 'os';
 
 export default function(source) {
-  if (typeof source !== "string") {
+  if (typeof source !== 'string') {
     return source;
   }
 
@@ -13,7 +11,10 @@ export default function(source) {
 function replaceModuleExports(source) {
   return source
     .replace('module.exports = doc', 'export default doc')
-    .replace(/module\.exports\["(.*)"] = oneQuery\(doc, "(.*)"\)/g, (match, g1, g2) => `export const ${g1} = oneQuery(doc, "${g2}")`);
+    .replace(
+      /module\.exports\["(.*)"] = oneQuery\(doc, "(.*)"\)/g,
+      (match, g1, g2) => `export const ${g1} = oneQuery(doc, "${g2}")`
+    );
 }
 
 function replaceRequires(source) {
@@ -21,11 +22,12 @@ function replaceRequires(source) {
   let index = 0;
 
   // replace a require statement with a variable
-  source = source.replace(/require\(([^)]+)\)/ig, (match, path) => {
+  source = source.replace(/require\(([^)]+)\)/gi, (match, path) => {
     path = path.replace(/["']+/g, '');
 
     if (!imports[path]) {
-      imports[path] = `frgmt${++index}`;
+      index += 1;
+      imports[path] = `frgmt${index}`;
     }
 
     return imports[path];

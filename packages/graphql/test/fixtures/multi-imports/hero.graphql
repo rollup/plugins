@@ -1,4 +1,4 @@
-query GetHero ($id: ID!) {
+query GetHero($id: ID!) {
   hero(id: $id) {
     id
     name
@@ -11,4 +11,3 @@ query GetHeros {
     name
   }
 }
-

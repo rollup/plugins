@@ -1,66 +1,72 @@
 {
-  "name": "@kocal/rollup-plugin-graphql",
+  "name": "@rollup/plugin-graphql",
   "version": "1.0.0",
-  "description": "Convert graphql files to ES6 modules",
-  "main": "dist/rollup-plugin-graphql.cjs.js",
-  "module": "dist/rollup-plugin-graphql.es.js",
-  "jsnext:main": "dist/rollup-plugin-graphql.es.js",
-  "files": [
-    "src",
-    "dist",
-    "README.md"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Kocal/rollup-plugin-graphql.git"
-  },
-  "keywords": [
-    "graphql",
-    "rollup",
-    "rollupjs"
-  ],
-  "author": "Kamil Kisiela <kamil.kisiela@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Kocal/rollup-plugin-graphql/issues"
-  },
-  "homepage": "https://github.com/Kocal/rollup-plugin-graphql#readme",
-  "contributors": [
-    "Benny Powers (https://github.com/bennypowers)",
-    "Hugo Alliaume (https://github.com/Kocal)"
-  ],
   "publishConfig": {
     "access": "public"
   },
+  "description": "Convert .gql/.graphql files to ES6 modules",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "rollup",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/json#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
-    "test": "jest",
-    "pretest": "npm run build",
-    "posttest": "npm run lint",
     "build": "rollup -c",
-    "prebuild": "rm -rf dist/*",
-    "prepublish": "npm test",
-    "lint": "eslint src"
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:graphql && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
+    "lint:graphql": "prettier --write \"test/fixtures/**/*.graphql\"",
+    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint && pnpm run test",
+    "pretest": "pnpm run build",
+    "test": "ava",
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
+  },
+  "files": [
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "json",
+    "es2015",
+    "npm",
+    "modules"
+  ],
+  "peerDependencies": {
+    "graphql": ">=0.9.0",
+    "rollup": "^1.20.0 || ^2.0.0"
   },
   "dependencies": {
-    "graphql-tag": "^2.2.2",
-    "rollup-pluginutils": "^2.0.1"
-  },
-  "peerDependencies": {
-    "graphql": ">=0.9.0"
+    "@rollup/pluginutils": "^4.0.0",
+    "graphql-tag": "^2.2.2"
   },
   "devDependencies": {
-    "babel-jest": "^24.0.0",
-    "eslint": "^5.13.0",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-jest": "^20.0.3",
+    "@rollup/plugin-buble": "^0.21.0",
     "graphql": "^14.1.1",
-    "jest": "^24.0.0",
-    "rollup": "^1.1.2",
-    "rollup-plugin-buble": "^0.19.6",
-    "rollup-plugin-node-resolve": "^4.0.0"
+    "rollup": "^2.23.0"
   },
-  "jest": {
-    "testRegex": "/tests/.*\\.spec.js$",
-    "testEnvironment": "node"
+  "types": "types/index.d.ts",
+  "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
   }
 }
