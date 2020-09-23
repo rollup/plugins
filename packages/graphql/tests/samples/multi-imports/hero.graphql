@@ -1,0 +1,14 @@
+query GetHero ($id: ID!) {
+  hero(id: $id) {
+    id
+    name
+  }
+}
+
+query GetHeros {
+  hero {
+    id
+    name
+  }
+}
+

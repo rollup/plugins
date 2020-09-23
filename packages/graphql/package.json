@@ -1,0 +1,66 @@
+{
+  "name": "@kocal/rollup-plugin-graphql",
+  "version": "1.0.0",
+  "description": "Convert graphql files to ES6 modules",
+  "main": "dist/rollup-plugin-graphql.cjs.js",
+  "module": "dist/rollup-plugin-graphql.es.js",
+  "jsnext:main": "dist/rollup-plugin-graphql.es.js",
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kocal/rollup-plugin-graphql.git"
+  },
+  "keywords": [
+    "graphql",
+    "rollup",
+    "rollupjs"
+  ],
+  "author": "Kamil Kisiela <kamil.kisiela@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kocal/rollup-plugin-graphql/issues"
+  },
+  "homepage": "https://github.com/Kocal/rollup-plugin-graphql#readme",
+  "contributors": [
+    "Benny Powers (https://github.com/bennypowers)",
+    "Hugo Alliaume (https://github.com/Kocal)"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "jest",
+    "pretest": "npm run build",
+    "posttest": "npm run lint",
+    "build": "rollup -c",
+    "prebuild": "rm -rf dist/*",
+    "prepublish": "npm test",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "graphql-tag": "^2.2.2",
+    "rollup-pluginutils": "^2.0.1"
+  },
+  "peerDependencies": {
+    "graphql": ">=0.9.0"
+  },
+  "devDependencies": {
+    "babel-jest": "^24.0.0",
+    "eslint": "^5.13.0",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-jest": "^20.0.3",
+    "graphql": "^14.1.1",
+    "jest": "^24.0.0",
+    "rollup": "^1.1.2",
+    "rollup-plugin-buble": "^0.19.6",
+    "rollup-plugin-node-resolve": "^4.0.0"
+  },
+  "jest": {
+    "testRegex": "/tests/.*\\.spec.js$",
+    "testEnvironment": "node"
+  }
+}
