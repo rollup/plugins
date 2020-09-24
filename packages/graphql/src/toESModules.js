@@ -1,6 +1,13 @@
+/* eslint-disable import/prefer-default-export */
+
 import { EOL } from 'os';
 
-export default function(source) {
+/**
+ * Convert CommonJS exports to ES modules exports
+ * @param source Source code to convert
+ * @returns The converted source code
+ */
+export function toESModules(source) {
   if (typeof source !== 'string') {
     return source;
   }

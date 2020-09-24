@@ -1,7 +1,7 @@
 import { createFilter } from '@rollup/pluginutils';
 import loader from 'graphql-tag/loader';
 
-import toESModules from './toESModules';
+import { toESModules } from './toESModules';
 
 export default function graphql({ include, exclude } = {}) {
   // path filter
