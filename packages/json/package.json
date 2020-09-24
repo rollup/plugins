@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-json",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -11,6 +11,7 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/json#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -18,7 +19,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:json && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:json": "prettier --write \"test/fixtures/!(garbage)/*.json\"",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
@@ -44,24 +45,27 @@
     "modules"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "^1.20.0 || ^2.0.0"
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.0.8"
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.0",
-    "@rollup/plugin-node-resolve": "^7.0.0",
-    "source-map-support": "^0.5.16"
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "rollup": "^2.23.0",
+    "source-map-support": "^0.5.19"
   },
+  "types": "types/index.d.ts",
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "module": "dist/index.es.js",
-  "types": "types/index.d.ts"
+  }
 }

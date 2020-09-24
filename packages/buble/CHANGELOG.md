@@ -1,5 +1,21 @@
 # @rollup/plugin-buble ChangeLog
 
+## v0.21.3
+
+_2020-04-12_
+
+### Updates
+
+- chore: upgrade buble, resolves babel/babel#11216 (#288)
+
+## v0.21.2
+
+_2020-04-12_
+
+### Updates
+
+- chore: Move to Typescript (#231)
+
 ## v0.21.1
 
 _2020-02-01_

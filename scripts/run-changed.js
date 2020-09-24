@@ -60,6 +60,7 @@ const getDiff = async () => {
 
   if (!filters.length) {
     log(chalk`{yellow No individual package changes detected}`);
+    return;
   }
 
   log(chalk`{blue Executing \`${task}\`} for:\n  ${uniqueFilters.join('\n  ')}\n`);

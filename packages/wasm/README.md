@@ -30,15 +30,15 @@ npm install @rollup/plugin-wasm --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import wasm from '@rollup/plugin-wasm';
+import { wasm } from '@rollup/plugin-wasm';
 
 export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [wasm()]
+  plugins: [wasm()],
 };
 ```
 
@@ -53,6 +53,22 @@ Default: `null`
 
 Specifies an array of strings that each represent a WebAssembly file to load synchronously. See [Synchronous Modules](#synchronous-modules) for a functional example.
 
+### `maxFileSize`
+
+Type: `Number`<br>
+Default: `14336` (14kb)
+
+The maximum file size for inline files. If a file exceeds this limit, it will be copied to the destination folder and loaded from a separate file at runtime. If `maxFileSize` is set to `0` all files will be copied.
+
+Files specified in `sync` to load synchronously are always inlined, regardless of size.
+
+### `publicPath`
+
+Type: `String`<br>
+Default: (empty string)
+
+A string which will be added in front of filenames when they are not inlined but are copied.
+
 ## WebAssembly Example
 
 Given the following simple C file:
@@ -66,9 +82,9 @@ int main() {
 Compile the file using `emscripten`, or the online [WasmFiddle](https://wasdk.github.io/WasmFiddle//) tool. Then import and instantiate the resulting file:
 
 ```js
-import wasm from './sample.wasm';
+import sample from './sample.wasm';
 
-wasm({ ...imports }).then(({ instance }) => {
+sample({ ...imports }).then(({ instance }) => {
   console.log(instance.exports.main());
 });
 ```
@@ -83,14 +99,14 @@ Small modules (< 4KB) can be compiled synchronously by specifying them in the co
 
 ```js
 wasm({
-  sync: ['web/sample.wasm', 'web/foobar.wasm']
+  sync: ['web/sample.wasm', 'web/foobar.wasm'],
 });
 ```
 
 This means that the exports can be accessed immediately.
 
 ```js
-import module from './sample.wasm';
+import sample from './sample.wasm';
 
 const instance = sample({ ...imports });
 

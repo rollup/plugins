@@ -59,7 +59,7 @@ const getCommits = async (pluginName) => {
     .map((commit) => {
       const node = parser.sync(commit);
 
-      node.breaking = reBreaking.test(node.body || node.footer);
+      node.breaking = reBreaking.test(node.body || node.footer) || /!:/.test(node.header);
 
       return node;
     });

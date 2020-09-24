@@ -1,5 +1,81 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v9.0.0
+
+_2020-08-13_
+
+### Breaking Changes
+
+- chore: update dependencies (e632469)
+
+### Updates
+
+- refactor: remove deep-freeze from dependencies (#529)
+- chore: clean up changelog (84dfddb)
+
+## v8.4.0
+
+_2020-07-12_
+
+### Features
+
+- feat: preserve search params and hashes (#487)
+- feat: support .js imports in TypeScript (#480)
+
+### Updates
+
+- docs: fix named export use in readme (#456)
+- docs: correct mainFields valid values (#469)
+
+## v8.1.0
+
+_2020-06-22_
+
+### Features
+
+- feat: add native node es modules support (#413)
+
+## v8.0.1
+
+_2020-06-05_
+
+### Bugfixes
+
+- fix: handle nested entry modules with the resolveOnly option (#430)
+
+## v8.0.0
+
+_2020-05-20_
+
+### Breaking Changes
+
+- feat: Add default export (#361)
+- feat: export defaults (#301)
+
+### Bugfixes
+
+- fix: resolve local files if `resolveOption` is set (#337)
+
+### Updates
+
+- docs: correct misspelling (#343)
+
+## v7.1.3
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: resolve symlinked entry point properly (#291)
+
+## v7.1.2
+
+_2020-04-12_
+
+### Updates
+
+- docs: fix url (#289)
+
 ## v7.1.1
 
 _2020-02-03_

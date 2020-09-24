@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { resolve } from 'path';
 
-import { CompilerOptions, PartialCustomOptions } from './interfaces';
+import { CompilerOptions, PartialCompilerOptions } from './interfaces';
 
 export const DIRECTORY_PROPS = ['outDir', 'declarationDir'] as const;
 
@@ -12,7 +12,7 @@ export const DIRECTORY_PROPS = ['outDir', 'declarationDir'] as const;
  * @param compilerOptions Compiler options to _mutate_.
  * @param relativeTo Paths are resolved relative to this path.
  */
-export function makePathsAbsolute(compilerOptions: PartialCustomOptions, relativeTo: string) {
+export function makePathsAbsolute(compilerOptions: PartialCompilerOptions, relativeTo: string) {
   for (const pathProp of DIRECTORY_PROPS) {
     if (compilerOptions[pathProp]) {
       compilerOptions[pathProp] = resolve(relativeTo, compilerOptions[pathProp] as string);
@@ -38,6 +38,9 @@ export function normalizeCompilerOptions(
     // Default to using source maps.
     // If the plugin user sets sourceMap to false we keep that option.
     compilerOptions.sourceMap = true;
+    // Using inlineSources to make sure typescript generate source content
+    // instead of source path.
+    compilerOptions.inlineSources = true;
     autoSetSourceMap = true;
   }
 

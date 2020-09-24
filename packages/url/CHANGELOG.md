@@ -1,5 +1,21 @@
 # @rollup/plugin-url ChangeLog
 
+## v5.0.1
+
+_2020-06-05_
+
+### Bugfixes
+
+- fix: add name property to plugin (#433)
+
+## v5.0.0
+
+_2020-05-11_
+
+### Breaking Changes
+
+- fix: Don't append path separator on empty dirname (#212)
+
 ## v4.0.2
 
 _2020-02-01_

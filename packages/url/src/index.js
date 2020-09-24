@@ -26,6 +26,7 @@ export default function url(options = {}) {
   const copies = Object.create(null);
 
   return {
+    name: 'url',
     load(id) {
       if (!filter(id)) {
         return null;
@@ -56,7 +57,7 @@ export default function url(options = {}) {
             .replace(/\[hash\]/g, hash)
             .replace(/\[extname\]/g, ext)
             // use `sep` for windows environments
-            .replace(/\[dirname\]/g, `${relativeDir}${sep}`)
+            .replace(/\[dirname\]/g, relativeDir === '' ? '' : `${relativeDir}${sep}`)
             .replace(/\[name\]/g, name);
           // Windows fix - exports must be in unix format
           data = `${publicPath}${outputFileName.split(sep).join(posix.sep)}`;

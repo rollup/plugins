@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-data-uri",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publishConfig": {
     "access": "public"
   },
@@ -11,6 +11,7 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/data-uri",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "engines": {
     "node": ">= 8.0.0"
   },
@@ -21,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -48,13 +49,15 @@
     "rollup": "^1.20.0||^2.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^3.0.0",
+    "@rollup/plugin-typescript": "^5.0.2",
     "@rollup/pluginutils": "^3.0.1",
-    "rollup": "^2.0.0",
-    "typescript": "^3.7.4"
+    "rollup": "^2.23.0"
   },
+  "types": "types/index.d.ts",
   "ava": {
-    "compileEnhancements": false,
+    "babel": {
+      "compileEnhancements": false
+    },
     "extensions": [
       "ts"
     ],
@@ -68,7 +71,5 @@
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "module": "dist/index.es.js",
-  "types": "types/index.d.ts"
+  }
 }

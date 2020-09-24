@@ -1,5 +1,5 @@
 // @ts-check
-import resolve from '..';
+import { nodeResolve } from '..';
 
 /** @type {import("rollup").RollupOptions} */
 const config = {
@@ -10,7 +10,7 @@ const config = {
     name: 'MyModule'
   },
   plugins: [
-    resolve({
+    nodeResolve({
       browser: true,
       customResolveOptions: {
         moduleDirectory: 'js_modules'

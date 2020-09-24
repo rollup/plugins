@@ -11,7 +11,7 @@ import {
   DEFAULT_COMPILER_OPTIONS,
   EnumCompilerOptions,
   FORCED_COMPILER_OPTIONS,
-  PartialCustomOptions
+  PartialCompilerOptions
 } from './interfaces';
 import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
 
@@ -59,9 +59,9 @@ function readTsConfigFile(ts: typeof import('typescript'), tsConfigPath: string)
  * This indicates that the internal CompilerOptions type is used rather than the JsonCompilerOptions.
  */
 function containsEnumOptions(
-  compilerOptions: PartialCustomOptions
+  compilerOptions: PartialCompilerOptions
 ): compilerOptions is Partial<CompilerOptions> {
-  const enums: Array<keyof EnumCompilerOptions> = [
+  const enums: Array<EnumCompilerOptions> = [
     'module',
     'target',
     'jsx',
@@ -89,7 +89,7 @@ const configCache = new Map() as import('typescript').Map<
 export function parseTypescriptConfig(
   ts: typeof import('typescript'),
   tsconfig: RollupTypescriptOptions['tsconfig'],
-  compilerOptions: PartialCustomOptions
+  compilerOptions: PartialCompilerOptions
 ) {
   /* eslint-disable no-undefined */
   const cwd = process.cwd();

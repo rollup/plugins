@@ -1,5 +1,21 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.1
+
+_2020-06-05_
+
+### Bugfixes
+
+- fix: properly initialize custom resolvers (#426)
+
+## v3.1.0
+
+_2020-04-12_
+
+### Features
+
+- feat: Move to Typescript (#228)
+
 ## v3.0.1
 
 _2020-02-01_

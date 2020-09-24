@@ -1,13 +1,13 @@
-const { join, resolve } = require('path');
+import { join, resolve } from 'path';
 
-const test = require('ava');
-const { rollup } = require('rollup');
-const babel = require('rollup-plugin-babel');
-const commonjs = require('rollup-plugin-commonjs');
+import test from 'ava';
+import { rollup } from 'rollup';
+import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
 
-const { getCode, getImports, testBundle } = require('../../../util/test');
+import { getCode, getImports, testBundle } from '../../../util/test';
 
-const nodeResolve = require('..');
+import { nodeResolve } from '..';
 
 process.chdir(join(__dirname, 'fixtures'));
 
@@ -51,6 +51,7 @@ test('finds a file inside a package directory', async (t) => {
     plugins: [
       nodeResolve(),
       babel({
+        babelHelpers: 'bundled',
         presets: [
           [
             '@babel/preset-env',
@@ -102,6 +103,25 @@ test('supports non-standard extensions', async (t) => {
     ]
   });
   await testBundle(t, bundle);
+});
+
+test('supports JS extensions in TS when referring to TS imports', async (t) => {
+  const bundle = await rollup({
+    input: 'ts-import-js-extension/import-ts-with-js-extension.ts',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.ts']
+      }),
+      babel({
+        babelHelpers: 'bundled',
+        plugins: ['@babel/plugin-transform-typescript'],
+        extensions: ['.js', '.ts']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
 });
 
 test('ignores IDs with null character', async (t) => {
@@ -218,4 +238,79 @@ test('handles package side-effects', async (t) => {
   t.snapshot(global.sideEffects);
 
   delete global.sideEffects;
+});
+
+test('can resolve imports with hashes', async (t) => {
+  const bundle = await rollup({
+    input: 'hash.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      {
+        load(id) {
+          if (id === resolve(__dirname, 'fixtures', 'node_modules', 'test', 'index.js#foo')) {
+            return 'export default "resolved with hash"';
+          }
+          return null;
+        }
+      }
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'resolved with hash');
+});
+
+test('can resolve imports with search params', async (t) => {
+  const bundle = await rollup({
+    input: 'search-params.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      {
+        load(id) {
+          if (
+            id ===
+            resolve(__dirname, 'fixtures', 'node_modules', 'test', 'index.js?foo=bar&lorem=ipsum')
+          ) {
+            return 'export default "resolved with search params"';
+          }
+          return null;
+        }
+      }
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'resolved with search params');
+});
+
+test('can resolve imports with search params and hash', async (t) => {
+  const bundle = await rollup({
+    input: 'search-params-and-hash.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      {
+        load(id) {
+          if (
+            id ===
+            resolve(
+              __dirname,
+              'fixtures',
+              'node_modules',
+              'test',
+              'index.js?foo=bar&lorem=ipsum#foo'
+            )
+          ) {
+            return 'export default "resolved with search params and hash"';
+          }
+          return null;
+        }
+      }
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'resolved with search params and hash');
 });

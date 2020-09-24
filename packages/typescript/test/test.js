@@ -23,7 +23,7 @@ function onwarn(warning) {
   console.warn(warning.toString());
 }
 
-test('runs code through typescript', async (t) => {
+test.serial('runs code through typescript', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', target: 'es5' })],
@@ -35,7 +35,7 @@ test('runs code through typescript', async (t) => {
   t.false(code.includes('const'), code);
 });
 
-test('supports creating declaration files', async (t) => {
+test.serial('supports creating declaration files', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -57,7 +57,7 @@ test('supports creating declaration files', async (t) => {
   t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
-test('supports creating declaration files in subfolder', async (t) => {
+test.serial('supports creating declaration files in subfolder', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -82,7 +82,65 @@ test('supports creating declaration files in subfolder', async (t) => {
   t.true(declarationSource.includes('//# sourceMappingURL=main.d.ts.map'), declarationSource);
 });
 
-test('supports creating declaration files in declarationDir', async (t) => {
+test.serial('supports creating declarations with non-default rootDir', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/declaration-root-dir/src/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/declaration-root-dir/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(
+    bundle,
+    { format: 'esm', dir: 'fixtures/declaration-root-dir/lib' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'main.d.ts']
+  );
+});
+
+test.serial('supports creating declaration files for interface only source file', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/export-interface-only/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/export-interface-only/tsconfig.json',
+        declarationDir: 'fixtures/export-interface-only/dist/types',
+        declaration: true,
+        declarationMap: true
+      })
+    ],
+    onwarn
+  });
+
+  const output = await getCode(
+    bundle,
+    { format: 'esm', dir: 'fixtures/export-interface-only/dist' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    [
+      'main.js',
+      'types/interface.d.ts',
+      'types/interface.d.ts.map',
+      'types/main.d.ts',
+      'types/main.d.ts.map'
+    ]
+  );
+
+  const declarationSource = output[1].source;
+  t.true(declarationSource.includes('export interface ITest'), declarationSource);
+  t.true(declarationSource.includes('//# sourceMappingURL=interface.d.ts.map'), declarationSource);
+});
+
+test.serial('supports creating declaration files in declarationDir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -104,7 +162,7 @@ test('supports creating declaration files in declarationDir', async (t) => {
   t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
-test('ensures outDir is set when creating declaration files', async (t) => {
+test.serial('ensures outDir is set when creating declaration files', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -127,7 +185,7 @@ test('ensures outDir is set when creating declaration files', async (t) => {
   );
 });
 
-test('ensures outDir is located in Rollup output dir', async (t) => {
+test.serial('ensures outDir is located in Rollup output dir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -156,7 +214,7 @@ test('ensures outDir is located in Rollup output dir', async (t) => {
   );
 });
 
-test('ensures declarationDir is located in Rollup output dir', async (t) => {
+test.serial('ensures declarationDir is located in Rollup output dir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -186,7 +244,7 @@ test('ensures declarationDir is located in Rollup output dir', async (t) => {
   );
 });
 
-test('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
+test.serial('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/relative-dir/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/relative-dir/tsconfig.json' })],
@@ -202,7 +260,7 @@ test('relative paths in tsconfig.json are resolved relative to the file', async 
   t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
-test('throws for unsupported module types', async (t) => {
+test.serial('throws for unsupported module types', async (t) => {
   const caughtError = await t.throws(() =>
     rollup({
       input: 'fixtures/basic/main.ts',
@@ -217,7 +275,7 @@ test('throws for unsupported module types', async (t) => {
   );
 });
 
-test('warns for invalid module types', async (t) => {
+test.serial('warns for invalid module types', async (t) => {
   const warnings = [];
   await t.throwsAsync(() =>
     rollup({
@@ -234,12 +292,12 @@ test('warns for invalid module types', async (t) => {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
       pluginCode: 'TS6046',
-      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'esnext'.`
+      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'esnext'.`
     }
   ]);
 });
 
-test('ignores case of module types', async (t) => {
+test.serial('ignores case of module types', async (t) => {
   await t.notThrowsAsync(
     rollup({
       input: 'fixtures/basic/main.ts',
@@ -249,7 +307,7 @@ test('ignores case of module types', async (t) => {
   );
 });
 
-test('handles async functions', async (t) => {
+test.serial('handles async functions', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/async/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/async/tsconfig.json' })],
@@ -260,7 +318,7 @@ test('handles async functions', async (t) => {
   t.pass();
 });
 
-test('does not duplicate helpers', async (t) => {
+test.serial('does not duplicate helpers', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/dedup-helpers/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/dedup-helpers/tsconfig.json', target: 'es5' })],
@@ -275,7 +333,7 @@ test('does not duplicate helpers', async (t) => {
   t.false(code.includes('__extends$1'), code);
 });
 
-test('transpiles `export class A` correctly', async (t) => {
+test.serial('transpiles `export class A` correctly', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-class-fix/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/export-class-fix/tsconfig.json' })],
@@ -307,7 +365,7 @@ test.serial('transpiles ES6 features to ES5 with source maps', async (t) => {
   t.is(code.indexOf('=>'), -1, code);
 });
 
-test('reports diagnostics and throws if errors occur during transpilation', async (t) => {
+test.serial('reports diagnostics and throws if errors occur during transpilation', async (t) => {
   const caughtError = await t.throwsAsync(
     rollup({
       input: 'fixtures/syntax-error/missing-type.ts',
@@ -320,7 +378,7 @@ test('reports diagnostics and throws if errors occur during transpilation', asyn
   t.is(caughtError.pluginCode, 'TS1110');
 });
 
-test('ignore type errors if noEmitOnError is false', async (t) => {
+test.serial('ignore type errors if noEmitOnError is false', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/syntax-error/missing-type.ts',
@@ -346,7 +404,7 @@ test('ignore type errors if noEmitOnError is false', async (t) => {
   t.true(warnings[0].frame.includes('var a: ;'));
 });
 
-test('works with named exports for abstract classes', async (t) => {
+test.serial('works with named exports for abstract classes', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-abstract-class/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/export-abstract-class/tsconfig.json' })],
@@ -356,7 +414,7 @@ test('works with named exports for abstract classes', async (t) => {
   t.true(code.length > 0, code);
 });
 
-test('should use named exports for classes', async (t) => {
+test.serial('should use named exports for classes', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-class/main.ts',
     plugins: [typescript({ include: 'fixtures/export-class/**/*' })],
@@ -365,7 +423,7 @@ test('should use named exports for classes', async (t) => {
   t.is((await evaluateBundle(bundle)).foo, 'bar');
 });
 
-test('supports overriding the TypeScript version', async (t) => {
+test.serial('supports overriding the TypeScript version', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/overriding-typescript/main.ts',
     onwarn,
@@ -403,7 +461,7 @@ test('supports overriding the TypeScript version', async (t) => {
   t.is(result, 1337);
 });
 
-test('supports overriding tslib with a custom path', async (t) => {
+test.serial('supports overriding tslib with a custom path', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
     plugins: [
@@ -419,7 +477,7 @@ test('supports overriding tslib with a custom path', async (t) => {
   t.is(code.myParent.baseMethod(), 'base method');
 });
 
-test('supports overriding tslib with a custom path in a promise', async (t) => {
+test.serial('supports overriding tslib with a custom path in a promise', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
     plugins: [
@@ -435,7 +493,7 @@ test('supports overriding tslib with a custom path in a promise', async (t) => {
   t.is(code.myParent.baseMethod(), 'base method');
 });
 
-test('should not resolve .d.ts files', async (t) => {
+test.serial('should not resolve .d.ts files', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/dts/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/dts/tsconfig.json' })],
@@ -523,7 +581,7 @@ test.serial('should support extends property with node resolution', async (t) =>
   t.true(usage, 'should contain usage');
 });
 
-test('complies code that uses browser functions', async (t) => {
+test.serial('complies code that uses browser functions', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/dom/main.ts',
     plugins: [typescript({ tsconfig: './fixtures/dom/tsconfig.json' })],
@@ -535,7 +593,7 @@ test('complies code that uses browser functions', async (t) => {
   t.true(code.includes('navigator.clipboard.readText()'), code);
 });
 
-test('allows specifying a path for tsconfig.json', async (t) => {
+test.serial('allows specifying a path for tsconfig.json', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/tsconfig-jsx/main.tsx',
     plugins: [
@@ -549,7 +607,7 @@ test('allows specifying a path for tsconfig.json', async (t) => {
   t.not(usage, -1, 'should contain usage');
 });
 
-test('throws if tsconfig cannot be found', async (t) => {
+test.serial('throws if tsconfig cannot be found', async (t) => {
   const caughtError = await t.throws(() =>
     rollup({
       input: 'fixtures/tsconfig-jsx/main.tsx',
@@ -564,7 +622,7 @@ test('throws if tsconfig cannot be found', async (t) => {
   );
 });
 
-test('should throw on bad options', async (t) => {
+test.serial('should throw on bad options', async (t) => {
   const warnings = [];
   await t.throwsAsync(
     () =>
@@ -576,7 +634,9 @@ test('should throw on bad options', async (t) => {
           warnings.push(warning);
         }
       }),
-    "@rollup/plugin-typescript: Couldn't process compiler options"
+    {
+      message: "@rollup/plugin-typescript: Couldn't process compiler options"
+    }
   );
 
   t.deepEqual(warnings, [
@@ -589,7 +649,7 @@ test('should throw on bad options', async (t) => {
   ]);
 });
 
-test('creates _tslib.js file when preserveModules is used', async (t) => {
+test.serial('creates _tslib.js file when preserveModules is used', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/preserve-modules/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/preserve-modules/tsconfig.json' })],
@@ -602,31 +662,57 @@ test('creates _tslib.js file when preserveModules is used', async (t) => {
   t.true(files[1].fileName.includes('tslib.es6.js'), files[1].fileName);
 });
 
-test('should handle re-exporting types', async (t) => {
+test.serial('should handle re-exporting types', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/reexport-type/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/reexport-type/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/reexport-type/tsconfig.json',
+        // Make sure the transpiled files are empty
+        inlineSourceMap: false,
+        sourceMap: false
+      })
+    ],
     onwarn
   });
   await t.notThrowsAsync(getCode(bundle, outputOptions));
 });
 
-test('prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options', async (t) => {
-  await t.notThrowsAsync(
-    rollup({
-      input: 'fixtures/overriding-typescript/main.ts',
-      plugins: [
-        typescript({
-          tsconfig: 'fixtures/overriding-typescript/tsconfig.json',
-          inlineSourceMap: true
-        })
-      ],
-      onwarn
-    })
-  );
+test.serial(
+  'prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options',
+  async (t) => {
+    await t.notThrowsAsync(
+      rollup({
+        input: 'fixtures/overriding-typescript/main.ts',
+        plugins: [
+          typescript({
+            tsconfig: 'fixtures/overriding-typescript/tsconfig.json',
+            inlineSourceMap: true
+          })
+        ],
+        onwarn
+      })
+    );
+  }
+);
+
+test.serial('should not emit null sourceContent', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', sourcemap: true }, true);
+  const sourcemap = output[0].map;
+  // eslint-disable-next-line no-undefined
+  t.false(sourcemap.sourcesContent.includes(undefined));
 });
 
-test('should not fail if source maps are off', async (t) => {
+test.serial('should not fail if source maps are off', async (t) => {
   await t.notThrowsAsync(
     rollup({
       input: 'fixtures/overriding-typescript/main.ts',
@@ -642,7 +728,7 @@ test('should not fail if source maps are off', async (t) => {
   );
 });
 
-test('should allow a namespace containing a class', async (t) => {
+test.serial('should allow a namespace containing a class', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-namespace-export-class/test.ts',
     plugins: [typescript({ tsconfig: 'fixtures/export-namespace-export-class/tsconfig.json' })],
@@ -668,7 +754,7 @@ test.serial('should allow merging an exported function and namespace', async (t)
   t.is(f.foo, '2');
 });
 
-test('supports dynamic imports', async (t) => {
+test.serial('supports dynamic imports', async (t) => {
   const code = await getCode(
     await rollup({
       input: 'fixtures/dynamic-imports/main.ts',
@@ -681,7 +767,7 @@ test('supports dynamic imports', async (t) => {
   t.true(code.includes("console.log('dynamic')"));
 });
 
-test('supports CommonJS imports when the output format is CommonJS', async (t) => {
+test.serial('supports CommonJS imports when the output format is CommonJS', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/commonjs-imports/main.ts',
     plugins: [
@@ -694,7 +780,7 @@ test('supports CommonJS imports when the output format is CommonJS', async (t) =
   t.is(output, 'exported from commonjs');
 });
 
-test('supports optional chaining', async (t) => {
+test.serial('supports optional chaining', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/optional-chaining/main.ts',
     plugins: [
@@ -706,11 +792,10 @@ test('supports optional chaining', async (t) => {
     ],
     onwarn
   });
-  const output = await evaluateBundle(bundle);
-  t.is(output, 'NOT FOUND');
+  t.regex(await getCode(bundle), /.*var main = o\.b\?\.c \?\? 'NOT FOUND';.*/);
 });
 
-test('supports incremental build', async (t) => {
+test.serial('supports incremental build', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -761,7 +846,7 @@ test.serial.skip('supports project references', async (t) => {
   t.is(zoo[0].name, 'Bob!?! ');
 });
 
-test('warns if sourceMap is set in Typescript but not Rollup', async (t) => {
+test.serial('warns if sourceMap is set in Typescript but not Rollup', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -779,7 +864,7 @@ test('warns if sourceMap is set in Typescript but not Rollup', async (t) => {
   );
 });
 
-test('warns if sourceMap is set in Rollup but not Typescript', async (t) => {
+test.serial('warns if sourceMap is set in Rollup but not Typescript', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -799,7 +884,7 @@ test('warns if sourceMap is set in Rollup but not Typescript', async (t) => {
   );
 });
 
-test('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
+test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',

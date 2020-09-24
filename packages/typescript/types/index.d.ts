@@ -1,26 +1,8 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import {
-  CompilerOptionsValue,
-  TsConfigSourceFile,
-  CustomTransformers,
-  Program,
-  TypeChecker
-} from 'typescript';
+import { CompilerOptions, CustomTransformers } from 'typescript';
 
-export interface RollupTypescriptOptions {
-  /**
-   * Other Typescript compiler options.
-   */
-  [option: string]:
-    | CompilerOptionsValue
-    | TsConfigSourceFile
-    | RollupTypescriptOptions['include']
-    | RollupTypescriptOptions['typescript']
-    | RollupTypescriptOptions['tslib']
-    | RollupTypescriptOptions['transformers']
-    | undefined;
-
+export interface RollupTypescriptPluginOptions {
   /**
    * Determine which files are transpiled by Typescript (all `.ts` and
    * `.tsx` files by default).
@@ -75,6 +57,18 @@ interface TypeCheckerTransformerFactory<T extends TransformerStage> {
 
   factory(typeChecker: TypeChecker): StagedTransformerFactory<T>;
 }
+
+/** Properties of `CompilerOptions` that are normally enums */
+export type EnumCompilerOptions = 'module' | 'moduleResolution' | 'newLine' | 'jsx' | 'target';
+
+/** JSON representation of Typescript compiler options */
+export type JsonCompilerOptions = Omit<CompilerOptions, EnumCompilerOptions> &
+  Record<EnumCompilerOptions, string>;
+
+/** Compiler options set by the plugin user. */
+export type PartialCompilerOptions = Partial<CompilerOptions> | Partial<JsonCompilerOptions>;
+
+export type RollupTypescriptOptions = RollupTypescriptPluginOptions & PartialCompilerOptions;
 
 /**
  * Seamless integration between Rollup and Typescript.

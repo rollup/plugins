@@ -1,5 +1,105 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v15.1.0
+
+_2020-09-21_
+
+### Features
+
+- feat: inject \_\_esModule marker into ES namespaces and add Object prototype (#552)
+- feat: add requireReturnsDefault to types (#579)
+
+## v15.0.0
+
+_2020-08-13_
+
+### Breaking Changes
+
+- feat!: return the namespace by default when requiring ESM (#507)
+- fix!: fix interop when importing CJS that is transpiled ESM from an actual ESM (#501)
+
+### Bugfixes
+
+- fix: add .cjs to default file extensions. (#524)
+
+### Updates
+
+- chore: update dependencies (fe399e2)
+
+## v14.0.0
+
+_2020-07-13_
+
+### Release Notes
+
+This restores the fixes from v13.0.1, but as a semver compliant major version.
+
+## v13.0.2
+
+_2020-07-13_
+
+### Rollback
+
+Rolls back breaking change in v13.0.1 whereby the exported `unwrapExports` method was removed.
+
+## v13.0.1
+
+_2020-07-12_
+
+### Bugfixes
+
+- fix: prevent rewrite require.resolve (#446)
+- fix: Support \_\_esModule packages with a default export (#465)
+
+## v13.0.0
+
+_2020-06-05_
+
+### Breaking Changes
+
+- fix!: remove namedExports from types (#410)
+- fix!: do not create fake named exports (#427)
+
+### Bugfixes
+
+- fix: \_\_moduleExports in multi entry + inter dependencies (#415)
+
+## v12.0.0
+
+_2020-05-20_
+
+### Breaking Changes
+
+- feat: add kill-switch for mixed es-cjs modules (#358)
+- feat: set syntheticNamedExports for commonjs modules (#149)
+
+### Bugfixes
+
+- fix: expose the virtual `require` function on mock `module`. fixes #307 (#326)
+- fix: improved shouldWrap logic. fixes #304 (#355)
+
+### Features
+
+- feat: support for explicit module.require calls. fixes #310 (#325)
+
+## v11.1.0
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: produce legal variable names from filenames containing hyphens. (#201)
+
+### Features
+
+- feat: support dynamic require (#206)
+- feat: export properties defined using Object.defineProperty(exports, ..) (#222)
+
+### Updates
+
+- chore: snapshot mismatch running tests before publish (d6bbfdd)
+- test: add snapshots to all "function" tests (#218)
+
 ## v11.0.2
 
 _2020-02-01_

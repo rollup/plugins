@@ -1,5 +1,29 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v3.1.0
+
+_2020-06-28_
+
+### Features
+
+- feat: resolve .tsx files (#448)
+
+## v3.0.2
+
+_2020-05-20_
+
+### Bugfixes
+
+- fix: fix aliases not resolving (#387)
+
+## v3.0.1
+
+_2020-05-11_
+
+### Updates
+
+- chore: rollup v2 peerDep. (dupe for pub) (ad08841)
+
 ## 3.0.0
 
 _2019-12-??_

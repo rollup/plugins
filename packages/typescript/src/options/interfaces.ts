@@ -1,23 +1,13 @@
-/** Properties of `CompilerOptions` that are normally enums */
-export interface EnumCompilerOptions {
-  module: string;
-  moduleResolution: string;
-  newLine: string;
-  jsx: string;
-  target: string;
-}
+import { PartialCompilerOptions } from '../../types';
+
+export { EnumCompilerOptions, JsonCompilerOptions } from '../../types';
+export { PartialCompilerOptions };
 
 /** Typescript compiler options */
 export type CompilerOptions = import('typescript').CompilerOptions;
-/** JSON representation of Typescript compiler options */
-export type JsonCompilerOptions = Omit<CompilerOptions, keyof EnumCompilerOptions> &
-  EnumCompilerOptions;
-/** Compiler options set by the plugin user. */
-export type PartialCustomOptions = Partial<CompilerOptions> | Partial<JsonCompilerOptions>;
 
-export const DEFAULT_COMPILER_OPTIONS: PartialCustomOptions = {
+export const DEFAULT_COMPILER_OPTIONS: PartialCompilerOptions = {
   module: 'esnext',
-  noEmitOnError: true,
   skipLibCheck: true
 };
 

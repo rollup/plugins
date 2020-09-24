@@ -6,8 +6,8 @@ export default {
   input: 'src/index.ts',
   external: [...Object.keys(pkg.dependencies), 'os'],
   output: [
-    { file: pkg.main, format: 'cjs' },
+    { file: pkg.main, format: 'cjs', exports: 'auto' },
     { file: pkg.module, format: 'es' }
   ],
-  plugins: [typescript()]
+  plugins: [typescript({ sourceMap: false })]
 };

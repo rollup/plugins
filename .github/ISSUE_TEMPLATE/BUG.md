@@ -7,9 +7,9 @@ about: Something went awry and you'd like to tell us about it.
 <!--
   ⚡️ katchow! We 💛 issues.
 
-  Please - do not - remove this template.
-  Please - do not - skip or remove parts of this template.
-  Or your issue may be closed.
+  🚨 Your issue will be CLOSED if:
+     - This template is removed
+     - Parts of this template are removed
 
   👉🏽 Need help or tech support? Please don't open an issue!
   Head to https://gitter.im/rollup/rollup or https://stackoverflow.com/questions/tagged/rollupjs
@@ -23,16 +23,19 @@ about: Something went awry and you'd like to tell us about it.
 - Rollup Version:
 - Operating System (or Browser):
 - Node Version:
-
-### How Do We Reproduce?
+- Link to reproduction _(⚠️ read below)_:
 
 <!--
-  Issues without minimal reproductions will be closed! Please provide one by:
+  🚨 Issues WITHOUT a valid reproduction WILL BE CLOSED!
+
+  Please provide one by:
   1. Using the REPL.it plugin reproduction template at https://repl.it/@rollup/rollup-plugin-repro
   2. Provide a minimal repository link (Read https://git.io/fNzHA for instructions).
      Please use NPM for installing dependencies!
      These may take more time to triage than the other options.
-  3. Using the REPL at https://rollupjs.org/repl/, or
+  3. Using the Rollup REPL at https://rollupjs.org/repl/
+
+  ⚠️ ZIP Files are unsafe and maintainers will NOT download them.
 -->
 
 
@@ -41,6 +44,8 @@ about: Something went awry and you'd like to tell us about it.
 
 ### Actual Behavior
 
+
+### Additional Information
 
 <!--
   Most issues can be expressed or demonstrated through the REPL or a repository.

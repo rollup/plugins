@@ -11,15 +11,23 @@ export default function json(options = {}) {
     transform(json, id) {
       if (id.slice(-5) !== '.json' || !filter(id)) return null;
 
-      return {
-        code: dataToEsm(JSON.parse(json), {
-          preferConst: options.preferConst,
-          compact: options.compact,
-          namedExports: options.namedExports,
-          indent
-        }),
-        map: { mappings: '' }
-      };
+      try {
+        const parsed = JSON.parse(json);
+        return {
+          code: dataToEsm(parsed, {
+            preferConst: options.preferConst,
+            compact: options.compact,
+            namedExports: options.namedExports,
+            indent
+          }),
+          map: { mappings: '' }
+        };
+      } catch (err) {
+        const message = 'Could not parse JSON file';
+        const position = parseInt(/[\d]/.exec(err.message)[0], 10);
+        this.warn({ message, id, position });
+        return null;
+      }
     }
   };
 }

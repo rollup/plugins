@@ -1,5 +1,21 @@
 # @rollup/plugin-json ChangeLog
 
+## v4.1.0
+
+_2020-06-05_
+
+### Features
+
+- feat: log the filename when JSON.parse fails (#417)
+
+## v4.0.3
+
+_2020-04-19_
+
+### Updates
+
+- chore: add rollup 2 to peer range (06d9d29)
+
 ## v4.0.2
 
 _2020-02-01_

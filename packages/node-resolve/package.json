@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-node-resolve",
-  "version": "7.1.1",
+  "version": "9.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -10,9 +10,10 @@
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/node-resolve/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 10.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -21,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -48,24 +49,29 @@
     "rollup": "^1.20.0||^2.0.0"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.0.8",
-    "@types/resolve": "0.0.8",
+    "@rollup/pluginutils": "^3.1.0",
+    "@types/resolve": "1.17.1",
     "builtin-modules": "^3.1.0",
+    "deepmerge": "^4.2.2",
     "is-module": "^1.0.0",
-    "resolve": "^1.14.2"
+    "resolve": "^1.17.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.3",
-    "@babel/preset-env": "^7.8.3",
-    "@rollup/plugin-json": "^4.0.1",
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-transform-typescript": "^7.10.5",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@rollup/plugin-commonjs": "^14.0.0",
+    "@rollup/plugin-json": "^4.1.0",
     "es5-ext": "^0.10.53",
-    "rollup": "^2.0.0",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup": "^2.23.0",
     "source-map": "^0.7.3",
     "string-capitalize": "^1.0.1"
   },
+  "types": "types/index.d.ts",
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
@@ -73,6 +79,9 @@
       "!**/types.ts"
     ]
   },
-  "module": "dist/index.es.js",
-  "types": "types/index.d.ts"
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/es/index.js"
+  },
+  "type": "commonjs"
 }

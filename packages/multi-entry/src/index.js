@@ -1,56 +1,77 @@
-/* eslint-disable consistent-return, no-param-reassign */
+/* eslint-disable no-param-reassign */
 
+import virtual from '@rollup/plugin-virtual';
 import { promise as matched } from 'matched';
 
-const entry = '\0rollup:plugin-multi-entry:entry-point';
+const DEFAULT_OUTPUT = 'multi-entry.js';
+const AS_IMPORT = 'import';
+const AS_EXPORT = 'export * from';
 
-export default function multiEntry(conf) {
-  let include = [];
-  let exclude = [];
-  let exporter = (path) => `export * from ${JSON.stringify(path)};`;
+export default function multiEntry(conf = {}) {
+  const config = {
+    include: [],
+    exclude: [],
+    entryFileName: DEFAULT_OUTPUT,
+    exports: true,
+    ...conf
+  };
 
-  function configure(config) {
-    if (typeof config === 'string') {
-      include = [config];
-    } else if (Array.isArray(config)) {
-      include = config;
+  let prefix = config.exports === false ? AS_IMPORT : AS_EXPORT;
+  const exporter = (path) => `${prefix} ${JSON.stringify(path)}`;
+
+  const configure = (input) => {
+    if (typeof input === 'string') {
+      config.include = [input];
+    } else if (Array.isArray(input)) {
+      config.include = input;
     } else {
-      include = config.include || [];
-      exclude = config.exclude || [];
-      if (config.exports === false) {
-        exporter = (path) => `import ${JSON.stringify(path)};`;
+      const { include = [], exclude = [], entryFileName = DEFAULT_OUTPUT, exports } = input;
+      config.include = include;
+      config.exclude = exclude;
+      config.entryFileName = entryFileName;
+      if (exports === false) {
+        prefix = AS_IMPORT;
       }
     }
-  }
+  };
 
-  if (conf) {
-    configure(conf);
-  }
+  let virtualisedEntry;
 
   return {
+    name: 'multi-entry',
+
     options(options) {
-      if (options.input && options.input !== entry) {
+      if (options.input !== config.entryFileName) {
         configure(options.input);
       }
-      options.input = entry;
+      return {
+        ...options,
+        input: config.entryFileName
+      };
     },
 
-    resolveId(id) {
-      if (id === entry) {
-        return entry;
-      }
+    outputOptions(options) {
+      return {
+        ...options,
+        entryFileNames: config.entryFileName
+      };
+    },
+
+    buildStart(options) {
+      const patterns = config.include.concat(config.exclude.map((pattern) => `!${pattern}`));
+      const entries = patterns.length
+        ? matched(patterns, { realpath: true }).then((paths) => paths.map(exporter).join('\n'))
+        : Promise.resolve('');
+
+      virtualisedEntry = virtual({ [options.input]: entries });
+    },
+
+    resolveId(id, importer) {
+      return virtualisedEntry && virtualisedEntry.resolveId(id, importer);
     },
 
     load(id) {
-      if (id === entry) {
-        if (!include.length) {
-          return Promise.resolve('');
-        }
-        const patterns = include.concat(exclude.map((pattern) => `!${pattern}`));
-        return matched(patterns, { realpath: true }).then((paths) =>
-          paths.map(exporter).join('\n')
-        );
-      }
+      return virtualisedEntry && virtualisedEntry.load(id);
     }
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-wasm",
-  "version": "3.0.0",
+  "version": "5.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -10,7 +10,11 @@
   "author": "Jamen Marz <jamenmarz+gh@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/wasm/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -18,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -29,6 +33,7 @@
   },
   "files": [
     "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -43,14 +48,19 @@
     "emscripten"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "^1.20.0 || ^2.0.0"
   },
   "devDependencies": {
-    "del-cli": "^3.0.0",
-    "rollup": "^2.0.0",
+    "@rollup/plugin-typescript": "^5.0.2",
+    "del-cli": "^3.0.1",
+    "rollup": "^2.23.0",
     "source-map": "^0.7.3"
   },
+  "types": "types/index.d.ts",
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",

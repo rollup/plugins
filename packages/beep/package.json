@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-beep",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -20,7 +20,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "ava --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint --fix --cache lib test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "test": "ava"
@@ -39,10 +39,13 @@
     "rollup": "^1.20.0||^2.0.0"
   },
   "devDependencies": {
-    "rollup": "^2.0.0",
-    "strip-ansi": "^5.2.0"
+    "rollup": "^2.23.0",
+    "strip-ansi": "^6.0.0"
   },
   "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",

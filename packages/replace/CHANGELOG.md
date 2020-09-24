@@ -1,5 +1,21 @@
 # @rollup/plugin-replace ChangeLog
 
+## v2.3.3
+
+_2020-06-05_
+
+### Updates
+
+- docs: clarify options for allowed replacement values (#422)
+
+## v2.3.2
+
+_2020-04-19_
+
+### Updates
+
+- chore: add rollup 2 to peer range (3e0d775)
+
 ## v2.3.1
 
 _2020-02-01_

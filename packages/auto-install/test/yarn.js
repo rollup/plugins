@@ -3,7 +3,7 @@ const { join } = require('path');
 
 const test = require('ava');
 const del = require('del');
-const resolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const { rollup } = require('rollup');
 
 const autoInstall = require('..');
@@ -15,6 +15,7 @@ const input = join(cwd, '../input.js');
 process.chdir(cwd);
 
 test('yarn', async (t) => {
+  t.timeout(50000);
   await rollup({
     input,
     output: {
@@ -22,7 +23,7 @@ test('yarn', async (t) => {
       format: 'cjs'
     },
     // mock the call to yarn here. yarn has had consistent issues in this test env
-    plugins: [autoInstall({ commands: { yarn: 'echo yarn > yarn.lock' } }), resolve()]
+    plugins: [autoInstall({ commands: { yarn: 'echo yarn > yarn.lock' } }), nodeResolve()]
   });
   const lockFile = readFileSync('yarn.lock', 'utf-8');
   // snapshots for this are a nightmare cross-platform

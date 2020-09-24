@@ -10,7 +10,7 @@ import getPluginOptions from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
 import findTypescriptOutput from './outputFile';
-import createWatchProgram from './watchProgram';
+import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const {
@@ -22,7 +22,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     transformers
   } = getPluginOptions(options);
   const emittedFiles = new Map<string, string>();
-  const declarationFiles = new Set<string>();
+  const watchProgramHelper = new WatchProgramHelper();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
@@ -42,19 +42,31 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
-      program = createWatchProgram(ts, this, {
-        formatHost,
-        resolveModule,
-        parsedOptions,
-        writeFile(fileName, data) {
-          emittedFiles.set(fileName, data);
-        },
-        transformers
-      });
+      // Fixes a memory leak https://github.com/rollup/plugins/issues/322
+      if (!program) {
+        program = createWatchProgram(ts, this, {
+          formatHost,
+          resolveModule,
+          parsedOptions,
+          writeFile(fileName, data) {
+            emittedFiles.set(fileName, data);
+          },
+          status(diagnostic) {
+            watchProgramHelper.handleStatus(diagnostic);
+          },
+          transformers
+        });
+      }
+    },
+
+    watchChange(id) {
+      if (!filter(id)) return;
+
+      watchProgramHelper.watch();
     },
 
     buildEnd() {
-      if (process.env.ROLLUP_WATCH !== 'true') {
+      if (this.meta.watchMode !== true) {
         // ESLint doesn't understand optional chaining
         // eslint-disable-next-line
         program?.close();
@@ -86,26 +98,30 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       return null;
     },
 
-    load(id) {
+    async load(id) {
       if (!filter(id)) return null;
 
-      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
-      output.declarations.forEach((declaration) => declarationFiles.add(declaration));
+      await watchProgramHelper.wait();
 
-      return output.code ? (output as SourceDescription) : null;
+      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
+
+      return output.code != null ? (output as SourceDescription) : null;
     },
 
     generateBundle(outputOptions) {
-      for (const id of declarationFiles) {
-        const code = emittedFiles.get(id);
-        if (code) {
+      parsedOptions.fileNames.forEach((fileName) => {
+        const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles);
+        output.declarations.forEach((id) => {
+          const code = emittedFiles.get(id);
+          if (!code) return;
+
           this.emitFile({
             type: 'asset',
             fileName: normalizePath(path.relative(outputOptions.dir!, id)),
             source: code
           });
-        }
-      }
+        });
+      });
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
       if (tsBuildInfoPath) {

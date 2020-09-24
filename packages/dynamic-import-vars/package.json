@@ -1,0 +1,74 @@
+{
+  "name": "@rollup/plugin-dynamic-import-vars",
+  "version": "1.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Resolving dynamic imports that contain variables.",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "LarsDenBakker",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "engines": {
+    "node": ">= 10.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
+    "lint:js": "eslint --fix --cache src test --ext .js",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepublishOnly": "pnpm run lint && pnpm run build",
+    "pretest": "pnpm run build -- --sourcemap",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "dynamic import",
+    "variable",
+    "variables",
+    "glob",
+    "string",
+    "concatenation",
+    "interpolation"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0||^2.0.0"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^3.1.0",
+    "estree-walker": "^2.0.1",
+    "globby": "^11.0.1",
+    "magic-string": "^0.25.7"
+  },
+  "devDependencies": {
+    "acorn": "^7.3.1",
+    "acorn-dynamic-import": "^4.0.0",
+    "prettier": "^2.0.5",
+    "rollup": "^2.23.0"
+  },
+  "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
+    "files": [
+      "!**/fixtures/**",
+      "!**/snapshots/**"
+    ]
+  }
+}

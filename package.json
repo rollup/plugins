@@ -7,9 +7,9 @@
     "ci:lint": "node scripts/run-changed.js ci:lint",
     "ci:test": "node scripts/run-changed.js ci:test",
     "lint": "pnpm run lint:docs && npm run lint:json && pnpm run lint:package && node scripts/run-changed.js lint",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint scripts util",
-    "lint:json": "prettier --single-quote --write tsconfig.*.json codecov.yml pnpm-workspace.yaml",
+    "lint:json": "prettier --write tsconfig.*.json codecov.yml pnpm-workspace.yaml",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "preinstall": "node scripts/disallow-npm.js",
     "pub": "node scripts/pub.js",
@@ -18,32 +18,32 @@
     "test": "node scripts/run-changed.js test"
   },
   "dependencies": {
-    "conventional-commits-parser": "^3.0.8",
-    "semver": "^7.1.1",
+    "conventional-commits-parser": "^3.1.0",
+    "semver": "^7.3.2",
     "write-pkg": "^4.0.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.14.0",
-    "@typescript-eslint/parser": "^2.14.0",
-    "ava": "^2.4.0",
-    "chalk": "^2.4.2",
-    "codecov-lite": "^0.3.1",
-    "del-cli": "^3.0.0",
+    "@ava/babel": "^1.0.1",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "ava": "^3.11.0",
+    "chalk": "^4.1.0",
+    "codecov-lite": "^1.0.3",
+    "del-cli": "^3.0.1",
     "eslint-config-rollup": "^0.1.0",
-    "execa": "^2.1.0",
-    "globby": "^10.0.1",
-    "husky": "^3.1.0",
-    "lint-staged": "^9.5.0",
-    "nyc": "^14.1.1",
-    "pnpm": "^4.6.0",
-    "prettier": "^1.19.1",
-    "prettier-plugin-package": "^0.3.1",
-    "rollup": "^2.0.0",
-    "ts-node": "^8.5.4",
+    "execa": "^4.0.3",
+    "globby": "^11.0.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "nyc": "^15.1.0",
+    "pnpm": "^5.4.6",
+    "prettier": "^2.0.5",
+    "prettier-plugin-package": "^1.0.0",
+    "ts-node": "^8.10.2",
     "tsconfig-paths": "^3.9.0",
-    "tslib": "^1.10.0",
-    "typescript": "^3.7.4",
-    "yaml": "^1.7.2"
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.7",
+    "yaml": "^1.10.0"
   },
   "ava": {
     "files": [
@@ -59,17 +59,14 @@
     }
   },
   "lint-staged": {
-    "*.js,*.ts": [
-      "eslint --fix",
-      "git add"
+    "*.{ts,js}": [
+      "eslint --fix"
     ],
     "*.md": [
-      "prettier --single-quote --write",
-      "git add"
+      "prettier --single-quote --write"
     ],
     "*package.json": [
-      "prettier --write --plugin=prettier-plugin-package",
-      "git add"
+      "prettier --write --plugin=prettier-plugin-package"
     ]
   },
   "nyc": {

@@ -3,7 +3,7 @@ const { join } = require('path');
 
 const test = require('ava');
 const del = require('del');
-const resolve = require('@rollup/plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const { rollup } = require('rollup');
 
 const autoInstall = require('..');
@@ -17,6 +17,7 @@ const pkgFile = join(cwd, 'package.json');
 process.chdir(cwd);
 
 test('invalid manager', (t) => {
+  t.timeout(50000);
   const error = t.throws(
     () =>
       rollup({
@@ -25,21 +26,24 @@ test('invalid manager', (t) => {
           file,
           format: 'cjs'
         },
-        plugins: [autoInstall({ pkgFile, manager: 'foo' }), resolve()]
+        plugins: [autoInstall({ pkgFile, manager: 'foo' }), nodeResolve()]
       }),
-    RangeError
+    {
+      instanceOf: RangeError
+    }
   );
   t.snapshot(error.message);
 });
 
 test('npm', async (t) => {
+  t.timeout(50000);
   await rollup({
     input,
     output: {
       file,
       format: 'cjs'
     },
-    plugins: [autoInstall({ pkgFile, manager }), resolve()]
+    plugins: [autoInstall({ pkgFile, manager }), nodeResolve()]
   });
   t.snapshot(readFileSync('package-lock.json', 'utf-8'));
 });

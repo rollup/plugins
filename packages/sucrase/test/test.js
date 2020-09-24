@@ -1,5 +1,10 @@
+const path = require('path');
+
 const test = require('ava');
 const { rollup } = require('rollup');
+
+// eslint-disable-next-line import/no-unresolved, import/extensions
+const alias = require('@rollup/plugin-alias');
 
 const { testBundle } = require('../../../util/test');
 
@@ -46,5 +51,55 @@ test('converts typescript', async (t) => {
     ]
   });
   t.plan(1);
+  return testBundle(t, bundle);
+});
+
+test('converts typescript with aliases', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/typescript-with-aliases/main.js',
+    plugins: [
+      sucrase({
+        transforms: ['typescript']
+      }),
+      alias({
+        entries: [
+          {
+            find: '~src',
+            replacement: path.resolve(__dirname, 'fixtures', 'typescript-with-aliases', 'src')
+          }
+        ]
+      })
+    ]
+  });
+  t.plan(1);
+
+  return testBundle(t, bundle);
+});
+
+test('resolves typescript directory imports', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/typescript-resolve-directory/main.js',
+    plugins: [
+      sucrase({
+        transforms: ['typescript']
+      })
+    ]
+  });
+  t.plan(2);
+
+  return testBundle(t, bundle);
+});
+
+test('converts typescript jsx ("tsx")', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/typescript-with-tsx/main.js',
+    plugins: [
+      sucrase({
+        transforms: ['typescript', 'jsx']
+      })
+    ]
+  });
+  t.plan(2);
+
   return testBundle(t, bundle);
 });

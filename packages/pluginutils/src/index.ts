@@ -4,6 +4,7 @@ import createFilter from './createFilter';
 import dataToEsm from './dataToEsm';
 import extractAssignedNames from './extractAssignedNames';
 import makeLegalIdentifier from './makeLegalIdentifier';
+import normalizePath from './normalizePath';
 
 export {
   addExtension,
@@ -11,7 +12,8 @@ export {
   createFilter,
   dataToEsm,
   extractAssignedNames,
-  makeLegalIdentifier
+  makeLegalIdentifier,
+  normalizePath
 };
 
 // TODO: remove this in next major
@@ -21,5 +23,6 @@ export default {
   createFilter,
   dataToEsm,
   extractAssignedNames,
-  makeLegalIdentifier
+  makeLegalIdentifier,
+  normalizePath
 };

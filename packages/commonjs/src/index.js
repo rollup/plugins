@@ -1,67 +1,68 @@
-import { realpathSync, existsSync } from 'fs';
-import { extname, resolve, normalize } from 'path';
+import { extname } from 'path';
 
-import { sync as nodeResolveSync, isCore } from 'resolve';
 import { createFilter } from '@rollup/pluginutils';
+import getCommonDir from 'commondir';
 
 import { peerDependencies } from '../package.json';
 
+import { getDynamicPackagesEntryIntro, getDynamicPackagesModule } from './dynamic-packages-manager';
+import getDynamicRequirePaths from './dynamic-require-paths';
 import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_PACKAGES_ID,
   EXTERNAL_SUFFIX,
+  getHelpersModule,
   getIdFromExternalProxyId,
   getIdFromProxyId,
-  HELPERS,
   HELPERS_ID,
   PROXY_SUFFIX
 } from './helpers';
-import { getIsCjsPromise, setIsCjsPromise } from './is-cjs';
+import { setIsCjsPromise } from './is-cjs';
+import {
+  getDynamicJsonProxy,
+  getDynamicRequireProxy,
+  getSpecificHelperProxy,
+  getStaticRequireProxy,
+  getUnknownRequireProxy
+} from './proxies';
 import getResolveId from './resolve-id';
-import { checkEsModule, hasCjsKeywords, transformCommonjs } from './transform';
-import { getName } from './utils';
+import {
+  checkEsModule,
+  hasCjsKeywords,
+  normalizePathSlashes,
+  transformCommonjs
+} from './transform';
 
 export default function commonjs(options = {}) {
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
-  const { ignoreGlobal } = options;
+  const {
+    ignoreGlobal,
+    requireReturnsDefault: requireReturnsDefaultOption,
+    esmExternals
+  } = options;
+  const getRequireReturnsDefault =
+    typeof requireReturnsDefaultOption === 'function'
+      ? requireReturnsDefaultOption
+      : () => requireReturnsDefaultOption;
+  let esmExternalIds;
+  const isEsmExternal =
+    typeof esmExternals === 'function'
+      ? esmExternals
+      : Array.isArray(esmExternals)
+      ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
+      : () => esmExternals;
 
-  const customNamedExports = {};
-  if (options.namedExports) {
-    Object.keys(options.namedExports).forEach((id) => {
-      let resolveId = id;
-      let resolvedId;
+  const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
+    options.dynamicRequireTargets
+  );
+  const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
+  const commonDir = isDynamicRequireModulesEnabled
+    ? getCommonDir(null, Array.from(dynamicRequireModuleSet).concat(process.cwd()))
+    : null;
 
-      if (isCore(id)) {
-        // resolve will not find npm modules with the same name as
-        // core modules without a trailing slash. Since core modules
-        // must be external, we can assume any core modules defined
-        // here are npm modules by that name.
-        resolveId += '/';
-      }
-
-      try {
-        resolvedId = nodeResolveSync(resolveId, { basedir: process.cwd() });
-      } catch (err) {
-        resolvedId = resolve(id);
-      }
-
-      // Note: customNamedExport's keys must be normalized file paths.
-      // resolve and nodeResolveSync both return normalized file paths
-      // so no additional normalization is necessary.
-      customNamedExports[resolvedId] = options.namedExports[id];
-
-      if (existsSync(resolvedId)) {
-        const realpath = realpathSync(resolvedId);
-        if (realpath !== resolvedId) {
-          customNamedExports[realpath] = options.namedExports[id];
-        }
-      }
-    });
-  }
-
-  const esModulesWithoutDefaultExport = new Set();
   const esModulesWithDefaultExport = new Set();
-  // TODO maybe this should be configurable?
-  const allowDynamicRequire = !!options.ignore;
+  const esModulesWithNamedExports = new Set();
 
   const ignoreRequire =
     typeof options.ignore === 'function'
@@ -75,37 +76,41 @@ export default function commonjs(options = {}) {
   const sourceMap = options.sourceMap !== false;
 
   function transformAndCheckExports(code, id) {
-    const { isEsModule, hasDefaultExport, ast } = checkEsModule(this.parse, code, id);
-    if (isEsModule) {
-      (hasDefaultExport ? esModulesWithDefaultExport : esModulesWithoutDefaultExport).add(id);
-      return null;
+    const { isEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
+      this.parse,
+      code,
+      id
+    );
+    if (hasDefaultExport) {
+      esModulesWithDefaultExport.add(id);
+    }
+    if (hasNamedExports) {
+      esModulesWithNamedExports.add(id);
     }
 
-    // it is not an ES module but it does not have CJS-specific elements.
-    if (!hasCjsKeywords(code, ignoreGlobal)) {
-      esModulesWithoutDefaultExport.add(id);
+    if (
+      !dynamicRequireModuleSet.has(normalizePathSlashes(id)) &&
+      (!hasCjsKeywords(code, ignoreGlobal) || (isEsModule && !options.transformMixedEsModules))
+    ) {
+      setIsCjsPromise(id, false);
       return null;
     }
-
-    const normalizedId = normalize(id);
 
     const transformed = transformCommonjs(
       this.parse,
       code,
       id,
-      this.getModuleInfo(id).isEntry,
-      ignoreGlobal,
+      isEsModule,
+      ignoreGlobal || isEsModule,
       ignoreRequire,
-      customNamedExports[normalizedId],
       sourceMap,
-      allowDynamicRequire,
+      isDynamicRequireModulesEnabled,
+      dynamicRequireModuleSet,
+      commonDir,
       ast
     );
-    if (!transformed) {
-      esModulesWithoutDefaultExport.add(id);
-      return null;
-    }
 
+    setIsCjsPromise(id, isEsModule ? false : Boolean(transformed));
     return transformed;
   }
 
@@ -113,6 +118,12 @@ export default function commonjs(options = {}) {
     name: 'commonjs',
 
     buildStart() {
+      if (options.namedExports != null) {
+        this.warn(
+          'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
+        );
+      }
+
       const [major, minor] = this.meta.rollupVersion.split('.').map(Number);
       const minVersion = peerDependencies.rollup.slice(2);
       const [minMajor, minMinor] = minVersion.split('.').map(Number);
@@ -126,41 +137,64 @@ export default function commonjs(options = {}) {
     resolveId,
 
     load(id) {
-      if (id === HELPERS_ID) return HELPERS;
+      if (id === HELPERS_ID) {
+        return getHelpersModule(isDynamicRequireModulesEnabled);
+      }
 
-      // generate proxy modules
+      if (id.startsWith(HELPERS_ID)) {
+        return getSpecificHelperProxy(id);
+      }
+
       if (id.endsWith(EXTERNAL_SUFFIX)) {
         const actualId = getIdFromExternalProxyId(id);
-        const name = getName(actualId);
+        return getUnknownRequireProxy(
+          actualId,
+          isEsmExternal(actualId) ? getRequireReturnsDefault(actualId) : true
+        );
+      }
 
-        return `import ${name} from ${JSON.stringify(actualId)}; export default ${name};`;
+      if (id === DYNAMIC_PACKAGES_ID) {
+        return getDynamicPackagesModule(dynamicRequireModuleDirPaths, commonDir);
+      }
+
+      if (id.startsWith(DYNAMIC_JSON_PREFIX)) {
+        return getDynamicJsonProxy(id, commonDir);
+      }
+
+      const normalizedPath = normalizePathSlashes(id);
+      if (dynamicRequireModuleSet.has(normalizedPath) && !normalizedPath.endsWith('.json')) {
+        return getDynamicRequireProxy(normalizedPath, commonDir);
       }
 
       if (id.endsWith(PROXY_SUFFIX)) {
         const actualId = getIdFromProxyId(id);
-        const name = getName(actualId);
+        return getStaticRequireProxy(
+          actualId,
+          getRequireReturnsDefault(actualId),
+          esModulesWithDefaultExport,
+          esModulesWithNamedExports
+        );
+      }
 
-        return getIsCjsPromise(actualId).then((isCjs) => {
-          if (isCjs)
-            return `import { __moduleExports } from ${JSON.stringify(
-              actualId
-            )}; export default __moduleExports;`;
-          else if (esModulesWithoutDefaultExport.has(actualId))
-            return `import * as ${name} from ${JSON.stringify(actualId)}; export default ${name};`;
-          else if (esModulesWithDefaultExport.has(actualId)) {
-            return `export {default} from ${JSON.stringify(actualId)};`;
-          }
-          return `import * as ${name} from ${JSON.stringify(
-            actualId
-          )}; import {getCjsExportFromNamespace} from "${HELPERS_ID}"; export default getCjsExportFromNamespace(${name})`;
-        });
+      if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
+        return getDynamicPackagesEntryIntro(
+          id,
+          dynamicRequireModuleDirPaths,
+          dynamicRequireModuleSet
+        );
       }
 
       return null;
     },
 
     transform(code, id) {
-      if (!filter(id) || extensions.indexOf(extname(id)) === -1) {
+      const extName = extname(id);
+      if (
+        extName !== '.cjs' &&
+        id !== DYNAMIC_PACKAGES_ID &&
+        !id.startsWith(DYNAMIC_JSON_PREFIX) &&
+        (!filter(id) || !extensions.includes(extName))
+      ) {
         setIsCjsPromise(id, null);
         return null;
       }
@@ -170,10 +204,10 @@ export default function commonjs(options = {}) {
         transformed = transformAndCheckExports.call(this, code, id);
       } catch (err) {
         transformed = null;
+        setIsCjsPromise(id, false);
         this.error(err, err.loc);
       }
 
-      setIsCjsPromise(id, Boolean(transformed));
       return transformed;
     }
   };

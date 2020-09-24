@@ -5,7 +5,7 @@ import { readdirSync } from 'fs';
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import { commonjs, getCodeFromBundle, execute } from './helpers/util';
+import { commonjs, getCodeMapFromBundle, runCodeSplitTest } from './helpers/util';
 
 process.chdir(__dirname);
 
@@ -21,7 +21,7 @@ readdirSync('./fixtures/function').forEach((dir) => {
   (config.solo ? test.only : test)(dir, async (t) => {
     const options = Object.assign(
       {
-        input: `fixtures/function/${dir}/main.js`
+        input: `fixtures/function/${dir}/${config.input || 'main.js'}`
       },
       config.options || {},
       {
@@ -33,15 +33,21 @@ readdirSync('./fixtures/function').forEach((dir) => {
     );
 
     const bundle = await rollup(options);
-    const code = await getCodeFromBundle(bundle);
+    const codeMap = await getCodeMapFromBundle(bundle);
     if (config.show || config.solo) {
-      console.error(code);
+      console.error();
+      for (const chunkName of Object.keys(codeMap)) {
+        console.error();
+        console.error(`===> ${chunkName}`);
+        console.group();
+        console.error(codeMap[chunkName]);
+        console.groupEnd();
+      }
     }
-
-    const { exports, global } = execute(code, config.context, t);
+    const { exports, global } = runCodeSplitTest(codeMap, t, config.context);
 
     if (config.exports) config.exports(exports, t);
     if (config.global) config.global(global, t);
-    t.snapshot(code);
+    t.snapshot(codeMap);
   });
 });

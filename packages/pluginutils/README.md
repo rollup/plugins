@@ -50,9 +50,9 @@ export default function myPlugin(options = {}) {
   return {
     resolveId(code, id) {
       // only adds an extension if there isn't one already
-      id = addExtension(id); // `foo` -> `foo.js`, `foo.js -> foo.js`
-      id = addExtension(id, '.myext'); // `foo` -> `foo.myext`, `foo.js -> `foo.js`
-    }
+      id = addExtension(id); // `foo` -> `foo.js`, `foo.js` -> `foo.js`
+      id = addExtension(id, '.myext'); // `foo` -> `foo.myext`, `foo.js` -> `foo.js`
+    },
   };
 }
 ```
@@ -88,9 +88,9 @@ export default function myPlugin(options = {}) {
         },
         leave(node) {
           if (node.scope) scope = scope.parent;
-        }
+        },
       });
-    }
+    },
   };
 }
 ```
@@ -99,14 +99,16 @@ export default function myPlugin(options = {}) {
 
 Constructs a filter function which can be used to determine whether or not certain modules should be operated upon.
 
-Parameters: `(include?: <minmatch>, exclude?: <minmatch>, options?: Object)`<br>
+Parameters: `(include?: <picomatch>, exclude?: <picomatch>, options?: Object)`<br>
 Returns: `String`
 
 #### `include` and `exclude`
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
 
-A valid [`minimatch`](https://www.npmjs.com/package/minimatch) pattern, or array of patterns. If `options.include` is omitted or has zero length, filter will return `true` by default. Otherwise, an ID must match one or more of the `minimatch` patterns, and must not match any of the `options.exclude` patterns.
+A valid [`picomatch`](https://github.com/micromatch/picomatch#globbing-features) pattern, or array of patterns. If `options.include` is omitted or has zero length, filter will return `true` by default. Otherwise, an ID must match one or more of the `picomatch` patterns, and must not match any of the `options.exclude` patterns.
+
+Note that `picomatch` patterns are very similar to [`minimatch`](https://github.com/isaacs/minimatch#readme) patterns, and in most use cases, they are interchangeable. If you have more specific pattern matching needs, you can view [this comparison table](https://github.com/micromatch/picomatch#library-comparisons) to learn more about where the libraries differ.
 
 #### `options`
 
@@ -124,7 +126,7 @@ import { createFilter } from '@rollup/pluginutils';
 export default function myPlugin(options = {}) {
   // assume that the myPlugin accepts options of `options.include` and `options.exclude`
   var filter = createFilter(options.include, options.exclude, {
-    resolve: '/my/base/dir'
+    resolve: '/my/base/dir',
   });
 
   return {
@@ -132,7 +134,7 @@ export default function myPlugin(options = {}) {
       if (!filter(id)) return;
 
       // proceed with the transformation...
-    }
+    },
   };
 }
 ```
@@ -158,14 +160,14 @@ import { dataToEsm } from '@rollup/pluginutils';
 const esModuleSource = dataToEsm(
   {
     custom: 'data',
-    to: ['treeshake']
+    to: ['treeshake'],
   },
   {
     compact: false,
     indent: '\t',
     preferConst: false,
     objectShorthand: false,
-    namedExports: true
+    namedExports: true,
   }
 );
 /*
@@ -205,11 +207,11 @@ export default function myPlugin(options = {}) {
           if (node.type === 'VariableDeclarator') {
             const declaredNames = extractAssignedNames(node.id);
             // do something with the declared names
-            // e.g. for `const {x, y: z} = ... => declaredNames = ['x', 'z']
+            // e.g. for `const {x, y: z} = ...` => declaredNames = ['x', 'z']
           }
-        }
+        },
       });
-    }
+    },
   };
 }
 ```
@@ -228,6 +230,22 @@ import { makeLegalIdentifier } from '@rollup/pluginutils';
 
 makeLegalIdentifier('foo-bar'); // 'foo_bar'
 makeLegalIdentifier('typeof'); // '_typeof'
+```
+
+### normalizePath
+
+Converts path separators to forward slash.
+
+Parameters: `(filename: String)`<br>
+Returns: `String`
+
+#### Usage
+
+```js
+import { normalizePath } from '@rollup/pluginutils';
+
+normalizePath('foo\\bar'); // 'foo/bar'
+normalizePath('foo/bar'); // 'foo/bar'
 ```
 
 ## Meta

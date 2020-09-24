@@ -5,7 +5,7 @@ const path = require('path');
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const nodeResolve = require('..');
+const { nodeResolve } = require('..');
 
 process.chdir(path.join(__dirname, 'fixtures'));
 

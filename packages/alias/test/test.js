@@ -118,13 +118,22 @@ test('RegExp aliasing', (t) =>
     {
       entries: [
         { find: /f(o+)bar/, replacement: 'f$1bar2019' },
-        { find: new RegExp('.*pony.*'), replacement: 'i/am/a/barbie/girl' },
+        {
+          find: new RegExp('.*pony.*'),
+          replacement: 'i/am/a/barbie/girl'
+        },
         { find: /^test\/$/, replacement: 'this/is/strict' }
       ]
     },
     [
-      { source: 'fooooooooobar', importer: '/src/importer.js' },
-      { source: 'im/a/little/pony/yes', importer: '/src/importer.js' },
+      {
+        source: 'fooooooooobar',
+        importer: '/src/importer.js'
+      },
+      {
+        source: 'im/a/little/pony/yes',
+        importer: '/src/importer.js'
+      },
       { source: './test', importer: '/src/importer.js' },
       { source: 'test', importer: '/src/importer.js' },
       { source: 'test/', importer: '/src/importer.js' }
@@ -143,8 +152,14 @@ test('Will not confuse modules with similar names', (t) =>
     },
     [
       { source: 'foo2', importer: '/src/importer.js' },
-      { source: './fooze/bar', importer: '/src/importer.js' },
-      { source: './someFile.foo', importer: '/src/importer.js' }
+      {
+        source: './fooze/bar',
+        importer: '/src/importer.js'
+      },
+      {
+        source: './someFile.foo',
+        importer: '/src/importer.js'
+      }
     ]
   ).then((result) => t.deepEqual(result, [null, null, null])));
 
@@ -175,7 +190,12 @@ test('Windows absolute path aliasing', (t) =>
         }
       ]
     },
-    [{ source: 'resolve', importer: posix.resolve(DIRNAME, './fixtures/index.js') }]
+    [
+      {
+        source: 'resolve',
+        importer: posix.resolve(DIRNAME, './fixtures/index.js')
+      }
+    ]
   ).then((result) =>
     t.deepEqual(result, [normalizePath('E:\\react\\node_modules\\fbjs\\lib\\warning')])
   ));
@@ -211,9 +231,15 @@ test('Works in rollup with non fake input', (t) =>
       alias({
         entries: [
           { find: 'fancyNumber', replacement: './aliasMe' },
-          { find: './anotherFancyNumber', replacement: './localAliasMe' },
+          {
+            find: './anotherFancyNumber',
+            replacement: './localAliasMe'
+          },
           { find: 'numberFolder', replacement: './folder' },
-          { find: './numberFolder', replacement: './folder' }
+          {
+            find: './numberFolder',
+            replacement: './folder'
+          }
         ]
       })
     ]
@@ -252,7 +278,12 @@ test('Global customResolver function', (t) => {
       ],
       customResolver: () => customResult
     },
-    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
+    [
+      {
+        source: 'test',
+        importer: posix.resolve(DIRNAME, './files/index.js')
+      }
+    ]
   ).then((result) => t.deepEqual(result, [customResult]));
 });
 
@@ -271,7 +302,12 @@ test('Local customResolver function', (t) => {
       ],
       customResolver: () => customResult
     },
-    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
+    [
+      {
+        source: 'test',
+        importer: posix.resolve(DIRNAME, './files/index.js')
+      }
+    ]
   ).then((result) => t.deepEqual(result, [localCustomResult]));
 });
 
@@ -288,7 +324,12 @@ test('Global customResolver plugin-like object', (t) => {
       ],
       customResolver: { resolveId: () => customResult }
     },
-    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
+    [
+      {
+        source: 'test',
+        importer: posix.resolve(DIRNAME, './files/index.js')
+      }
+    ]
   ).then((result) => t.deepEqual(result, [customResult]));
 });
 
@@ -302,18 +343,55 @@ test('Local customResolver plugin-like object', (t) => {
         {
           find: 'test',
           replacement: path.resolve('./test/files/folder/hipster.jsx'),
-          customResolver: { resolveId: () => localCustomResult }
+          customResolver: {
+            resolveId: () => localCustomResult
+          }
         }
       ],
       customResolver: { resolveId: () => customResult }
     },
-    [{ source: 'test', importer: posix.resolve(DIRNAME, './files/index.js') }]
+    [
+      {
+        source: 'test',
+        importer: posix.resolve(DIRNAME, './files/index.js')
+      }
+    ]
   ).then((result) => t.deepEqual(result, [localCustomResult]));
 });
 
-/** @TODO
- *  Needs to be modified after rollup-plugin-node-resolve would became a part of rollup-plugins monorepo
- */
+test('supports node-resolve as a custom resolver', (t) =>
+  resolveAliasWithRollup(
+    {
+      entries: [
+        {
+          find: 'local-resolver',
+          replacement: path.resolve(DIRNAME, 'fixtures'),
+          customResolver: nodeResolvePlugin()
+        },
+        {
+          find: 'global-resolver',
+          replacement: path.resolve(DIRNAME, 'fixtures', 'folder')
+        }
+      ],
+      customResolver: nodeResolvePlugin()
+    },
+    [
+      {
+        source: 'local-resolver',
+        importer: posix.resolve(DIRNAME, './files/index.js')
+      },
+      {
+        source: 'global-resolver',
+        importer: posix.resolve(DIRNAME, './files/index.js')
+      }
+    ]
+  ).then((result) =>
+    t.deepEqual(result, [
+      path.resolve(DIRNAME, 'fixtures', 'index.js'),
+      path.resolve(DIRNAME, 'fixtures', 'folder', 'index.js')
+    ])
+  ));
+
 test('Alias + rollup-plugin-node-resolve', (t) =>
   rollup({
     input: './test/fixtures/index.js',
@@ -321,9 +399,18 @@ test('Alias + rollup-plugin-node-resolve', (t) =>
       alias({
         entries: [
           { find: 'fancyNumber', replacement: './aliasMe' },
-          { find: './anotherFancyNumber', replacement: './localAliasMe' },
-          { find: 'numberFolder/anotherNumber', replacement: './folder' },
-          { find: './numberFolder', replacement: './folder' },
+          {
+            find: './anotherFancyNumber',
+            replacement: './localAliasMe'
+          },
+          {
+            find: 'numberFolder/anotherNumber',
+            replacement: './folder'
+          },
+          {
+            find: './numberFolder',
+            replacement: './folder'
+          },
           { find: 'superdeep', replacement: './deep/deep2' }
         ]
       }),

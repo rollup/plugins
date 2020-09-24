@@ -2,6 +2,7 @@
 import { dirname, normalize, resolve, sep } from 'path';
 
 import builtinList from 'builtin-modules';
+import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
@@ -17,6 +18,17 @@ import {
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
 const nullFn = () => null;
+const deepFreeze = object => {
+  Object.freeze(object);
+
+  for (const value of Object.values(object)) {
+    if (typeof value === 'object' && !Object.isFrozen(value)) {
+      deepFreeze(value);
+    }
+  }
+
+  return object;
+};
 const defaults = {
   customResolveOptions: {},
   dedupe: [],
@@ -25,8 +37,9 @@ const defaults = {
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: []
 };
+export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
-export default function nodeResolve(opts = {}) {
+export function nodeResolve(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { customResolveOptions, extensions, jail } = options;
   const warnings = [];
@@ -87,6 +100,12 @@ export default function nodeResolve(opts = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
+      // strip hash and query params from import
+      const [withoutHash, hash] = importee.split('#');
+      const [importPath, params] = withoutHash.split('?');
+      const importSuffix = `${params ? `?${params}` : ''}${hash ? `#${hash}` : ''}`;
+      importee = importPath;
+
       const basedir = !importer || dedupe(importee) ? rootDir : dirname(importer);
 
       // https://github.com/defunctzombie/package-browser-field-spec
@@ -108,6 +127,7 @@ export default function nodeResolve(opts = {}) {
 
       const parts = importee.split(/[/\\]/);
       let id = parts.shift();
+      let isRelativeImport = false;
 
       if (id[0] === '@' && parts.length > 0) {
         // scoped packages
@@ -115,12 +135,15 @@ export default function nodeResolve(opts = {}) {
       } else if (id[0] === '.') {
         // an import relative to the parent dir of the importer
         id = resolve(basedir, importee);
+        isRelativeImport = true;
       }
 
-      const input = normalizeInput(rollupOptions.input);
-
-      if (resolveOnly.length && !resolveOnly.some((pattern) => pattern.test(id))) {
-        if (input.includes(id)) {
+      if (
+        !isRelativeImport &&
+        resolveOnly.length &&
+        !resolveOnly.some((pattern) => pattern.test(id))
+      ) {
+        if (normalizeInput(rollupOptions.input).includes(importee)) {
           return null;
         }
         return false;
@@ -184,6 +207,15 @@ export default function nodeResolve(opts = {}) {
         importSpecifierList.push(`${importee}/`);
       }
 
+      // TypeScript files may import '.js' to refer to either '.ts' or '.tsx'
+      if (importer && importee.endsWith('.js')) {
+        for (const ext of ['.ts', '.tsx']) {
+          if (importer.endsWith(ext) && extensions.includes(ext)) {
+            importSpecifierList.push(importee.replace(/.js$/, ext));
+          }
+        }
+      }
+
       importSpecifierList.push(importee);
       resolveOptions = Object.assign(resolveOptions, customResolveOptions);
 
@@ -228,11 +260,17 @@ export default function nodeResolve(opts = {}) {
         if (resolved && options.modulesOnly) {
           const code = await readFile(resolved, 'utf-8');
           if (isModule(code)) {
-            return { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
+            return {
+              id: `${resolved}${importSuffix}`,
+              moduleSideEffects: hasModuleSideEffects(resolved)
+            };
           }
           return null;
         }
-        const result = { id: resolved, moduleSideEffects: hasModuleSideEffects(resolved) };
+        const result = {
+          id: `${resolved}${importSuffix}`,
+          moduleSideEffects: hasModuleSideEffects(resolved)
+        };
         return result;
       } catch (error) {
         return null;
@@ -251,3 +289,5 @@ export default function nodeResolve(opts = {}) {
     }
   };
 }
+
+export default nodeResolve;

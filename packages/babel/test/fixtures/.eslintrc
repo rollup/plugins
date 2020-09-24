@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "class-methods-use-this": "off",
+    "no-alert": "off",
+    "no-console": "off",
+    "no-param-reassign": "off",
+    "no-undef": "off",
+    "import/prefer-default-export": "off"
+  }
+}

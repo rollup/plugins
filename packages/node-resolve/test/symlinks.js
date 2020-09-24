@@ -6,7 +6,7 @@ const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
 
-const nodeResolve = require('..');
+const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
 
@@ -51,6 +51,16 @@ test.serial('resolves symlinked packages', async (t) => {
   });
   const { module } = await testBundle(t, bundle);
   t.is(module.exports.number1, module.exports.number2);
+});
+
+test.serial('resolves symlinked packages with browser object', async (t) => {
+  const bundle = await rollup({
+    input: 'symlinked/first/index.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ browser: true })]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports.number1, 'not random string');
 });
 
 test.serial('preserves symlinks if `preserveSymlinks` is true', async (t) => {

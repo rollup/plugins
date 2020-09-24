@@ -1,5 +1,80 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v6.0.0
+
+_2020-09-09_
+
+### Breaking Changes
+
+- fix!: Change `noEmitOnError` default to false (#544)
+
+### Updates
+
+- test: add generating declarations with non-default rootDir (#553)
+- chore: update dependencies (9e52818)
+
+## v5.0.2
+
+_2020-07-12_
+
+### Bugfixes
+
+- fix: utilize 'this.meta.watchMode' (#449)
+
+### Updates
+
+- chore: linting update (410ceb8)
+
+## v5.0.1
+
+_2020-06-28_
+
+### Bugfixes
+
+- fix: load empty emitted files (#476)
+
+## v5.0.0
+
+_2020-06-22_
+
+### Breaking Changes
+
+- fix!: sync rollup and typescript file watch (#425)
+
+### Bugfixes
+
+- fix: Fix peer dep version (#461)
+
+## v4.1.2
+
+_2020-05-20_
+
+### Bugfixes
+
+- fix: memory leak. fixes #322 (#352)
+
+### Updates
+
+- docs: update readme examples (#391)
+- docs: update link to @rollup/plugin-babel in README.md (#372)
+
+## v4.1.1
+
+_2020-04-12_
+
+### Bugfixes
+
+- fix: sourcemap generated as null (#276)
+- fix: use parsedOptions.fileNames for emit declaration files (#270) (#271)
+
+## v4.1.0
+
+_2020-04-12_
+
+### Features
+
+- feat: Refine options interface (#284)
+
 ## v4.0.0
 
 ### Bugfixes

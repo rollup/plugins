@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-buble",
-  "version": "0.21.1",
+  "version": "0.21.3",
   "publishConfig": {
     "access": "public"
   },
@@ -11,6 +11,7 @@
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/buble/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/rollup-plugin-buble.cjs.js",
+  "module": "dist/rollup-plugin-buble.es.js",
   "engines": {
     "node": ">= 8.0.0"
   },
@@ -21,7 +22,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --write README.md",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
@@ -49,19 +50,22 @@
     "rollup": "^1.20.0||^2.0.0"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.0.8",
+    "@rollup/pluginutils": "^3.1.0",
     "@types/buble": "^0.19.2",
-    "buble": "^0.19.8"
+    "buble": "^0.20.0"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^3.0.0",
-    "del-cli": "^3.0.0",
-    "rollup": "^2.0.0",
+    "@rollup/plugin-typescript": "^5.0.2",
+    "del-cli": "^3.0.1",
+    "rollup": "^2.23.0",
     "source-map": "^0.7.3",
-    "typescript": "^3.7.4"
+    "typescript": "^3.9.7"
   },
+  "types": "types/index.d.ts",
   "ava": {
-    "compileEnhancements": false,
+    "babel": {
+      "compileEnhancements": false
+    },
     "extensions": [
       "ts"
     ],
@@ -75,7 +79,5 @@
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  },
-  "module": "dist/rollup-plugin-buble.es.js",
-  "types": "types/index.d.ts"
+  }
 }

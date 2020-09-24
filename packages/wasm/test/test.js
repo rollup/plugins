@@ -1,16 +1,24 @@
-import { rollup } from 'rollup';
-import test from 'ava';
+import { sep, posix, join } from 'path';
 
-// eslint-disable-next-line no-unused-vars, import/no-unresolved, import/extensions
-import wasm from '../dist/index';
+import { rollup } from 'rollup';
+import globby from 'globby';
+import test from 'ava';
+import del from 'del';
+
+import { getCode } from '../../../util/test';
+
+import wasm from '../';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
-const testBundle = async (t, bundle) => {
-  const { output } = await bundle.generate({ format: 'cjs' });
-  const [{ code }] = output;
-  const func = new AsyncFunction('t', `let result;\n\n${code}\n\nreturn result;`);
+process.chdir(__dirname);
 
+const outputFile = './output/bundle.js';
+const outputDir = './output/';
+
+const testBundle = async (t, bundle) => {
+  const code = await getCode(bundle);
+  const func = new AsyncFunction('t', `let result;\n\n${code}\n\nreturn result;`);
   return func(t);
 };
 
@@ -18,17 +26,43 @@ test('async compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/async.js',
+    input: 'fixtures/async.js',
     plugins: [wasm()]
   });
   await testBundle(t, bundle);
+});
+
+test('fetching WASM from separate file', async (t) => {
+  t.plan(3);
+
+  const bundle = await rollup({
+    input: 'fixtures/complex.js',
+    plugins: [
+      wasm({
+        maxFileSize: 0
+      })
+    ]
+  });
+
+  await bundle.write({ format: 'cjs', file: outputFile });
+  const glob = join(outputDir, `**/*.wasm`)
+    .split(sep)
+    .join(posix.sep);
+
+  global.result = null;
+  global.t = t;
+  require(outputFile);
+
+  await global.result;
+  t.snapshot(await globby(glob));
+  await del(outputDir);
 });
 
 test('complex module decoding', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/complex.js',
+    input: 'fixtures/complex.js',
     plugins: [wasm()]
   });
   await testBundle(t, bundle);
@@ -38,10 +72,10 @@ test('sync compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
-    input: 'test/fixtures/sync.js',
+    input: 'fixtures/sync.js',
     plugins: [
       wasm({
-        sync: ['test/fixtures/sample.wasm']
+        sync: ['fixtures/sample.wasm']
       })
     ]
   });
@@ -52,12 +86,38 @@ test('imports', async (t) => {
   t.plan(1);
 
   const bundle = await rollup({
-    input: 'test/fixtures/imports.js',
+    input: 'fixtures/imports.js',
     plugins: [
       wasm({
-        sync: ['test/fixtures/imports.wasm']
+        sync: ['fixtures/imports.wasm']
       })
     ]
   });
   await testBundle(t, bundle);
 });
+
+try {
+  const { Worker } = require('worker_threads');
+  test('worker', async (t) => {
+    t.plan(2);
+
+    const bundle = await rollup({
+      input: 'fixtures/worker.js',
+      plugins: [wasm()]
+    });
+    const code = await getCode(bundle);
+    const executeWorker = () => {
+      const worker = new Worker(code, { eval: true });
+      return new Promise((resolve, reject) => {
+        worker.on('error', (err) => reject(err));
+        worker.on('exit', (exitCode) => resolve(exitCode));
+      });
+    };
+    await t.notThrowsAsync(async () => {
+      const result = await executeWorker();
+      t.true(result === 0);
+    });
+  });
+} catch (err) {
+  // worker threads aren't fully supported in Node versions before 11.7.0
+}

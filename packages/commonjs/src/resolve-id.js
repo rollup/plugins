@@ -1,8 +1,11 @@
 /* eslint-disable no-param-reassign, no-undefined */
+
 import { statSync } from 'fs';
 import { dirname, resolve, sep } from 'path';
 
 import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_PACKAGES_ID,
   getExternalProxyId,
   getIdFromProxyId,
   getProxyId,
@@ -45,11 +48,18 @@ export default function getResolveId(extensions) {
     const isProxyModule = importee.endsWith(PROXY_SUFFIX);
     if (isProxyModule) {
       importee = getIdFromProxyId(importee);
-    } else if (importee.startsWith('\0')) {
-      if (importee === HELPERS_ID) {
+    }
+    if (importee.startsWith('\0')) {
+      if (
+        importee.startsWith(HELPERS_ID) ||
+        importee === DYNAMIC_PACKAGES_ID ||
+        importee.startsWith(DYNAMIC_JSON_PREFIX)
+      ) {
         return importee;
       }
-      return null;
+      if (!isProxyModule) {
+        return null;
+      }
     }
 
     if (importer && importer.endsWith(PROXY_SUFFIX)) {

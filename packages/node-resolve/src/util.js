@@ -156,7 +156,7 @@ export function normalizeInput(input) {
   }
 
   // otherwise it's a string
-  return input;
+  return [input];
 }
 
 // Resolve module specifiers in order. Promise resolves to the first module that resolves
@@ -171,7 +171,12 @@ export function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
         return value;
       }
 
-      return resolveId(importSpecifierList[i], resolveOptions);
+      return resolveId(importSpecifierList[i], resolveOptions).then((result) => {
+        if (!resolveOptions.preserveSymlinks) {
+          result = realpathSync(result);
+        }
+        return result;
+      });
     });
 
     if (i < importSpecifierList.length - 1) {

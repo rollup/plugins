@@ -1,5 +1,13 @@
 # @rollup/plugin-inject ChangeLog
 
+## v4.0.2
+
+_2020-05-11_
+
+### Updates
+
+- chore: rollup v2 peerDep. (dupe for pub) (f0d8440)
+
 ## v4.0.1
 
 _2020-02-01_

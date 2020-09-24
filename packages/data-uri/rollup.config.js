@@ -7,7 +7,7 @@ export default {
   plugins: [typescript()],
   external: [...Object.keys(pkg.devDependencies), 'url'],
   output: [
-    { format: 'cjs', file: pkg.main, sourcemap: true },
+    { format: 'cjs', file: pkg.main, sourcemap: true, exports: 'auto' },
     { format: 'esm', file: pkg.module, sourcemap: true }
   ]
 };
