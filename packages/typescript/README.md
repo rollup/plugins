@@ -112,6 +112,82 @@ typescript({
 });
 ```
 
+### `transformers`
+
+Type: `{ [before | after | afterDeclarations]: TransformerFactory[] }`<br>
+Default: `undefined`
+
+Allows registration of TypeScript custom transformers at any of the supported stages:
+
+- **before**: transformers will execute before the TypeScript's own transformers on raw TypeScript files
+- **after**: transformers will execute after the TypeScript transformers on transpiled code
+  **afterDeclarations**: transformers will execute after declaration file generation allowing to modify existing declaration files
+
+Supported transformer factories:
+
+- all **build in** TypeScript custom transformer factories:
+
+  - `import(‘typescript’).TransformerFactory` annotated **TransformerFactory** bellow
+  - `import(‘typescript’).CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+
+- **ProgramTransformerFactory** represents a transformer factory allowing the resulting transformer to grab a reference to the **Program** instance
+
+  ```js
+  {
+    type: 'program',
+    factory: (program: Program) => TransformerFactory | CustomTransformerFactory
+  }
+  ```
+
+- **TypeCheckerTransformerFactory** represents a transformer factory allowing the resulting transformer to grab a reference to the **TypeChecker** instance
+  ```js
+  {
+    type: 'typeChecker',
+    factory: (typeChecker: TypeChecker) => TransformerFactory | CustomTransformerFactory
+  }
+  ```
+
+```js
+typescript({
+  transformers: {
+    before: [
+      {
+        // Allow the transformer to get a Program reference in it's factory
+        type: 'program',
+        factory: program => {
+          return ProgramRequiringTransformerFactory(program);
+        }
+      },
+      {
+        type: 'typeChecker',
+        factory: typeChecker => {
+          // Allow the transformer to get a Program reference in it's factory
+          return TypeCheckerRequiringTransformerFactory(program);
+        }
+      }
+    ],
+    after: [
+      // You can use normal transformers directly
+      require('custom-transformer-based-on-Context')
+    ],
+    afterDeclarations: [
+      // Or even define in place
+      function fixDeclarationFactory(context) {
+        return function fixDeclaration(source) {
+          function visitor(node) {
+            // Do real work here
+
+            return ts.visitEachChild(node, visitor, context);
+          }
+
+          return ts.visitEachChild(source, visitor, context);
+        };
+      }
+    ]
+  }
+});
+```
+
 ### Typescript compiler options
 
 Some of Typescript's [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html) affect how Rollup builds files.
