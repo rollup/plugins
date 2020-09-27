@@ -261,6 +261,27 @@ test('can resolve imports with hashes', async (t) => {
   t.is(module.exports, 'resolved with hash');
 });
 
+test('can resolve imports with hash in path', async (t) => {
+  const bundle = await rollup({
+    input: 'hash-in-path.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve(),
+      {
+        load(id) {
+          if (id === resolve(__dirname, 'fixtures', 'node_modules', 'test', '#', 'foo.js')) {
+            return 'export default "resolved with hash"';
+          }
+          return null;
+        }
+      }
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'resolved with hash');
+});
+
 test('can resolve imports with search params', async (t) => {
   const bundle = await rollup({
     input: 'search-params.js',

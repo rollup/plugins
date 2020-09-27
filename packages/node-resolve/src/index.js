@@ -101,7 +101,12 @@ export function nodeResolve(opts = {}) {
       if (/\0/.test(importee)) return null;
 
       // strip hash and query params from import
-      const [withoutHash, hash] = importee.split('#');
+      let [withoutHash, hash] = importee.split('#');
+      // handle hash in path test/#/foo
+      if (hash && hash[0] === '/') {
+        withoutHash = `${withoutHash}#${hash}`;
+        hash = '';
+      }
       const [importPath, params] = withoutHash.split('?');
       const importSuffix = `${params ? `?${params}` : ''}${hash ? `#${hash}` : ''}`;
       importee = importPath;
