@@ -7,3 +7,4 @@ export const readFile = promisify(fs.readFile);
 export const realpath = promisify(fs.realpath);
 export { realpathSync } from 'fs';
 export const stat = promisify(fs.stat);
+export const existsSync = fs.existsSync;

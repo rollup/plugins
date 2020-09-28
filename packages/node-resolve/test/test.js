@@ -22,6 +22,17 @@ test('finds a module with jsnext:main', async (t) => {
   t.is(module.exports, 'JSNEXT');
 });
 
+test('finds a fallback main with non-exists module', async (t) => {
+  const bundle = await rollup({
+    input: 'module-non-exists.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [nodeResolve({ mainFields: ['module', 'main'] })]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'MAIN');
+});
+
 test('finds and converts a basic CommonJS module', async (t) => {
   const bundle = await rollup({
     input: 'commonjs.js',

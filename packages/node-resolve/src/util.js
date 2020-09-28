@@ -5,7 +5,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import resolveModule from 'resolve';
 
-import { realpathSync } from './fs';
+import { realpathSync, existsSync } from './fs';
 
 const resolveId = promisify(resolveModule);
 
@@ -84,10 +84,13 @@ export function getPackageInfo(options) {
   for (let i = 0; i < mainFields.length; i++) {
     const field = mainFields[i];
     if (typeof pkg[field] === 'string') {
-      pkg.main = pkg[field];
-      packageInfo.resolvedMainField = field;
-      overriddenMain = true;
-      break;
+      const fieldPath = resolve(pkgRoot, pkg[field]); 
+      if (existsSync(fieldPath)) {
+        pkg.main = pkg[field];
+        packageInfo.resolvedMainField = field;
+        overriddenMain = true;
+        break;
+      }
     }
   }
 
