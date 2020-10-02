@@ -65,7 +65,8 @@ export default {
   },
   plugins: [
     replace({
-      'process.env.NODE_ENV': JSON.stringify('production') // JSON.stringify('development')
+      // alternatively, one could pass process.env.NODE_ENV or 'development` to stringify
+      'process.env.NODE_ENV': JSON.stringify('production')
     })
   ]
 };
