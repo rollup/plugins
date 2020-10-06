@@ -9,8 +9,7 @@ export interface RollupTypescriptPluginOptions {
    */
   include?: FilterPattern;
   /**
-   * Determine which files are transpiled by Typescript (all `.ts` and
-   * `.tsx` files by default).
+   * Determine which files are ignored by Typescript
    */
   exclude?: FilterPattern;
   /**
