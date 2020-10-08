@@ -254,7 +254,7 @@ export function transformCommonjs(
   }
 
   function hasDynamicModuleForPath(source) {
-    if (!/[/\\]/.test(source)) {
+    if (!/^(?:\.{0,2}[/\\]|[A-Za-z]:[/\\])/.test(source)) {
       try {
         const resolvedPath = normalizePathSlashes(
           nodeResolveSync(source, { basedir: dirname(id) })
