@@ -665,3 +665,44 @@ test('imports .cjs file extension by default', async (t) => {
   const code = await getCodeFromBundle(bundle);
   t.snapshot(code);
 });
+
+test('registers dynamic requires when entry is from a different loader', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/dynamic-require-different-loader/main.js',
+    plugins: [
+      {
+        load(id) {
+          if (id === path.resolve('fixtures/samples/dynamic-require-different-loader/main.js')) {
+            return 'import submodule1 from "./submodule1"; export default submodule1();';
+          }
+          return null;
+        }
+      },
+      commonjs({
+        dynamicRequireTargets: ['fixtures/samples/dynamic-require-different-loader/submodule2.js'],
+        transformMixedEsModules: true
+      })
+    ]
+  });
+
+  t.is((await executeBundle(bundle, t)).exports, 'Hello there');
+});
+
+test('transforms the es file with a `commonjsRequire` and no `require`s', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/dynamic-require-es-mixed-helpers/main.js',
+    plugins: [
+      commonjs({
+        dynamicRequireTargets: ['fixtures/samples/dynamic-require-es-mixed-helpers/submodule.js'],
+        transformMixedEsModules: true
+      })
+    ]
+  });
+
+  const code = await getCodeFromBundle(bundle);
+
+  t.is(
+    /commonjsRequire\(["']\.\/submodule\.js/.test(code),
+    true
+  );
+});

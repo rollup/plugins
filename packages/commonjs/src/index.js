@@ -76,6 +76,13 @@ export default function commonjs(options = {}) {
   const sourceMap = options.sourceMap !== false;
 
   function transformAndCheckExports(code, id) {
+    if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
+      code = getDynamicPackagesEntryIntro(
+        dynamicRequireModuleDirPaths,
+        dynamicRequireModuleSet
+      ) + code;
+    }
+
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
       this.parse,
       code,
@@ -173,14 +180,6 @@ export default function commonjs(options = {}) {
           getRequireReturnsDefault(actualId),
           esModulesWithDefaultExport,
           esModulesWithNamedExports
-        );
-      }
-
-      if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
-        return getDynamicPackagesEntryIntro(
-          id,
-          dynamicRequireModuleDirPaths,
-          dynamicRequireModuleSet
         );
       }
 
