@@ -560,8 +560,7 @@ export function transformCommonjs(
     !usesCommonjsHelpers &&
     (ignoreGlobal || !uses.global)
   ) {
-    // not a CommonJS module
-    return null;
+    return { meta: { commonjs: { isCommonJS: false } } };
   }
 
   const importBlock = `${(usesCommonjsHelpers
@@ -698,5 +697,10 @@ export function transformCommonjs(
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
 
-  return { code, map, syntheticNamedExports: isEsModule ? false : '__moduleExports' };
+  return {
+    code,
+    map,
+    syntheticNamedExports: isEsModule ? false : '__moduleExports',
+    meta: { commonjs: { isCommonJS: !isEsModule } }
+  };
 }

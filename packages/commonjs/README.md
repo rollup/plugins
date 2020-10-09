@@ -311,6 +311,26 @@ ES modules are _always_ parsed in strict mode. That means that certain non-stric
 
 Luckily, there is absolutely no good reason _not_ to use strict mode for everything — so the solution to this problem is to lobby the authors of those modules to update them.
 
+## Inter-plugin-communication
+
+This plugin exposes the result of its CommonJS file type detection for other plugins to use. You can access it via `this.getModuleInfo` or the `moduleParsed` hook:
+
+```js
+function cjsDetectionPlugin() {
+  return {
+    name: 'cjs-detection',
+    moduleParsed({
+      id,
+      meta: {
+        commonjs: { isCommonJS },
+      },
+    }) {
+      console.log(`File ${id} is CommonJS: ${isCommonJS}`);
+    },
+  };
+}
+```
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
