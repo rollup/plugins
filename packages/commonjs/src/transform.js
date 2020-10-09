@@ -127,6 +127,7 @@ export function transformCommonjs(
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
+  disableWrap,
   commonDir,
   astCache
 ) {
@@ -547,7 +548,7 @@ export function transformCommonjs(
 
   // If `isEsModule` is on, it means it has ES6 import/export statements,
   //   which just can't be wrapped in a function.
-  if (isEsModule) shouldWrap = false;
+  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
 
   usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
 

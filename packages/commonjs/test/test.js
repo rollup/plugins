@@ -706,3 +706,19 @@ test('transforms the es file with a `commonjsRequire` and no `require`s', async 
     true
   );
 });
+
+test('does not wrap commonjsRegister calls in createCommonjsModule', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/dynamic-require-double-wrap/main.js',
+    plugins: [
+      commonjs({
+        sourceMap: true,
+        dynamicRequireTargets: ['fixtures/samples/dynamic-require-double-wrap/submodule.js']
+      })
+    ]
+  });
+
+  const code = await getCodeFromBundle(bundle, { exports: 'named' });
+
+  t.not(/createCommonjsModule\(function/.test(code), true);
+});
