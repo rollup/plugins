@@ -18,7 +18,7 @@ import {
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
 const nullFn = () => null;
-const deepFreeze = object => {
+const deepFreeze = (object) => {
   Object.freeze(object);
 
   for (const value of Object.values(object)) {
@@ -100,15 +100,9 @@ export function nodeResolve(opts = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
-      // strip hash and query params from import
-      let [withoutHash, hash] = importee.split('#');
-      // handle hash in path test/#/foo
-      if (hash && hash[0] === '/') {
-        withoutHash = `${withoutHash}#${hash}`;
-        hash = '';
-      }
-      const [importPath, params] = withoutHash.split('?');
-      const importSuffix = `${params ? `?${params}` : ''}${hash ? `#${hash}` : ''}`;
+      // strip query params from import
+      const [importPath, params] = importee.split('?');
+      const importSuffix = `${params ? `?${params}` : ''}`;
       importee = importPath;
 
       const basedir = !importer || dedupe(importee) ? rootDir : dirname(importer);
