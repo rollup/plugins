@@ -106,10 +106,9 @@ export function nodeResolve(opts = {}) {
         importer = importer.slice(1);
       }
 
-      // strip hash and query params from import
-      const [withoutHash, hash] = importee.split('#');
-      const [importPath, params] = withoutHash.split('?');
-      const importSuffix = `${params ? `?${params}` : ''}${hash ? `#${hash}` : ''}`;
+      // strip query params from import
+      const [importPath, params] = importee.split('?');
+      const importSuffix = `${params ? `?${params}` : ''}`;
       importee = importPath;
 
       const basedir = !importer || dedupe(importee) ? rootDir : dirname(importer);

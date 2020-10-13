@@ -13,7 +13,7 @@
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+. Due to the use of `tslib` to inject helpers, this plugin requires at least [TypeScript 2.1](https://github.com/Microsoft/TypeScript/wiki/Roadmap#21-december-2016). See also [here](https://blog.mariusschulz.com/2016/12/16/typescript-2-1-external-helpers-library#the-importhelpers-flag-and-tslib).
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+. This plugin also requires at least [TypeScript 3.4](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html).
 
 ## Install
 
@@ -41,9 +41,9 @@ export default {
   input: 'src/index.ts',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [typescript()]
+  plugins: [typescript()],
 };
 ```
 
@@ -95,7 +95,7 @@ Overrides the TypeScript module used for transpilation.
 
 ```js
 typescript({
-  typescript: require('some-fork-of-typescript')
+  typescript: require('some-fork-of-typescript'),
 });
 ```
 
@@ -108,7 +108,83 @@ Overrides the injected TypeScript helpers with a custom version.
 
 ```js
 typescript({
-  tslib: require.resolve('some-fork-of-tslib')
+  tslib: require.resolve('some-fork-of-tslib'),
+});
+```
+
+### `transformers`
+
+Type: `{ [before | after | afterDeclarations]: TransformerFactory[] }`<br>
+Default: `undefined`
+
+Allows registration of TypeScript custom transformers at any of the supported stages:
+
+- **before**: transformers will execute before the TypeScript's own transformers on raw TypeScript files
+- **after**: transformers will execute after the TypeScript transformers on transpiled code
+  **afterDeclarations**: transformers will execute after declaration file generation allowing to modify existing declaration files
+
+Supported transformer factories:
+
+- all **build in** TypeScript custom transformer factories:
+
+  - `import(‘typescript’).TransformerFactory` annotated **TransformerFactory** bellow
+  - `import(‘typescript’).CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+
+- **ProgramTransformerFactory** represents a transformer factory allowing the resulting transformer to grab a reference to the **Program** instance
+
+  ```js
+  {
+    type: 'program',
+    factory: (program: Program) => TransformerFactory | CustomTransformerFactory
+  }
+  ```
+
+- **TypeCheckerTransformerFactory** represents a transformer factory allowing the resulting transformer to grab a reference to the **TypeChecker** instance
+  ```js
+  {
+    type: 'typeChecker',
+    factory: (typeChecker: TypeChecker) => TransformerFactory | CustomTransformerFactory
+  }
+  ```
+
+```js
+typescript({
+  transformers: {
+    before: [
+      {
+        // Allow the transformer to get a Program reference in it's factory
+        type: 'program',
+        factory: program => {
+          return ProgramRequiringTransformerFactory(program);
+        }
+      },
+      {
+        type: 'typeChecker',
+        factory: typeChecker => {
+          // Allow the transformer to get a Program reference in it's factory
+          return TypeCheckerRequiringTransformerFactory(program);
+        }
+      }
+    ],
+    after: [
+      // You can use normal transformers directly
+      require('custom-transformer-based-on-Context')
+    ],
+    afterDeclarations: [
+      // Or even define in place
+      function fixDeclarationFactory(context) {
+        return function fixDeclaration(source) {
+          function visitor(node) {
+            // Do real work here
+
+            return ts.visitEachChild(node, visitor, context);
+          }
+
+          return ts.visitEachChild(source, visitor, context);
+        };
+      }
+    ]
+  }
 });
 ```
 
@@ -119,7 +195,7 @@ Some of Typescript's [CompilerOptions](https://www.typescriptlang.org/docs/handb
 #### `noEmitOnError`
 
 Type: `Boolean`<br>
-Default: `true`
+Default: `false`
 
 If a type error is detected, the Rollup build is aborted when this option is set to true.
 
@@ -151,8 +227,8 @@ export default {
   input: './main.ts',
   plugins: [
     typescript({ module: 'CommonJS' }),
-    commonjs({ extensions: ['.js', '.ts'] }) // the ".ts" extension is required
-  ]
+    commonjs({ extensions: ['.js', '.ts'] }), // the ".ts" extension is required
+  ],
 };
 ```
 
@@ -180,7 +256,7 @@ import typescript from '@rollup/plugin-typescript';
 export default {
   // … other options …
   acornInjectPlugins: [jsx()],
-  plugins: [typescript({ jsx: 'preserve' })]
+  plugins: [typescript({ jsx: 'preserve' })],
 };
 ```
 

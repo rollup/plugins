@@ -13,7 +13,14 @@ import findTypescriptOutput from './outputFile';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
-  const { filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(options);
+  const {
+    filter,
+    tsconfig,
+    compilerOptions,
+    tslib,
+    typescript: ts,
+    transformers
+  } = getPluginOptions(options);
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
 
@@ -46,7 +53,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           },
           status(diagnostic) {
             watchProgramHelper.handleStatus(diagnostic);
-          }
+          },
+          transformers
         });
       }
     },
