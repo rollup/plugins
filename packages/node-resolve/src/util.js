@@ -5,7 +5,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import resolveModule from 'resolve';
 
-import { realpathSync } from './fs';
+import { exists, realpath, realpathSync } from './fs';
 
 const resolveId = promisify(resolveModule);
 
@@ -165,22 +165,20 @@ export function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
   let promise = Promise.resolve();
 
   for (let i = 0; i < importSpecifierList.length; i++) {
-    promise = promise.then((value) => {
+    // eslint-disable-next-line no-loop-func
+    promise = promise.then(async (value) => {
       // if we've already resolved to something, just return it.
       if (value) {
         return value;
       }
 
-      return resolveId(importSpecifierList[i], resolveOptions).then((result) => {
-        if (!resolveOptions.preserveSymlinks) {
-          try {
-            result = realpathSync(result);
-          } catch (e) {
-            // maybe the file does not exist. Might be a builtin
-          }
+      let result = await resolveId(importSpecifierList[i], resolveOptions);
+      if (!resolveOptions.preserveSymlinks) {
+        if (await exists(result)) {
+          result = await realpath(result);
         }
-        return result;
-      });
+      }
+      return result;
     });
 
     // swallow MODULE_NOT_FOUND errors
