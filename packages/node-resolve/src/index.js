@@ -101,9 +101,7 @@ export function nodeResolve(opts = {}) {
       if (/\0/.test(importee)) return null;
 
       if (/\0/.test(importer)) {
-        // handle cases like common-js plugin which has form
-        // \u0000<id>?commonjs-proxy
-        importer = importer.slice(1);
+        importer = undefined;
       }
 
       // strip query params from import
