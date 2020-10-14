@@ -5,7 +5,11 @@ import getCommonDir from 'commondir';
 
 import { peerDependencies } from '../package.json';
 
-import { getDynamicPackagesEntryIntro, getDynamicPackagesModule } from './dynamic-packages-manager';
+import {
+  getDynamicPackagesEntryIntro,
+  getDynamicPackagesModule,
+  isModuleRegistrationProxy
+} from './dynamic-packages-manager';
 import getDynamicRequirePaths from './dynamic-require-paths';
 import {
   DYNAMIC_JSON_PREFIX,
@@ -103,6 +107,9 @@ export default function commonjs(options = {}) {
       return null;
     }
 
+    // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
+    const disableWrap = isModuleRegistrationProxy(id, dynamicRequireModuleSet);
+
     const transformed = transformCommonjs(
       this.parse,
       code,
@@ -113,6 +120,7 @@ export default function commonjs(options = {}) {
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
+      disableWrap,
       commonDir,
       ast
     );
@@ -168,9 +176,8 @@ export default function commonjs(options = {}) {
         return getDynamicJsonProxy(id, commonDir);
       }
 
-      const normalizedPath = normalizePathSlashes(id);
-      if (dynamicRequireModuleSet.has(normalizedPath) && !normalizedPath.endsWith('.json')) {
-        return getDynamicRequireProxy(normalizedPath, commonDir);
+      if (isModuleRegistrationProxy(id, dynamicRequireModuleSet)) {
+        return getDynamicRequireProxy(normalizePathSlashes(id), commonDir);
       }
 
       if (id.endsWith(PROXY_SUFFIX)) {

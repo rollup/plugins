@@ -50,3 +50,8 @@ export function getDynamicPackagesEntryIntro(
 
   return dynamicImports;
 }
+
+export function isModuleRegistrationProxy(id, dynamicRequireModuleSet) {
+  const normalizedPath = normalizePathSlashes(id);
+  return dynamicRequireModuleSet.has(normalizedPath) && !normalizedPath.endsWith('.json');
+}
