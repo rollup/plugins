@@ -244,7 +244,7 @@ export function transformCommonjs(
       }
 
       if (isDynamicRegister || !isDynamic || sourceId.endsWith('.json')) {
-        sources.push([sourceId, !isDynamicRegister]);
+        sources.push([sourceId, isDynamicRegister]);
       }
 
       required[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
@@ -545,36 +545,42 @@ export function transformCommonjs(
     }
   });
 
-  if (
-    !sources.length &&
-    !uses.module &&
-    !uses.exports &&
-    !uses.require &&
-    (ignoreGlobal || !uses.global)
-  ) {
-    // not a CommonJS module
-    return null;
-  }
-
   // If `isEsModule` is on, it means it has ES6 import/export statements,
   //   which just can't be wrapped in a function.
   if (isEsModule) shouldWrap = false;
 
   usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
 
+  if (
+    !sources.length &&
+    !uses.module &&
+    !uses.exports &&
+    !uses.require &&
+    !usesCommonjsHelpers &&
+    (ignoreGlobal || !uses.global)
+  ) {
+    // not a CommonJS module
+    return null;
+  }
+
   const importBlock = `${(usesCommonjsHelpers
     ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
     : []
   )
     .concat(
-      sources.map(
-        ([source]) =>
-          // import the actual module before the proxy, so that we know
-          // what kind of proxy to build
-          `import '${source}';`
-      ),
+      // dynamic registers first (`commonjsRegister(,,,)`), as the may be required in the other modules
       sources
-        .filter(([, importProxy]) => importProxy)
+        .filter(([, isDynamicRegister]) => isDynamicRegister)
+        .map(([source]) => `import '${source}';`),
+
+      // now the solid modules, non-commonjsRegister
+      sources
+        .filter(([, isDynamicRegister]) => !isDynamicRegister)
+        .map(([source]) => `import '${source}';`),
+
+      // now the proxies for solid modules (non-commonjsRegister)
+      sources
+        .filter(([, isDynamicRegister]) => !isDynamicRegister)
         .map(([source]) => {
           const { name, importsDefault } = required[source];
           return `import ${importsDefault ? `${name} from ` : ``}'${

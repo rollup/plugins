@@ -34,26 +34,19 @@ export function getDynamicPackagesModule(dynamicRequireModuleDirPaths, commonDir
 }
 
 export function getDynamicPackagesEntryIntro(
-  id,
   dynamicRequireModuleDirPaths,
   dynamicRequireModuleSet
 ) {
-  try {
-    const code = readFileSync(id, { encoding: 'utf8' });
-    let dynamicImports = Array.from(
-      dynamicRequireModuleSet,
-      (dynamicId) => `require(${JSON.stringify(DYNAMIC_REGISTER_PREFIX + dynamicId)});`
-    ).join('\n');
+  let dynamicImports = Array.from(
+    dynamicRequireModuleSet,
+    (dynamicId) => `require(${JSON.stringify(DYNAMIC_REGISTER_PREFIX + dynamicId)});`
+  ).join('\n');
 
-    if (dynamicRequireModuleDirPaths.length) {
-      dynamicImports += `require(${JSON.stringify(
-        DYNAMIC_REGISTER_PREFIX + DYNAMIC_PACKAGES_ID
-      )});`;
-    }
-
-    return `${dynamicImports}\n${code}`;
-  } catch (ex) {
-    this.warn(`Failed to read file ${id}, dynamic modules might not work correctly`);
-    return null;
+  if (dynamicRequireModuleDirPaths.length) {
+    dynamicImports += `require(${JSON.stringify(
+      DYNAMIC_REGISTER_PREFIX + DYNAMIC_PACKAGES_ID
+    )});`;
   }
+
+  return dynamicImports;
 }
