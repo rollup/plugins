@@ -262,7 +262,7 @@ export function nodeResolve(opts = {}) {
         }
       }
 
-      if (options.modulesOnly) {
+      if (options.modulesOnly && (await exists(resolved))) {
         const code = await readFile(resolved, 'utf-8');
         if (isModule(code)) {
           return {
