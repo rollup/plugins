@@ -1,12 +1,13 @@
 /* eslint-disable line-comment-position, no-new-func, no-undefined */
 import * as path from 'path';
 
+import resolve from '@rollup/plugin-node-resolve';
+
 import test from 'ava';
-import { SourceMapConsumer } from 'source-map';
-import { install } from 'source-map-support';
 import { getLocator } from 'locate-character';
 import { rollup } from 'rollup';
-import resolve from '@rollup/plugin-node-resolve';
+import { SourceMapConsumer } from 'source-map';
+import { install } from 'source-map-support';
 
 import { testBundle } from '../../../util/test';
 
@@ -722,3 +723,26 @@ test('does not wrap commonjsRegister calls in createCommonjsModule', async (t) =
 
   t.not(/createCommonjsModule\(function/.test(code), true);
 });
+
+// This test uses worker threads to simulate an empty internal cache and needs at least Node 12
+if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
+  test('can be cached across instances', async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/samples/caching/main.js',
+      plugins: [commonjs()]
+    });
+    const { cache } = bundle;
+    const code = await getCodeFromBundle(bundle);
+
+    // We do a second run in a worker so that all internal state is cleared
+    const { Worker } = await import('worker_threads');
+    const getRollupUpCodeWithCache = new Worker(
+      path.join(__dirname, 'fixtures/samples/caching/rollupWorker.js'),
+      {
+        workerData: cache
+      }
+    );
+
+    t.is(code, await new Promise((done) => getRollupUpCodeWithCache.on('message', done)));
+  });
+}

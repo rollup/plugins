@@ -103,14 +103,13 @@ export default function commonjs(options = {}) {
       !dynamicRequireModuleSet.has(normalizePathSlashes(id)) &&
       (!hasCjsKeywords(code, ignoreGlobal) || (isEsModule && !options.transformMixedEsModules))
     ) {
-      setIsCjsPromise(id, false);
-      return null;
+      return { meta: { commonjs: { isCommonJS: false } } };
     }
 
     // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
     const disableWrap = isModuleRegistrationProxy(id, dynamicRequireModuleSet);
 
-    const transformed = transformCommonjs(
+    return transformCommonjs(
       this.parse,
       code,
       id,
@@ -124,9 +123,6 @@ export default function commonjs(options = {}) {
       commonDir,
       ast
     );
-
-    setIsCjsPromise(id, isEsModule ? false : Boolean(transformed));
-    return transformed;
   }
 
   return {
@@ -201,20 +197,25 @@ export default function commonjs(options = {}) {
         !id.startsWith(DYNAMIC_JSON_PREFIX) &&
         (!filter(id) || !extensions.includes(extName))
       ) {
-        setIsCjsPromise(id, null);
         return null;
       }
 
-      let transformed;
       try {
-        transformed = transformAndCheckExports.call(this, code, id);
+        return transformAndCheckExports.call(this, code, id);
       } catch (err) {
-        transformed = null;
-        setIsCjsPromise(id, false);
-        this.error(err, err.loc);
+        return this.error(err, err.loc);
       }
+    },
 
-      return transformed;
+    moduleParsed({ id, meta: { commonjs } }) {
+      if (commonjs) {
+        const isCjs = commonjs.isCommonJS;
+        if (isCjs != null) {
+          setIsCjsPromise(id, isCjs);
+          return;
+        }
+      }
+      setIsCjsPromise(id, null);
     }
   };
 }
