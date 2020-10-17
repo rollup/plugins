@@ -6,11 +6,12 @@ import { dirname, resolve, sep } from 'path';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
-  getExternalProxyId,
-  getIdFromProxyId,
-  getProxyId,
+  EXTERNAL_SUFFIX,
   HELPERS_ID,
-  PROXY_SUFFIX
+  isWrappedId,
+  PROXY_SUFFIX,
+  unwrapId,
+  wrapId
 } from './helpers';
 
 function getCandidatesForExtension(resolved, extension) {
@@ -45,9 +46,9 @@ export default function getResolveId(extensions) {
   }
 
   function resolveId(importee, importer) {
-    const isProxyModule = importee.endsWith(PROXY_SUFFIX);
+    const isProxyModule = isWrappedId(importee, PROXY_SUFFIX);
     if (isProxyModule) {
-      importee = getIdFromProxyId(importee);
+      importee = unwrapId(importee, PROXY_SUFFIX);
     }
     if (importee.startsWith('\0')) {
       if (
@@ -62,8 +63,8 @@ export default function getResolveId(extensions) {
       }
     }
 
-    if (importer && importer.endsWith(PROXY_SUFFIX)) {
-      importer = getIdFromProxyId(importer);
+    if (importer && isWrappedId(importer, PROXY_SUFFIX)) {
+      importer = unwrapId(importer, PROXY_SUFFIX);
     }
 
     return this.resolve(importee, importer, { skipSelf: true }).then((resolved) => {
@@ -72,9 +73,9 @@ export default function getResolveId(extensions) {
       }
       if (isProxyModule) {
         if (!resolved) {
-          return { id: getExternalProxyId(importee), external: false };
+          return { id: wrapId(importee, EXTERNAL_SUFFIX), external: false };
         }
-        resolved.id = (resolved.external ? getExternalProxyId : getProxyId)(resolved.id);
+        resolved.id = wrapId(resolved.id, resolved.external ? EXTERNAL_SUFFIX : PROXY_SUFFIX);
         resolved.external = false;
         return resolved;
       }

@@ -143,7 +143,7 @@ You can also supply an array of ids to be treated as ES modules, or a function t
 
 ### `requireReturnsDefault`
 
-Type: `boolean | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>
+Type: `boolean | "namespace" | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>
 Default: `false`
 
 Controls what is returned when requiring an ES module from a CommonJS file. When using the `esmExternals` option, this will also apply to external modules. By default, this plugin will render those imports as namespace imports, i.e.

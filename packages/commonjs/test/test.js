@@ -702,10 +702,7 @@ test('transforms the es file with a `commonjsRequire` and no `require`s', async 
 
   const code = await getCodeFromBundle(bundle);
 
-  t.is(
-    /commonjsRequire\(["']\.\/submodule\.js/.test(code),
-    true
-  );
+  t.is(/commonjsRequire\(["']\.\/submodule\.js/.test(code), true);
 });
 
 test('does not wrap commonjsRegister calls in createCommonjsModule', async (t) => {
