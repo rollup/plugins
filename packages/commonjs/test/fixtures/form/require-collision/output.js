@@ -1,4 +1,4 @@
-import 'foo';
+import '_foo?commonjs-require';
 import require$$1 from '_foo?commonjs-proxy';
 
 (function() {

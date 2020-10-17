@@ -14,6 +14,7 @@ import {
   getVirtualPathForDynamicRequirePath,
   HELPERS_ID,
   PROXY_SUFFIX,
+  REQUIRE_SUFFIX,
   wrapId
 } from './helpers';
 import { getName } from './utils';
@@ -573,13 +574,16 @@ export function transformCommonjs(
     : []
   )
     .concat(
-      // dynamic registers first (`commonjsRegister(,,,)`), as the may be required in the other modules
+      // dynamic registers first, as the may be required in the other modules
       dynamicRegisterSources.map((source) => `import '${source}';`),
 
-      // now the solid modules, non-commonjsRegister
-      requiredSources.map((source) => `import '${source}';`),
+      // now the actual modules so that they are analyzed before creating the proxies;
+      // no need to do this for virtual modules as we never proxy them
+      requiredSources
+        .filter((source) => !source.startsWith('\0'))
+        .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
 
-      // now the proxies for solid modules (non-commonjsRegister)
+      // now the proxy modules
       requiredSources.map((source) => {
         const { name, importsDefault } = required[source];
         return `import ${importsDefault ? `${name} from ` : ``}'${

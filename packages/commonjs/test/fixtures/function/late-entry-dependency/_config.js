@@ -1,5 +1,6 @@
-const path = require('path');
 const fs = require('fs');
+
+const path = require('path');
 
 const ID_MAIN = path.join(__dirname, 'main.js');
 const ID_OTHER = path.join(__dirname, 'other.js');

@@ -10,6 +10,7 @@ import {
   HELPERS_ID,
   isWrappedId,
   PROXY_SUFFIX,
+  REQUIRE_SUFFIX,
   unwrapId,
   wrapId
 } from './helpers';
@@ -45,10 +46,18 @@ export default function getResolveId(extensions) {
     return undefined;
   }
 
-  function resolveId(importee, importer) {
+  return function resolveId(importee, importer) {
+    // Proxies are only importing resolved ids, no need to resolve again
+    if (importer && isWrappedId(importer, PROXY_SUFFIX)) {
+      return importee;
+    }
+
     const isProxyModule = isWrappedId(importee, PROXY_SUFFIX);
+    const isRequiredModule = isWrappedId(importee, REQUIRE_SUFFIX);
     if (isProxyModule) {
       importee = unwrapId(importee, PROXY_SUFFIX);
+    } else if (isRequiredModule) {
+      importee = unwrapId(importee, REQUIRE_SUFFIX);
     }
     if (importee.startsWith('\0')) {
       if (
@@ -58,30 +67,23 @@ export default function getResolveId(extensions) {
       ) {
         return importee;
       }
-      if (!isProxyModule) {
-        return null;
-      }
+      return null;
     }
 
-    if (importer && isWrappedId(importer, PROXY_SUFFIX)) {
-      importer = unwrapId(importer, PROXY_SUFFIX);
-    }
-
-    return this.resolve(importee, importer, { skipSelf: true }).then((resolved) => {
+    return this.resolve(importee, importer, {
+      skipSelf: true,
+      custom: { 'node-resolve': { isRequire: isProxyModule || isRequiredModule } }
+    }).then((resolved) => {
       if (!resolved) {
         resolved = resolveExtensions(importee, importer);
       }
-      if (isProxyModule) {
-        if (!resolved) {
-          return { id: wrapId(importee, EXTERNAL_SUFFIX), external: false };
-        }
+      if (resolved && isProxyModule) {
         resolved.id = wrapId(resolved.id, resolved.external ? EXTERNAL_SUFFIX : PROXY_SUFFIX);
         resolved.external = false;
-        return resolved;
+      } else if (!resolved && (isProxyModule || isRequiredModule)) {
+        return { id: wrapId(importee, EXTERNAL_SUFFIX), external: false };
       }
       return resolved;
     });
-  }
-
-  return resolveId;
+  };
 }

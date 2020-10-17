@@ -3,6 +3,7 @@ export const wrapId = (id, suffix) => `\0${id}${suffix}`;
 export const unwrapId = (wrappedId, suffix) => wrappedId.slice(1, -suffix.length);
 
 export const PROXY_SUFFIX = '?commonjs-proxy';
+export const REQUIRE_SUFFIX = '?commonjs-require';
 export const EXTERNAL_SUFFIX = '?commonjs-external';
 
 export const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
