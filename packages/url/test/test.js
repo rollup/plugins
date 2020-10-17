@@ -43,6 +43,14 @@ test.serial('inline text files', async (t) => {
   await run(t, 'svg', { limit: 10 * 1024 });
 });
 
+test.serial('inline binary mp3 files', async (t) => {
+  await run(t, 'mp3', { limit: 100 * 1024 });
+});
+
+test.serial('inline "large" mp3 files', async (t) => {
+  await run(t, 'mp3', { limit: 10 });
+});
+
 test.serial('inline "large" files', async (t) => {
   await run(t, 'svg', { limit: 10 });
 });
