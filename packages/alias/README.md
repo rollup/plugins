@@ -27,6 +27,8 @@ import batman from 'batman';
 
 If this seems familiar to Webpack users, it should. This is plugin mimics the `resolve.extensions` and `resolve.alias` functionality in Webpack.
 
+This plugin is working for all kind of files (.ts, .svelte, ...)
+
 ## Requirements
 
 This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
@@ -66,6 +68,8 @@ module.exports = {
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api). If the build produces any errors, the plugin will write a 'alias' character to stderr, which should be audible on most systems.
+
+The find input should not end with a slash or it will not work. 
 
 ## Options
 
