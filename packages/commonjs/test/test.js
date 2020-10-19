@@ -278,7 +278,7 @@ test('typeof transforms: correct-scoping', async (t) => {
 test('typeof transforms: protobuf', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/umd/protobuf.js',
-    external: ['bytebuffer'],
+    external: ['bytebuffer', 'foo'],
     plugins: [commonjs()]
   });
 
@@ -316,7 +316,7 @@ test('deconflicts reserved keywords', async (t) => {
     plugins: [commonjs()]
   });
 
-  const reservedProp = (await executeBundle(bundle, t)).exports.delete;
+  const reservedProp = (await executeBundle(bundle, t, { exports: 'named' })).exports.delete;
   t.is(reservedProp, 'foo');
 });
 
@@ -702,10 +702,7 @@ test('transforms the es file with a `commonjsRequire` and no `require`s', async 
 
   const code = await getCodeFromBundle(bundle);
 
-  t.is(
-    /commonjsRequire\(["']\.\/submodule\.js/.test(code),
-    true
-  );
+  t.is(/commonjsRequire\(["']\.\/submodule\.js/.test(code), true);
 });
 
 test('does not wrap commonjsRegister calls in createCommonjsModule', async (t) => {

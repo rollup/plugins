@@ -11,9 +11,11 @@ import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_REGISTER_PREFIX,
-  getProxyId,
   getVirtualPathForDynamicRequirePath,
-  HELPERS_ID
+  HELPERS_ID,
+  PROXY_SUFFIX,
+  REQUIRE_SUFFIX,
+  wrapId
 } from './helpers';
 import { getName } from './utils';
 
@@ -138,7 +140,8 @@ export function transformCommonjs(
   const required = {};
   // Because objects have no guaranteed ordering, yet we need it,
   // we need to keep track of the order in a array
-  const sources = [];
+  const requiredSources = [];
+  const dynamicRegisterSources = [];
 
   let uid = 0;
 
@@ -229,8 +232,7 @@ export function transformCommonjs(
     }
 
     const existing = required[sourceId];
-    // eslint-disable-next-line no-undefined
-    if (existing === undefined) {
+    if (!existing) {
       const isDynamic = hasDynamicModuleForPath(sourceId);
 
       if (!name) {
@@ -240,12 +242,15 @@ export function transformCommonjs(
         } while (scope.contains(name));
       }
 
-      if (isDynamicRegister && sourceId.endsWith('.json')) {
-        sourceId = DYNAMIC_JSON_PREFIX + sourceId;
+      if (isDynamicRegister) {
+        if (sourceId.endsWith('.json')) {
+          sourceId = DYNAMIC_JSON_PREFIX + sourceId;
+        }
+        dynamicRegisterSources.push(sourceId);
       }
 
-      if (isDynamicRegister || !isDynamic || sourceId.endsWith('.json')) {
-        sources.push([sourceId, isDynamicRegister]);
+      if (!isDynamic || sourceId.endsWith('.json')) {
+        requiredSources.push(sourceId);
       }
 
       required[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
@@ -553,7 +558,8 @@ export function transformCommonjs(
   usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
 
   if (
-    !sources.length &&
+    !requiredSources.length &&
+    !dynamicRegisterSources.length &&
     !uses.module &&
     !uses.exports &&
     !uses.require &&
@@ -568,25 +574,22 @@ export function transformCommonjs(
     : []
   )
     .concat(
-      // dynamic registers first (`commonjsRegister(,,,)`), as the may be required in the other modules
-      sources
-        .filter(([, isDynamicRegister]) => isDynamicRegister)
-        .map(([source]) => `import '${source}';`),
+      // dynamic registers first, as the may be required in the other modules
+      dynamicRegisterSources.map((source) => `import '${source}';`),
 
-      // now the solid modules, non-commonjsRegister
-      sources
-        .filter(([, isDynamicRegister]) => !isDynamicRegister)
-        .map(([source]) => `import '${source}';`),
+      // now the actual modules so that they are analyzed before creating the proxies;
+      // no need to do this for virtual modules as we never proxy them
+      requiredSources
+        .filter((source) => !source.startsWith('\0'))
+        .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
 
-      // now the proxies for solid modules (non-commonjsRegister)
-      sources
-        .filter(([, isDynamicRegister]) => !isDynamicRegister)
-        .map(([source]) => {
-          const { name, importsDefault } = required[source];
-          return `import ${importsDefault ? `${name} from ` : ``}'${
-            source.startsWith('\0') ? source : getProxyId(source)
-          }';`;
-        })
+      // now the proxy modules
+      requiredSources.map((source) => {
+        const { name, importsDefault } = required[source];
+        return `import ${importsDefault ? `${name} from ` : ``}'${
+          source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
+        }';`;
+      })
     )
     .join('\n')}\n\n`;
 

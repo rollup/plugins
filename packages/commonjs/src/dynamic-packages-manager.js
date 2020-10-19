@@ -43,9 +43,7 @@ export function getDynamicPackagesEntryIntro(
   ).join('\n');
 
   if (dynamicRequireModuleDirPaths.length) {
-    dynamicImports += `require(${JSON.stringify(
-      DYNAMIC_REGISTER_PREFIX + DYNAMIC_PACKAGES_ID
-    )});`;
+    dynamicImports += `require(${JSON.stringify(DYNAMIC_REGISTER_PREFIX + DYNAMIC_PACKAGES_ID)});`;
   }
 
   return dynamicImports;

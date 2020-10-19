@@ -1,4 +1,4 @@
-import './input2.js';
+import '_./input2.js?commonjs-require';
 import t2 from '_./input2.js?commonjs-proxy';
 
 console.log(t2);

@@ -1,4 +1,4 @@
-import './a';
+import '_./a?commonjs-require';
 import a from '_./a?commonjs-proxy';
 
 var b = 42;
