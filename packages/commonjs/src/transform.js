@@ -68,7 +68,7 @@ function isTrueNode(node) {
 
   switch (node.type) {
     case 'Literal':
-      return node.value;
+      return !!node.value;
     case 'UnaryExpression':
       return node.operator === '!' && node.argument && node.argument.value === 0;
     default:
