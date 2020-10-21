@@ -9,7 +9,7 @@ const defaults = {
 };
 const ext = /\.ya?ml$/;
 
-export default function yamll(opts = {}) {
+export default function yaml(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { documentMode, safe } = options;
   const filter = createFilter(options.include, options.exclude);
