@@ -35,7 +35,7 @@ export default function yamll(opts = {}) {
       let data = loadMethod(content);
 
       if (typeof options.transform === 'function') {
-        const result = options.transform(data);
+        const result = options.transform(data, id);
         // eslint-disable-next-line no-undefined
         if (result !== undefined) {
           data = result;
