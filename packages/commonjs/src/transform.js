@@ -104,6 +104,7 @@ function getAssignedMember(node) {
   return { object, key, value: right };
 }
 
+// TODO Lukas rename, e.g. analyzeModule
 export function checkEsModule(parse, code, id) {
   const ast = tryParse(parse, code, id);
 
@@ -113,6 +114,7 @@ export function checkEsModule(parse, code, id) {
   let hasNamedExports = false;
   let reassignedExports = false;
 
+  // TODO Lukas convert to switch
   for (const node of ast.body) {
     if (node.type === 'ExportDefaultDeclaration') {
       isEsModule = true;
@@ -139,9 +141,7 @@ export function checkEsModule(parse, code, id) {
       }
     } else if (node.type === 'ImportDeclaration') {
       isEsModule = true;
-    }
-
-    if (node.type === 'ExpressionStatement' && node.expression) {
+    } else if (node.type === 'ExpressionStatement' && node.expression) {
       if (node.expression.type === 'CallExpression') {
         // detect Object.defineProperty(exports, '__esModule', { value: true });
         if (isDefineCompiledEsm(node.expression)) {
@@ -161,6 +161,9 @@ export function checkEsModule(parse, code, id) {
             }
           }
 
+          // TODO Lukas this is only analyzing the top level and would fail at a nested assignment to module.exports
+          // TODO Lukas add test for this
+          // Do we really need the "compiled" information available?
           if (object === 'module' && key === 'exports') {
             reassignedExports = true;
           }
@@ -399,6 +402,8 @@ export function transformCommonjs(
     );
   }
 
+  // TODO Lukas merge with second pass
+  // TODO Lukas find a better way to handle reassignments?
   // do a first pass, see which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
   // where `foo` is later reassigned. (This happens in the wild. CommonJS, sigh)
@@ -414,33 +419,33 @@ export function transformCommonjs(
     }
   });
 
+  const skippedNodes = new Set();
   walk(ast, {
     enter(node, parent) {
+      if (skippedNodes.has(node)) {
+        this.skip();
+        return;
+      }
+
       if (sourceMap) {
         magicString.addSourcemapLocation(node.start);
         magicString.addSourcemapLocation(node.end);
       }
 
       // skip dead branches
-      if (parent && (parent.type === 'IfStatement' || parent.type === 'ConditionalExpression')) {
-        if (node === parent.consequent && isFalsy(parent.test)) {
-          this.skip();
-          return;
-        }
-        if (node === parent.alternate && isTruthy(parent.test)) {
-          this.skip();
-          return;
+      if (node.type === 'IfStatement' || node.type === 'ConditionalExpression') {
+        if (isFalsy(node.test)) {
+          skippedNodes.add(node.consequent);
+        } else if (node.alternate && isTruthy(node.test)) {
+          skippedNodes.add(node.alternate);
         }
       }
 
+      // TODO Lukas only do this if we are sure we will not wrap
+      // => determine this during first pass!
       // skip and remove expressions such as Object.defineProperty(exports, '__esModule', { value: true });
       if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
         magicString.remove(parent.start, parent.end);
-        this.skip();
-        return;
-      }
-
-      if (node._skip) {
         this.skip();
         return;
       }
@@ -562,7 +567,7 @@ export function transformCommonjs(
           shouldWrap = true;
         }
 
-        node.left._skip = true;
+        skippedNodes.add(node.left);
 
         if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
           node.right.properties.forEach((prop) => {
@@ -631,7 +636,7 @@ export function transformCommonjs(
         }
       }
 
-      node.callee._skip = true;
+      skippedNodes.add(node.callee);
     },
 
     leave(node) {
