@@ -331,6 +331,7 @@ importers:
       '@rollup/plugin-typescript': 5.0.2_rollup@2.23.0
       '@types/node': 14.0.26
       '@types/picomatch': 2.2.1
+      acorn: 8.0.4
       rollup: 2.23.0
     specifiers:
       '@rollup/plugin-commonjs': ^14.0.0
@@ -339,6 +340,7 @@ importers:
       '@types/estree': 0.0.45
       '@types/node': ^14.0.26
       '@types/picomatch': ^2.2.1
+      acorn: ^8.0.4
       estree-walker: ^2.0.1
       picomatch: ^2.2.2
       rollup: ^2.23.0
