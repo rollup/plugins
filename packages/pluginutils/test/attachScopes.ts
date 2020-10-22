@@ -1,7 +1,10 @@
+// eslint-disable-next-line import/no-unresolved
+import { Program, ForStatement, ForOfStatement, ForInStatement, BlockStatement } from 'estree';
+
 import test from 'ava';
 import { parse } from 'acorn';
 
-import { attachScopes } from '../';
+import { attachScopes, AttachedScope } from '../';
 
 test('attaches a scope to the top level', (t) => {
   const ast = parse('var foo;', { ecmaVersion: 2020, sourceType: 'module' });
@@ -80,18 +83,18 @@ test('supports ForStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as import('estree').Program;
+  ) as unknown) as Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
   t.falsy(scope.contains('b'));
 
-  const forLoop = ast.body[0] as import('estree').ForStatement & Record<string, any>;
+  const forLoop = ast.body[0] as ForStatement & { scope: AttachedScope };
 
   t.truthy(forLoop.scope.contains('a'));
   t.falsy(forLoop.scope.contains('b'));
 
-  const forBody = forLoop.body as import('estree').BlockStatement & Record<string, any>;
+  const forBody = forLoop.body as BlockStatement & { scope: AttachedScope };
   t.truthy(forBody.scope.contains('a'));
   t.truthy(forBody.scope.contains('b'));
 });
@@ -105,17 +108,17 @@ test('supports ForOfStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as import('estree').Program;
+  ) as unknown) as Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
   t.falsy(scope.contains('b'));
 
-  const forLoop = ast.body[0] as import('estree').ForOfStatement & Record<string, any>;
+  const forLoop = ast.body[0] as ForOfStatement & { scope: AttachedScope };
   t.truthy(forLoop.scope.contains('a'));
   t.falsy(forLoop.scope.contains('b'));
 
-  const forBody = forLoop.body as import('estree').BlockStatement & Record<string, any>;
+  const forBody = forLoop.body as BlockStatement & { scope: AttachedScope };
   t.truthy(forBody.scope.contains('a'));
   t.truthy(forBody.scope.contains('b'));
 });
@@ -129,17 +132,17 @@ test('supports ForInStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as import('estree').Program;
+  ) as unknown) as Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
   t.falsy(scope.contains('b'));
 
-  const forLoop = ast.body[0] as import('estree').ForInStatement & Record<string, any>;
+  const forLoop = ast.body[0] as ForInStatement & { scope: AttachedScope };
   t.truthy(forLoop.scope.contains('a'));
   t.falsy(forLoop.scope.contains('b'));
 
-  const forBody = forLoop.body as import('estree').BlockStatement & Record<string, any>;
+  const forBody = forLoop.body as BlockStatement & { scope: AttachedScope };
   t.truthy(forBody.scope.contains('a'));
   t.truthy(forBody.scope.contains('b'));
 });

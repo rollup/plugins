@@ -322,13 +322,13 @@ importers:
       string-capitalize: ^1.0.1
   packages/pluginutils:
     dependencies:
-      '@types/estree': 0.0.45
       estree-walker: 2.0.1
       picomatch: 2.2.2
     devDependencies:
       '@rollup/plugin-commonjs': 14.0.0_rollup@2.23.0
       '@rollup/plugin-node-resolve': 8.4.0_rollup@2.23.0
       '@rollup/plugin-typescript': 5.0.2_rollup@2.23.0
+      '@types/estree': 0.0.45
       '@types/node': 14.0.26
       '@types/picomatch': 2.2.1
       acorn: 8.0.4
