@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import { Program, ForStatement, ForOfStatement, ForInStatement, BlockStatement } from 'estree';
+import * as estree from 'estree';
 
 import test from 'ava';
 import { parse } from 'acorn';
@@ -83,18 +83,18 @@ test('supports ForStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as Program;
+  ) as unknown) as estree.Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
   t.falsy(scope.contains('b'));
 
-  const forLoop = ast.body[0] as ForStatement & { scope: AttachedScope };
+  const forLoop = ast.body[0] as estree.ForStatement & { scope: AttachedScope };
 
   t.truthy(forLoop.scope.contains('a'));
   t.falsy(forLoop.scope.contains('b'));
 
-  const forBody = forLoop.body as BlockStatement & { scope: AttachedScope };
+  const forBody = forLoop.body as estree.BlockStatement & { scope: AttachedScope };
   t.truthy(forBody.scope.contains('a'));
   t.truthy(forBody.scope.contains('b'));
 });
@@ -108,17 +108,17 @@ test('supports ForOfStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as Program;
+  ) as unknown) as estree.Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
   t.falsy(scope.contains('b'));
 
-  const forLoop = ast.body[0] as ForOfStatement & { scope: AttachedScope };
+  const forLoop = ast.body[0] as estree.ForOfStatement & { scope: AttachedScope };
   t.truthy(forLoop.scope.contains('a'));
   t.falsy(forLoop.scope.contains('b'));
 
-  const forBody = forLoop.body as BlockStatement & { scope: AttachedScope };
+  const forBody = forLoop.body as estree.BlockStatement & { scope: AttachedScope };
   t.truthy(forBody.scope.contains('a'));
   t.truthy(forBody.scope.contains('b'));
 });
@@ -132,17 +132,17 @@ test('supports ForInStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as Program;
+  ) as unknown) as estree.Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
   t.falsy(scope.contains('b'));
 
-  const forLoop = ast.body[0] as ForInStatement & { scope: AttachedScope };
+  const forLoop = ast.body[0] as estree.ForInStatement & { scope: AttachedScope };
   t.truthy(forLoop.scope.contains('a'));
   t.falsy(forLoop.scope.contains('b'));
 
-  const forBody = forLoop.body as BlockStatement & { scope: AttachedScope };
+  const forBody = forLoop.body as estree.BlockStatement & { scope: AttachedScope };
   t.truthy(forBody.scope.contains('a'));
   t.truthy(forBody.scope.contains('b'));
 });

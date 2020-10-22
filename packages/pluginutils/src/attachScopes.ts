@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-unresolved
+import * as estree from 'estree';
+
 import { walk } from 'estree-walker';
 
 import { AttachedScope, AttachScopes } from '../types';
@@ -16,7 +19,7 @@ const blockDeclarations: BlockDeclaration = {
 interface ScopeOptions {
   parent?: AttachedScope;
   block?: boolean;
-  params?: import('estree').Node[];
+  params?: estree.Node[];
 }
 
 class Scope implements AttachedScope {
@@ -39,7 +42,7 @@ class Scope implements AttachedScope {
     }
   }
 
-  addDeclaration(node: import('estree').Node, isBlockDeclaration: boolean, isVar: boolean): void {
+  addDeclaration(node: estree.Node, isBlockDeclaration: boolean, isVar: boolean): void {
     if (!isBlockDeclaration && this.isBlockScope) {
       // it's a `var` or function node, and this
       // is a block scope, so we need to go up
@@ -61,7 +64,7 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
 
   walk(ast, {
     enter(n, parent) {
-      const node = n as import('estree').Node;
+      const node = n as estree.Node;
       // function foo () {...}
       // class Foo {...}
       if (/(Function|Class)Declaration/.test(node.type)) {
@@ -81,7 +84,7 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
 
       // create new function scope
       if (/Function/.test(node.type)) {
-        const func = node as import('estree').Function;
+        const func = node as estree.Function;
         newScope = new Scope({
           parent: scope,
           block: false,
@@ -130,7 +133,7 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
       }
     },
     leave(n) {
-      const node = n as import('estree').Node & Record<string, any>;
+      const node = n as estree.Node & Record<string, any>;
       if (node[propertyName]) scope = scope.parent!;
     }
   });
