@@ -70,3 +70,76 @@ test('supports catch without a parameter', (t) => {
     attachScopes(ast, 'scope');
   });
 });
+
+test('supports ForStatement', (t) => {
+  const ast = (parse(
+    `
+    for (let a = 0; a < 10; a++) {
+      console.log(a);
+      let b = 10;
+    }
+  `,
+    { ecmaVersion: 2020, sourceType: 'module' }
+  ) as unknown) as import('estree').Program;
+
+  const scope = attachScopes(ast, 'scope');
+  t.falsy(scope.contains('a'));
+  t.falsy(scope.contains('b'));
+
+  const forLoop = ast.body[0] as import('estree').ForStatement & Record<string, any>;
+
+  t.truthy(forLoop.scope.contains('a'));
+  t.falsy(forLoop.scope.contains('b'));
+
+  const forBody = forLoop.body as import('estree').BlockStatement & Record<string, any>;
+  t.truthy(forBody.scope.contains('a'));
+  t.truthy(forBody.scope.contains('b'));
+});
+
+test('supports ForOfStatement', (t) => {
+  const ast = (parse(
+    `
+    for (const a of [1, 2, 3]) {
+      console.log(a);
+      let b = 10;
+    }
+  `,
+    { ecmaVersion: 2020, sourceType: 'module' }
+  ) as unknown) as import('estree').Program;
+
+  const scope = attachScopes(ast, 'scope');
+  t.falsy(scope.contains('a'));
+  t.falsy(scope.contains('b'));
+
+  const forLoop = ast.body[0] as import('estree').ForOfStatement & Record<string, any>;
+  t.truthy(forLoop.scope.contains('a'));
+  t.falsy(forLoop.scope.contains('b'));
+
+  const forBody = forLoop.body as import('estree').BlockStatement & Record<string, any>;
+  t.truthy(forBody.scope.contains('a'));
+  t.truthy(forBody.scope.contains('b'));
+});
+
+test('supports ForInStatement', (t) => {
+  const ast = (parse(
+    `
+    for (let a in [1, 2, 3]) {
+      console.log(a);
+      let b = 10;
+    }
+  `,
+    { ecmaVersion: 2020, sourceType: 'module' }
+  ) as unknown) as import('estree').Program;
+
+  const scope = attachScopes(ast, 'scope');
+  t.falsy(scope.contains('a'));
+  t.falsy(scope.contains('b'));
+
+  const forLoop = ast.body[0] as import('estree').ForInStatement & Record<string, any>;
+  t.truthy(forLoop.scope.contains('a'));
+  t.falsy(forLoop.scope.contains('b'));
+
+  const forBody = forLoop.body as import('estree').BlockStatement & Record<string, any>;
+  t.truthy(forBody.scope.contains('a'));
+  t.truthy(forBody.scope.contains('b'));
+});

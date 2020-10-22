@@ -72,13 +72,9 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
       if (node.type === 'VariableDeclaration') {
         const { kind } = node;
         const isBlockDeclaration = blockDeclarations[kind];
-        // don't add const/let declarations in the body of a for loop #113
-        const parentType = parent ? parent.type : '';
-        if (!(isBlockDeclaration && /ForOfStatement/.test(parentType))) {
-          node.declarations.forEach((declaration) => {
-            scope.addDeclaration(declaration, isBlockDeclaration, true);
-          });
-        }
+        node.declarations.forEach((declaration) => {
+          scope.addDeclaration(declaration, isBlockDeclaration, true);
+        });
       }
 
       let newScope: AttachedScope | undefined;
@@ -97,6 +93,14 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
         if (func.type === 'FunctionExpression' && func.id) {
           newScope.addDeclaration(func, false, false);
         }
+      }
+
+      // create new for scope
+      if (/For(In|Of)?Statement/.test(node.type)) {
+        newScope = new Scope({
+          parent: scope,
+          block: true
+        });
       }
 
       // create new block scope
