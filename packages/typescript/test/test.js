@@ -186,15 +186,15 @@ async function ensureOutDirWhenCreatingDeclarationFiles(compilerOptionName) {
 }
 
 test.serial('ensures outDir is set when creating declaration files (declaration)', async (t) => {
-  ensureOutDirWhenCreatingDeclarationFiles('declaration');
+  await ensureOutDirWhenCreatingDeclarationFiles('declaration');
 });
 
 test.serial('ensures outDir is set when creating declaration files (declarationMap)', async (t) => {
-  ensureOutDirWhenCreatingDeclarationFiles('declarationMap');
+  await ensureOutDirWhenCreatingDeclarationFiles('declarationMap');
 });
 
 test.serial('ensures outDir is set when creating declaration files (composite)', async (t) => {
-  ensureOutDirWhenCreatingDeclarationFiles('composite');
+  await ensureOutDirWhenCreatingDeclarationFiles('composite');
 });
 
 test.serial('ensures outDir is located in Rollup output dir', async (t) => {
