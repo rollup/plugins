@@ -110,7 +110,7 @@ export default function commonjs(options = {}) {
     // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
     const disableWrap = isModuleRegistrationProxy(id, dynamicRequireModuleSet);
 
-    // TODO Lukas in the other version, this is treating is isCompiledEsModule like esModule with regard to the promise
+    // TODO Lukas in the other version, this is treating isCompiledEsModule like isEsModule with regard to the promise
     return transformCommonjs(
       this.parse,
       code,

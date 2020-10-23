@@ -339,6 +339,9 @@ export function transformCommonjs(
       : node.arguments[0].quasis[0].value.cooked;
   }
 
+  // TODO Lukas
+  // * Extract this to a separate file to see what additional variables we need (scope)
+  // * No longer use this during the regular run but perform relevant actions as a post-processing step (or does it make sense to at least collect target strings to be able to identify nodes?)
   function getRequired(node, name) {
     let sourceId = getRequireStringArg(node);
     const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
@@ -409,24 +412,23 @@ export function transformCommonjs(
     );
   }
 
-  // TODO Lukas merge with second pass
-  // TODO Lukas find a better way to handle reassignments?
   // do a first pass, see which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
   // where `foo` is later reassigned. (This happens in the wild. CommonJS, sigh)
-  const assignedTo = new Set();
+  const reassignedNames = new Set();
+  const removedDeclaratorsIfNotReassigned = new Set();
+
   walk(ast, {
     enter(node) {
       if (node.type !== 'AssignmentExpression') return;
       if (node.left.type === 'MemberExpression') return;
 
-      extractAssignedNames(node.left).forEach((name) => {
-        assignedTo.add(name);
-      });
+      extractAssignedNames(node.left).forEach((name) => reassignedNames.add(name));
     }
   });
 
   const skippedNodes = new Set();
+
   walk(ast, {
     enter(node, parent) {
       if (skippedNodes.has(node)) {
@@ -434,6 +436,18 @@ export function transformCommonjs(
         return;
       }
 
+      // TODO Lukas only do this if we are sure we will not wrap
+      // => determine this during first pass!
+      // skip and remove expressions such as Object.defineProperty(exports, '__esModule', { value: true });
+      if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
+        magicString.remove(parent.start, parent.end);
+        this.skip();
+        return;
+      }
+
+      programDepth += 1;
+      if (node.scope) ({ scope } = node);
+      if (functionType.test(node.type)) lexicalDepth += 1;
       if (sourceMap) {
         magicString.addSourcemapLocation(node.start);
         magicString.addSourcemapLocation(node.end);
@@ -447,20 +461,6 @@ export function transformCommonjs(
           skippedNodes.add(node.alternate);
         }
       }
-
-      // TODO Lukas only do this if we are sure we will not wrap
-      // => determine this during first pass!
-      // skip and remove expressions such as Object.defineProperty(exports, '__esModule', { value: true });
-      if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
-        magicString.remove(parent.start, parent.end);
-        this.skip();
-        return;
-      }
-
-      programDepth += 1;
-
-      if (node.scope) ({ scope } = node);
-      if (functionType.test(node.type)) lexicalDepth += 1;
 
       // if toplevel return, we need to wrap it
       if (node.type === 'ReturnStatement' && lexicalDepth === 0) {
@@ -592,24 +592,22 @@ export function transformCommonjs(
       const name = getDefinePropertyCallName(node, 'exports');
       if (name && name === makeLegalIdentifier(name)) namedExports[name] = true;
 
-      // if this is `var x = require('x')`, we can do `import x from 'x'`
+      // if this is a top level `var x = require('x')`, we can do `import x from 'x'`
       if (
         node.type === 'VariableDeclarator' &&
         node.id.type === 'Identifier' &&
         isStaticRequireStatement(node.init) &&
-        !isIgnoredRequireStatement(node.init)
+        !isIgnoredRequireStatement(node.init) &&
+        !scope.parent
       ) {
-        // for now, only do this for top-level requires. maybe fix this in future
-        if (scope.parent) return;
-
         // edge case — CJS allows you to assign to imports. ES doesn't
-        if (assignedTo.has(node.id.name)) return;
+        if (reassignedNames.has(node.id.name)) return;
 
         const required = getRequired(node.init, node.id.name);
         required.importsDefault = true;
 
         if (required.name === node.id.name && !required.isDynamic) {
-          node._shouldRemove = true;
+          removedDeclaratorsIfNotReassigned.add(node);
         }
       }
 
@@ -647,37 +645,27 @@ export function transformCommonjs(
     },
 
     leave(node) {
-      programDepth -= 1;
-      if (node.scope) scope = scope.parent;
-      if (functionType.test(node.type)) lexicalDepth -= 1;
-
-      if (node.type === 'VariableDeclaration') {
+      if (node.type === 'VariableDeclaration' && !scope.parent) {
         let keepDeclaration = false;
-        let c = node.declarations[0].start;
+        let { start } = node.declarations[0];
 
-        for (let i = 0; i < node.declarations.length; i += 1) {
-          const declarator = node.declarations[i];
-
-          if (declarator._shouldRemove) {
-            magicString.remove(c, declarator.end);
-          } else {
-            if (!keepDeclaration) {
-              magicString.remove(c, declarator.start);
-              keepDeclaration = true;
-            }
-
-            c = declarator.end;
+        for (const declarator of node.declarations) {
+          if (removedDeclaratorsIfNotReassigned.has(declarator)) {
+            magicString.remove(start, declarator.end);
+          } else if (!keepDeclaration) {
+            magicString.remove(start, declarator.start);
+            keepDeclaration = true;
           }
+          start = declarator.end;
         }
 
         if (!keepDeclaration) {
           magicString.remove(node.start, node.end);
         }
-      } else if (node.type === 'ExpressionStatement') {
-        if (node._shouldRemove) {
-          magicString.remove(node.start, node.end);
-        }
       }
+      programDepth -= 1;
+      if (node.scope) scope = scope.parent;
+      if (functionType.test(node.type)) lexicalDepth -= 1;
     }
   });
 
@@ -748,6 +736,11 @@ export function transformCommonjs(
   } else {
     const names = [];
 
+    // TODO Lukas
+    //  * collect all relevant top-level AssignmentExpressions while analyzing above instead of looping again and repeating all the checks
+    // * If there is more than one assignment, only the first becomes a declaration
+    // * If there are nested assignments, create a separate declaration at the top
+    // * Handle reading the variable
     for (const node of ast.body) {
       if (node.type === 'ExpressionStatement' && node.expression.type === 'AssignmentExpression') {
         const { left } = node.expression;
