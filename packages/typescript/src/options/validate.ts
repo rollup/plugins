@@ -83,7 +83,7 @@ export function validatePaths(
     }
   }
 
-  if (compilerOptions.declaration || compilerOptions.declarationMap) {
+  if (compilerOptions.declaration || compilerOptions.declarationMap || compilerOptions.composite) {
     if (DIRECTORY_PROPS.every((dirProperty) => !compilerOptions[dirProperty])) {
       context.error(
         `@rollup/plugin-typescript: 'outDir' or 'declarationDir' must be specified to generate declaration files.`
