@@ -189,10 +189,6 @@ test.serial('ensures outDir is set when creating declaration files (declaration)
   await ensureOutDirWhenCreatingDeclarationFiles(t, 'declaration');
 });
 
-test.serial('ensures outDir is set when creating declaration files (declarationMap)', async (t) => {
-  await ensureOutDirWhenCreatingDeclarationFiles(t, 'declarationMap');
-});
-
 test.serial('ensures outDir is set when creating declaration files (composite)', async (t) => {
   await ensureOutDirWhenCreatingDeclarationFiles(t, 'composite');
 });
