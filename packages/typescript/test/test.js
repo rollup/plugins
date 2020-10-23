@@ -162,7 +162,7 @@ test.serial('supports creating declaration files in declarationDir', async (t) =
   t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
-async function ensureOutDirWhenCreatingDeclarationFiles(compilerOptionName) {
+async function ensureOutDirWhenCreatingDeclarationFiles(t, compilerOptionName) {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -186,15 +186,15 @@ async function ensureOutDirWhenCreatingDeclarationFiles(compilerOptionName) {
 }
 
 test.serial('ensures outDir is set when creating declaration files (declaration)', async (t) => {
-  await ensureOutDirWhenCreatingDeclarationFiles('declaration');
+  await ensureOutDirWhenCreatingDeclarationFiles(t, 'declaration');
 });
 
 test.serial('ensures outDir is set when creating declaration files (declarationMap)', async (t) => {
-  await ensureOutDirWhenCreatingDeclarationFiles('declarationMap');
+  await ensureOutDirWhenCreatingDeclarationFiles(t, 'declarationMap');
 });
 
 test.serial('ensures outDir is set when creating declaration files (composite)', async (t) => {
-  await ensureOutDirWhenCreatingDeclarationFiles('composite');
+  await ensureOutDirWhenCreatingDeclarationFiles(t, 'composite');
 });
 
 test.serial('ensures outDir is located in Rollup output dir', async (t) => {
