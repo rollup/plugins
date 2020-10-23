@@ -30,6 +30,7 @@ import {
   getUnknownRequireProxy
 } from './proxies';
 import getResolveId from './resolve-id';
+import validateRollupVersion from './rollup-version';
 import {
   checkEsModule,
   hasCjsKeywords,
@@ -85,11 +86,13 @@ export default function commonjs(options = {}) {
         getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
     }
 
-    const { isEsModule, isCompiledEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
-      this.parse,
-      code,
-      id
-    );
+    const {
+      isEsModule,
+      isCompiledEsModule,
+      hasDefaultExport,
+      hasNamedExports,
+      ast
+    } = checkEsModule(this.parse, code, id);
     if (hasDefaultExport) {
       esModulesWithDefaultExport.add(id);
     }
@@ -129,18 +132,10 @@ export default function commonjs(options = {}) {
     name: 'commonjs',
 
     buildStart() {
+      validateRollupVersion(this.meta.rollupVersion, peerDependencies.rollup);
       if (options.namedExports != null) {
         this.warn(
           'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
-        );
-      }
-
-      const [major, minor] = this.meta.rollupVersion.split('.').map(Number);
-      const minVersion = peerDependencies.rollup.slice(2);
-      const [minMajor, minMinor] = minVersion.split('.').map(Number);
-      if (major < minMajor || (major === minMajor && minor < minMinor)) {
-        this.error(
-          `Insufficient Rollup version: "@rollup/plugin-commonjs" requires at least rollup@${minVersion} but found rollup@${this.meta.rollupVersion}.`
         );
       }
     },
