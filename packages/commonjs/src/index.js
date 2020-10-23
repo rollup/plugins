@@ -32,7 +32,7 @@ import {
 import getResolveId from './resolve-id';
 import validateRollupVersion from './rollup-version';
 import {
-  checkEsModule,
+  analyzeTopLevelStatements,
   hasCjsKeywords,
   normalizePathSlashes,
   transformCommonjs
@@ -92,7 +92,7 @@ export default function commonjs(options = {}) {
       hasDefaultExport,
       hasNamedExports,
       ast
-    } = checkEsModule(this.parse, code, id);
+    } = analyzeTopLevelStatements(this.parse, code, id);
     if (hasDefaultExport) {
       esModulesWithDefaultExport.add(id);
     }

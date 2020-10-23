@@ -104,8 +104,7 @@ function getAssignedMember(node) {
   return { object, key, value: right };
 }
 
-// TODO Lukas rename, e.g. analyzeModule
-export function checkEsModule(parse, code, id) {
+export function analyzeTopLevelStatements(parse, code, id) {
   const ast = tryParse(parse, code, id);
 
   let isEsModule = false;
@@ -114,61 +113,69 @@ export function checkEsModule(parse, code, id) {
   let hasNamedExports = false;
   let reassignedExports = false;
 
-  // TODO Lukas convert to switch
   for (const node of ast.body) {
-    if (node.type === 'ExportDefaultDeclaration') {
-      isEsModule = true;
-      hasDefaultExport = true;
-    } else if (node.type === 'ExportNamedDeclaration') {
-      isEsModule = true;
-      if (node.declaration) {
-        hasNamedExports = true;
-      } else {
-        for (const specifier of node.specifiers) {
-          if (specifier.exported.name === 'default') {
-            hasDefaultExport = true;
-          } else {
-            hasNamedExports = true;
+    switch (node.type) {
+      case 'ExportDefaultDeclaration':
+        isEsModule = true;
+        hasDefaultExport = true;
+        break;
+      case 'ExportNamedDeclaration':
+        isEsModule = true;
+        if (node.declaration) {
+          hasNamedExports = true;
+        } else {
+          for (const specifier of node.specifiers) {
+            if (specifier.exported.name === 'default') {
+              hasDefaultExport = true;
+            } else {
+              hasNamedExports = true;
+            }
           }
         }
-      }
-    } else if (node.type === 'ExportAllDeclaration') {
-      isEsModule = true;
-      if (node.exported && node.exported.name === 'default') {
-        hasDefaultExport = true;
-      } else {
-        hasNamedExports = true;
-      }
-    } else if (node.type === 'ImportDeclaration') {
-      isEsModule = true;
-    } else if (node.type === 'ExpressionStatement' && node.expression) {
-      if (node.expression.type === 'CallExpression') {
-        // detect Object.defineProperty(exports, '__esModule', { value: true });
-        if (isDefineCompiledEsm(node.expression)) {
-          __esModuleTrue = true;
+        break;
+      case 'ExportAllDeclaration':
+        isEsModule = true;
+        if (node.exported && node.exported.name === 'default') {
+          hasDefaultExport = true;
+        } else {
+          hasNamedExports = true;
         }
-      }
-
-      if (node.expression.type === 'AssignmentExpression') {
-        // detect exports.__esModule = true;
-        const assignedMember = getAssignedMember(node);
-
-        if (assignedMember) {
-          const { object, key, value } = assignedMember;
-          if (key === KEY_COMPILED_ESM) {
-            if (isTrueNode(value)) {
+        break;
+      case 'ImportDeclaration':
+        isEsModule = true;
+        break;
+      case 'ExpressionStatement':
+        if (node.expression) {
+          if (node.expression.type === 'CallExpression') {
+            // detect Object.defineProperty(exports, '__esModule', { value: true });
+            if (isDefineCompiledEsm(node.expression)) {
               __esModuleTrue = true;
             }
           }
 
-          // TODO Lukas this is only analyzing the top level and would fail at a nested assignment to module.exports
-          // TODO Lukas add test for this
-          // Do we really need the "compiled" information available?
-          if (object === 'module' && key === 'exports') {
-            reassignedExports = true;
+          if (node.expression.type === 'AssignmentExpression') {
+            // detect exports.__esModule = true;
+            const assignedMember = getAssignedMember(node);
+
+            if (assignedMember) {
+              const { object, key, value } = assignedMember;
+              if (key === KEY_COMPILED_ESM) {
+                if (isTrueNode(value)) {
+                  __esModuleTrue = true;
+                }
+              }
+
+              // TODO Lukas this is only analyzing the top level and would fail at a nested assignment to module.exports
+              // TODO Lukas add test for this
+              // Do we really need the "compiled" information available?
+              if (object === 'module' && key === 'exports') {
+                reassignedExports = true;
+              }
+            }
           }
         }
-      }
+        break;
+      default:
     }
   }
 
