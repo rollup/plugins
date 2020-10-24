@@ -56,7 +56,7 @@ export function validatePaths(
     if (compilerOptions[dirProperty]) {
       if (!outputOptions.dir) {
         context.error(
-          `@rollup/plugin-typescript: 'dir' must be used when '${dirProperty}' is specified.`
+          `@rollup/plugin-typescript: 'output.dir' must be used in rollup config when '${dirProperty}' is specified in tsconfig.`
         );
       }
 
@@ -72,7 +72,7 @@ export function validatePaths(
   if (tsBuildInfoPath && compilerOptions.incremental) {
     if (!outputOptions.dir) {
       context.error(
-        `@rollup/plugin-typescript: 'dir' must be used when 'tsBuildInfoFile' or 'incremental' are specified.`
+        `@rollup/plugin-typescript: 'output.dir' must be used in rollup config when 'tsBuildInfoFile' or 'incremental' are specified in tsconfig.`
       );
     }
 
