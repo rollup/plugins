@@ -26,6 +26,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [data-uri](packages/data-uri)                       | Import modules from Data URIs                                                             |
 | [dsv](packages/dsv)                                 | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
 | [dynamic-import-vars](packages/dynamic-import-vars) | Resolving dynamic imports that contain variables.                                         |
+| [eslint](packages/eslint)                           | Verify entry point and all imported files with ESLint                                     |
 | [graphql](packages/graphql)                         | Convert .gql/.graphql files to ES6 modules                                                |
 | [html](packages/html)                               | Create HTML files to serve Rollup bundles                                                 |
 | [image](packages/image)                             | Import JPG, PNG, GIF, SVG, and WebP files                                                 |

@@ -162,13 +162,13 @@ test.serial('supports creating declaration files in declarationDir', async (t) =
   t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
-test.serial('ensures outDir is set when creating declaration files', async (t) => {
+async function ensureOutDirWhenCreatingDeclarationFiles(t, compilerOptionName) {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
       typescript({
         tsconfig: 'fixtures/basic/tsconfig.json',
-        declaration: true
+        [compilerOptionName]: true
       })
     ],
     onwarn
@@ -183,6 +183,14 @@ test.serial('ensures outDir is set when creating declaration files', async (t) =
     ),
     `Unexpected error message: ${caughtError.message}`
   );
+}
+
+test.serial('ensures outDir is set when creating declaration files (declaration)', async (t) => {
+  await ensureOutDirWhenCreatingDeclarationFiles(t, 'declaration');
+});
+
+test.serial('ensures outDir is set when creating declaration files (composite)', async (t) => {
+  await ensureOutDirWhenCreatingDeclarationFiles(t, 'composite');
 });
 
 test.serial('ensures outDir is located in Rollup output dir', async (t) => {
@@ -201,7 +209,9 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
   );
   t.true(
-    noDirError.message.includes(`'dir' must be used when 'outDir' is specified`),
+    noDirError.message.includes(
+      `Rollup 'dir' option must be used when Typescript compiler option 'outDir' is specified`
+    ),
     `Unexpected error message: ${noDirError.message}`
   );
 
@@ -209,7 +219,9 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
   t.true(
-    wrongDirError.message.includes(`'outDir' must be located inside 'dir'`),
+    wrongDirError.message.includes(
+      `Path of Typescript compiler option 'outDir' must be located inside Rollup 'dir' option`
+    ),
     `Unexpected error message: ${wrongDirError.message}`
   );
 });
@@ -231,7 +243,9 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
   );
   t.true(
-    noDirError.message.includes(`'dir' must be used when 'declarationDir' is specified`),
+    noDirError.message.includes(
+      `Rollup 'dir' option must be used when Typescript compiler option 'declarationDir' is specified`
+    ),
     `Unexpected error message: ${noDirError.message}`
   );
 
@@ -239,7 +253,9 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
   t.true(
-    wrongDirError.message.includes(`'declarationDir' must be located inside 'dir'`),
+    wrongDirError.message.includes(
+      `Path of Typescript compiler option 'declarationDir' must be located inside Rollup 'dir' option`
+    ),
     `Unexpected error message: ${wrongDirError.message}`
   );
 });

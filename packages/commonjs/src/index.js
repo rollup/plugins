@@ -16,10 +16,10 @@ import {
   DYNAMIC_PACKAGES_ID,
   EXTERNAL_SUFFIX,
   getHelpersModule,
-  getIdFromExternalProxyId,
-  getIdFromProxyId,
   HELPERS_ID,
-  PROXY_SUFFIX
+  isWrappedId,
+  PROXY_SUFFIX,
+  unwrapId
 } from './helpers';
 import { setIsCjsPromise } from './is-cjs';
 import {
@@ -81,10 +81,8 @@ export default function commonjs(options = {}) {
 
   function transformAndCheckExports(code, id) {
     if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
-      code = getDynamicPackagesEntryIntro(
-        dynamicRequireModuleDirPaths,
-        dynamicRequireModuleSet
-      ) + code;
+      code =
+        getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
     }
 
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
@@ -156,8 +154,8 @@ export default function commonjs(options = {}) {
         return getSpecificHelperProxy(id);
       }
 
-      if (id.endsWith(EXTERNAL_SUFFIX)) {
-        const actualId = getIdFromExternalProxyId(id);
+      if (isWrappedId(id, EXTERNAL_SUFFIX)) {
+        const actualId = unwrapId(id, EXTERNAL_SUFFIX);
         return getUnknownRequireProxy(
           actualId,
           isEsmExternal(actualId) ? getRequireReturnsDefault(actualId) : true
@@ -176,8 +174,8 @@ export default function commonjs(options = {}) {
         return getDynamicRequireProxy(normalizePathSlashes(id), commonDir);
       }
 
-      if (id.endsWith(PROXY_SUFFIX)) {
-        const actualId = getIdFromProxyId(id);
+      if (isWrappedId(id, PROXY_SUFFIX)) {
+        const actualId = unwrapId(id, PROXY_SUFFIX);
         return getStaticRequireProxy(
           actualId,
           getRequireReturnsDefault(actualId),

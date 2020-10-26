@@ -100,6 +100,10 @@ export function nodeResolve(opts = {}) {
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
+      if (/\0/.test(importer)) {
+        importer = undefined;
+      }
+
       // strip query params from import
       const [importPath, params] = importee.split('?');
       const importSuffix = `${params ? `?${params}` : ''}`;
@@ -218,62 +222,61 @@ export function nodeResolve(opts = {}) {
       importSpecifierList.push(importee);
       resolveOptions = Object.assign(resolveOptions, customResolveOptions);
 
-      try {
-        let resolved = await resolveImportSpecifiers(importSpecifierList, resolveOptions);
-
-        if (resolved && packageBrowserField) {
-          if (Object.prototype.hasOwnProperty.call(packageBrowserField, resolved)) {
-            if (!packageBrowserField[resolved]) {
-              browserMapCache.set(resolved, packageBrowserField);
-              return ES6_BROWSER_EMPTY;
-            }
-            resolved = packageBrowserField[resolved];
-          }
-          browserMapCache.set(resolved, packageBrowserField);
-        }
-
-        if (hasPackageEntry && !preserveSymlinks && resolved) {
-          const fileExists = await exists(resolved);
-          if (fileExists) {
-            resolved = await realpath(resolved);
-          }
-        }
-
-        idToPackageInfo.set(resolved, packageInfo);
-
-        if (hasPackageEntry) {
-          if (builtins.has(resolved) && preferBuiltins && isPreferBuiltinsSet) {
-            return null;
-          } else if (importeeIsBuiltin && preferBuiltins) {
-            if (!isPreferBuiltinsSet) {
-              this.warn(
-                `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
-              );
-            }
-            return null;
-          } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
-            return null;
-          }
-        }
-
-        if (resolved && options.modulesOnly) {
-          const code = await readFile(resolved, 'utf-8');
-          if (isModule(code)) {
-            return {
-              id: `${resolved}${importSuffix}`,
-              moduleSideEffects: hasModuleSideEffects(resolved)
-            };
-          }
-          return null;
-        }
-        const result = {
-          id: `${resolved}${importSuffix}`,
-          moduleSideEffects: hasModuleSideEffects(resolved)
-        };
-        return result;
-      } catch (error) {
+      let resolved = await resolveImportSpecifiers(importSpecifierList, resolveOptions);
+      if (!resolved) {
         return null;
       }
+
+      if (packageBrowserField) {
+        if (Object.prototype.hasOwnProperty.call(packageBrowserField, resolved)) {
+          if (!packageBrowserField[resolved]) {
+            browserMapCache.set(resolved, packageBrowserField);
+            return ES6_BROWSER_EMPTY;
+          }
+          resolved = packageBrowserField[resolved];
+        }
+        browserMapCache.set(resolved, packageBrowserField);
+      }
+
+      if (hasPackageEntry && !preserveSymlinks) {
+        const fileExists = await exists(resolved);
+        if (fileExists) {
+          resolved = await realpath(resolved);
+        }
+      }
+
+      idToPackageInfo.set(resolved, packageInfo);
+
+      if (hasPackageEntry) {
+        if (builtins.has(resolved) && preferBuiltins && isPreferBuiltinsSet) {
+          return null;
+        } else if (importeeIsBuiltin && preferBuiltins) {
+          if (!isPreferBuiltinsSet) {
+            this.warn(
+              `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
+            );
+          }
+          return null;
+        } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
+          return null;
+        }
+      }
+
+      if (options.modulesOnly && (await exists(resolved))) {
+        const code = await readFile(resolved, 'utf-8');
+        if (isModule(code)) {
+          return {
+            id: `${resolved}${importSuffix}`,
+            moduleSideEffects: hasModuleSideEffects(resolved)
+          };
+        }
+        return null;
+      }
+      const result = {
+        id: `${resolved}${importSuffix}`,
+        moduleSideEffects: hasModuleSideEffects(resolved)
+      };
+      return result;
     },
 
     load(importee) {
