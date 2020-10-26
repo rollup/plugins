@@ -50,12 +50,12 @@
     "rollup": "^1.20.0||^2.0.0"
   },
   "dependencies": {
-    "eslint": "^6.0.0",
-    "rollup-pluginutils": "^2.7.1"
+    "@rollup/pluginutils": "^4.0.0",
+    "eslint": "^7.12.0"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^8.4.0",
-    "@rollup/plugin-typescript": "5.0.2",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-typescript": "^6.0.0",
     "@types/eslint": "^7.2.2",
     "rollup": "^2.23.0"
   },
@@ -75,9 +75,10 @@
       "!**/helpers/**",
       "!**/recipes/**",
       "!**/types.ts"
-    ],
-    "contributors": [
-      "Mattias Ekstrand <mattias.ekstrand@gmail.com>"
     ]
-  }
+  },
+  "contributors": [
+    "Andrew Powell <andrew@shellscape.org>",
+    "Mattias Ekstrand <mattias.ekstrand@gmail.com>"
+  ]
 }
