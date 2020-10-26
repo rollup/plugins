@@ -1,0 +1,84 @@
+{
+  "name": "@rollup/plugin-eslint",
+  "version": "8.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Verify entry point and all imported files with ESLint",
+  "license": "MIT",
+  "repository": "rollup/plugins",
+  "author": "Bogdan Chadkin <trysound@yandex.ru>",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/eslint#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "engines": {
+    "node": ">= 10.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm run test -- --verbose",
+    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
+    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
+    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
+    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prebuild": "del-cli dist",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint && pnpm run test",
+    "pretest": "pnpm run build",
+    "test": "ava"
+  },
+  "files": [
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "rollup-plugin",
+    "eslint",
+    "es2015",
+    "es6",
+    "lint"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0||^2.0.0"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^4.0.0",
+    "eslint": "^7.12.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-typescript": "^6.0.0",
+    "@types/eslint": "^7.2.2",
+    "rollup": "^2.23.0"
+  },
+  "types": "types/index.d.ts",
+  "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  },
+  "contributors": [
+    "Andrew Powell <andrew@shellscape.org>",
+    "Mattias Ekstrand <mattias.ekstrand@gmail.com>"
+  ]
+}

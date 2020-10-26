@@ -25,6 +25,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [commonjs](packages/commonjs)         | Convert CommonJS modules to ES6                                                           |
 | [data-uri](packages/data-uri)         | Import modules from Data URIs                                                             |
 | [dsv](packages/dsv)                   | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
+| [eslint](packages/eslint)             | Verify entry point and all imported files with ESLint                                     |
 | [html](packages/html)                 | Create HTML files to serve Rollup bundles                                                 |
 | [image](packages/image)               | Import JPG, PNG, GIF, SVG, and WebP files                                                 |
 | [inject](packages/inject)             | Scan modules for global variables and injects `import` statements where necessary         |
