@@ -5,17 +5,21 @@ import getCommonDir from 'commondir';
 
 import { peerDependencies } from '../package.json';
 
-import { getDynamicPackagesEntryIntro, getDynamicPackagesModule } from './dynamic-packages-manager';
+import {
+  getDynamicPackagesEntryIntro,
+  getDynamicPackagesModule,
+  isModuleRegistrationProxy
+} from './dynamic-packages-manager';
 import getDynamicRequirePaths from './dynamic-require-paths';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
   EXTERNAL_SUFFIX,
   getHelpersModule,
-  getIdFromExternalProxyId,
-  getIdFromProxyId,
   HELPERS_ID,
-  PROXY_SUFFIX
+  isWrappedId,
+  PROXY_SUFFIX,
+  unwrapId
 } from './helpers';
 import { setIsCjsPromise } from './is-cjs';
 import {
@@ -76,6 +80,11 @@ export default function commonjs(options = {}) {
   const sourceMap = options.sourceMap !== false;
 
   function transformAndCheckExports(code, id) {
+    if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
+      code =
+        getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
+    }
+
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
       this.parse,
       code,
@@ -92,11 +101,13 @@ export default function commonjs(options = {}) {
       !dynamicRequireModuleSet.has(normalizePathSlashes(id)) &&
       (!hasCjsKeywords(code, ignoreGlobal) || (isEsModule && !options.transformMixedEsModules))
     ) {
-      setIsCjsPromise(id, false);
-      return null;
+      return { meta: { commonjs: { isCommonJS: false } } };
     }
 
-    const transformed = transformCommonjs(
+    // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
+    const disableWrap = isModuleRegistrationProxy(id, dynamicRequireModuleSet);
+
+    return transformCommonjs(
       this.parse,
       code,
       id,
@@ -106,12 +117,10 @@ export default function commonjs(options = {}) {
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
+      disableWrap,
       commonDir,
       ast
     );
-
-    setIsCjsPromise(id, isEsModule ? false : Boolean(transformed));
-    return transformed;
   }
 
   return {
@@ -145,8 +154,8 @@ export default function commonjs(options = {}) {
         return getSpecificHelperProxy(id);
       }
 
-      if (id.endsWith(EXTERNAL_SUFFIX)) {
-        const actualId = getIdFromExternalProxyId(id);
+      if (isWrappedId(id, EXTERNAL_SUFFIX)) {
+        const actualId = unwrapId(id, EXTERNAL_SUFFIX);
         return getUnknownRequireProxy(
           actualId,
           isEsmExternal(actualId) ? getRequireReturnsDefault(actualId) : true
@@ -161,13 +170,12 @@ export default function commonjs(options = {}) {
         return getDynamicJsonProxy(id, commonDir);
       }
 
-      const normalizedPath = normalizePathSlashes(id);
-      if (dynamicRequireModuleSet.has(normalizedPath) && !normalizedPath.endsWith('.json')) {
-        return getDynamicRequireProxy(normalizedPath, commonDir);
+      if (isModuleRegistrationProxy(id, dynamicRequireModuleSet)) {
+        return getDynamicRequireProxy(normalizePathSlashes(id), commonDir);
       }
 
-      if (id.endsWith(PROXY_SUFFIX)) {
-        const actualId = getIdFromProxyId(id);
+      if (isWrappedId(id, PROXY_SUFFIX)) {
+        const actualId = unwrapId(id, PROXY_SUFFIX);
         return getStaticRequireProxy(
           actualId,
           getRequireReturnsDefault(actualId),
@@ -176,36 +184,36 @@ export default function commonjs(options = {}) {
         );
       }
 
-      if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
-        return getDynamicPackagesEntryIntro(
-          id,
-          dynamicRequireModuleDirPaths,
-          dynamicRequireModuleSet
-        );
-      }
-
       return null;
     },
 
     transform(code, id) {
       const extName = extname(id);
-      if (extName !== '.cjs' && id !== DYNAMIC_PACKAGES_ID && !id.startsWith(DYNAMIC_JSON_PREFIX)) {
-        if (!filter(id) || !extensions.includes(extName)) {
-          setIsCjsPromise(id, null);
-          return null;
+      if (
+        extName !== '.cjs' &&
+        id !== DYNAMIC_PACKAGES_ID &&
+        !id.startsWith(DYNAMIC_JSON_PREFIX) &&
+        (!filter(id) || !extensions.includes(extName))
+      ) {
+        return null;
+      }
+
+      try {
+        return transformAndCheckExports.call(this, code, id);
+      } catch (err) {
+        return this.error(err, err.loc);
+      }
+    },
+
+    moduleParsed({ id, meta: { commonjs } }) {
+      if (commonjs) {
+        const isCjs = commonjs.isCommonJS;
+        if (isCjs != null) {
+          setIsCjsPromise(id, isCjs);
+          return;
         }
       }
-
-      let transformed;
-      try {
-        transformed = transformAndCheckExports.call(this, code, id);
-      } catch (err) {
-        transformed = null;
-        setIsCjsPromise(id, false);
-        this.error(err, err.loc);
-      }
-
-      return transformed;
+      setIsCjsPromise(id, null);
     }
   };
 }

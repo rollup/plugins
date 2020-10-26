@@ -1,4 +1,4 @@
-import 'bar';
+import '_bar?commonjs-require';
 import bar from '_bar?commonjs-proxy';
 
 var foo = require( 'foo' );

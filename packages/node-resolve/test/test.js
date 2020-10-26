@@ -240,15 +240,15 @@ test('handles package side-effects', async (t) => {
   delete global.sideEffects;
 });
 
-test('can resolve imports with hashes', async (t) => {
+test('can resolve imports with hash in path', async (t) => {
   const bundle = await rollup({
-    input: 'hash.js',
+    input: 'hash-in-path.js',
     onwarn: () => t.fail('No warnings were expected'),
     plugins: [
       nodeResolve(),
       {
         load(id) {
-          if (id === resolve(__dirname, 'fixtures', 'node_modules', 'test', 'index.js#foo')) {
+          if (id === resolve(__dirname, 'fixtures', 'node_modules', 'test', '#', 'foo.js')) {
             return 'export default "resolved with hash"';
           }
           return null;

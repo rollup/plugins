@@ -121,3 +121,31 @@ try {
 } catch (err) {
   // worker threads aren't fully supported in Node versions before 11.7.0
 }
+
+test('injectHelper', async (t) => {
+  t.plan(4);
+
+  const injectImport = `import { _loadWasmModule } from ${JSON.stringify('\0wasmHelpers.js')};`;
+
+  const bundle = await rollup({
+    input: 'fixtures/injectHelper.js',
+    plugins: [
+      wasm({
+        sync: ['fixtures/sample.wasm']
+      }),
+      {
+        name: 'test-detect',
+        transform: (code, id) => {
+          if (id.endsWith('sample.wasm')) {
+            t.true(code.includes(injectImport));
+          }
+          if (id.endsWith('foo.js')) {
+            t.true(!code.includes(injectImport));
+          }
+          return code;
+        }
+      }
+    ]
+  });
+  await testBundle(t, bundle);
+});

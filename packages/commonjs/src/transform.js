@@ -11,9 +11,11 @@ import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_REGISTER_PREFIX,
-  getProxyId,
   getVirtualPathForDynamicRequirePath,
-  HELPERS_ID
+  HELPERS_ID,
+  PROXY_SUFFIX,
+  REQUIRE_SUFFIX,
+  wrapId
 } from './helpers';
 import { getName } from './utils';
 
@@ -127,6 +129,7 @@ export function transformCommonjs(
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
+  disableWrap,
   commonDir,
   astCache
 ) {
@@ -137,7 +140,8 @@ export function transformCommonjs(
   const required = {};
   // Because objects have no guaranteed ordering, yet we need it,
   // we need to keep track of the order in a array
-  const sources = [];
+  const requiredSources = [];
+  const dynamicRegisterSources = [];
 
   let uid = 0;
 
@@ -228,8 +232,7 @@ export function transformCommonjs(
     }
 
     const existing = required[sourceId];
-    // eslint-disable-next-line no-undefined
-    if (existing === undefined) {
+    if (!existing) {
       const isDynamic = hasDynamicModuleForPath(sourceId);
 
       if (!name) {
@@ -239,12 +242,15 @@ export function transformCommonjs(
         } while (scope.contains(name));
       }
 
-      if (isDynamicRegister && sourceId.endsWith('.json')) {
-        sourceId = DYNAMIC_JSON_PREFIX + sourceId;
+      if (isDynamicRegister) {
+        if (sourceId.endsWith('.json')) {
+          sourceId = DYNAMIC_JSON_PREFIX + sourceId;
+        }
+        dynamicRegisterSources.push(sourceId);
       }
 
-      if (isDynamicRegister || !isDynamic || sourceId.endsWith('.json')) {
-        sources.push([sourceId, !isDynamicRegister]);
+      if (!isDynamic || sourceId.endsWith('.json')) {
+        requiredSources.push(sourceId);
       }
 
       required[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
@@ -254,7 +260,7 @@ export function transformCommonjs(
   }
 
   function hasDynamicModuleForPath(source) {
-    if (!/[/\\]/.test(source)) {
+    if (!/^(?:\.{0,2}[/\\]|[A-Za-z]:[/\\])/.test(source)) {
       try {
         const resolvedPath = normalizePathSlashes(
           nodeResolveSync(source, { basedir: dirname(id) })
@@ -545,42 +551,45 @@ export function transformCommonjs(
     }
   });
 
+  // If `isEsModule` is on, it means it has ES6 import/export statements,
+  //   which just can't be wrapped in a function.
+  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
+
+  usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
+
   if (
-    !sources.length &&
+    !requiredSources.length &&
+    !dynamicRegisterSources.length &&
     !uses.module &&
     !uses.exports &&
     !uses.require &&
+    !usesCommonjsHelpers &&
     (ignoreGlobal || !uses.global)
   ) {
-    // not a CommonJS module
-    return null;
+    return { meta: { commonjs: { isCommonJS: false } } };
   }
-
-  // If `isEsModule` is on, it means it has ES6 import/export statements,
-  //   which just can't be wrapped in a function.
-  if (isEsModule) shouldWrap = false;
-
-  usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
 
   const importBlock = `${(usesCommonjsHelpers
     ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
     : []
   )
     .concat(
-      sources.map(
-        ([source]) =>
-          // import the actual module before the proxy, so that we know
-          // what kind of proxy to build
-          `import '${source}';`
-      ),
-      sources
-        .filter(([, importProxy]) => importProxy)
-        .map(([source]) => {
-          const { name, importsDefault } = required[source];
-          return `import ${importsDefault ? `${name} from ` : ``}'${
-            source.startsWith('\0') ? source : getProxyId(source)
-          }';`;
-        })
+      // dynamic registers first, as the may be required in the other modules
+      dynamicRegisterSources.map((source) => `import '${source}';`),
+
+      // now the actual modules so that they are analyzed before creating the proxies;
+      // no need to do this for virtual modules as we never proxy them
+      requiredSources
+        .filter((source) => !source.startsWith('\0'))
+        .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
+
+      // now the proxy modules
+      requiredSources.map((source) => {
+        const { name, importsDefault } = required[source];
+        return `import ${importsDefault ? `${name} from ` : ``}'${
+          source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
+        }';`;
+      })
     )
     .join('\n')}\n\n`;
 
@@ -691,5 +700,10 @@ export function transformCommonjs(
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
 
-  return { code, map, syntheticNamedExports: isEsModule ? false : '__moduleExports' };
+  return {
+    code,
+    map,
+    syntheticNamedExports: isEsModule ? false : '__moduleExports',
+    meta: { commonjs: { isCommonJS: !isEsModule } }
+  };
 }

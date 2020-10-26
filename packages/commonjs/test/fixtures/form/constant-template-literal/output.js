@@ -1,4 +1,4 @@
-import 'tape';
+import '_tape?commonjs-require';
 import foo from '_tape?commonjs-proxy';
 
 console.log(foo);
