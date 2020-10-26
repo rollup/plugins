@@ -31,8 +31,8 @@ export default {
   plugins: [
     eslint({
       /* your options */
-    }),
-  ],
+    })
+  ]
 };
 ```
 
