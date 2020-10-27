@@ -312,10 +312,10 @@ test('transpiles files when path contains query and hash', async (t) => {
       ]
     }
   );
-  t.false(code.includes('class WithQuery '), 'should transpile when path contains query');
-  t.false(code.includes('class WithHash '), 'should transpile when path contains hash');
-  t.false(
-    code.includes('class WithQueryAndHash '),
+  t.true(code.includes('function WithQuery()'), 'should transpile when path contains query');
+  t.true(code.includes('function WithHash()'), 'should transpile when path contains hash');
+  t.true(
+    code.includes('function WithQueryAndHash()'),
     'should transpile when path contains query and hash'
   );
 });
