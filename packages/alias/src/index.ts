@@ -108,7 +108,7 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
       const customResolver = getCustomResolver(matchedEntry, options);
       if (customResolver) {
-        return customResolver.call(this, updatedId, importerId);
+        return customResolver.call(this, updatedId, importerId, {});
       }
 
       return this.resolve(updatedId, importer, { skipSelf: true }).then((resolved) => {
