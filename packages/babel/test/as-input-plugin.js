@@ -159,12 +159,14 @@ test('allows transform-runtime to be used instead of bundled helpers', async (t)
     code,
     `'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+var _classCallCheck = require('@babel/runtime/helpers/classCallCheck');
 
-var _classCallCheck = _interopDefault(require('@babel/runtime/helpers/classCallCheck'));
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var _classCallCheck__default = /*#__PURE__*/_interopDefaultLegacy(_classCallCheck);
 
 var Foo = function Foo() {
-  _classCallCheck(this, Foo);
+  _classCallCheck__default['default'](this, Foo);
 };
 
 module.exports = Foo;
