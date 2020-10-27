@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": "rollup/plugins",
   "author": "rollup",
-  "homepage": "https://github.com/rollup/plugins/tree/master/packages/json#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/graphql#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -39,9 +39,9 @@
   "keywords": [
     "rollup",
     "plugin",
-    "json",
-    "es2015",
-    "npm",
+    "graphql",
+    "apollo",
+    "import",
     "modules"
   ],
   "peerDependencies": {
@@ -53,7 +53,7 @@
     "graphql-tag": "^2.2.2"
   },
   "devDependencies": {
-    "@rollup/plugin-buble": "^0.21.0",
+    "@rollup/plugin-buble": "^0.21.3",
     "graphql": "^14.1.1",
     "rollup": "^2.23.0"
   },

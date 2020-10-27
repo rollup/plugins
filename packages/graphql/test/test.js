@@ -3,7 +3,7 @@ const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
 
-const graphql = require('../src');
+const graphql = require('..');
 
 require('source-map-support').install();
 
