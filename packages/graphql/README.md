@@ -13,7 +13,7 @@
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v10.0.0+) and Rollup v1.20.0+.
 
 ## Install
 
@@ -51,7 +51,7 @@ With an accompanying file `src/index.js`, you can import GraphQL files or named 
 import schema from './schema.graphql';
 
 // or import named Query/Mutation
-import { FooQuery, FooMutation } from './schema.graphql';
+import { BatmanQuery, JokerMutation } from './schema.graphql';
 ```
 
 #### Fragments
