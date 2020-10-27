@@ -1,5 +1,23 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v16.0.0
+
+_2020-10-27_
+
+### Breaking Changes
+
+- feat!: Expose cjs detection and support offline caching (#604)
+
+### Bugfixes
+
+- fix: avoid wrapping `commonjsRegister` call in `createCommonjsModule(...)` (#602)
+- fix: register dynamic modules when a different loader (i.e typescript) loads the entry file (#599)
+- fix: fixed access to node_modules dynamic module with subfolder (i.e 'logform/json') (#601)
+
+### Features
+
+- feat: pass type of import to node-resolve (#611)
+
 ## v15.1.0
 
 _2020-09-21_
