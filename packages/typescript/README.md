@@ -125,7 +125,7 @@ Allows registration of TypeScript custom transformers at any of the supported st
 
 Supported transformer factories:
 
-- all **build in** TypeScript custom transformer factories:
+- all **built-in** TypeScript custom transformer factories:
 
   - `import('typescript').TransformerFactory` annotated **TransformerFactory** bellow
   - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
