@@ -62,7 +62,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 ### `include`
 
 Type: `String` | `Array[...String]`<br>
-Default: `['**/*.svg', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.webp']`
+Default: `['**/*.svg', '**/*.png', '**/*.jp(e)?g', '**/*.gif', '**/*.webp']`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default .svg, .png, .jpg, .jpeg, .gif and .webp files are targeted.
 
