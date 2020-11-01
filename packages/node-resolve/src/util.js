@@ -169,7 +169,8 @@ export async function resolveImportSpecifiers(importSpecifierList, resolveOption
       if (!resolveOptions.preserveSymlinks) {
         // eslint-disable-next-line no-await-in-loop
         if (await exists(result)) {
-          result = realpathSync(result);
+          // eslint-disable-next-line no-await-in-loop
+          result = await realpath(result);
         }
       }
       return result;
