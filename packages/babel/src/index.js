@@ -5,7 +5,7 @@ import { BUNDLED, HELPERS } from './constants';
 import bundledHelpersPlugin from './bundledHelpersPlugin';
 import preflightCheck from './preflightCheck';
 import transformCode from './transformCode';
-import { addBabelPlugin, escapeRegExpCharacters, warnOnce } from './utils';
+import { addBabelPlugin, escapeRegExpCharacters, warnOnce, stripQuery } from './utils';
 
 const unpackOptions = ({
   extensions = babel.DEFAULT_EXTENSIONS,
@@ -35,7 +35,7 @@ const warnAboutDeprecatedHelpersOption = ({ deprecatedOption, suggestion }) => {
     `\`${deprecatedOption}\` has been removed in favor a \`babelHelpers\` option. Try changing your configuration to \`${suggestion}\`. ` +
       `Refer to the documentation to learn more: https://github.com/rollup/plugins/tree/master/packages/babel#babelhelpers`
   );
-}
+};
 
 const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }, rollupVersion) => {
   if ('runtimeHelpers' in rest) {
@@ -110,13 +110,18 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
       overrides
     );
 
-    let babelHelpers, babelOptions, filter, skipPreflightCheck;
+    let babelHelpers;
+    let babelOptions;
+    let filter;
+    let skipPreflightCheck;
     return {
       name: 'babel',
 
       options() {
-        //todo: remove options hook and hoist declarations when version checks are removed
-        let exclude, include, extensions;
+        // todo: remove options hook and hoist declarations when version checks are removed
+        let exclude;
+        let include;
+        let extensions;
 
         ({
           exclude,
@@ -127,9 +132,11 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
           ...babelOptions
         } = unpackInputPluginOptions(pluginOptionsWithOverrides, this.meta.rollupVersion));
 
-        const extensionRegExp = new RegExp(`(${extensions.map(escapeRegExpCharacters).join('|')})$`);
+        const extensionRegExp = new RegExp(
+          `(${extensions.map(escapeRegExpCharacters).join('|')})$`
+        );
         const includeExcludeFilter = createFilter(include, exclude);
-        filter = (id) => extensionRegExp.test(id) && includeExcludeFilter(id);
+        filter = (id) => extensionRegExp.test(stripQuery(id).bareId) && includeExcludeFilter(id);
 
         return null;
       },

@@ -5,7 +5,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import resolveModule from 'resolve';
 
-import { realpathSync, exists } from './fs';
+import { exists, realpath, realpathSync } from './fs';
 
 const resolveId = promisify(resolveModule);
 

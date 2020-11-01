@@ -101,15 +101,12 @@ export function nodeResolve(opts = {}) {
       if (/\0/.test(importee)) return null;
 
       if (/\0/.test(importer)) {
-        // handle cases like common-js plugin which has form
-        // \u0000<id>?commonjs-proxy
-        importer = importer.slice(1);
+        importer = undefined;
       }
 
-      // strip hash and query params from import
-      const [withoutHash, hash] = importee.split('#');
-      const [importPath, params] = withoutHash.split('?');
-      const importSuffix = `${params ? `?${params}` : ''}${hash ? `#${hash}` : ''}`;
+      // strip query params from import
+      const [importPath, params] = importee.split('?');
+      const importSuffix = `${params ? `?${params}` : ''}`;
       importee = importPath;
 
       const basedir = !importer || dedupe(importee) ? rootDir : dirname(importer);
@@ -262,10 +259,12 @@ export function nodeResolve(opts = {}) {
           return false;
         } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
           return null;
+        } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
+          return null;
         }
       }
 
-      if (options.modulesOnly) {
+      if (options.modulesOnly && (await exists(resolved))) {
         const code = await readFile(resolved, 'utf-8');
         if (isModule(code)) {
           return {

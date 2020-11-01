@@ -9,7 +9,7 @@ const defaults = {
 };
 const ext = /\.ya?ml$/;
 
-export default function yamll(opts = {}) {
+export default function yaml(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { documentMode, safe } = options;
   const filter = createFilter(options.include, options.exclude);
@@ -35,7 +35,7 @@ export default function yamll(opts = {}) {
       let data = loadMethod(content);
 
       if (typeof options.transform === 'function') {
-        const result = options.transform(data);
+        const result = options.transform(data, id);
         // eslint-disable-next-line no-undefined
         if (result !== undefined) {
           data = result;

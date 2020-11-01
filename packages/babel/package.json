@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-babel",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "publishConfig": {
     "access": "public"
   },
@@ -62,6 +62,7 @@
     "@babel/plugin-transform-runtime": "^7.10.5",
     "@babel/preset-env": "^7.10.4",
     "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
     "@types/babel__core": "^7.1.9",
     "rollup": "^2.23.0",
     "source-map": "^0.7.3"

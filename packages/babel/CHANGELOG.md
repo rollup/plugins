@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.2.1
+
+_2020-09-09_
+
+### Updates
+
+- chore: add deprecation/migration warnings for the runtime (#534)
+
 ## v5.2.0
 
 _2020-08-13_

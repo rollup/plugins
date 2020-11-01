@@ -1,5 +1,17 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v10.0.0
+
+_2020-10-27_
+
+### Breaking Changes
+
+- fix!: resolve hash in path (#588)
+
+### Bugfixes
+
+- fix: do not ignore exceptions (#564)
+
 ## v9.0.0
 
 _2020-08-13_

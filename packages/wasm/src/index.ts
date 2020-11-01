@@ -1,63 +1,99 @@
-import { readFile } from 'fs';
-import { resolve } from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
+import { createHash } from 'crypto';
 
 import { Plugin } from 'rollup';
 
 import { RollupWasmOptions } from '../types';
 
+import { getHelpersModule, HELPERS_ID } from './helper';
+
 export function wasm(options: RollupWasmOptions = {}): Plugin {
-  const syncFiles = (options.sync || []).map((x) => resolve(x));
+  const { sync = [], maxFileSize = 14 * 1024, publicPath = '' } = options;
+
+  const syncFiles = sync.map((x) => path.resolve(x));
+  const copies = Object.create(null);
 
   return {
     name: 'wasm',
 
-    load(id) {
-      if (/\.wasm$/.test(id)) {
-        return new Promise((res, reject) => {
-          readFile(id, (error, buffer) => {
-            if (error != null) {
-              reject(error);
-            }
-            res(buffer.toString('binary'));
-          });
-        });
+    resolveId(id) {
+      if (id === HELPERS_ID) {
+        return id;
       }
+
       return null;
     },
 
-    banner: `
-      function _loadWasmModule (sync, src, imports) {
-        var buf = null
-        var isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null
-        if (isNode) {
-          buf = Buffer.from(src, 'base64')
-        } else {
-          var raw = globalThis.atob(src)
-          var rawLength = raw.length
-          buf = new Uint8Array(new ArrayBuffer(rawLength))
-          for(var i = 0; i < rawLength; i++) {
-             buf[i] = raw.charCodeAt(i)
-          }
-        }
-
-        if (imports && !sync) {
-          return WebAssembly.instantiate(buf, imports)
-        } else if (!imports && !sync) {
-          return WebAssembly.compile(buf)
-        } else {
-          var mod = new WebAssembly.Module(buf)
-          return imports ? new WebAssembly.Instance(mod, imports) : mod
-        }
+    load(id) {
+      if (id === HELPERS_ID) {
+        return getHelpersModule();
       }
-    `.trim(),
+
+      if (!/\.wasm$/.test(id)) {
+        return null;
+      }
+
+      return Promise.all([fs.promises.stat(id), fs.promises.readFile(id)]).then(
+        ([stats, buffer]) => {
+          if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
+            const hash = createHash('sha1')
+              .update(buffer)
+              .digest('hex')
+              .substr(0, 16);
+
+            const filename = `${hash}.wasm`;
+            const publicFilepath = `${publicPath}${filename}`;
+
+            // only copy if the file is not marked `sync`, `sync` files are always inlined
+            if (syncFiles.indexOf(id) === -1) {
+              copies[id] = {
+                filename,
+                publicFilepath,
+                buffer
+              };
+            }
+          }
+
+          return buffer.toString('binary');
+        }
+      );
+    },
 
     transform(code, id) {
       if (code && /\.wasm$/.test(id)) {
-        const src = Buffer.from(code, 'binary').toString('base64');
-        const sync = syncFiles.indexOf(id) !== -1;
-        return `export default function(imports){return _loadWasmModule(${+sync}, '${src}', imports)}`;
+        const isSync = syncFiles.indexOf(id) !== -1;
+        const publicFilepath = copies[id] ? `'${copies[id].publicFilepath}'` : null;
+        let src;
+
+        if (publicFilepath === null) {
+          src = Buffer.from(code, 'binary').toString('base64');
+          src = `'${src}'`;
+        } else {
+          if (isSync) {
+            this.error('non-inlined files can not be `sync`.');
+          }
+          src = null;
+        }
+
+        return `import { _loadWasmModule } from ${JSON.stringify(HELPERS_ID)};
+export default function(imports){return _loadWasmModule(${+isSync}, ${publicFilepath}, ${src}, imports)}`;
       }
       return null;
+    },
+    generateBundle: async function write() {
+      await Promise.all(
+        Object.keys(copies).map(async (name) => {
+          const copy = copies[name];
+
+          this.emitFile({
+            type: 'asset',
+            source: copy.buffer,
+            name: 'Rollup WASM Asset',
+            fileName: copy.filename
+          });
+        })
+      );
     }
   };
 }

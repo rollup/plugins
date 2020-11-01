@@ -1,12 +1,13 @@
 /* eslint-disable line-comment-position, no-new-func, no-undefined */
 import * as path from 'path';
 
+import resolve from '@rollup/plugin-node-resolve';
+
 import test from 'ava';
-import { SourceMapConsumer } from 'source-map';
-import { install } from 'source-map-support';
 import { getLocator } from 'locate-character';
 import { rollup } from 'rollup';
-import resolve from '@rollup/plugin-node-resolve';
+import { SourceMapConsumer } from 'source-map';
+import { install } from 'source-map-support';
 
 import { testBundle } from '../../../util/test';
 
@@ -277,7 +278,7 @@ test('typeof transforms: correct-scoping', async (t) => {
 test('typeof transforms: protobuf', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/umd/protobuf.js',
-    external: ['bytebuffer'],
+    external: ['bytebuffer', 'foo'],
     plugins: [commonjs()]
   });
 
@@ -315,7 +316,7 @@ test('deconflicts reserved keywords', async (t) => {
     plugins: [commonjs()]
   });
 
-  const reservedProp = (await executeBundle(bundle, t)).exports.delete;
+  const reservedProp = (await executeBundle(bundle, t, { exports: 'named' })).exports.delete;
   t.is(reservedProp, 'foo');
 });
 
@@ -574,7 +575,24 @@ var esm = /*#__PURE__*/Object.freeze({
 	value: value
 });
 
-var main = esm;
+function getAugmentedNamespace(n) {
+	if (n.__esModule) return n;
+	var a = Object.defineProperty({}, '__esModule', {value: true});
+	Object.keys(n).forEach(function (k) {
+		var d = Object.getOwnPropertyDescriptor(n, k);
+		Object.defineProperty(a, k, d.get ? d : {
+			enumerable: true,
+			get: function () {
+				return n[k];
+			}
+		});
+	});
+	return a;
+}
+
+var require$$0 = /*@__PURE__*/getAugmentedNamespace(esm);
+
+var main = require$$0;
 
 module.exports = main;
 `
@@ -648,3 +666,80 @@ test('imports .cjs file extension by default', async (t) => {
   const code = await getCodeFromBundle(bundle);
   t.snapshot(code);
 });
+
+test('registers dynamic requires when entry is from a different loader', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/dynamic-require-different-loader/main.js',
+    plugins: [
+      {
+        load(id) {
+          if (id === path.resolve('fixtures/samples/dynamic-require-different-loader/main.js')) {
+            return 'import submodule1 from "./submodule1"; export default submodule1();';
+          }
+          return null;
+        }
+      },
+      commonjs({
+        dynamicRequireTargets: ['fixtures/samples/dynamic-require-different-loader/submodule2.js'],
+        transformMixedEsModules: true
+      })
+    ]
+  });
+
+  t.is((await executeBundle(bundle, t)).exports, 'Hello there');
+});
+
+test('transforms the es file with a `commonjsRequire` and no `require`s', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/dynamic-require-es-mixed-helpers/main.js',
+    plugins: [
+      commonjs({
+        dynamicRequireTargets: ['fixtures/samples/dynamic-require-es-mixed-helpers/submodule.js'],
+        transformMixedEsModules: true
+      })
+    ]
+  });
+
+  const code = await getCodeFromBundle(bundle);
+
+  t.is(/commonjsRequire\(["']\.\/submodule\.js/.test(code), true);
+});
+
+test('does not wrap commonjsRegister calls in createCommonjsModule', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/dynamic-require-double-wrap/main.js',
+    plugins: [
+      commonjs({
+        sourceMap: true,
+        dynamicRequireTargets: ['fixtures/samples/dynamic-require-double-wrap/submodule.js']
+      })
+    ]
+  });
+
+  const code = await getCodeFromBundle(bundle, { exports: 'named' });
+
+  t.not(/createCommonjsModule\(function/.test(code), true);
+});
+
+// This test uses worker threads to simulate an empty internal cache and needs at least Node 12
+if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
+  test('can be cached across instances', async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/samples/caching/main.js',
+      plugins: [commonjs()]
+    });
+    const { cache } = bundle;
+    const code = await getCodeFromBundle(bundle);
+
+    // We do a second run in a worker so that all internal state is cleared
+    const { Worker } = await import('worker_threads');
+    const getRollupUpCodeWithCache = new Worker(
+      path.join(__dirname, 'fixtures/samples/caching/rollupWorker.js'),
+      {
+        workerData: cache
+      }
+    );
+
+    t.is(code, await new Promise((done) => getRollupUpCodeWithCache.on('message', done)));
+  });
+}
