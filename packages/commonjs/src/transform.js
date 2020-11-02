@@ -7,7 +7,15 @@ import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 import { sync as nodeResolveSync } from 'resolve';
 
-import { flatten, isFalsy, isReference, isTruthy } from './ast-utils';
+import {
+  getKeypath,
+  getDefinePropertyCallName,
+  isDefineCompiledEsm,
+  isFalsy,
+  isReference,
+  isTruthy,
+  KEY_COMPILED_ESM
+} from './ast-utils';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_REGISTER_PREFIX,
@@ -17,224 +25,14 @@ import {
   REQUIRE_SUFFIX,
   wrapId
 } from './helpers';
-import { getName } from './utils';
-
-const KEY_COMPILED_ESM = '__esModule';
-const reserved = 'process location abstract arguments boolean break byte case catch char class const continue debugger default delete do double else enum eval export extends false final finally float for from function goto if implements import in instanceof int interface let long native new null package private protected public return short static super switch synchronized this throw throws transient true try typeof var void volatile while with yield'.split(
-  ' '
-);
-const blacklist = { [KEY_COMPILED_ESM]: true };
-reserved.forEach((word) => (blacklist[word] = true));
+import { tryParse } from './parse';
+import { deconflict, getName, normalizePathSlashes } from './utils';
 
 const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/;
 
-const firstpassGlobal = /\b(?:require|module|exports|global)\b/;
-const firstpassNoGlobal = /\b(?:require|module|exports)\b/;
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
 
-function deconflict(scope, globals, identifier) {
-  let i = 1;
-  let deconflicted = makeLegalIdentifier(identifier);
-
-  while (scope.contains(deconflicted) || globals.has(deconflicted) || deconflicted in blacklist) {
-    deconflicted = `${identifier}_${i}`;
-    i += 1;
-  }
-  scope.declarations[deconflicted] = true;
-
-  return deconflicted;
-}
-
-function tryParse(parse, code, id) {
-  try {
-    return parse(code, { allowReturnOutsideFunction: true });
-  } catch (err) {
-    err.message += ` in ${id}`;
-    throw err;
-  }
-}
-
-export function normalizePathSlashes(path) {
-  return path.replace(/\\/g, '/');
-}
-
-export function hasCjsKeywords(code, ignoreGlobal) {
-  const firstpass = ignoreGlobal ? firstpassNoGlobal : firstpassGlobal;
-  return firstpass.test(code);
-}
-
-function isTrueNode(node) {
-  if (!node) return false;
-
-  switch (node.type) {
-    case 'Literal':
-      return !!node.value;
-    case 'UnaryExpression':
-      return node.operator === '!' && node.argument && node.argument.value === 0;
-    default:
-      return false;
-  }
-}
-
-function getAssignedMember(node) {
-  const { left, operator, right } = node.expression;
-  if (operator !== '=' || left.type !== 'MemberExpression') {
-    return null;
-  }
-  let assignedIdentifier;
-  if (left.object.type === 'Identifier') {
-    // exports.foo = ...
-    assignedIdentifier = left.object;
-  } else if (
-    left.object.type === 'MemberExpression' &&
-    left.object.property.type === 'Identifier'
-  ) {
-    // module.exports.foo = ...
-    assignedIdentifier = left.object.property;
-  } else {
-    return null;
-  }
-
-  if (!['module', 'exports'].includes(assignedIdentifier.name)) {
-    return null;
-  }
-
-  const object = left.object ? left.object.name : null;
-  const key = left.property ? left.property.name : null;
-  return { object, key, value: right };
-}
-
-export function analyzeTopLevelStatements(parse, code, id) {
-  const ast = tryParse(parse, code, id);
-
-  let isEsModule = false;
-  let __esModuleTrue = false;
-  let hasDefaultExport = false;
-  let hasNamedExports = false;
-  let reassignedExports = false;
-
-  for (const node of ast.body) {
-    switch (node.type) {
-      case 'ExportDefaultDeclaration':
-        isEsModule = true;
-        hasDefaultExport = true;
-        break;
-      case 'ExportNamedDeclaration':
-        isEsModule = true;
-        if (node.declaration) {
-          hasNamedExports = true;
-        } else {
-          for (const specifier of node.specifiers) {
-            if (specifier.exported.name === 'default') {
-              hasDefaultExport = true;
-            } else {
-              hasNamedExports = true;
-            }
-          }
-        }
-        break;
-      case 'ExportAllDeclaration':
-        isEsModule = true;
-        if (node.exported && node.exported.name === 'default') {
-          hasDefaultExport = true;
-        } else {
-          hasNamedExports = true;
-        }
-        break;
-      case 'ImportDeclaration':
-        isEsModule = true;
-        break;
-      case 'ExpressionStatement':
-        if (node.expression) {
-          if (node.expression.type === 'CallExpression') {
-            // detect Object.defineProperty(exports, '__esModule', { value: true });
-            if (isDefineCompiledEsm(node.expression)) {
-              __esModuleTrue = true;
-            }
-          }
-
-          if (node.expression.type === 'AssignmentExpression') {
-            // detect exports.__esModule = true;
-            const assignedMember = getAssignedMember(node);
-
-            if (assignedMember) {
-              const { object, key, value } = assignedMember;
-              if (key === KEY_COMPILED_ESM) {
-                if (isTrueNode(value)) {
-                  __esModuleTrue = true;
-                }
-              }
-
-              // TODO Lukas this is only analyzing the top level and would fail at a nested assignment to module.exports
-              // TODO Lukas add test for this
-              // Do we really need the "compiled" information available?
-              if (object === 'module' && key === 'exports') {
-                reassignedExports = true;
-              }
-            }
-          }
-        }
-        break;
-      default:
-    }
-  }
-
-  // don't treat mixed es modules as compiled es mdoules
-  if (isEsModule) {
-    __esModuleTrue = false;
-  }
-
-  const isCompiledEsModule = !reassignedExports && __esModuleTrue;
-  return { isEsModule, isCompiledEsModule, hasDefaultExport, hasNamedExports, ast };
-}
-
-function getDefinePropertyCallName(node, targetName) {
-  const targetNames = targetName.split('.');
-  if (node.type !== 'CallExpression') return;
-
-  const {
-    callee: { object, property }
-  } = node;
-  if (!object || object.type !== 'Identifier' || object.name !== 'Object') return;
-  if (!property || property.type !== 'Identifier' || property.name !== 'defineProperty') return;
-  if (node.arguments.length !== 3) return;
-
-  const [target, key, value] = node.arguments;
-  if (targetNames.length === 1) {
-    if (target.type !== 'Identifier' || target.name !== targetNames[0]) {
-      return;
-    }
-  }
-
-  if (targetNames.length === 2) {
-    if (
-      target.type !== 'MemberExpression' ||
-      target.object.name !== targetNames[0] ||
-      target.property.name !== targetNames[1]
-    ) {
-      return;
-    }
-  }
-
-  if (value.type !== 'ObjectExpression' || !value.properties) return;
-
-  const valueProperty = value.properties.find((p) => p.key && p.key.name === 'value');
-  if (!valueProperty || !valueProperty.value) return;
-
-  // eslint-disable-next-line consistent-return
-  return { key: key.value, value: valueProperty.value };
-}
-
-function isDefineCompiledEsm(node) {
-  const definedProperty =
-    getDefinePropertyCallName(node, 'exports') || getDefinePropertyCallName(node, 'module.exports');
-  if (definedProperty && definedProperty.key === KEY_COMPILED_ESM) {
-    return isTrueNode(definedProperty.value);
-  }
-  return false;
-}
-
-export function transformCommonjs(
+export default function transformCommonjs(
   parse,
   code,
   id,
@@ -271,7 +69,6 @@ export function transformCommonjs(
 
   // TODO technically wrong since globals isn't populated yet, but ¯\_(ツ)_/¯
   const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
-
   const namedExports = {};
 
   let shouldWrap = false;
@@ -339,9 +136,6 @@ export function transformCommonjs(
       : node.arguments[0].quasis[0].value.cooked;
   }
 
-  // TODO Lukas
-  // * Extract this to a separate file to see what additional variables we need (scope)
-  // * No longer use this during the regular run but perform relevant actions as a post-processing step (or does it make sense to at least collect target strings to be able to identify nodes?)
   function getRequired(node, name) {
     let sourceId = getRequireStringArg(node);
     const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
@@ -481,7 +275,7 @@ export function transformCommonjs(
 
       // rewrite `typeof module`, `typeof module.exports` and `typeof exports` (https://github.com/rollup/rollup-plugin-commonjs/issues/151)
       if (node.type === 'UnaryExpression' && node.operator === 'typeof') {
-        const flattened = flatten(node.argument);
+        const flattened = getKeypath(node.argument);
         if (!flattened) return;
 
         if (scope.contains(flattened.name)) return;
@@ -558,7 +352,7 @@ export function transformCommonjs(
       if (node.type === 'AssignmentExpression') {
         if (node.left.type !== 'MemberExpression') return;
 
-        const flattened = flatten(node.left);
+        const flattened = getKeypath(node.left);
         if (!flattened) return;
 
         if (scope.contains(flattened.name)) return;
@@ -744,7 +538,7 @@ export function transformCommonjs(
     for (const node of ast.body) {
       if (node.type === 'ExpressionStatement' && node.expression.type === 'AssignmentExpression') {
         const { left } = node.expression;
-        const flattened = flatten(left);
+        const flattened = getKeypath(left);
 
         if (!flattened) {
           continue;

@@ -7,7 +7,7 @@ import {
   getVirtualPathForDynamicRequirePath,
   HELPERS_ID
 } from './helpers';
-import { normalizePathSlashes } from './transform';
+import { normalizePathSlashes } from './utils';
 
 export function getDynamicPackagesModule(dynamicRequireModuleDirPaths, commonDir) {
   let code = `const commonjsRegister = require('${HELPERS_ID}?commonjsRegister');`;

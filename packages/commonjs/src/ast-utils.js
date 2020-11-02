@@ -1,4 +1,3 @@
-/* eslint-disable no-undefined */
 export { default as isReference } from 'is-reference';
 
 const operators = {
@@ -17,34 +16,30 @@ const operators = {
   '||': (x) => isTruthy(x.left) || isTruthy(x.right)
 };
 
-const extractors = {
-  Identifier(names, node) {
-    names.push(node.name);
-  },
+function not(value) {
+  return value === null ? value : !value;
+}
 
-  ObjectPattern(names, node) {
-    node.properties.forEach((prop) => {
-      getExtractor(prop.value.type)(names, prop.value);
-    });
-  },
+function equals(a, b, strict) {
+  if (a.type !== b.type) return null;
+  // eslint-disable-next-line eqeqeq
+  if (a.type === 'Literal') return strict ? a.value === b.value : a.value == b.value;
+  return null;
+}
 
-  ArrayPattern(names, node) {
-    node.elements.forEach((element) => {
-      if (!element) return;
-      getExtractor(element.type)(names, element);
-    });
-  },
+export function isTruthy(node) {
+  if (!node) return false;
+  if (node.type === 'Literal') return !!node.value;
+  if (node.type === 'ParenthesizedExpression') return isTruthy(node.expression);
+  if (node.operator in operators) return operators[node.operator](node);
+  return null;
+}
 
-  RestElement(names, node) {
-    getExtractor(node.argument.type)(names, node.argument);
-  },
+export function isFalsy(node) {
+  return not(isTruthy(node));
+}
 
-  AssignmentPattern(names, node) {
-    getExtractor(node.left.type)(names, node.left);
-  }
-};
-
-export function flatten(node) {
+export function getKeypath(node) {
   const parts = [];
 
   while (node.type === 'MemberExpression') {
@@ -63,36 +58,78 @@ export function flatten(node) {
   return { name, keypath: parts.join('.') };
 }
 
-export function extractNames(node) {
-  const names = [];
-  extractors[node.type](names, node);
-  return names;
+export const KEY_COMPILED_ESM = '__esModule';
+
+export function isDefineCompiledEsm(node) {
+  const definedProperty =
+    getDefinePropertyCallName(node, 'exports') || getDefinePropertyCallName(node, 'module.exports');
+  if (definedProperty && definedProperty.key === KEY_COMPILED_ESM) {
+    return isTruthy(definedProperty.value);
+  }
+  return false;
 }
 
-function getExtractor(type) {
-  const extractor = extractors[type];
-  if (!extractor) throw new SyntaxError(`${type} pattern not supported.`);
-  return extractor;
+export function getAssignedMember(node) {
+  const { left, operator, right } = node.expression;
+  if (operator !== '=' || left.type !== 'MemberExpression') {
+    return null;
+  }
+  let assignedIdentifier;
+  if (left.object.type === 'Identifier') {
+    // exports.foo = ...
+    assignedIdentifier = left.object;
+  } else if (
+    left.object.type === 'MemberExpression' &&
+    left.object.property.type === 'Identifier'
+  ) {
+    // module.exports.foo = ...
+    assignedIdentifier = left.object.property;
+  } else {
+    return null;
+  }
+
+  if (!['module', 'exports'].includes(assignedIdentifier.name)) {
+    return null;
+  }
+
+  const object = left.object ? left.object.name : null;
+  const key = left.property ? left.property.name : null;
+  return { object, key, value: right };
 }
 
-export function isTruthy(node) {
-  if (node.type === 'Literal') return !!node.value;
-  if (node.type === 'ParenthesizedExpression') return isTruthy(node.expression);
-  if (node.operator in operators) return operators[node.operator](node);
-  return undefined;
-}
+export function getDefinePropertyCallName(node, targetName) {
+  const targetNames = targetName.split('.');
+  if (node.type !== 'CallExpression') return;
 
-export function isFalsy(node) {
-  return not(isTruthy(node));
-}
+  const {
+    callee: { object, property }
+  } = node;
+  if (!object || object.type !== 'Identifier' || object.name !== 'Object') return;
+  if (!property || property.type !== 'Identifier' || property.name !== 'defineProperty') return;
+  if (node.arguments.length !== 3) return;
 
-function not(value) {
-  return value === undefined ? value : !value;
-}
+  const [target, key, value] = node.arguments;
+  if (targetNames.length === 1) {
+    if (target.type !== 'Identifier' || target.name !== targetNames[0]) {
+      return;
+    }
+  }
 
-function equals(a, b, strict) {
-  if (a.type !== b.type) return undefined;
-  // eslint-disable-next-line eqeqeq
-  if (a.type === 'Literal') return strict ? a.value === b.value : a.value == b.value;
-  return undefined;
+  if (targetNames.length === 2) {
+    if (
+      target.type !== 'MemberExpression' ||
+      target.object.name !== targetNames[0] ||
+      target.property.name !== targetNames[1]
+    ) {
+      return;
+    }
+  }
+
+  if (value.type !== 'ObjectExpression' || !value.properties) return;
+
+  const valueProperty = value.properties.find((p) => p.key && p.key.name === 'value');
+  if (!valueProperty || !valueProperty.value) return;
+
+  // eslint-disable-next-line consistent-return
+  return { key: key.value, value: valueProperty.value };
 }

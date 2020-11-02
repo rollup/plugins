@@ -2,8 +2,7 @@ import { readFileSync } from 'fs';
 
 import { DYNAMIC_JSON_PREFIX, getVirtualPathForDynamicRequirePath, HELPERS_ID } from './helpers';
 import { getIsCjsPromise } from './is-cjs';
-import { normalizePathSlashes } from './transform';
-import { getName } from './utils';
+import { getName, normalizePathSlashes } from './utils';
 
 // e.g. id === "commonjsHelpers?commonjsRegister"
 export function getSpecificHelperProxy(id) {

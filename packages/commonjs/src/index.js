@@ -5,6 +5,8 @@ import getCommonDir from 'commondir';
 
 import { peerDependencies } from '../package.json';
 
+import analyzeTopLevelStatements from './analyze-top-level-statements';
+
 import {
   getDynamicPackagesEntryIntro,
   getDynamicPackagesModule,
@@ -22,6 +24,7 @@ import {
   unwrapId
 } from './helpers';
 import { setIsCjsPromise } from './is-cjs';
+import { hasCjsKeywords } from './parse';
 import {
   getDynamicJsonProxy,
   getDynamicRequireProxy,
@@ -31,12 +34,8 @@ import {
 } from './proxies';
 import getResolveId from './resolve-id';
 import validateRollupVersion from './rollup-version';
-import {
-  analyzeTopLevelStatements,
-  hasCjsKeywords,
-  normalizePathSlashes,
-  transformCommonjs
-} from './transform';
+import transformCommonjs from './transform';
+import { normalizePathSlashes } from './utils';
 
 export default function commonjs(options = {}) {
   const extensions = options.extensions || ['.js'];
