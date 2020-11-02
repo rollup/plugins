@@ -311,12 +311,12 @@ importers:
   packages/multi-entry:
     dependencies:
       '@rollup/plugin-virtual': 2.0.3_rollup@2.32.1
-      matched: 5.0.0
+      matched: 4.0.0
     devDependencies:
       rollup: 2.32.1
     specifiers:
       '@rollup/plugin-virtual': ^2.0.3
-      matched: ^5.0.0
+      matched: ^4.0.0
       rollup: ^2.23.0
   packages/node-resolve:
     dependencies:
@@ -508,7 +508,7 @@ importers:
       rollup: ^2.23.0
       source-map-support: ^0.5.19
       tosource: ^1.0.0
-lockfileVersion: 5.1
+lockfileVersion: 5.2
 packages:
   /@ava/babel/1.0.1:
     dependencies:
@@ -5099,15 +5099,16 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-glc9y00wgtwcDmp7GaE/0b0OnxpNJsVf3ael/An6Fe2Q51LLwN1er6sdomLRzz5h0+yMpiYLhWYF5R7HeqVd4g==
-  /matched/5.0.0:
+  /matched/4.0.0:
     dependencies:
       glob: 7.1.6
       picomatch: 2.2.2
     dev: false
     engines:
-      node: '>=12'
+      node: '>=8'
     resolution:
-      integrity: sha512-O0LCuxYYBNBjP2dmAg0i6PME0Mb0dvjulpMC0tTIeMRh6kXYsugOT5GOWpFkSzqjQjgOUs/eiyvpVhXdN2La4g==
+      integrity: sha1-gm819nUeyfx+ZV/RLoxnK96e55s=
+      tarball: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/matched/-/matched-4.0.0.tgz'
   /matcher/3.0.0:
     dependencies:
       escape-string-regexp: 4.0.0
