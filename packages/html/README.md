@@ -92,7 +92,7 @@ const template = ({ attributes, bundle, files, publicPath, title }) => { ... }
 
 - `attributes`: Corresponds to the `attributes` option passed to the plugin
 - `bundle`: An `Object` containing key-value pairs of [`AssetInfo` or `ChunkInfo`](https://rollupjs.org/guide/en/#generatebundle)
-- `files`: An `Array` of `AssetInfo` or `ChunkInfo` containing any entry (`isEntry: true`) files, and any asset (`isAsset: true`) files in the bundle that will be emitted
+- `files`: Files is an object with the following keys: `js` (containing the js assets that will be emitted), `css` (containing the css assets that will be emitted) and `map` (containing the generated map files). Al of the keys have the following type: `Array` of `AssetInfo` or `ChunkInfo`
 - `publicPath`: Corresponds to the `publicPath` option passed to the plugin
 - `title`: Corresponds to the `title` option passed to the plugin
 
