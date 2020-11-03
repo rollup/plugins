@@ -190,7 +190,7 @@ test('supports `false` in browser field', async (t) => {
   await testBundle(t, bundle);
 });
 
-test.only('pkg.browser with mapping to prevent bundle by specifying a value of false', async (t) => {
+test('pkg.browser with mapping to prevent bundle by specifying a value of false', async (t) => {
   const bundle = await rollup({
     input: 'browser-object-with-false.js',
     plugins: [nodeResolve({ browser: true }), commonjs()]
