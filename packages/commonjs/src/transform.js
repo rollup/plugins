@@ -1,24 +1,28 @@
 /* eslint-disable no-param-reassign, no-shadow, no-underscore-dangle, no-continue */
 
-import { dirname, resolve } from 'path';
+import { dirname } from 'path';
 
 import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
-import { sync as nodeResolveSync } from 'resolve';
 
 import {
-  getKeypath,
   getDefinePropertyCallName,
+  getKeypath,
+  getRequireHandlers,
   isDefineCompiledEsm,
   isFalsy,
+  isIgnoredRequireStatement,
+  isNodeRequirePropertyAccess,
   isReference,
+  isRequireIdentifier,
+  isRequireStatement,
+  isStaticRequireStatement,
   isTruthy,
-  KEY_COMPILED_ESM
+  KEY_COMPILED_ESM,
+  shouldUseSimulatedRequire
 } from './ast-utils';
 import {
-  DYNAMIC_JSON_PREFIX,
-  DYNAMIC_REGISTER_PREFIX,
   getVirtualPathForDynamicRequirePath,
   HELPERS_ID,
   PROXY_SUFFIX,
@@ -48,22 +52,13 @@ export default function transformCommonjs(
   astCache
 ) {
   const ast = astCache || tryParse(parse, code, id);
-
   const magicString = new MagicString(code);
-
-  const required = {};
-  // Because objects have no guaranteed ordering, yet we need it,
-  // we need to keep track of the order in a array
-  const requiredSources = [];
-  const dynamicRegisterSources = [];
-
-  let uid = 0;
-
   let scope = attachScopes(ast, 'scope');
   const uses = { module: false, exports: false, global: false, require: false };
-
   let lexicalDepth = 0;
   let programDepth = 0;
+  let shouldWrap = false;
+  let usesCommonjsHelpers = false;
 
   const globals = new Set();
 
@@ -71,140 +66,12 @@ export default function transformCommonjs(
   const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
   const namedExports = {};
 
-  let shouldWrap = false;
-  let usesCommonjsHelpers = false;
-
-  function isRequireStatement(node) {
-    if (!node) return false;
-    if (node.type !== 'CallExpression') return false;
-
-    // Weird case of `require()` or `module.require()` without arguments
-    if (node.arguments.length === 0) return false;
-
-    return isRequireIdentifier(node.callee);
-  }
-
-  function isRequireIdentifier(node) {
-    if (!node) return false;
-
-    if (node.type === 'Identifier' && node.name === 'require' /* `require` */) {
-      // `require` is hidden by a variable in local scope
-      if (scope.contains('require')) return false;
-
-      return true;
-    } else if (node.type === 'MemberExpression' /* `[something].[something]` */) {
-      // `module.[something]`
-      if (node.object.type !== 'Identifier' || node.object.name !== 'module') return false;
-
-      // `module` is hidden by a variable in local scope
-      if (scope.contains('module')) return false;
-
-      // `module.require(...)`
-      if (node.property.type !== 'Identifier' || node.property.name !== 'require') return false;
-
-      return true;
-    }
-
-    return false;
-  }
-
-  function hasDynamicArguments(node) {
-    return (
-      node.arguments.length > 1 ||
-      (node.arguments[0].type !== 'Literal' &&
-        (node.arguments[0].type !== 'TemplateLiteral' || node.arguments[0].expressions.length > 0))
-    );
-  }
-
-  function isStaticRequireStatement(node) {
-    if (!isRequireStatement(node)) return false;
-    return !hasDynamicArguments(node);
-  }
-
-  function isNodeRequireStatement(parent) {
-    const reservedMethod = ['resolve', 'cache', 'main'];
-    return !!(parent && parent.property && reservedMethod.indexOf(parent.property.name) > -1);
-  }
-
-  function isIgnoredRequireStatement(requiredNode) {
-    return ignoreRequire(requiredNode.arguments[0].value);
-  }
-
-  function getRequireStringArg(node) {
-    return node.arguments[0].type === 'Literal'
-      ? node.arguments[0].value
-      : node.arguments[0].quasis[0].value.cooked;
-  }
-
-  function getRequired(node, name) {
-    let sourceId = getRequireStringArg(node);
-    const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
-    if (isDynamicRegister) {
-      sourceId = sourceId.substr(DYNAMIC_REGISTER_PREFIX.length);
-    }
-
-    const existing = required[sourceId];
-    if (!existing) {
-      const isDynamic = hasDynamicModuleForPath(sourceId);
-
-      if (!name) {
-        do {
-          name = `require$$${uid}`;
-          uid += 1;
-        } while (scope.contains(name));
-      }
-
-      if (isDynamicRegister) {
-        if (sourceId.endsWith('.json')) {
-          sourceId = DYNAMIC_JSON_PREFIX + sourceId;
-        }
-        dynamicRegisterSources.push(sourceId);
-      }
-
-      if (!isDynamic || sourceId.endsWith('.json')) {
-        requiredSources.push(sourceId);
-      }
-
-      required[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
-    }
-
-    return required[sourceId];
-  }
-
-  function hasDynamicModuleForPath(source) {
-    if (!/^(?:\.{0,2}[/\\]|[A-Za-z]:[/\\])/.test(source)) {
-      try {
-        const resolvedPath = normalizePathSlashes(
-          nodeResolveSync(source, { basedir: dirname(id) })
-        );
-        if (dynamicRequireModuleSet.has(resolvedPath)) {
-          return true;
-        }
-      } catch (ex) {
-        // Probably a node.js internal module
-        return false;
-      }
-
-      return false;
-    }
-
-    for (const attemptExt of ['', '.js', '.json']) {
-      const resolvedPath = normalizePathSlashes(resolve(dirname(id), source + attemptExt));
-      if (dynamicRequireModuleSet.has(resolvedPath)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  function shouldUseSimulatedRequire(required) {
-    return (
-      hasDynamicModuleForPath(required.source) &&
-      // We only do `commonjsRequire` for json if it's the `commonjsRegister` call.
-      (required.source.startsWith(DYNAMIC_REGISTER_PREFIX) || !required.source.endsWith('.json'))
-    );
-  }
+  const {
+    getRequired,
+    requiredBySource,
+    requiredSources,
+    dynamicRegisterSources
+  } = getRequireHandlers(id, dynamicRequireModuleSet);
 
   // do a first pass, see which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
@@ -294,16 +161,16 @@ export default function transformCommonjs(
       if (node.type === 'Identifier') {
         if (isReference(node, parent) && !scope.contains(node.name)) {
           if (node.name in uses) {
-            if (isRequireIdentifier(node)) {
-              if (isNodeRequireStatement(parent)) {
+            if (isRequireIdentifier(node, scope)) {
+              if (isNodeRequirePropertyAccess(parent)) {
                 return;
               }
 
-              if (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent)) {
+              if (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent, scope)) {
                 return;
               }
 
-              if (isDynamicRequireModulesEnabled && isRequireStatement(parent)) {
+              if (isDynamicRequireModulesEnabled && isRequireStatement(parent, scope)) {
                 magicString.appendLeft(
                   parent.end - 1,
                   `,${JSON.stringify(
@@ -390,14 +257,14 @@ export default function transformCommonjs(
       if (
         node.type === 'VariableDeclarator' &&
         node.id.type === 'Identifier' &&
-        isStaticRequireStatement(node.init) &&
-        !isIgnoredRequireStatement(node.init) &&
+        isStaticRequireStatement(node.init, scope) &&
+        !isIgnoredRequireStatement(node.init, ignoreRequire) &&
         !scope.parent
       ) {
         // edge case — CJS allows you to assign to imports. ES doesn't
         if (reassignedNames.has(node.id.name)) return;
 
-        const required = getRequired(node.init, node.id.name);
+        const required = getRequired(node.init, scope, node.id.name);
         required.importsDefault = true;
 
         if (required.name === node.id.name && !required.isDynamic) {
@@ -405,11 +272,14 @@ export default function transformCommonjs(
         }
       }
 
-      if (!isStaticRequireStatement(node) || isIgnoredRequireStatement(node)) {
+      if (
+        !isStaticRequireStatement(node, scope) ||
+        isIgnoredRequireStatement(node, ignoreRequire)
+      ) {
         return;
       }
 
-      const required = getRequired(node);
+      const required = getRequired(node, scope);
 
       if (parent.type === 'ExpressionStatement') {
         // is a bare import, e.g. `require('foo');`
@@ -417,7 +287,7 @@ export default function transformCommonjs(
       } else {
         required.importsDefault = true;
 
-        if (shouldUseSimulatedRequire(required)) {
+        if (shouldUseSimulatedRequire(required, id, dynamicRequireModuleSet)) {
           magicString.overwrite(
             node.start,
             node.end,
@@ -497,7 +367,7 @@ export default function transformCommonjs(
 
       // now the proxy modules
       requiredSources.map((source) => {
-        const { name, importsDefault } = required[source];
+        const { name, importsDefault } = requiredBySource[source];
         return `import ${importsDefault ? `${name} from ` : ``}'${
           source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
         }';`;
