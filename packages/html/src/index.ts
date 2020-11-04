@@ -97,7 +97,7 @@ const defaults = {
   title: 'Rollup Bundle'
 };
 
-export function html(opts: RollupPluginHtmlOptions = {}): Plugin {
+export default function html(opts: RollupPluginHtmlOptions = {}): Plugin {
   const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
     {},
     defaults,
