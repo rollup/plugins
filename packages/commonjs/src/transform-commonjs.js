@@ -41,7 +41,6 @@ export default function transformCommonjs(
   code,
   id,
   isEsModule,
-  isCompiledEsModule,
   ignoreGlobal,
   ignoreRequire,
   sourceMap,
@@ -59,6 +58,8 @@ export default function transformCommonjs(
   let programDepth = 0;
   let shouldWrap = false;
   let usesCommonjsHelpers = false;
+  let isCompiledEsModule = false;
+  let defineCompiledEsmExpression = null;
 
   const globals = new Set();
 
@@ -79,15 +80,6 @@ export default function transformCommonjs(
   const reassignedNames = new Set();
   const removedDeclaratorsIfNotReassigned = new Set();
 
-  walk(ast, {
-    enter(node) {
-      if (node.type !== 'AssignmentExpression') return;
-      if (node.left.type === 'MemberExpression') return;
-
-      extractAssignedNames(node.left).forEach((name) => reassignedNames.add(name));
-    }
-  });
-
   const skippedNodes = new Set();
 
   walk(ast, {
@@ -97,11 +89,14 @@ export default function transformCommonjs(
         return;
       }
 
-      // TODO Lukas only do this if we are sure we will not wrap
-      // => determine this during first pass!
-      // skip and remove expressions such as Object.defineProperty(exports, '__esModule', { value: true });
+      // detect expressions such as Object.defineProperty(exports, '__esModule', { value: true });
       if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
-        magicString.remove(parent.start, parent.end);
+        if (programDepth === 2 && !defineCompiledEsmExpression) {
+          defineCompiledEsmExpression = parent;
+          isCompiledEsModule = true;
+        } else {
+          shouldWrap = true;
+        }
         this.skip();
         return;
       }
@@ -139,6 +134,36 @@ export default function transformCommonjs(
         }
         return;
       }
+
+      if (node.type !== 'AssignmentExpression') return;
+      if (node.left.type === 'MemberExpression') return;
+
+      extractAssignedNames(node.left).forEach((name) => reassignedNames.add(name));
+    },
+
+    leave(node) {
+      programDepth -= 1;
+      if (node.scope) scope = scope.parent;
+      if (functionType.test(node.type)) lexicalDepth -= 1;
+    }
+  });
+
+  walk(ast, {
+    enter(node, parent) {
+      if (skippedNodes.has(node)) {
+        this.skip();
+        return;
+      }
+
+      // TODO Lukas why do we need to skip? Can we do this later instead?
+      if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
+        this.skip();
+        return;
+      }
+
+      programDepth += 1;
+      if (node.scope) ({ scope } = node);
+      if (functionType.test(node.type)) lexicalDepth += 1;
 
       // rewrite `typeof module`, `typeof module.exports` and `typeof exports` (https://github.com/rollup/rollup-plugin-commonjs/issues/151)
       if (node.type === 'UnaryExpression' && node.operator === 'typeof') {
@@ -227,16 +252,22 @@ export default function transformCommonjs(
         const match = exportsPattern.exec(flattened.keypath);
         if (!match || flattened.keypath === 'exports') return;
 
+        // TODO Lukas do not declare we are using module or exports unless we do
+        // not remove this
         uses[flattened.name] = true;
 
         // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
         // if this isn't top-level, we'll need to wrap the module
         if (programDepth > 3) {
           shouldWrap = true;
+        } else if (match[1] === KEY_COMPILED_ESM && !defineCompiledEsmExpression) {
+          defineCompiledEsmExpression = parent;
+          isCompiledEsModule = true;
         }
 
         skippedNodes.add(node.left);
 
+        // TODO Lukas can we get rid of __esModule here?
         if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
           node.right.properties.forEach((prop) => {
             if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
@@ -335,7 +366,11 @@ export default function transformCommonjs(
 
   // If `isEsModule` is on, it means it has ES6 import/export statements,
   //   which just can't be wrapped in a function.
-  shouldWrap = shouldWrap && !disableWrap && !isEsModule && !isCompiledEsModule;
+  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
+
+  if (defineCompiledEsmExpression && !shouldWrap) {
+    magicString.remove(defineCompiledEsmExpression.start, defineCompiledEsmExpression.end);
+  }
 
   usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
 

@@ -34,7 +34,7 @@ import {
 } from './proxies';
 import getResolveId from './resolve-id';
 import validateRollupVersion from './rollup-version';
-import transformCommonjs from './transform';
+import transformCommonjs from './transform-commonjs';
 import { normalizePathSlashes } from './utils';
 
 export default function commonjs(options = {}) {
@@ -85,13 +85,11 @@ export default function commonjs(options = {}) {
         getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
     }
 
-    const {
-      isEsModule,
-      isCompiledEsModule,
-      hasDefaultExport,
-      hasNamedExports,
-      ast
-    } = analyzeTopLevelStatements(this.parse, code, id);
+    const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
+      this.parse,
+      code,
+      id
+    );
     if (hasDefaultExport) {
       esModulesWithDefaultExport.add(id);
     }
@@ -109,13 +107,11 @@ export default function commonjs(options = {}) {
     // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
     const disableWrap = isModuleRegistrationProxy(id, dynamicRequireModuleSet);
 
-    // TODO Lukas in the other version, this is treating isCompiledEsModule like isEsModule with regard to the promise
     return transformCommonjs(
       this.parse,
       code,
       id,
       isEsModule,
-      isCompiledEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
       sourceMap,
