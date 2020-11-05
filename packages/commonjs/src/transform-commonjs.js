@@ -58,7 +58,6 @@ export default function transformCommonjs(
   let programDepth = 0;
   let shouldWrap = false;
   let usesCommonjsHelpers = false;
-  let isCompiledEsModule = false;
   let defineCompiledEsmExpression = null;
 
   const globals = new Set();
@@ -93,7 +92,6 @@ export default function transformCommonjs(
       if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
         if (programDepth === 2 && !defineCompiledEsmExpression) {
           defineCompiledEsmExpression = parent;
-          isCompiledEsModule = true;
         } else {
           shouldWrap = true;
         }
@@ -155,7 +153,6 @@ export default function transformCommonjs(
         return;
       }
 
-      // TODO Lukas why do we need to skip? Can we do this later instead?
       if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
         this.skip();
         return;
@@ -262,12 +259,11 @@ export default function transformCommonjs(
           shouldWrap = true;
         } else if (match[1] === KEY_COMPILED_ESM && !defineCompiledEsmExpression) {
           defineCompiledEsmExpression = parent;
-          isCompiledEsModule = true;
         }
 
         skippedNodes.add(node.left);
 
-        // TODO Lukas can we get rid of __esModule here?
+        // TODO Lukas can we get rid of __esModule if an object is assigned to module.exports?
         if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
           node.right.properties.forEach((prop) => {
             if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
@@ -368,8 +364,13 @@ export default function transformCommonjs(
   //   which just can't be wrapped in a function.
   shouldWrap = shouldWrap && !disableWrap && !isEsModule;
 
-  if (defineCompiledEsmExpression && !shouldWrap) {
-    magicString.remove(defineCompiledEsmExpression.start, defineCompiledEsmExpression.end);
+  if (defineCompiledEsmExpression) {
+    if (shouldWrap) {
+      uses.exports = true;
+      defineCompiledEsmExpression = null;
+    } else {
+      magicString.remove(defineCompiledEsmExpression.start, defineCompiledEsmExpression.end);
+    }
   }
 
   usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
@@ -457,8 +458,6 @@ export default function transformCommonjs(
         if (flattened.keypath === 'module.exports') {
           hasDefaultExport = true;
           magicString.overwrite(left.start, left.end, `var ${moduleName}`);
-          // direct assignment to module.exports overwrites any previously set __esModule value
-          isCompiledEsModule = false;
         } else {
           const [, name] = match;
 
@@ -491,15 +490,20 @@ export default function transformCommonjs(
       }
     }
 
-    const exportsDefault = hasDefaultExport || !!deconflictedDefaultExportName;
-    if (!isEsModule && !hasDefaultExport && (!isCompiledEsModule || !exportsDefault)) {
-      wrapperEnd = `\n\nvar ${moduleName} = {\n${names
+    // TODO Lukas maybe we can use getters for mutable values?
+    if (!isEsModule && !hasDefaultExport) {
+      const moduleExports = `{\n${names
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
-        .join(',\n')}\n};`;
+        .join(',\n')}\n}`;
+      wrapperEnd = `\n\nvar ${moduleName} = ${
+        defineCompiledEsmExpression
+          ? `/*#__PURE__*/Object.defineProperty(${moduleExports}, '__esModule', {value: true})`
+          : moduleExports
+      };`;
     }
   }
 
-  if (!isEsModule && !isCompiledEsModule) {
+  if (!isEsModule) {
     const exportModuleExports = {
       str: `export { ${moduleName} as __moduleExports };`,
       name: '__moduleExports'
@@ -515,7 +519,7 @@ export default function transformCommonjs(
     .append(wrapperEnd);
 
   const defaultExport = [];
-  if (isCompiledEsModule && deconflictedDefaultExportName) {
+  if (defineCompiledEsmExpression && deconflictedDefaultExportName) {
     defaultExport.push(`export default ${deconflictedDefaultExportName};`);
   } else if (!isEsModule) {
     defaultExport.push(`export default ${moduleName};`);
@@ -538,7 +542,7 @@ export default function transformCommonjs(
   return {
     code,
     map,
-    syntheticNamedExports: isEsModule || isCompiledEsModule ? false : '__moduleExports',
-    meta: { commonjs: { isCommonJS: !isEsModule && !isCompiledEsModule } }
+    syntheticNamedExports: isEsModule ? false : '__moduleExports',
+    meta: { commonjs: { isCommonJS: !isEsModule } }
   };
 }

@@ -23,17 +23,8 @@ export const HELPERS_ID = '\0commonjsHelpers.js';
 // This will no longer be necessary once Rollup switches to ES6 output, likely
 // in Rollup 3
 
-// The "hasOwnProperty" call in "getDefaultExportFromCjs" is technically not
-// needed, but for consumers that use Rollup's old interop pattern, it will fix
-// rollup/rollup-plugin-commonjs#224
-// We should remove it once Rollup core and this plugin are updated to not use
-// this pattern any more
 const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-export function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
 
 export function createCommonjsModule(fn, basedir, module) {
 	return module = {
