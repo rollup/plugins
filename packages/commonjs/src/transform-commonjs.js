@@ -15,7 +15,6 @@ import {
   isIgnoredRequireStatement,
   isNodeRequirePropertyAccess,
   isReference,
-  isRequireIdentifier,
   isRequireStatement,
   isStaticRequireStatement,
   isTruthy,
@@ -88,17 +87,6 @@ export default function transformCommonjs(
         return;
       }
 
-      // detect expressions such as Object.defineProperty(exports, '__esModule', { value: true });
-      if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
-        if (programDepth === 2 && !defineCompiledEsmExpression) {
-          defineCompiledEsmExpression = parent;
-        } else {
-          shouldWrap = true;
-        }
-        this.skip();
-        return;
-      }
-
       programDepth += 1;
       if (node.scope) ({ scope } = node);
       if (functionType.test(node.type)) lexicalDepth += 1;
@@ -107,36 +95,166 @@ export default function transformCommonjs(
         magicString.addSourcemapLocation(node.end);
       }
 
-      // skip dead branches
-      if (node.type === 'IfStatement' || node.type === 'ConditionalExpression') {
-        if (isFalsy(node.test)) {
-          skippedNodes.add(node.consequent);
-        } else if (node.alternate && isTruthy(node.test)) {
-          skippedNodes.add(node.alternate);
-        }
+      switch (node.type) {
+        case 'AssignmentExpression':
+          if (node.left.type === 'MemberExpression') {
+            const flattened = getKeypath(node.left);
+            if (!flattened) return;
+
+            if (scope.contains(flattened.name)) return;
+
+            const exportsPatternMatch = exportsPattern.exec(flattened.keypath);
+            if (!exportsPatternMatch || flattened.keypath === 'exports') return;
+
+            // TODO Lukas do not declare we are using module or exports unless we do
+            // not remove this
+            uses[flattened.name] = true;
+
+            // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
+            // if this isn't top-level, we'll need to wrap the module
+            if (programDepth > 3) {
+              shouldWrap = true;
+            } else if (
+              exportsPatternMatch[1] === KEY_COMPILED_ESM &&
+              !defineCompiledEsmExpression
+            ) {
+              defineCompiledEsmExpression = parent;
+            }
+
+            skippedNodes.add(node.left);
+
+            // TODO Lukas can we get rid of __esModule if an object is assigned to module.exports?
+            // or is this not needed as we would add it later anyway?
+            if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
+              node.right.properties.forEach((prop) => {
+                if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
+                const { name } = prop.key;
+                if (name === makeLegalIdentifier(name)) namedExports[name] = true;
+              });
+              return;
+            }
+
+            if (exportsPatternMatch[1]) namedExports[exportsPatternMatch[1]] = true;
+          } else {
+            for (const name of extractAssignedNames(node.left)) {
+              reassignedNames.add(name);
+            }
+          }
+          break;
+        case 'CallExpression':
+          if (isDefineCompiledEsm(node)) {
+            if (programDepth === 3 && !defineCompiledEsmExpression) {
+              // skip special handling for [module.]exports until we know we render this
+              skippedNodes.add(node.arguments[0]);
+              defineCompiledEsmExpression = parent;
+            } else {
+              shouldWrap = true;
+            }
+          } else {
+            const name = getDefinePropertyCallName(node, 'exports');
+            if (name && name === makeLegalIdentifier(name)) namedExports[name] = true;
+          }
+          break;
+        case 'ConditionalExpression':
+        case 'IfStatement':
+          // skip dead branches
+          if (isFalsy(node.test)) {
+            skippedNodes.add(node.consequent);
+          } else if (node.alternate && isTruthy(node.test)) {
+            skippedNodes.add(node.alternate);
+          }
+          break;
+        case 'ReturnStatement':
+          // if top-level return, we need to wrap it
+          if (lexicalDepth === 0) {
+            shouldWrap = true;
+          }
+          break;
+        case 'Identifier':
+          if (isReference(node, parent)) {
+            const { name } = node;
+            if (!scope.contains(name)) {
+              switch (name) {
+                case 'require':
+                  if (
+                    isNodeRequirePropertyAccess(parent) ||
+                    (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent, scope))
+                  ) {
+                    break;
+                  }
+
+                  if (isDynamicRequireModulesEnabled && isRequireStatement(parent, scope)) {
+                    magicString.appendLeft(
+                      parent.end - 1,
+                      `,${JSON.stringify(
+                        dirname(id) === '.'
+                          ? null /* default behavior */
+                          : getVirtualPathForDynamicRequirePath(
+                              normalizePathSlashes(dirname(id)),
+                              commonDir
+                            )
+                      )}`
+                    );
+                  }
+
+                  magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                    storeName: true
+                  });
+                  usesCommonjsHelpers = true;
+                  break;
+                case 'module':
+                case 'exports':
+                  uses[name] = true;
+                  break;
+                case 'global':
+                  uses.global = true;
+                  if (!ignoreGlobal) {
+                    magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
+                      storeName: true
+                    });
+                    usesCommonjsHelpers = true;
+                  }
+                  break;
+                case 'define':
+                  magicString.overwrite(node.start, node.end, 'undefined', { storeName: true });
+                  break;
+                default:
+                  globals.add(name);
+              }
+            }
+          }
+          break;
+        case 'ThisExpression':
+          // rewrite top-level `this` as `commonjsHelpers.commonjsGlobal`
+          if (lexicalDepth === 0) {
+            uses.global = true;
+            if (!ignoreGlobal) {
+              magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
+                storeName: true
+              });
+              usesCommonjsHelpers = true;
+            }
+          }
+          break;
+        case 'UnaryExpression':
+          // rewrite `typeof module`, `typeof module.exports` and `typeof exports` (https://github.com/rollup/rollup-plugin-commonjs/issues/151)
+          if (node.operator === 'typeof') {
+            const flattened = getKeypath(node.argument);
+            if (!flattened) return;
+
+            if (scope.contains(flattened.name)) return;
+
+            if (
+              flattened.keypath === 'module.exports' ||
+              flattened.keypath === 'module' ||
+              flattened.keypath === 'exports'
+            ) {
+              magicString.overwrite(node.start, node.end, `'object'`, { storeName: false });
+            }
+          }
+          break;
+        default:
       }
-
-      // if toplevel return, we need to wrap it
-      if (node.type === 'ReturnStatement' && lexicalDepth === 0) {
-        shouldWrap = true;
-      }
-
-      // rewrite `this` as `commonjsHelpers.commonjsGlobal`
-      if (node.type === 'ThisExpression' && lexicalDepth === 0) {
-        uses.global = true;
-        if (!ignoreGlobal) {
-          magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
-            storeName: true
-          });
-          usesCommonjsHelpers = true;
-        }
-        return;
-      }
-
-      if (node.type !== 'AssignmentExpression') return;
-      if (node.left.type === 'MemberExpression') return;
-
-      extractAssignedNames(node.left).forEach((name) => reassignedNames.add(name));
     },
 
     leave(node) {
@@ -162,123 +280,20 @@ export default function transformCommonjs(
       if (node.scope) ({ scope } = node);
       if (functionType.test(node.type)) lexicalDepth += 1;
 
-      // rewrite `typeof module`, `typeof module.exports` and `typeof exports` (https://github.com/rollup/rollup-plugin-commonjs/issues/151)
-      if (node.type === 'UnaryExpression' && node.operator === 'typeof') {
-        const flattened = getKeypath(node.argument);
-        if (!flattened) return;
-
-        if (scope.contains(flattened.name)) return;
-
-        if (
-          flattened.keypath === 'module.exports' ||
-          flattened.keypath === 'module' ||
-          flattened.keypath === 'exports'
-        ) {
-          magicString.overwrite(node.start, node.end, `'object'`, { storeName: false });
-        }
-      }
-
       // rewrite `require` (if not already handled) `global` and `define`, and handle free references to
       // `module` and `exports` as these mean we need to wrap the module in commonjsHelpers.createCommonjsModule
       if (node.type === 'Identifier') {
         if (isReference(node, parent) && !scope.contains(node.name)) {
-          if (node.name in uses) {
-            if (isRequireIdentifier(node, scope)) {
-              if (isNodeRequirePropertyAccess(parent)) {
-                return;
-              }
-
-              if (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent, scope)) {
-                return;
-              }
-
-              if (isDynamicRequireModulesEnabled && isRequireStatement(parent, scope)) {
-                magicString.appendLeft(
-                  parent.end - 1,
-                  `,${JSON.stringify(
-                    dirname(id) === '.'
-                      ? null /* default behavior */
-                      : getVirtualPathForDynamicRequirePath(
-                          normalizePathSlashes(dirname(id)),
-                          commonDir
-                        )
-                  )}`
-                );
-              }
-
-              magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
-                storeName: true
-              });
-              usesCommonjsHelpers = true;
-            }
-
-            uses[node.name] = true;
-            if (node.name === 'global' && !ignoreGlobal) {
-              magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
-                storeName: true
-              });
-              usesCommonjsHelpers = true;
-            }
-
-            // if module or exports are used outside the context of an assignment
-            // expression, we need to wrap the module
-            if (node.name === 'module' || node.name === 'exports') {
-              shouldWrap = true;
-            }
+          // if module or exports are used outside the context of an assignment
+          // expression, we need to wrap the module
+          // TODO Lukas we need to add handling of assignment expressions to the top loop before migrating this
+          if (node.name === 'module' || node.name === 'exports') {
+            shouldWrap = true;
           }
-
-          if (node.name === 'define') {
-            magicString.overwrite(node.start, node.end, 'undefined', { storeName: true });
-          }
-
-          globals.add(node.name);
         }
 
         return;
       }
-
-      // Is this an assignment to exports or module.exports?
-      if (node.type === 'AssignmentExpression') {
-        if (node.left.type !== 'MemberExpression') return;
-
-        const flattened = getKeypath(node.left);
-        if (!flattened) return;
-
-        if (scope.contains(flattened.name)) return;
-
-        const match = exportsPattern.exec(flattened.keypath);
-        if (!match || flattened.keypath === 'exports') return;
-
-        // TODO Lukas do not declare we are using module or exports unless we do
-        // not remove this
-        uses[flattened.name] = true;
-
-        // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
-        // if this isn't top-level, we'll need to wrap the module
-        if (programDepth > 3) {
-          shouldWrap = true;
-        } else if (match[1] === KEY_COMPILED_ESM && !defineCompiledEsmExpression) {
-          defineCompiledEsmExpression = parent;
-        }
-
-        skippedNodes.add(node.left);
-
-        // TODO Lukas can we get rid of __esModule if an object is assigned to module.exports?
-        if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
-          node.right.properties.forEach((prop) => {
-            if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
-            const { name } = prop.key;
-            if (name === makeLegalIdentifier(name)) namedExports[name] = true;
-          });
-          return;
-        }
-
-        if (match[1]) namedExports[match[1]] = true;
-        return;
-      }
-
-      const name = getDefinePropertyCallName(node, 'exports');
-      if (name && name === makeLegalIdentifier(name)) namedExports[name] = true;
 
       // if this is a top level `var x = require('x')`, we can do `import x from 'x'`
       if (

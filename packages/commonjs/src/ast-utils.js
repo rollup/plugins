@@ -106,7 +106,6 @@ export function getAssignedMember(node) {
 
 export function getDefinePropertyCallName(node, targetName) {
   const targetNames = targetName.split('.');
-  if (node.type !== 'CallExpression') return;
 
   const {
     callee: { object, property }
