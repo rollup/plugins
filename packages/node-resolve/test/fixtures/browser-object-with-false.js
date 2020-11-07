@@ -12,7 +12,7 @@ const clientHttp = new Client('http:');
 t.is(clientWs.name, 'websocket-tracker');
 t.is(clientHttp.name, 'NULL');
 t.is(HTTPTracker, ES6_BROWSER_EMPTY);
-t.is(HTTPTrackerWithSubPath, ES6_BROWSER_EMPTY);
+t.deepEqual(HTTPTrackerWithSubPath, { default: {} });
 
 // expose
 export default 'ok';

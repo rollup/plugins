@@ -330,7 +330,7 @@ importers:
       '@babel/core': 7.12.3
       '@babel/plugin-transform-typescript': 7.12.1_@babel+core@7.12.3
       '@rollup/plugin-babel': 5.2.1_@babel+core@7.12.3+rollup@2.32.1
-      '@rollup/plugin-commonjs': 14.0.0_rollup@2.32.1
+      '@rollup/plugin-commonjs': 16.0.0_rollup@2.32.1
       '@rollup/plugin-json': 4.1.0_rollup@2.32.1
       es5-ext: 0.10.53
       rollup: 2.32.1
@@ -340,7 +340,7 @@ importers:
       '@babel/core': ^7.10.5
       '@babel/plugin-transform-typescript': ^7.10.5
       '@rollup/plugin-babel': ^5.1.0
-      '@rollup/plugin-commonjs': ^14.0.0
+      '@rollup/plugin-commonjs': ^16.0.0
       '@rollup/plugin-json': ^4.1.0
       '@rollup/pluginutils': ^3.1.0
       '@types/resolve': 1.17.1
@@ -508,7 +508,7 @@ importers:
       rollup: ^2.23.0
       source-map-support: ^0.5.19
       tosource: ^1.0.0
-lockfileVersion: 5.1
+lockfileVersion: 5.2
 packages:
   /@ava/babel/1.0.1:
     dependencies:
@@ -1661,6 +1661,23 @@ packages:
       rollup: ^2.3.4
     resolution:
       integrity: sha512-+PSmD9ePwTAeU106i9FRdc+Zb3XUWyW26mo5Atr2mk82hor8+nPwkztEjFo8/B1fJKfaQDg9aM2bzQkjhi7zOw==
+  /@rollup/plugin-commonjs/16.0.0_rollup@2.32.1:
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.32.1
+      commondir: 1.0.1
+      estree-walker: 2.0.1
+      glob: 7.1.6
+      is-reference: 1.2.1
+      magic-string: 0.25.7
+      resolve: 1.18.1
+      rollup: 2.32.1
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^2.30.0
+    resolution:
+      integrity: sha512-LuNyypCP3msCGVQJ7ki8PqYdpjfEkE/xtFa5DqlF+7IBD0JsfMZ87C58heSwIMint58sAUZbt3ITqOmdQv/dXw==
   /@rollup/plugin-json/4.1.0_rollup@2.32.1:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
@@ -3812,7 +3829,6 @@ packages:
     resolution:
       integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==
   /estree-walker/2.0.1:
-    dev: false
     resolution:
       integrity: sha512-tF0hv+Yi2Ot1cwj9eYHtxC0jB9bmjacjQs6ZBTj82H8JwUywFuc+7E83NWfNMwHXZc11mjfFcVXPe9gEP4B8dg==
   /esutils/2.0.3:
