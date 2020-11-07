@@ -121,14 +121,14 @@ Allows registration of TypeScript custom transformers at any of the supported st
 
 - **before**: transformers will execute before the TypeScript's own transformers on raw TypeScript files
 - **after**: transformers will execute after the TypeScript transformers on transpiled code
-  **afterDeclarations**: transformers will execute after declaration file generation allowing to modify existing declaration files
+- **afterDeclarations**: transformers will execute after declaration file generation allowing to modify existing declaration files
 
 Supported transformer factories:
 
-- all **build in** TypeScript custom transformer factories:
+- all **built-in** TypeScript custom transformer factories:
 
-  - `import(‘typescript’).TransformerFactory` annotated **TransformerFactory** bellow
-  - `import(‘typescript’).CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+  - `import('typescript').TransformerFactory` annotated **TransformerFactory** bellow
+  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
 
 - **ProgramTransformerFactory** represents a transformer factory allowing the resulting transformer to grab a reference to the **Program** instance
 
