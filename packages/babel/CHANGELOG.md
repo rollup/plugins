@@ -1,5 +1,25 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.2.1
+
+_2020-09-09_
+
+### Updates
+
+- chore: add deprecation/migration warnings for the runtime (#534)
+
+## v5.2.0
+
+_2020-08-13_
+
+### Features
+
+- feat: `export * as ns` support (#511)
+
+### Updates
+
+- chore: update dependencies (13526d6)
+
 ## v5.1.0
 
 _2020-07-12_

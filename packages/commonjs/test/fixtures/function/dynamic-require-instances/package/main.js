@@ -1,1 +1,1 @@
-module.exorts = { name: 'package', value: null };
+module.exports = { name: 'package', value: null };

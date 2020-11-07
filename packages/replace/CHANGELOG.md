@@ -1,5 +1,15 @@
 # @rollup/plugin-replace ChangeLog
 
+## v2.3.4
+
+_2020-10-27_
+
+### Updates
+
+- docs: describe process.env.NODE_ENV case (#589)
+- chore: update dependencies (53e2b73)
+- docs: linting update in readme (aef7dbc)
+
 ## v2.3.3
 
 _2020-06-05_

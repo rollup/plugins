@@ -1,5 +1,34 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v6.1.0
+
+_2020-10-27_
+
+### Bugfixes
+
+- fix: add composite to validation checks (#618)
+
+### Features
+
+- feat: Add CustomTransformers support (#280)
+
+### Updates
+
+- docs: More informative error messages (#619)
+
+## v6.0.0
+
+_2020-09-09_
+
+### Breaking Changes
+
+- fix!: Change `noEmitOnError` default to false (#544)
+
+### Updates
+
+- test: add generating declarations with non-default rootDir (#553)
+- chore: update dependencies (9e52818)
+
 ## v5.0.2
 
 _2020-07-12_

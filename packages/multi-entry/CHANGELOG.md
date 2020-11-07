@@ -1,5 +1,14 @@
 # @rollup/plugin-multi-entry ChangeLog
 
+## v4.0.0
+
+_2020-08-13_
+
+### Breaking Changes
+
+- refactor!: virtualised & entryFileName (#520)
+- chore: update dependencies (afd93a3)
+
 ## v3.0.1
 
 _2020-05-11_

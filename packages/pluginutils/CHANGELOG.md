@@ -1,5 +1,47 @@
 # @rollup/pluginutils ChangeLog
 
+## v4.1.0
+
+_2020-10-27_
+
+### Bugfixes
+
+- fix: attach scope object to for-loop (#616)
+
+### Features
+
+- feat: normalizePath (#550)
+
+### Updates
+
+- refactor: improve readability of attachScopes test (#551)
+
+## v4.0.0
+
+_2020-08-13_
+
+### Breaking Changes
+
+- fix!: don't add cwd to absolute or patterns that start with a glob (#517)
+
+### Bugfixes
+
+- fix: resolve relative paths starting with "./" (#180)
+
+### Features
+
+- feat: add native node es modules support (#419)
+
+### Updates
+
+- docs: Correct minimatch to picomatch (#525)
+- chore: update dependencies (9f56d37)
+- refactor: replace micromatch with picomatch. (#306)
+- chore: Don't bundle micromatch (#220)
+- chore: add missing typescript devDep (238b140)
+- chore: Use readonly arrays, add TSDoc (#187)
+- chore: Use typechecking (2ae08eb)
+
 ## v3.1.0
 
 _2020-06-05_

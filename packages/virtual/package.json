@@ -12,6 +12,9 @@
   "bugs": "https://github.com/rollup/rollup-plugin-virtual/issues",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -30,6 +33,7 @@
   },
   "files": [
     "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -46,12 +50,20 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.4.0",
+    "@rollup/plugin-typescript": "^6.0.0",
     "rollup": "^2.23.0"
   },
+  "types": "types/index.d.ts",
   "ava": {
     "babel": {
       "compileEnhancements": false
     },
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",

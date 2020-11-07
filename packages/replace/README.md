@@ -52,6 +52,26 @@ The configuration above will replace every instance of `__buildEnv__` with `'pro
 
 Typically, `@rollup/plugin-replace` should be placed in `plugins` _before_ other plugins so that they may apply optimizations, such as dead code removal.
 
+The most popular case is replacing process.env.NODE_ENV with development or production environment.
+
+```js
+import replace from '@rollup/plugin-replace';
+
+export default {
+  input: 'src/index.js',
+  output: {
+    dir: 'output',
+    format: 'cjs'
+  },
+  plugins: [
+    replace({
+      // alternatively, one could pass process.env.NODE_ENV or 'development` to stringify
+      'process.env.NODE_ENV': JSON.stringify('production')
+    })
+  ]
+};
+```
+
 ## Options
 
 In addition to the properties and values specified for replacement, users may also specify the options below.

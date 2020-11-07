@@ -1,5 +1,5 @@
-import './a';
-import './b';
+import '_./a?commonjs-require';
+import '_./b?commonjs-require';
 import require$$0 from '_./a?commonjs-proxy';
 import b from '_./b?commonjs-proxy';
 

@@ -82,6 +82,28 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
   t.true(declarationSource.includes('//# sourceMappingURL=main.d.ts.map'), declarationSource);
 });
 
+test.serial('supports creating declarations with non-default rootDir', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/declaration-root-dir/src/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/declaration-root-dir/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(
+    bundle,
+    { format: 'esm', dir: 'fixtures/declaration-root-dir/lib' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'main.d.ts']
+  );
+});
+
 test.serial('supports creating declaration files for interface only source file', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/export-interface-only/main.ts',
@@ -140,13 +162,13 @@ test.serial('supports creating declaration files in declarationDir', async (t) =
   t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
 });
 
-test.serial('ensures outDir is set when creating declaration files', async (t) => {
+async function ensureOutDirWhenCreatingDeclarationFiles(t, compilerOptionName) {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
       typescript({
         tsconfig: 'fixtures/basic/tsconfig.json',
-        declaration: true
+        [compilerOptionName]: true
       })
     ],
     onwarn
@@ -161,6 +183,14 @@ test.serial('ensures outDir is set when creating declaration files', async (t) =
     ),
     `Unexpected error message: ${caughtError.message}`
   );
+}
+
+test.serial('ensures outDir is set when creating declaration files (declaration)', async (t) => {
+  await ensureOutDirWhenCreatingDeclarationFiles(t, 'declaration');
+});
+
+test.serial('ensures outDir is set when creating declaration files (composite)', async (t) => {
+  await ensureOutDirWhenCreatingDeclarationFiles(t, 'composite');
 });
 
 test.serial('ensures outDir is located in Rollup output dir', async (t) => {
@@ -179,7 +209,9 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
   );
   t.true(
-    noDirError.message.includes(`'dir' must be used when 'outDir' is specified`),
+    noDirError.message.includes(
+      `Rollup 'dir' option must be used when Typescript compiler option 'outDir' is specified`
+    ),
     `Unexpected error message: ${noDirError.message}`
   );
 
@@ -187,7 +219,9 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
   t.true(
-    wrongDirError.message.includes(`'outDir' must be located inside 'dir'`),
+    wrongDirError.message.includes(
+      `Path of Typescript compiler option 'outDir' must be located inside Rollup 'dir' option`
+    ),
     `Unexpected error message: ${wrongDirError.message}`
   );
 });
@@ -209,7 +243,9 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
   );
   t.true(
-    noDirError.message.includes(`'dir' must be used when 'declarationDir' is specified`),
+    noDirError.message.includes(
+      `Rollup 'dir' option must be used when Typescript compiler option 'declarationDir' is specified`
+    ),
     `Unexpected error message: ${noDirError.message}`
   );
 
@@ -217,7 +253,9 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
   t.true(
-    wrongDirError.message.includes(`'declarationDir' must be located inside 'dir'`),
+    wrongDirError.message.includes(
+      `Path of Typescript compiler option 'declarationDir' must be located inside Rollup 'dir' option`
+    ),
     `Unexpected error message: ${wrongDirError.message}`
   );
 });
@@ -901,6 +939,130 @@ test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript
   await getCode(bundle, { format: 'esm', sourcemap: true });
 
   t.is(warnings.length, 0);
+});
+
+test('supports custom transformers', async (t) => {
+  const warnings = [];
+
+  let program = null;
+  let typeChecker = null;
+
+  const bundle = await rollup({
+    input: 'fixtures/transformers/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/transformers/tsconfig.json',
+        outDir: 'fixtures/transformers/dist',
+        declaration: true,
+        transformers: {
+          before: [
+            // Replace the source contents before transforming
+            {
+              type: 'program',
+              factory: (p) => {
+                program = p;
+
+                return function removeOneParameterFactory(context) {
+                  return function removeOneParameter(source) {
+                    function visitor(node) {
+                      if (ts.isArrowFunction(node)) {
+                        return ts.createArrowFunction(
+                          node.modifiers,
+                          node.typeParameters,
+                          [node.parameters[0]],
+                          node.type,
+                          node.equalsGreaterThanToken,
+                          node.body
+                        );
+                      }
+
+                      return ts.visitEachChild(node, visitor, context);
+                    }
+
+                    return ts.visitEachChild(source, visitor, context);
+                  };
+                };
+              }
+            }
+          ],
+          after: [
+            // Enforce a constant numeric output
+            {
+              type: 'typeChecker',
+              factory: (tc) => {
+                typeChecker = tc;
+
+                return function enforceConstantReturnFactory(context) {
+                  return function enforceConstantReturn(source) {
+                    function visitor(node) {
+                      if (ts.isReturnStatement(node)) {
+                        return ts.createReturn(ts.createNumericLiteral('1'));
+                      }
+
+                      return ts.visitEachChild(node, visitor, context);
+                    }
+
+                    return ts.visitEachChild(source, visitor, context);
+                  };
+                };
+              }
+            }
+          ],
+          afterDeclarations: [
+            // Change the return type to numeric
+            function fixDeclarationFactory(context) {
+              return function fixDeclaration(source) {
+                function visitor(node) {
+                  if (ts.isFunctionTypeNode(node)) {
+                    return ts.createFunctionTypeNode(
+                      node.typeParameters,
+                      [node.parameters[0]],
+                      ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+                    );
+                  }
+
+                  return ts.visitEachChild(node, visitor, context);
+                }
+
+                return ts.visitEachChild(source, visitor, context);
+              };
+            }
+          ]
+        }
+      })
+    ],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/transformers' }, true);
+
+  t.is(warnings.length, 0);
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'dist/main.d.ts']
+  );
+
+  // Expect the function to have one less arguments from before transformer and return 1 from after transformer
+  t.true(output[0].code.includes('var HashFn = function (val) { return 1; };'), output[0].code);
+
+  // Expect the definition file to reflect the resulting function type after transformer modifications
+  t.true(
+    output[1].source.includes('export declare const HashFn: (val: string) => number;'),
+    output[1].source
+  );
+
+  // Expect a Program to have been forwarded for transformers with custom factories requesting one
+  t.deepEqual(program && program.emit && typeof program.emit === 'function', true);
+
+  // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
+  t.deepEqual(
+    typeChecker &&
+      typeChecker.getTypeAtLocation &&
+      typeof typeChecker.getTypeAtLocation === 'function',
+    true
+  );
 });
 
 function fakeTypescript(custom) {

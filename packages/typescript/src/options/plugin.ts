@@ -15,7 +15,16 @@ import getTsLibPath from '../tslib';
  * - `tslib`: ESM code from the tslib helper library (possibly custom).
  */
 export default function getPluginOptions(options: RollupTypescriptOptions) {
-  const { cacheDir, include, exclude, tsconfig, typescript, tslib, ...compilerOptions } = options;
+  const {
+    cacheDir,
+    exclude,
+    include,
+    transformers,
+    tsconfig,
+    tslib,
+    typescript,
+    ...compilerOptions
+  } = options;
 
   const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude);
 
@@ -25,6 +34,7 @@ export default function getPluginOptions(options: RollupTypescriptOptions) {
     tsconfig,
     compilerOptions: compilerOptions as PartialCompilerOptions,
     typescript: typescript || defaultTs,
-    tslib: tslib || getTsLibPath()
+    tslib: tslib || getTsLibPath(),
+    transformers
   };
 }

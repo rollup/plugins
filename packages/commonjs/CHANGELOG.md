@@ -1,5 +1,49 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v16.0.0
+
+_2020-10-27_
+
+### Breaking Changes
+
+- feat!: Expose cjs detection and support offline caching (#604)
+
+### Bugfixes
+
+- fix: avoid wrapping `commonjsRegister` call in `createCommonjsModule(...)` (#602)
+- fix: register dynamic modules when a different loader (i.e typescript) loads the entry file (#599)
+- fix: fixed access to node_modules dynamic module with subfolder (i.e 'logform/json') (#601)
+
+### Features
+
+- feat: pass type of import to node-resolve (#611)
+
+## v15.1.0
+
+_2020-09-21_
+
+### Features
+
+- feat: inject \_\_esModule marker into ES namespaces and add Object prototype (#552)
+- feat: add requireReturnsDefault to types (#579)
+
+## v15.0.0
+
+_2020-08-13_
+
+### Breaking Changes
+
+- feat!: return the namespace by default when requiring ESM (#507)
+- fix!: fix interop when importing CJS that is transpiled ESM from an actual ESM (#501)
+
+### Bugfixes
+
+- fix: add .cjs to default file extensions. (#524)
+
+### Updates
+
+- chore: update dependencies (fe399e2)
+
 ## v14.0.0
 
 _2020-07-13_

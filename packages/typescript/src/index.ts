@@ -14,9 +14,15 @@ import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
-  const { cacheDir, filter, tsconfig, compilerOptions, tslib, typescript: ts } = getPluginOptions(
-    options
-  );
+  const {
+    cacheDir,
+    compilerOptions,
+    filter,
+    transformers,
+    tsconfig,
+    tslib,
+    typescript: ts
+  } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
@@ -53,7 +59,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           },
           status(diagnostic) {
             watchProgramHelper.handleStatus(diagnostic);
-          }
+          },
+          transformers
         });
       }
     },

@@ -90,8 +90,8 @@ A function which can optionally mutate parsed YAML. The function should return t
 
 ```js
 yaml({
-  transform(data) {
-    if (Array.isArray(data)) {
+  transform(data, filePath) {
+    if (Array.isArray(data) && filePath === './my-file.yml') {
       return data.filter(character => !character.batman);
     }
   }

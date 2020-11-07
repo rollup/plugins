@@ -1,0 +1,1 @@
+exports.dep = 42;
