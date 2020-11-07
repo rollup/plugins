@@ -846,6 +846,33 @@ test.serial('supports incremental rebuild', async (t) => {
   );
 });
 
+test.serial('supports consecutive incremental rebuilds', async (t) => {
+  process.chdir('fixtures/incremental');
+
+  const firstBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+
+  const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    firstRun.map((out) => out.fileName),
+    ['main.js', '.tsbuildinfo']
+  );
+
+  const secondBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+  const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    secondRun.map((out) => out.fileName),
+    ['main.js', '.tsbuildinfo']
+  );
+});
+
 test.serial.skip('supports project references', async (t) => {
   process.chdir('fixtures/project-references');
 

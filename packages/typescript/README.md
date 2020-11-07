@@ -188,6 +188,21 @@ typescript({
 });
 ```
 
+### `cacheDir`
+
+Type: `String`<br>
+Default: _.rollup.cache_
+
+When compiling with `incremental` or `composite` options the plugin will
+store compiled files in this folder. This allows the use of incremental
+compilation.
+
+```js
+typescript({
+  cacheDir: '.rollup.tscache'
+});
+```
+
 ### Typescript compiler options
 
 Some of Typescript's [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html) affect how Rollup builds files.

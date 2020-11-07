@@ -9,18 +9,21 @@ import createModuleResolver from './moduleResolution';
 import getPluginOptions from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
-import findTypescriptOutput from './outputFile';
+import findTypescriptOutput, { getEmittedFile } from './outputFile';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
+import TSCache from './tscache';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const {
-    filter,
-    tsconfig,
+    cacheDir,
     compilerOptions,
+    filter,
+    transformers,
+    tsconfig,
     tslib,
-    typescript: ts,
-    transformers
+    typescript: ts
   } = getPluginOptions(options);
+  const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
 
@@ -49,6 +52,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           resolveModule,
           parsedOptions,
           writeFile(fileName, data) {
+            if (parsedOptions.options.composite || parsedOptions.options.incremental) {
+              tsCache.cacheCode(fileName, data);
+            }
             emittedFiles.set(fileName, data);
           },
           status(diagnostic) {
@@ -103,16 +109,16 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       await watchProgramHelper.wait();
 
-      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles);
+      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles, tsCache);
 
       return output.code != null ? (output as SourceDescription) : null;
     },
 
     generateBundle(outputOptions) {
       parsedOptions.fileNames.forEach((fileName) => {
-        const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles);
+        const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
-          const code = emittedFiles.get(id);
+          const code = getEmittedFile(id, emittedFiles, tsCache);
           if (!code) return;
 
           this.emitFile({
