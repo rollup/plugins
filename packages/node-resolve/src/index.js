@@ -259,8 +259,6 @@ export function nodeResolve(opts = {}) {
           return false;
         } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
           return null;
-        } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
-          return null;
         }
       }
 
