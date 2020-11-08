@@ -171,7 +171,7 @@ export default {
 
 ## Resolving Built-Ins (like `fs`)
 
-By default this plugin will try and resolve everything to a local module. If that fails and the id matches a built-in module, then the module will be marked as external.
+By default this plugin will prefer built-ins over local modules, marking them as external.
 
 See [`preferBuiltins`](#preferbuiltins).
 
