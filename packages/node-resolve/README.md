@@ -129,7 +129,7 @@ DEPRECATED: use "resolveOnly" instead
 ### `preferBuiltins`
 
 Type: `Boolean`<br>
-Default: `true`
+Default: `true` (with warnings if a builtin module is used over a local version. Set to `true` to disable warning.)
 
 If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
 
