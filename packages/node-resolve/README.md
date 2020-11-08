@@ -175,7 +175,7 @@ By default this plugin will prefer built-ins over local modules, marking them as
 
 See [`preferBuiltins`](#preferbuiltins).
 
-Use a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) to provide stubbed versions of built-ins.
+Use a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) to provide stubbed versions of built-ins, and set `preferBuiltins` to `false`.
 
 ## Meta
 
