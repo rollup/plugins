@@ -197,7 +197,7 @@ export function nodeResolve(opts = {}) {
 
       const importeeIsBuiltin = builtins.has(importee);
 
-      if (importeeIsBuiltin && (!preferBuiltins || !isPreferBuiltinsSet)) {
+      if (importeeIsBuiltin) {
         // The `resolve` library will not resolve packages with the same
         // name as a node built-in module. If we're resolving something
         // that's a builtin, and we don't prefer to find built-ins, we
@@ -243,9 +243,7 @@ export function nodeResolve(opts = {}) {
         idToPackageInfo.set(resolved, packageInfo);
 
         if (hasPackageEntry) {
-          if (builtins.has(resolved) && preferBuiltins && isPreferBuiltinsSet) {
-            return null;
-          } else if (importeeIsBuiltin && preferBuiltins) {
+          if (importeeIsBuiltin && preferBuiltins) {
             if (!isPreferBuiltinsSet) {
               this.warn(
                 `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
