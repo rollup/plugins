@@ -65,7 +65,7 @@
     "@babel/core": "^7.10.5",
     "@babel/plugin-transform-typescript": "^7.10.5",
     "@rollup/plugin-babel": "^5.1.0",
-    "@rollup/plugin-commonjs": "^14.0.0",
+    "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "es5-ext": "^0.10.53",
     "rollup": "^2.23.0",

@@ -1,13 +1,8 @@
 import { dirname, extname, resolve } from 'path';
-import { promisify } from 'util';
 
 import { createFilter } from '@rollup/pluginutils';
 
-import resolveModule from 'resolve';
-
-import { exists, realpath, realpathSync } from './fs';
-
-const resolveId = promisify(resolveModule);
+import { realpathSync } from './fs';
 
 // returns the imported package name for bare module imports
 export function getPackageName(id) {
@@ -157,29 +152,4 @@ export function normalizeInput(input) {
 
   // otherwise it's a string
   return [input];
-}
-
-// Resolve module specifiers in order. Promise resolves to the first module that resolves
-// successfully, or the error that resulted from the last attempted module resolution.
-export async function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
-  for (let i = 0; i < importSpecifierList.length; i++) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      let result = await resolveId(importSpecifierList[i], resolveOptions);
-      if (!resolveOptions.preserveSymlinks) {
-        // eslint-disable-next-line no-await-in-loop
-        if (await exists(result)) {
-          // eslint-disable-next-line no-await-in-loop
-          result = await realpath(result);
-        }
-      }
-      return result;
-    } catch (error) {
-      // swallow MODULE_NOT_FOUND errors
-      if (error.code !== 'MODULE_NOT_FOUND') {
-        throw error;
-      }
-    }
-  }
-  return null;
 }

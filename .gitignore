@@ -9,6 +9,7 @@ output/
 coverage.lcov
 pnpm-debug.log
 .idea
+.rollup.cache
 
 !packages/node-resolve/test/fixtures/**/node_modules
 !packages/commonjs/test/**/node_modules
