@@ -1,5 +1,21 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v3.0.0
+
+_2020-10-27_
+
+### Breaking Changes
+
+- chore: update dependencies (943f528)
+
+### Features
+
+- feat: provide file id to transform function (#615)
+
+### Updates
+
+- chore: linting updates (93074ca)
+
 ## v2.1.1
 
 _2020-05-11_

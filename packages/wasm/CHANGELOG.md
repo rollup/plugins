@@ -1,5 +1,25 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v5.1.1
+
+_2020-10-27_
+
+### Updates
+
+- refact: use helper module instead of banner (#607)
+
+## v5.1.0
+
+_2020-09-09_
+
+### Features
+
+- feat: option to not inline wasm (#543)
+
+### Updates
+
+- chore: update dependencies (8ac8237)
+
 ## v5.0.0
 
 _2020-05-20_

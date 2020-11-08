@@ -38,7 +38,7 @@ const commitChanges = async (cwd, pluginName, version) => {
 const getCommits = async (pluginName) => {
   log(chalk`{blue Gathering Commits}`);
 
-  let params = ['tag', '--list', `${pluginName}-v*`, '--sort', '-taggerdate'];
+  let params = ['tag', '--list', `${pluginName}-v*`, '--sort', '-v:refname'];
   const { stdout: tags } = await execa('git', params);
   const [latestTag] = tags.split('\n');
 

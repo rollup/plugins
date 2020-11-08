@@ -1,10 +1,11 @@
-import { resolve, sep, posix, isAbsolute } from 'path';
+import { resolve, posix, isAbsolute } from 'path';
 
 import pm from 'picomatch';
 
 import { CreateFilter } from '../types';
 
 import ensureArray from './utils/ensureArray';
+import normalizePath from './normalizePath';
 
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
   if (resolutionBase === false || isAbsolute(id) || id.startsWith('*')) {
@@ -12,9 +13,7 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
   }
 
   // resolve('') is valid and will default to process.cwd()
-  const basePath = resolve(resolutionBase || '')
-    .split(sep)
-    .join('/')
+  const basePath = normalizePath(resolve(resolutionBase || ''))
     // escape all possible (posix + win) path characters that might interfere with regex
     .replace(/[-^$*+?.()|[\]{}]/g, '\\$&');
   // Note that we use posix.join because:
@@ -48,7 +47,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
     if (typeof id !== 'string') return false;
     if (/\0/.test(id)) return false;
 
-    const pathId = id.split(sep).join('/');
+    const pathId = normalizePath(id);
 
     for (let i = 0; i < excludeMatchers.length; ++i) {
       const matcher = excludeMatchers[i];

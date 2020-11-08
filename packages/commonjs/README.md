@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [commonjs()],
+  plugins: [commonjs()]
 };
 ```
 
@@ -66,8 +66,8 @@ commonjs({
     '!node_modules/logform/index.js',
     '!node_modules/logform/format.js',
     '!node_modules/logform/levels.js',
-    '!node_modules/logform/browser.js',
-  ],
+    '!node_modules/logform/browser.js'
+  ]
 });
 ```
 
@@ -76,21 +76,21 @@ commonjs({
 Type: `string | string[]`<br>
 Default: `null`
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default non-CommonJS modules are ignored.
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default, all files with extensions other than those in `extensions` or `".cjs"` are ignored, but you can exclude additional files. See also the `include` option.
 
 ### `include`
 
 Type: `string | string[]`<br>
 Default: `null`
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default CommonJS modules are targeted.
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default, all files with extension `".cjs"` or those in `extensions` are included, but you can narrow this list by only including specific files. These files will be analyzed and transpiled if either the analysis does not find ES module specific statements or `transformMixedEsModules` is `true`.
 
 ### `extensions`
 
 Type: `string[]`<br>
 Default: `['.js']`
 
-Search for extensions other than .js in the order specified.
+For extensionless imports, search for extensions other than .js in the order specified. Note that you need to make sure that non-JavaScript files are transpiled by another plugin first.
 
 ### `ignoreGlobal`
 
@@ -104,28 +104,28 @@ If true, uses of `global` won't be dealt with by this plugin.
 Type: `boolean`<br>
 Default: `true`
 
-If false, skips source map generation for CommonJS modules.
+If false, skips source map generation for CommonJS modules. This will improve performance.
 
 ### `transformMixedEsModules`
 
 Type: `boolean`<br>
 Default: `false`
 
-Instructs the plugin whether or not to enable mixed module transformations. This is useful in scenarios with mixed ES and CommonJS modules. Set to `true` if it's known that `require` calls should be transformed, or `false` if the code contains env detection and the `require` should survive a transformation.
+Instructs the plugin whether to enable mixed module transformations. This is useful in scenarios with modules that contain a mix of ES `import` statements and CommonJS `require` expressions. Set to `true` if `require` calls should be transformed to imports in mixed modules, or `false` if the `require` expressions should survive the transformation. The latter can be important if the code contains environment detection, or you are coding for an environment with special treatment for `require` calls such as [ElectronJS](https://www.electronjs.org/). See also the "ignore" option.
 
 ### `ignore`
 
 Type: `string[] | ((id: string) => boolean)`<br>
 Default: `[]`
 
-Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function. Only use this option if you know what you're doing!
+Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function.
 
 ### `esmExternals`
 
-Type: `boolean | string[] || ((id: string) => boolean)`
+Type: `boolean | string[] | ((id: string) => boolean)`
 Default: `false`
 
-Controls how imports from external dependencies are rendered. By default, all external dependencies are assumed to be CommonJS. This means they are rendered as default imports to be compatible with e.g. NodeJS where ES modules can only import a default export from a CommonJS dependency:
+Controls how to render imports from external dependencies. By default, this plugin assumes that all external dependencies are CommonJS. This means they are rendered as default imports to be compatible with e.g. NodeJS where ES modules can only import a default export from a CommonJS dependency:
 
 ```js
 // input
@@ -137,16 +137,16 @@ import foo from 'foo';
 
 This is likely not desired for ES module dependencies: Here `require` should usually return the namespace to be compatible with how bundled modules are handled.
 
-If you set `esmExternals` to `true`, all external dependencies are assumed to be ES modules and will adhere to the `requireReturnsDefault` option. If that option is not set, they will be rendered as namespace imports.
+If you set `esmExternals` to `true`, this plugins assumes that all external dependencies are ES modules and will adhere to the `requireReturnsDefault` option. If that option is not set, they will be rendered as namespace imports.
 
-You can also supply an array of ids that are to be treated as ES modules, or a function that will be passed each external id to determine if it is an ES module.
+You can also supply an array of ids to be treated as ES modules, or a function that will be passed each external id to determine if it is an ES module.
 
 ### `requireReturnsDefault`
 
-Type: `boolean | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>
+Type: `boolean | "namespace" | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>
 Default: `false`
 
-Controls what is returned when requiring an ES module or external dependency from a CommonJS file. By default, this plugin will render it as a namespace import, i.e.
+Controls what is returned when requiring an ES module from a CommonJS file. When using the `esmExternals` option, this will also apply to external modules. By default, this plugin will render those imports as namespace imports, i.e.
 
 ```js
 // input
@@ -174,7 +174,7 @@ This is in line with how other bundlers handle this situation and is also the mo
 
   var dep$1 = /*#__PURE__*/ Object.freeze({
     __proto__: null,
-    default: dep,
+    default: dep
   });
 
   console.log(dep$1.default);
@@ -182,13 +182,44 @@ This is in line with how other bundlers handle this situation and is also the mo
 
 For these situations, you can change Rollup's behaviour either globally or per module. To change it globally, set the `requireReturnsDefault` option to one of the following values:
 
-- `false`: This is the default, requiring an ES module returns its namespace. For external dependencies when using `esmExternals: true`, no additional interop code is generated:
+- `false`: This is the default, requiring an ES module returns its namespace. This is the only option that will also add a marker `__esModule: true` to the namespace to support interop patterns in CommonJS modules that are transpiled ES modules.
 
   ```js
   // input
   const dep = require('dep');
   console.log(dep);
 
+  // output
+  import * as dep$1 from 'dep';
+
+  function getAugmentedNamespace(n) {
+    var a = Object.defineProperty({}, '__esModule', { value: true });
+    Object.keys(n).forEach(function (k) {
+      var d = Object.getOwnPropertyDescriptor(n, k);
+      Object.defineProperty(
+        a,
+        k,
+        d.get
+          ? d
+          : {
+              enumerable: true,
+              get: function () {
+                return n[k];
+              }
+            }
+      );
+    });
+    return a;
+  }
+
+  var dep = /*@__PURE__*/ getAugmentedNamespace(dep$1);
+
+  console.log(dep);
+  ```
+
+- `"namespace"`: Like `false`, requiring an ES module returns its namespace, but the plugin does not add the `__esModule` marker and thus creates more efficient code. For external dependencies when using `esmExternals: true`, no additional interop code is generated.
+
+  ```js
   // output
   import * as dep from 'dep';
 
@@ -256,9 +287,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule',
+    name: 'MyModule'
   },
-  plugins: [resolve(), commonjs()],
+  plugins: [resolve(), commonjs()]
 };
 ```
 
@@ -268,7 +299,7 @@ Symlinks are common in monorepos and are also created by the `npm link` command.
 
 ```js
 commonjs({
-  include: /node_modules/,
+  include: /node_modules/
 });
 ```
 
@@ -279,6 +310,26 @@ Whether symlinked module paths are [realpathed](http://man7.org/linux/man-pages/
 ES modules are _always_ parsed in strict mode. That means that certain non-strict constructs (like octal literals) will be treated as syntax errors when Rollup parses modules that use them. Some older CommonJS modules depend on those constructs, and if you depend on them your bundle will blow up. There's basically nothing we can do about that.
 
 Luckily, there is absolutely no good reason _not_ to use strict mode for everything — so the solution to this problem is to lobby the authors of those modules to update them.
+
+## Inter-plugin-communication
+
+This plugin exposes the result of its CommonJS file type detection for other plugins to use. You can access it via `this.getModuleInfo` or the `moduleParsed` hook:
+
+```js
+function cjsDetectionPlugin() {
+  return {
+    name: 'cjs-detection',
+    moduleParsed({
+      id,
+      meta: {
+        commonjs: { isCommonJS }
+      }
+    }) {
+      console.log(`File ${id} is CommonJS: ${isCommonJS}`);
+    }
+  };
+}
+```
 
 ## Meta
 

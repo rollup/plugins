@@ -1,9 +1,11 @@
 import * as nodePath from 'path';
+import * as fs from 'fs';
 
 import test from 'ava';
 import { rollup } from 'rollup';
 import { SourceMapConsumer } from 'source-map';
 import jsonPlugin from '@rollup/plugin-json';
+import nodeResolvePlugin from '@rollup/plugin-node-resolve';
 
 import { getCode } from '../../../util/test';
 
@@ -157,12 +159,14 @@ test('allows transform-runtime to be used instead of bundled helpers', async (t)
     code,
     `'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+var _classCallCheck = require('@babel/runtime/helpers/classCallCheck');
 
-var _classCallCheck = _interopDefault(require('@babel/runtime/helpers/classCallCheck'));
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var _classCallCheck__default = /*#__PURE__*/_interopDefaultLegacy(_classCallCheck);
 
 var Foo = function Foo() {
-  _classCallCheck(this, Foo);
+  _classCallCheck__default['default'](this, Foo);
 };
 
 module.exports = Foo;
@@ -285,6 +289,35 @@ test('transpiles only files with whitelisted extensions', async (t) => {
   t.true(code.includes('class Jsx '), 'should not transpile .jsx');
   t.true(code.includes('class Mjs '), 'should not transpile .mjs');
   t.false(code.includes('class Other '), 'should transpile .other');
+});
+
+test('transpiles files when path contains query and hash', async (t) => {
+  const code = await generate(
+    'fixtures/with-query-and-hash/main.js',
+    {},
+    {},
+    {
+      plugins: [
+        babelPlugin({ babelHelpers: 'bundled' }),
+        // node-resolve plugin know how to resolve relative request with query
+        nodeResolvePlugin(),
+        {
+          load(id) {
+            // rollup don't know how to load module with query
+            // we could teach rollup to discard query while loading module
+            const [bareId] = id.split(`?`);
+            return fs.readFileSync(bareId, 'utf-8');
+          }
+        }
+      ]
+    }
+  );
+  t.true(code.includes('function WithQuery()'), 'should transpile when path contains query');
+  t.true(code.includes('function WithHash()'), 'should transpile when path contains hash');
+  t.true(
+    code.includes('function WithQueryAndHash()'),
+    'should transpile when path contains query and hash'
+  );
 });
 
 test('throws when trying to add babel helper unavailable in used @babel/core version', async (t) => {

@@ -1,5 +1,7 @@
 import { SourceDescription } from 'rollup';
 
+import TSCache from './tscache';
+
 export interface TypescriptSourceDescription extends Partial<SourceDescription> {
   declarations: string[];
 }
@@ -19,6 +21,29 @@ function isMapOutputFile(name: string): boolean {
 }
 
 /**
+ * Returns the content of a filename either from the current
+ * typescript compiler instance or from the cached content.
+ * @param fileName The filename for the contents to retrieve
+ * @param emittedFiles The files emitted in the current typescript instance
+ * @param tsCache A cache to files cached by Typescript
+ */
+export function getEmittedFile(
+  fileName: string | undefined,
+  emittedFiles: ReadonlyMap<string, string>,
+  tsCache: TSCache
+): string | undefined {
+  let code: string | undefined;
+  if (fileName) {
+    if (emittedFiles.has(fileName)) {
+      code = emittedFiles.get(fileName);
+    } else {
+      code = tsCache.getCached(fileName);
+    }
+  }
+  return code;
+}
+
+/**
  * Finds the corresponding emitted Javascript files for a given Typescript file.
  * @param id Path to the Typescript file.
  * @param emittedFiles Map of file names to source code,
@@ -28,7 +53,8 @@ export default function findTypescriptOutput(
   ts: typeof import('typescript'),
   parsedOptions: import('typescript').ParsedCommandLine,
   id: string,
-  emittedFiles: ReadonlyMap<string, string>
+  emittedFiles: ReadonlyMap<string, string>,
+  tsCache: TSCache
 ): TypescriptSourceDescription {
   const emittedFileNames = ts.getOutputFileNames(
     parsedOptions,
@@ -40,8 +66,8 @@ export default function findTypescriptOutput(
   const mapFile = emittedFileNames.find(isMapOutputFile);
 
   return {
-    code: emittedFiles.get(codeFile!),
-    map: emittedFiles.get(mapFile!),
+    code: getEmittedFile(codeFile, emittedFiles, tsCache),
+    map: getEmittedFile(mapFile, emittedFiles, tsCache),
     declarations: emittedFileNames.filter((name) => name !== codeFile && name !== mapFile)
   };
 }

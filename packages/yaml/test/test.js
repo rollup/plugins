@@ -59,8 +59,11 @@ test('resolves extensionless imports in conjunction with nodeResolve plugin', as
 });
 
 test('applies the optional transform method to parsed YAML', async (t) => {
-  const transform = (data) => {
+  const transform = (data, filePath) => {
+    // check that transformer is passed a correct file path
+    t.true(typeof filePath === 'string' && filePath.endsWith('.yaml'), filePath);
     if (Array.isArray(data)) {
+      t.true(filePath.endsWith('array.yaml'), filePath);
       return data.filter((datum) => !datum.private);
     }
     Object.keys(data).forEach((key) => {

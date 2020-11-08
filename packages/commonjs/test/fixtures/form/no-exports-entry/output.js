@@ -1,4 +1,4 @@
-import './dummy';
+import '_./dummy?commonjs-require';
 import dummy from '_./dummy?commonjs-proxy';
 
 var foo = function () {

@@ -1,4 +1,3 @@
-/* eslint-disable no-undefined */
 const isCjsPromises = new Map();
 
 export function getIsCjsPromise(id) {
@@ -8,7 +7,7 @@ export function getIsCjsPromise(id) {
   const promise = new Promise((resolve) => {
     isCjsPromise = {
       resolve,
-      promise: undefined
+      promise: null
     };
     isCjsPromises.set(id, isCjsPromise);
   });
@@ -22,9 +21,9 @@ export function setIsCjsPromise(id, resolution) {
   if (isCjsPromise) {
     if (isCjsPromise.resolve) {
       isCjsPromise.resolve(resolution);
-      isCjsPromise.resolve = undefined;
+      isCjsPromise.resolve = null;
     }
   } else {
-    isCjsPromises.set(id, { promise: Promise.resolve(resolution), resolve: undefined });
+    isCjsPromises.set(id, { promise: Promise.resolve(resolution), resolve: null });
   }
 }
