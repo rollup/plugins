@@ -259,7 +259,7 @@ export function nodeResolve(opts = {}) {
 
       if (hasPackageEntry) {
         if (importeeIsBuiltin && preferBuiltins) {
-          if (!isPreferBuiltinsSet) {
+          if (!isPreferBuiltinsSet && resolved !== importee) {
             this.warn(
               `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
             );
