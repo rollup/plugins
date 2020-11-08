@@ -270,19 +270,6 @@ export function nodeResolve(opts = {}) {
         }
       }
 
-      if (hasPackageEntry) {
-        if (importeeIsBuiltin && preferBuiltins) {
-          if (!isPreferBuiltinsSet) {
-            this.warn(
-              `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
-            );
-          }
-          return null;
-        } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
-          return null;
-        }
-      }
-
       if (options.modulesOnly && (await exists(resolved))) {
         const code = await readFile(resolved, 'utf-8');
         if (isModule(code)) {
