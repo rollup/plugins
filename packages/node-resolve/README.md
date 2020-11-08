@@ -118,11 +118,8 @@ DEPRECATED: use "resolveOnly" instead
 ### `preferBuiltins`
 
 Type: `Boolean`<br>
-Default: unset
 
 If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
-
-If unset the plugin will first look for modules of the same name, and then fall back to built-in modules.
 
 ### `modulesOnly`
 
