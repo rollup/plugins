@@ -240,9 +240,9 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
   const requiredSources = [];
   const requiredBySource = Object.create(null);
   const dynamicRegisterSources = [];
-  let uid = 0;
 
-  function getRequired(node, scope, name) {
+  // TODO Lukas this is assymetric with regard to "usesRequired": Do this manually outside?
+  function getRequired(node, usesRequired) {
     let sourceId = getRequireStringArg(node);
     const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
     if (isDynamicRegister) {
@@ -252,14 +252,6 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
     const existing = requiredBySource[sourceId];
     if (!existing) {
       const isDynamic = hasDynamicModuleForPath(sourceId, id, dynamicRequireModuleSet);
-
-      if (!name) {
-        do {
-          name = `require$$${uid}`;
-          uid += 1;
-        } while (scope.contains(name));
-      }
-
       if (isDynamicRegister) {
         if (sourceId.endsWith('.json')) {
           sourceId = DYNAMIC_JSON_PREFIX + sourceId;
@@ -271,10 +263,19 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
         requiredSources.push(sourceId);
       }
 
-      requiredBySource[sourceId] = { source: sourceId, name, importsDefault: false, isDynamic };
+      requiredBySource[sourceId] = {
+        source: sourceId,
+        name: null,
+        isDynamic,
+        nodesUsingRequired: []
+      };
     }
 
-    return requiredBySource[sourceId];
+    const required = requiredBySource[sourceId];
+    if (usesRequired) {
+      required.nodesUsingRequired.push(node);
+    }
+    return required;
   }
 
   return { getRequired, requiredBySource, requiredSources, dynamicRegisterSources };

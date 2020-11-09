@@ -51,8 +51,9 @@ export default function transformCommonjs(
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
-  let scope = attachScopes(ast, 'scope');
+  const moduleScope = attachScopes(ast, 'scope');
   const uses = { module: false, exports: false, global: false, require: false };
+  let scope = moduleScope;
   let lexicalDepth = 0;
   let programDepth = 0;
   let shouldWrap = false;
@@ -72,11 +73,15 @@ export default function transformCommonjs(
     dynamicRegisterSources
   } = getRequireHandlers(id, dynamicRequireModuleSet);
 
-  // do a first pass, see which names are assigned to. This is necessary to prevent
+  // See which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
   // where `foo` is later reassigned. (This happens in the wild. CommonJS, sigh)
   const reassignedNames = new Set();
-  const removedDeclaratorsIfNotReassigned = new Set();
+
+  const topLevelDeclarations = [];
+  const topLevelRequireDeclarators = new Set();
+  const requireExpressionsAndScope = [];
+  const requireExpressionsWithUsedReturnValue = new Set();
 
   const skippedNodes = new Set();
 
@@ -141,8 +146,9 @@ export default function transformCommonjs(
             }
           }
           break;
-        case 'CallExpression':
+        case 'CallExpression': {
           if (isDefineCompiledEsm(node)) {
+            // TODO Lukas should we also check for the parent type?
             if (programDepth === 3 && !defineCompiledEsmExpression) {
               // skip special handling for [module.]exports until we know we render this
               skippedNodes.add(node.arguments[0]);
@@ -150,11 +156,40 @@ export default function transformCommonjs(
             } else {
               shouldWrap = true;
             }
-          } else {
-            const name = getDefinePropertyCallName(node, 'exports');
-            if (name && name === makeLegalIdentifier(name)) namedExports[name] = true;
+            break;
+          }
+          const name = getDefinePropertyCallName(node, 'exports');
+          if (name) {
+            if (name === makeLegalIdentifier(name)) {
+              namedExports[name] = true;
+            }
+            break;
+          }
+          if (
+            isStaticRequireStatement(node, scope) &&
+            !isIgnoredRequireStatement(node, ignoreRequire)
+          ) {
+            requireExpressionsAndScope.push({ node, scope });
+            skippedNodes.add(node.callee);
+            if (parent.type === 'ExpressionStatement') {
+              // This is a bare import, e.g. `require('foo');`
+              magicString.remove(parent.start, parent.end);
+            } else {
+              requireExpressionsWithUsedReturnValue.add(node);
+              if (
+                parent.type === 'VariableDeclarator' &&
+                !scope.parent &&
+                parent.id.type === 'Identifier'
+              ) {
+                // This will allow us to reuse this variable name as the imported variable if it is not reassigned
+                // and does not conflict with variables in other places where this is imported
+                // TODO Lukas test the latter
+                topLevelRequireDeclarators.add(parent);
+              }
+            }
           }
           break;
+        }
         case 'ConditionalExpression':
         case 'IfStatement':
           // skip dead branches
@@ -162,12 +197,6 @@ export default function transformCommonjs(
             skippedNodes.add(node.consequent);
           } else if (node.alternate && isTruthy(node.test)) {
             skippedNodes.add(node.alternate);
-          }
-          break;
-        case 'ReturnStatement':
-          // if top-level return, we need to wrap it
-          if (lexicalDepth === 0) {
-            shouldWrap = true;
           }
           break;
         case 'Identifier':
@@ -204,6 +233,7 @@ export default function transformCommonjs(
                   break;
                 case 'module':
                 case 'exports':
+                  shouldWrap = true;
                   uses[name] = true;
                   break;
                 case 'global':
@@ -222,6 +252,12 @@ export default function transformCommonjs(
                   globals.add(name);
               }
             }
+          }
+          break;
+        case 'ReturnStatement':
+          // if top-level return, we need to wrap it
+          if (lexicalDepth === 0) {
+            shouldWrap = true;
           }
           break;
         case 'ThisExpression':
@@ -253,6 +289,11 @@ export default function transformCommonjs(
             }
           }
           break;
+        case 'VariableDeclaration':
+          if (!scope.parent) {
+            topLevelDeclarations.push(node);
+          }
+          break;
         default:
       }
     },
@@ -264,116 +305,82 @@ export default function transformCommonjs(
     }
   });
 
-  walk(ast, {
-    enter(node, parent) {
-      if (skippedNodes.has(node)) {
-        this.skip();
-        return;
+  // TODO Lukas extract this later
+  // First collect all required modules
+  const requiredByNode = new Map();
+  for (const { node, scope } of requireExpressionsAndScope) {
+    // TODO Lukas maybe create the required in one go and also improve "importsDefault" name
+    const required = getRequired(node, requireExpressionsWithUsedReturnValue.has(node));
+    requiredByNode.set(node, { scope, required });
+  }
+
+  const removedDeclarators = new Set();
+  // Then determine the used names and removed declarators
+  for (const declarator of topLevelRequireDeclarators) {
+    const { required } = requiredByNode.get(declarator.init);
+    if (!(required.name || required.isDynamic)) {
+      const potentialName = declarator.id.name;
+      // TODO Lukas we also need to check that not
+      // required.nodesUsingRequired.some(isUsedName) IF we can determine this is a local declaration
+      // Basically rewrite "contains"
+      if (!reassignedNames.has(potentialName)) {
+        required.name = potentialName;
+        // TODO Lukas test
+        moduleScope[potentialName] = true;
+        removedDeclarators.add(declarator);
       }
-
-      if (node.type === 'CallExpression' && isDefineCompiledEsm(node)) {
-        this.skip();
-        return;
-      }
-
-      programDepth += 1;
-      if (node.scope) ({ scope } = node);
-      if (functionType.test(node.type)) lexicalDepth += 1;
-
-      // rewrite `require` (if not already handled) `global` and `define`, and handle free references to
-      // `module` and `exports` as these mean we need to wrap the module in commonjsHelpers.createCommonjsModule
-      if (node.type === 'Identifier') {
-        if (isReference(node, parent) && !scope.contains(node.name)) {
-          // if module or exports are used outside the context of an assignment
-          // expression, we need to wrap the module
-          // TODO Lukas we need to add handling of assignment expressions to the top loop before migrating this
-          if (node.name === 'module' || node.name === 'exports') {
-            shouldWrap = true;
-          }
-        }
-
-        return;
-      }
-
-      // if this is a top level `var x = require('x')`, we can do `import x from 'x'`
-      if (
-        node.type === 'VariableDeclarator' &&
-        node.id.type === 'Identifier' &&
-        isStaticRequireStatement(node.init, scope) &&
-        !isIgnoredRequireStatement(node.init, ignoreRequire) &&
-        !scope.parent
-      ) {
-        // edge case — CJS allows you to assign to imports. ES doesn't
-        if (reassignedNames.has(node.id.name)) return;
-
-        const required = getRequired(node.init, scope, node.id.name);
-        required.importsDefault = true;
-
-        if (required.name === node.id.name && !required.isDynamic) {
-          removedDeclaratorsIfNotReassigned.add(node);
-        }
-      }
-
-      if (
-        !isStaticRequireStatement(node, scope) ||
-        isIgnoredRequireStatement(node, ignoreRequire)
-      ) {
-        return;
-      }
-
-      const required = getRequired(node, scope);
-
-      if (parent.type === 'ExpressionStatement') {
-        // is a bare import, e.g. `require('foo');`
-        magicString.remove(parent.start, parent.end);
-      } else {
-        required.importsDefault = true;
-
-        if (shouldUseSimulatedRequire(required, id, dynamicRequireModuleSet)) {
-          magicString.overwrite(
-            node.start,
-            node.end,
-            `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-              getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
-            )}, ${JSON.stringify(
-              dirname(id) === '.'
-                ? null /* default behavior */
-                : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
-            )})`
-          );
-          usesCommonjsHelpers = true;
-        } else {
-          magicString.overwrite(node.start, node.end, required.name);
-        }
-      }
-
-      skippedNodes.add(node.callee);
-    },
-
-    leave(node) {
-      if (node.type === 'VariableDeclaration' && !scope.parent) {
-        let keepDeclaration = false;
-        let { start } = node.declarations[0];
-
-        for (const declarator of node.declarations) {
-          if (removedDeclaratorsIfNotReassigned.has(declarator)) {
-            magicString.remove(start, declarator.end);
-          } else if (!keepDeclaration) {
-            magicString.remove(start, declarator.start);
-            keepDeclaration = true;
-          }
-          start = declarator.end;
-        }
-
-        if (!keepDeclaration) {
-          magicString.remove(node.start, node.end);
-        }
-      }
-      programDepth -= 1;
-      if (node.scope) scope = scope.parent;
-      if (functionType.test(node.type)) lexicalDepth -= 1;
     }
-  });
+  }
+
+  let uid = 0;
+  // Determine names where they are still missing and rewrite expressions
+  for (const requireExpression of requireExpressionsWithUsedReturnValue) {
+    const { required } = requiredByNode.get(requireExpression);
+    if (shouldUseSimulatedRequire(required, id, dynamicRequireModuleSet)) {
+      magicString.overwrite(
+        requireExpression.start,
+        requireExpression.end,
+        `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
+          getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
+        )}, ${JSON.stringify(
+          dirname(id) === '.'
+            ? null /* default behavior */
+            : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
+        )})`
+      );
+      usesCommonjsHelpers = true;
+    } else {
+      if (!required.name) {
+        let potentialName;
+        const isUsedName = (node) => requiredByNode.get(node).scope.contains(potentialName);
+        do {
+          potentialName = `require$$${uid}`;
+          uid += 1;
+        } while (required.nodesUsingRequired.some(isUsedName));
+        required.name = potentialName;
+        moduleScope[potentialName] = true;
+      }
+      magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
+    }
+  }
+
+  // Rewrite declarations, checking which declarators can be removed by their init
+  for (const declaration of topLevelDeclarations) {
+    let keepDeclaration = false;
+    let { start } = declaration.declarations[0];
+    for (const declarator of declaration.declarations) {
+      if (removedDeclarators.has(declarator)) {
+        magicString.remove(start, declarator.end);
+      } else if (!keepDeclaration) {
+        magicString.remove(start, declarator.start);
+        keepDeclaration = true;
+      }
+      start = declarator.end;
+    }
+    if (!keepDeclaration) {
+      magicString.remove(declaration.start, declaration.end);
+    }
+  }
 
   // If `isEsModule` is on, it means it has ES6 import/export statements,
   //   which just can't be wrapped in a function.
@@ -418,8 +425,8 @@ export default function transformCommonjs(
 
       // now the proxy modules
       requiredSources.map((source) => {
-        const { name, importsDefault } = requiredBySource[source];
-        return `import ${importsDefault ? `${name} from ` : ``}'${
+        const { name, nodesUsingRequired } = requiredBySource[source];
+        return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
           source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
         }';`;
       })
