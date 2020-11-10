@@ -2,9 +2,9 @@ import { extname } from 'path';
 
 import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
 
-import { RollupPluginHtmlOptions, RollupPluginHtmlTemplateOptions } from '../types';
+import { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
 
-const getFiles = (bundle: OutputBundle): RollupPluginHtmlTemplateOptions['files'] => {
+const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
   const files = Object.values(bundle).filter(
     (file) =>
       file.type === 'chunk' ||
@@ -15,16 +15,7 @@ const getFiles = (bundle: OutputBundle): RollupPluginHtmlTemplateOptions['files'
     const { fileName } = file;
     const extension = extname(fileName).substring(1);
 
-    switch (extension) {
-      case 'css':
-      case 'js':
-      case 'map':
-        result[extension] = (result[extension] || []).concat(file);
-        break;
-      default:
-        // TODO: verify if this branch can be reached or not.
-        break;
-    }
+    result[extension] = (result[extension] || []).concat(file);
   }
 
   return result;
@@ -46,7 +37,7 @@ const defaultTemplate = async ({
   meta,
   publicPath,
   title
-}: RollupPluginHtmlTemplateOptions) => {
+}: RollupHtmlTemplateOptions) => {
   const scripts = (files.js || [])
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
@@ -97,7 +88,7 @@ const defaults = {
   title: 'Rollup Bundle'
 };
 
-export default function html(opts: RollupPluginHtmlOptions = {}): Plugin {
+export default function html(opts: RollupHtmlOptions = {}): Plugin {
   const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
     {},
     defaults,
