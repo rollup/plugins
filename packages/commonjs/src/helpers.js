@@ -26,6 +26,10 @@ export const HELPERS_ID = '\0commonjsHelpers.js';
 const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+export function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
 export function createCommonjsModule(fn, basedir, module) {
 	return module = {
 		path: basedir,

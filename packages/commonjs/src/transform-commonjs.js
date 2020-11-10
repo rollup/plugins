@@ -58,7 +58,7 @@ export default function transformCommonjs(
   let programDepth = 0;
   let shouldWrap = false;
   let usesCommonjsHelpers = false;
-  let defineCompiledEsmExpression = null;
+  const defineCompiledEsmExpressions = [];
 
   const globals = new Set();
 
@@ -119,17 +119,15 @@ export default function transformCommonjs(
             // if this isn't top-level, we'll need to wrap the module
             if (programDepth > 3) {
               shouldWrap = true;
-            } else if (
-              exportsPatternMatch[1] === KEY_COMPILED_ESM &&
-              !defineCompiledEsmExpression
-            ) {
-              defineCompiledEsmExpression = parent;
+            } else if (exportsPatternMatch[1] === KEY_COMPILED_ESM) {
+              defineCompiledEsmExpressions.push(parent);
             }
 
             skippedNodes.add(node.left);
 
             // TODO Lukas can we get rid of __esModule if an object is assigned to module.exports?
             // or is this not needed as we would add it later anyway?
+            // At the very least, we can use this in our algorithm
             if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
               node.right.properties.forEach((prop) => {
                 if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
@@ -148,11 +146,10 @@ export default function transformCommonjs(
           break;
         case 'CallExpression': {
           if (isDefineCompiledEsm(node)) {
-            // TODO Lukas should we also check for the parent type?
-            if (programDepth === 3 && !defineCompiledEsmExpression) {
+            if (programDepth === 3 && parent.type === 'ExpressionStatement') {
               // skip special handling for [module.]exports until we know we render this
               skippedNodes.add(node.arguments[0]);
-              defineCompiledEsmExpression = parent;
+              defineCompiledEsmExpressions.push(parent);
             } else {
               shouldWrap = true;
             }
@@ -386,12 +383,17 @@ export default function transformCommonjs(
   //   which just can't be wrapped in a function.
   shouldWrap = shouldWrap && !disableWrap && !isEsModule;
 
-  if (defineCompiledEsmExpression) {
-    if (shouldWrap) {
-      uses.exports = true;
-      defineCompiledEsmExpression = null;
+  let isCompiledEsm = false;
+  if (defineCompiledEsmExpressions.length > 0) {
+    if (!shouldWrap && defineCompiledEsmExpressions.length === 1) {
+      isCompiledEsm = true;
+      magicString.remove(
+        defineCompiledEsmExpressions[0].start,
+        defineCompiledEsmExpressions[0].end
+      );
     } else {
-      magicString.remove(defineCompiledEsmExpression.start, defineCompiledEsmExpression.end);
+      shouldWrap = true;
+      uses.exports = true;
     }
   }
 
@@ -408,30 +410,6 @@ export default function transformCommonjs(
   ) {
     return { meta: { commonjs: { isCommonJS: false } } };
   }
-
-  const importBlock = `${(usesCommonjsHelpers
-    ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
-    : []
-  )
-    .concat(
-      // dynamic registers first, as the may be required in the other modules
-      dynamicRegisterSources.map((source) => `import '${source}';`),
-
-      // now the actual modules so that they are analyzed before creating the proxies;
-      // no need to do this for virtual modules as we never proxy them
-      requiredSources
-        .filter((source) => !source.startsWith('\0'))
-        .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
-
-      // now the proxy modules
-      requiredSources.map((source) => {
-        const { name, nodesUsingRequired } = requiredBySource[source];
-        return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
-          source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
-        }';`;
-      })
-    )
-    .join('\n')}\n\n`;
 
   const namedExportDeclarations = [];
   let wrapperStart = '';
@@ -518,7 +496,7 @@ export default function transformCommonjs(
         .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
         .join(',\n')}\n}`;
       wrapperEnd = `\n\nvar ${moduleName} = ${
-        defineCompiledEsmExpression
+        isCompiledEsm
           ? `/*#__PURE__*/Object.defineProperty(${moduleExports}, '__esModule', {value: true})`
           : moduleExports
       };`;
@@ -534,29 +512,58 @@ export default function transformCommonjs(
     namedExportDeclarations.unshift(exportModuleExports);
   }
 
-  magicString
-    .trim()
-    .prepend(importBlock + wrapperStart)
-    .trim()
-    .append(wrapperEnd);
-
   const defaultExport = [];
-  if (defineCompiledEsmExpression && deconflictedDefaultExportName) {
-    defaultExport.push(`export default ${deconflictedDefaultExportName};`);
-  } else if (!isEsModule) {
-    defaultExport.push(`export default ${moduleName};`);
+  if (!isEsModule) {
+    if (isCompiledEsm) {
+      defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
+    } else if (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0) {
+      usesCommonjsHelpers = true;
+      defaultExport.push(
+        `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
+      );
+    } else {
+      defaultExport.push(`export default ${moduleName};`);
+    }
   }
 
   const named = namedExportDeclarations
     .filter((x) => x.name !== 'default' || !hasDefaultExport)
     .map((x) => x.str);
 
-  magicString.append(
-    `\n\n${defaultExport
-      .concat(named)
-      .concat(hasDefaultExport ? defaultExportPropertyAssignments : [])
-      .join('\n')}`
-  );
+  const importBlock = `${(usesCommonjsHelpers
+    ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
+    : []
+  )
+    .concat(
+      // dynamic registers first, as the may be required in the other modules
+      dynamicRegisterSources.map((source) => `import '${source}';`),
+
+      // now the actual modules so that they are analyzed before creating the proxies;
+      // no need to do this for virtual modules as we never proxy them
+      requiredSources
+        .filter((source) => !source.startsWith('\0'))
+        .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
+
+      // now the proxy modules
+      requiredSources.map((source) => {
+        const { name, nodesUsingRequired } = requiredBySource[source];
+        return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
+          source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
+        }';`;
+      })
+    )
+    .join('\n')}\n\n`;
+
+  magicString
+    .trim()
+    .prepend(importBlock + wrapperStart)
+    .trim()
+    .append(
+      `${wrapperEnd}\n\n${defaultExport
+        .concat(named)
+        .concat(hasDefaultExport ? defaultExportPropertyAssignments : [])
+        .join('\n')}`
+    );
 
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
