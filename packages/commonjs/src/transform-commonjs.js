@@ -9,18 +9,21 @@ import MagicString from 'magic-string';
 import {
   getDefinePropertyCallName,
   getKeypath,
-  getRequireHandlers,
   isDefineCompiledEsm,
   isFalsy,
+  isLocallyShadowed,
+  isReference,
+  isTruthy,
+  KEY_COMPILED_ESM
+} from './ast-utils';
+import {
+  getRequireHandlers,
   isIgnoredRequireStatement,
   isNodeRequirePropertyAccess,
-  isReference,
   isRequireStatement,
   isStaticRequireStatement,
-  isTruthy,
-  KEY_COMPILED_ESM,
   shouldUseSimulatedRequire
-} from './ast-utils';
+} from './handle-require-expressions';
 import {
   getVirtualPathForDynamicRequirePath,
   HELPERS_ID,
@@ -51,9 +54,8 @@ export default function transformCommonjs(
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
-  const moduleScope = attachScopes(ast, 'scope');
   const uses = { module: false, exports: false, global: false, require: false };
-  let scope = moduleScope;
+  let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
   let shouldWrap = false;
@@ -67,22 +69,20 @@ export default function transformCommonjs(
   const namedExports = {};
 
   const {
-    getRequired,
+    addRequireStatement,
+    dynamicRegisterSources,
+    requiredByNode,
     requiredBySource,
     requiredSources,
-    dynamicRegisterSources
+    requireExpressionsWithUsedReturnValue
   } = getRequireHandlers(id, dynamicRequireModuleSet);
 
   // See which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
   // where `foo` is later reassigned. (This happens in the wild. CommonJS, sigh)
   const reassignedNames = new Set();
-
   const topLevelDeclarations = [];
   const topLevelRequireDeclarators = new Set();
-  const requireExpressionsAndScope = [];
-  const requireExpressionsWithUsedReturnValue = new Set();
-
   const skippedNodes = new Set();
 
   walk(ast, {
@@ -166,13 +166,10 @@ export default function transformCommonjs(
             isStaticRequireStatement(node, scope) &&
             !isIgnoredRequireStatement(node, ignoreRequire)
           ) {
-            requireExpressionsAndScope.push({ node, scope });
             skippedNodes.add(node.callee);
-            if (parent.type === 'ExpressionStatement') {
-              // This is a bare import, e.g. `require('foo');`
-              magicString.remove(parent.start, parent.end);
-            } else {
-              requireExpressionsWithUsedReturnValue.add(node);
+            const usesReturnValue = parent.type !== 'ExpressionStatement';
+            addRequireStatement(node, scope, usesReturnValue);
+            if (usesReturnValue) {
               if (
                 parent.type === 'VariableDeclarator' &&
                 !scope.parent &&
@@ -183,6 +180,9 @@ export default function transformCommonjs(
                 // TODO Lukas test the latter
                 topLevelRequireDeclarators.add(parent);
               }
+            } else {
+              // This is a bare import, e.g. `require('foo');`
+              magicString.remove(parent.start, parent.end);
             }
           }
           break;
@@ -303,34 +303,26 @@ export default function transformCommonjs(
   });
 
   // TODO Lukas extract this later
-  // First collect all required modules
-  const requiredByNode = new Map();
-  for (const { node, scope } of requireExpressionsAndScope) {
-    // TODO Lukas maybe create the required in one go and also improve "importsDefault" name
-    const required = getRequired(node, requireExpressionsWithUsedReturnValue.has(node));
-    requiredByNode.set(node, { scope, required });
-  }
-
+  // Determine the used names and removed declarators
   const removedDeclarators = new Set();
-  // Then determine the used names and removed declarators
   for (const declarator of topLevelRequireDeclarators) {
     const { required } = requiredByNode.get(declarator.init);
     if (!(required.name || required.isDynamic)) {
       const potentialName = declarator.id.name;
-      // TODO Lukas we also need to check that not
-      // required.nodesUsingRequired.some(isUsedName) IF we can determine this is a local declaration
-      // Basically rewrite "contains"
-      if (!reassignedNames.has(potentialName)) {
+      if (
+        !reassignedNames.has(potentialName) &&
+        !required.nodesUsingRequired.some((node) =>
+          isLocallyShadowed(potentialName, requiredByNode.get(node).scope)
+        )
+      ) {
         required.name = potentialName;
-        // TODO Lukas test
-        moduleScope[potentialName] = true;
         removedDeclarators.add(declarator);
       }
     }
   }
 
-  let uid = 0;
   // Determine names where they are still missing and rewrite expressions
+  let uid = 0;
   for (const requireExpression of requireExpressionsWithUsedReturnValue) {
     const { required } = requiredByNode.get(requireExpression);
     if (shouldUseSimulatedRequire(required, id, dynamicRequireModuleSet)) {
@@ -345,6 +337,7 @@ export default function transformCommonjs(
             : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
         )})`
       );
+      // TODO Lukas if we add this to "uses", we may actually extract it
       usesCommonjsHelpers = true;
     } else {
       if (!required.name) {
@@ -355,7 +348,6 @@ export default function transformCommonjs(
           uid += 1;
         } while (required.nodesUsingRequired.some(isUsedName));
         required.name = potentialName;
-        moduleScope[potentialName] = true;
       }
       magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
     }
@@ -567,7 +559,6 @@ export default function transformCommonjs(
 
   code = magicString.toString();
   const map = sourceMap ? magicString.generateMap() : null;
-
   return {
     code,
     map,
