@@ -11,7 +11,6 @@ import {
   getKeypath,
   isDefineCompiledEsm,
   isFalsy,
-  isLocallyShadowed,
   isReference,
   isTruthy,
   KEY_COMPILED_ESM
@@ -21,8 +20,7 @@ import {
   isIgnoredRequireStatement,
   isNodeRequirePropertyAccess,
   isRequireStatement,
-  isStaticRequireStatement,
-  shouldUseSimulatedRequire
+  isStaticRequireStatement
 } from './handle-require-expressions';
 import {
   getVirtualPathForDynamicRequirePath,
@@ -76,10 +74,9 @@ export default function transformCommonjs(
   const {
     addRequireStatement,
     dynamicRegisterSources,
-    requiredByNode,
     requiredBySource,
     requiredSources,
-    requireExpressionsWithUsedReturnValue
+    rewriteRequireExpressions
   } = getRequireHandlers(id, dynamicRequireModuleSet);
 
   // See which names are assigned to. This is necessary to prevent
@@ -310,78 +307,6 @@ export default function transformCommonjs(
     }
   });
 
-  // TODO Lukas extract this later
-  // Determine the used names and removed declarators
-  const removedDeclarators = new Set();
-  for (const declarator of topLevelRequireDeclarators) {
-    const { required } = requiredByNode.get(declarator.init);
-    if (!(required.name || required.isDynamic)) {
-      const potentialName = declarator.id.name;
-      if (
-        !reassignedNames.has(potentialName) &&
-        !required.nodesUsingRequired.some((node) =>
-          isLocallyShadowed(potentialName, requiredByNode.get(node).scope)
-        )
-      ) {
-        required.name = potentialName;
-        removedDeclarators.add(declarator);
-      }
-    }
-  }
-
-  // Determine names where they are still missing and rewrite expressions
-  let uid = 0;
-  for (const requireExpression of requireExpressionsWithUsedReturnValue) {
-    const { required } = requiredByNode.get(requireExpression);
-    if (shouldUseSimulatedRequire(required, id, dynamicRequireModuleSet)) {
-      magicString.overwrite(
-        requireExpression.start,
-        requireExpression.end,
-        `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-          getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
-        )}, ${JSON.stringify(
-          dirname(id) === '.'
-            ? null /* default behavior */
-            : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
-        )})`
-      );
-      uses.commonjsHelpers = true;
-    } else {
-      if (!required.name) {
-        let potentialName;
-        const isUsedName = (node) => requiredByNode.get(node).scope.contains(potentialName);
-        do {
-          potentialName = `require$$${uid}`;
-          uid += 1;
-        } while (required.nodesUsingRequired.some(isUsedName));
-        required.name = potentialName;
-      }
-      magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
-    }
-  }
-
-  // Rewrite declarations, checking which declarators can be removed by their init
-  for (const declaration of topLevelDeclarations) {
-    let keepDeclaration = false;
-    let { start } = declaration.declarations[0];
-    for (const declarator of declaration.declarations) {
-      if (removedDeclarators.has(declarator)) {
-        magicString.remove(start, declarator.end);
-      } else if (!keepDeclaration) {
-        magicString.remove(start, declarator.start);
-        keepDeclaration = true;
-      }
-      start = declarator.end;
-    }
-    if (!keepDeclaration) {
-      magicString.remove(declaration.start, declaration.end);
-    }
-  }
-
-  // If `isEsModule` is on, it means it has ES6 import/export statements,
-  //   which just can't be wrapped in a function.
-  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
-
   let isCompiledEsm = false;
   if (defineCompiledEsmExpressions.length > 0) {
     if (!shouldWrap && defineCompiledEsmExpressions.length === 1) {
@@ -396,15 +321,29 @@ export default function transformCommonjs(
     }
   }
 
+  // We cannot wrap ES/mixed modules
+  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
   uses.commonjsHelpers = uses.commonjsHelpers || shouldWrap;
 
+  rewriteRequireExpressions(
+    magicString,
+    topLevelDeclarations,
+    topLevelRequireDeclarators,
+    reassignedNames,
+    commonDir,
+    uses,
+    HELPERS_NAME
+  );
+
   if (
-    !requiredSources.length &&
-    !dynamicRegisterSources.length &&
-    !uses.module &&
-    !uses.exports &&
-    !uses.require &&
-    !uses.commonjsHelpers &&
+    !(
+      requiredSources.length ||
+      dynamicRegisterSources.length ||
+      uses.module ||
+      uses.exports ||
+      uses.require ||
+      uses.commonjsHelpers
+    ) &&
     (ignoreGlobal || !uses.global)
   ) {
     return { meta: { commonjs: { isCommonJS: false } } };
@@ -433,6 +372,7 @@ export default function transformCommonjs(
 
     wrapperEnd += `);`;
   } else {
+    // TODO Lukas extract logic to generate exports
     const names = [];
 
     for (const { left } of topLevelModuleExportsAssignments) {
@@ -441,9 +381,7 @@ export default function transformCommonjs(
     }
     for (const [exportName, node] of topLevelExportsAssignmentsByName) {
       const deconflicted = deconflict(scope, globals, exportName);
-
       names.push({ exportName, deconflicted });
-
       magicString.overwrite(node.start, node.left.end, `var ${deconflicted}`);
 
       const declaration =
