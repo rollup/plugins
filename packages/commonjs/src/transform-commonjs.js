@@ -84,6 +84,8 @@ export default function transformCommonjs(
   const topLevelDeclarations = [];
   const topLevelRequireDeclarators = new Set();
   const skippedNodes = new Set();
+  const topLevelModuleExportsAssignments = [];
+  const topLevelExportsAssignmentsByName = new Map();
 
   walk(ast, {
     enter(node, parent) {
@@ -110,17 +112,24 @@ export default function transformCommonjs(
 
             const exportsPatternMatch = exportsPattern.exec(flattened.keypath);
             if (!exportsPatternMatch || flattened.keypath === 'exports') return;
+            const [, exportName] = exportsPatternMatch;
 
             // TODO Lukas do not declare we are using module or exports unless we do
             // not remove this
             uses[flattened.name] = true;
 
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
-            // if this isn't top-level, we'll need to wrap the module
+            // if this isn't top-level or reassigns an export, we'll need to wrap the module
             if (programDepth > 3) {
               shouldWrap = true;
-            } else if (exportsPatternMatch[1] === KEY_COMPILED_ESM) {
+            } else if (exportName === KEY_COMPILED_ESM) {
               defineCompiledEsmExpressions.push(parent);
+            } else if (flattened.keypath === 'module.exports') {
+              topLevelModuleExportsAssignments.push(node);
+            } else if (!topLevelExportsAssignmentsByName.has(exportName)) {
+              topLevelExportsAssignmentsByName.set(exportName, node);
+            } else {
+              shouldWrap = true;
             }
 
             skippedNodes.add(node.left);
@@ -429,63 +438,40 @@ export default function transformCommonjs(
     const names = [];
 
     // TODO Lukas
-    //  * collect all relevant top-level AssignmentExpressions while analyzing above instead of looping again and repeating all the checks
     // * If there is more than one assignment, only the first becomes a declaration
     // * If there are nested assignments, create a separate declaration at the top
     // * Handle reading the variable
-    for (const node of ast.body) {
-      if (node.type === 'ExpressionStatement' && node.expression.type === 'AssignmentExpression') {
-        const { left } = node.expression;
-        const flattened = getKeypath(left);
+    for (const { left } of topLevelModuleExportsAssignments) {
+      hasDefaultExport = true;
+      magicString.overwrite(left.start, left.end, `var ${moduleName}`);
+    }
+    for (const [exportName, node] of topLevelExportsAssignmentsByName) {
+      const deconflicted = deconflict(scope, globals, exportName);
 
-        if (!flattened) {
-          continue;
-        }
+      names.push({ exportName, deconflicted });
 
-        const match = exportsPattern.exec(flattened.keypath);
-        if (!match) {
-          continue;
-        }
+      magicString.overwrite(node.start, node.left.end, `var ${deconflicted}`);
 
-        if (flattened.keypath === 'module.exports') {
-          hasDefaultExport = true;
-          magicString.overwrite(left.start, left.end, `var ${moduleName}`);
-        } else {
-          const [, name] = match;
+      const declaration =
+        exportName === deconflicted
+          ? `export { ${exportName} };`
+          : `export { ${deconflicted} as ${exportName} };`;
 
-          if (name !== KEY_COMPILED_ESM) {
-            const deconflicted = deconflict(scope, globals, name);
-
-            names.push({ name, deconflicted });
-
-            magicString.overwrite(node.start, left.end, `var ${deconflicted}`);
-
-            const declaration =
-              name === deconflicted
-                ? `export { ${name} };`
-                : `export { ${deconflicted} as ${name} };`;
-
-            if (name !== 'default') {
-              namedExportDeclarations.push({
-                str: declaration,
-                name
-              });
-            } else {
-              deconflictedDefaultExportName = deconflicted;
-            }
-
-            defaultExportPropertyAssignments.push(`${moduleName}.${name} = ${deconflicted};`);
-          } else {
-            magicString.remove(node.start, node.end);
-          }
-        }
+      if (exportName !== 'default') {
+        namedExportDeclarations.push({
+          str: declaration,
+          exportName
+        });
+      } else {
+        deconflictedDefaultExportName = deconflicted;
       }
+
+      defaultExportPropertyAssignments.push(`${moduleName}.${exportName} = ${deconflicted};`);
     }
 
-    // TODO Lukas maybe we can use getters for mutable values?
     if (!isEsModule && !hasDefaultExport) {
       const moduleExports = `{\n${names
-        .map(({ name, deconflicted }) => `\t${name}: ${deconflicted}`)
+        .map(({ exportName, deconflicted }) => `\t${exportName}: ${deconflicted}`)
         .join(',\n')}\n}`;
       wrapperEnd = `\n\nvar ${moduleName} = ${
         isCompiledEsm
