@@ -104,8 +104,7 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
   const requiredByNode = new Map();
   const requireExpressionsWithUsedReturnValue = [];
 
-  // TODO Lukas this is assymetric with regard to "usesRequired": Do this manually outside?
-  function getRequired(node, usesRequired) {
+  function getRequired(node) {
     let sourceId = getRequireStringArg(node);
     const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
     if (isDynamicRegister) {
@@ -134,17 +133,14 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
       };
     }
 
-    const required = requiredBySource[sourceId];
-    if (usesRequired) {
-      required.nodesUsingRequired.push(node);
-    }
-    return required;
+    return requiredBySource[sourceId];
   }
 
   function addRequireStatement(node, scope, usesReturnValue) {
-    const required = getRequired(node, usesReturnValue);
+    const required = getRequired(node);
     requiredByNode.set(node, { scope, required });
     if (usesReturnValue) {
+      required.nodesUsingRequired.push(node);
       requireExpressionsWithUsedReturnValue.push(node);
     }
   }

@@ -54,12 +54,17 @@ export default function transformCommonjs(
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
-  const uses = { module: false, exports: false, global: false, require: false };
+  const uses = {
+    module: false,
+    exports: false,
+    global: false,
+    require: false,
+    commonjsHelpers: false
+  };
   let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
   let shouldWrap = false;
-  let usesCommonjsHelpers = false;
   const defineCompiledEsmExpressions = [];
 
   const globals = new Set();
@@ -114,8 +119,6 @@ export default function transformCommonjs(
             if (!exportsPatternMatch || flattened.keypath === 'exports') return;
             const [, exportName] = exportsPatternMatch;
 
-            // TODO Lukas do not declare we are using module or exports unless we do
-            // not remove this
             uses[flattened.name] = true;
 
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
@@ -134,9 +137,6 @@ export default function transformCommonjs(
 
             skippedNodes.add(node.left);
 
-            // TODO Lukas can we get rid of __esModule if an object is assigned to module.exports?
-            // or is this not needed as we would add it later anyway?
-            // At the very least, we can use this in our algorithm
             if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
               node.right.properties.forEach((prop) => {
                 if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
@@ -186,7 +186,6 @@ export default function transformCommonjs(
               ) {
                 // This will allow us to reuse this variable name as the imported variable if it is not reassigned
                 // and does not conflict with variables in other places where this is imported
-                // TODO Lukas test the latter
                 topLevelRequireDeclarators.add(parent);
               }
             } else {
@@ -235,7 +234,7 @@ export default function transformCommonjs(
                   magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
                     storeName: true
                   });
-                  usesCommonjsHelpers = true;
+                  uses.commonjsHelpers = true;
                   break;
                 case 'module':
                 case 'exports':
@@ -248,7 +247,7 @@ export default function transformCommonjs(
                     magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                       storeName: true
                     });
-                    usesCommonjsHelpers = true;
+                    uses.commonjsHelpers = true;
                   }
                   break;
                 case 'define':
@@ -274,7 +273,7 @@ export default function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                 storeName: true
               });
-              usesCommonjsHelpers = true;
+              uses.commonjsHelpers = true;
             }
           }
           break;
@@ -346,8 +345,7 @@ export default function transformCommonjs(
             : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
         )})`
       );
-      // TODO Lukas if we add this to "uses", we may actually extract it
-      usesCommonjsHelpers = true;
+      uses.commonjsHelpers = true;
     } else {
       if (!required.name) {
         let potentialName;
@@ -398,7 +396,7 @@ export default function transformCommonjs(
     }
   }
 
-  usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
+  uses.commonjsHelpers = uses.commonjsHelpers || shouldWrap;
 
   if (
     !requiredSources.length &&
@@ -406,7 +404,7 @@ export default function transformCommonjs(
     !uses.module &&
     !uses.exports &&
     !uses.require &&
-    !usesCommonjsHelpers &&
+    !uses.commonjsHelpers &&
     (ignoreGlobal || !uses.global)
   ) {
     return { meta: { commonjs: { isCommonJS: false } } };
@@ -437,10 +435,6 @@ export default function transformCommonjs(
   } else {
     const names = [];
 
-    // TODO Lukas
-    // * If there is more than one assignment, only the first becomes a declaration
-    // * If there are nested assignments, create a separate declaration at the top
-    // * Handle reading the variable
     for (const { left } of topLevelModuleExportsAssignments) {
       hasDefaultExport = true;
       magicString.overwrite(left.start, left.end, `var ${moduleName}`);
@@ -495,7 +489,7 @@ export default function transformCommonjs(
     if (isCompiledEsm) {
       defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
     } else if (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0) {
-      usesCommonjsHelpers = true;
+      uses.commonjsHelpers = true;
       defaultExport.push(
         `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
       );
@@ -508,7 +502,7 @@ export default function transformCommonjs(
     .filter((x) => x.name !== 'default' || !hasDefaultExport)
     .map((x) => x.str);
 
-  const importBlock = `${(usesCommonjsHelpers
+  const importBlock = `${(uses.commonjsHelpers
     ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
     : []
   )
