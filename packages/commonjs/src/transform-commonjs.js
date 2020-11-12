@@ -18,6 +18,7 @@ import {
 import {
   getRequireHandlers,
   isIgnoredRequireStatement,
+  isModuleRequire,
   isNodeRequirePropertyAccess,
   isRequireStatement,
   isStaticRequireStatement
@@ -254,6 +255,16 @@ export default function transformCommonjs(
                   globals.add(name);
               }
             }
+          }
+          break;
+        case 'MemberExpression':
+          if (!isDynamicRequireModulesEnabled && isModuleRequire(node, scope)) {
+            magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+              storeName: true
+            });
+            uses.commonjsHelpers = true;
+            skippedNodes.add(node.object);
+            skippedNodes.add(node.property);
           }
           break;
         case 'ReturnStatement':

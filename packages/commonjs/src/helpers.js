@@ -30,16 +30,6 @@ export function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-export function createCommonjsModule(fn, basedir, module) {
-	return module = {
-		path: basedir,
-		exports: {},
-		require: function (path, base) {
-			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
-		}
-	}, fn(module, module.exports), module.exports;
-}
-
 export function getDefaultExportFromNamespaceIfPresent (n) {
 	return n && Object.prototype.hasOwnProperty.call(n, 'default') ? n['default'] : n;
 }
@@ -65,12 +55,27 @@ export function getAugmentedNamespace(n) {
 `;
 
 const HELPER_NON_DYNAMIC = `
+export function createCommonjsModule(fn) {
+  var module = { exports: {} }
+	return fn(module, module.exports), module.exports;
+}
+
 export function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
 }
 `;
 
 const HELPERS_DYNAMIC = `
+export function createCommonjsModule(fn, basedir, module) {
+	return module = {
+		path: basedir,
+		exports: {},
+		require: function (path, base) {
+			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+		}
+	}, fn(module, module.exports), module.exports;
+}
+
 export function commonjsRegister (path, loader) {
 	DYNAMIC_REQUIRE_LOADERS[path] = loader;
 }

@@ -18,27 +18,24 @@ export function isRequireStatement(node, scope) {
   // Weird case of `require()` or `module.require()` without arguments
   if (node.arguments.length === 0) return false;
 
-  return isRequireIdentifier(node.callee, scope);
+  return isRequire(node.callee, scope);
 }
 
-export function isRequireIdentifier(node, scope) {
-  if (!node) return false;
+function isRequire(node, scope) {
+  return (
+    (node.type === 'Identifier' && node.name === 'require' && !scope.contains('require')) ||
+    (node.type === 'MemberExpression' && isModuleRequire(node, scope))
+  );
+}
 
-  if (node.type === 'Identifier' && node.name === 'require' /* `require` */) {
-    // `require` may be hidden by a variable in local scope
-    return !scope.contains('require');
-  } else if (node.type === 'MemberExpression' /* `[something].[something]` */) {
-    // `module.[something]`
-    if (node.object.type !== 'Identifier' || node.object.name !== 'module') return false;
-
-    // `module` is hidden by a variable in local scope
-    if (scope.contains('module')) return false;
-
-    // `module.require(...)`
-    return node.property.type === 'Identifier' && node.property.name === 'require';
-  }
-
-  return false;
+export function isModuleRequire({ object, property }, scope) {
+  return (
+    object.type === 'Identifier' &&
+    object.name === 'module' &&
+    property.type === 'Identifier' &&
+    property.name === 'require' &&
+    !scope.contains('module')
+  );
 }
 
 export function isStaticRequireStatement(node, scope) {
