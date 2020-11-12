@@ -384,18 +384,16 @@ export default function transformCommonjs(
       names.push({ exportName, deconflicted });
       magicString.overwrite(node.start, node.left.end, `var ${deconflicted}`);
 
-      const declaration =
-        exportName === deconflicted
-          ? `export { ${exportName} };`
-          : `export { ${deconflicted} as ${exportName} };`;
-
-      if (exportName !== 'default') {
+      if (exportName === 'default') {
+        deconflictedDefaultExportName = deconflicted;
+      } else {
         namedExportDeclarations.push({
-          str: declaration,
+          str:
+            exportName === deconflicted
+              ? `export { ${exportName} };`
+              : `export { ${deconflicted} as ${exportName} };`,
           exportName
         });
-      } else {
-        deconflictedDefaultExportName = deconflicted;
       }
 
       defaultExportPropertyAssignments.push(`${moduleName}.${exportName} = ${deconflicted};`);
@@ -426,7 +424,10 @@ export default function transformCommonjs(
   if (!isEsModule) {
     if (isCompiledEsm) {
       defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
-    } else if (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0) {
+    } else if (
+      (shouldWrap || deconflictedDefaultExportName) &&
+      (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0)
+    ) {
       uses.commonjsHelpers = true;
       defaultExport.push(
         `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
