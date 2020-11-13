@@ -3,6 +3,7 @@ import bar from '_bar?commonjs-proxy';
 
 var foo = require( 'foo' );
 
+
 var input = {
 
 };

@@ -15,6 +15,7 @@ import {
   isTruthy,
   KEY_COMPILED_ESM
 } from './ast-utils';
+import { rewriteExportsAndAppendExportsBlock, wrapCode } from './generate-exports';
 import {
   getRequireHandlers,
   getRequireStringArg,
@@ -24,14 +25,10 @@ import {
   isNodeRequirePropertyAccess,
   isRequireStatement,
   isStaticRequireStatement
-} from './handle-require-expressions';
-import {
-  DYNAMIC_JSON_PREFIX,
-  DYNAMIC_REGISTER_PREFIX,
-  getVirtualPathForDynamicRequirePath
-} from './helpers';
+} from './generate-imports';
+import { DYNAMIC_JSON_PREFIX, DYNAMIC_REGISTER_PREFIX } from './helpers';
 import { tryParse } from './parse';
-import { deconflict, getName, normalizePathSlashes } from './utils';
+import { deconflict, getName, getVirtualPathForDynamicRequirePath } from './utils';
 
 const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/;
 
@@ -57,13 +54,15 @@ export default function transformCommonjs(
     module: false,
     exports: false,
     global: false,
-    require: false
+    require: false,
+    commonjsHelpers: false
   };
+  const virtualDynamicRequirePath =
+    isDynamicRequireModulesEnabled && getVirtualPathForDynamicRequirePath(dirname(id), commonDir);
   let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
   let shouldWrap = false;
-  let usesCommonjsHelpers = false;
   const defineCompiledEsmExpressions = [];
 
   const globals = new Set();
@@ -76,7 +75,7 @@ export default function transformCommonjs(
   const {
     addRequireStatement,
     requiredSources,
-    rewriteRequireExpressionsAndGetImportBlock
+    rewriteRequireExpressionsAndPrependImportBlock
   } = getRequireHandlers();
 
   // See which names are assigned to. This is necessary to prevent
@@ -191,17 +190,12 @@ export default function transformCommonjs(
                   node.start,
                   node.end,
                   `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-                    getVirtualPathForDynamicRequirePath(normalizePathSlashes(sourceId), commonDir)
+                    getVirtualPathForDynamicRequirePath(sourceId, commonDir)
                   )}, ${JSON.stringify(
-                    dirname(id) === '.'
-                      ? null /* default behavior */
-                      : getVirtualPathForDynamicRequirePath(
-                          normalizePathSlashes(dirname(id)),
-                          commonDir
-                        )
+                    dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
                   )})`
                 );
-                usesCommonjsHelpers = true;
+                uses.commonjsHelpers = true;
                 return;
               }
               addRequireStatement(sourceId, node, scope, usesReturnValue);
@@ -244,12 +238,7 @@ export default function transformCommonjs(
                 magicString.appendLeft(
                   parent.end - 1,
                   `,${JSON.stringify(
-                    dirname(id) === '.'
-                      ? null /* default behavior */
-                      : getVirtualPathForDynamicRequirePath(
-                          normalizePathSlashes(dirname(id)),
-                          commonDir
-                        )
+                    dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
                   )}`
                 );
               }
@@ -257,7 +246,7 @@ export default function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
                 storeName: true
               });
-              usesCommonjsHelpers = true;
+              uses.commonjsHelpers = true;
               return;
             case 'module':
             case 'exports':
@@ -270,7 +259,7 @@ export default function transformCommonjs(
                 magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                   storeName: true
                 });
-                usesCommonjsHelpers = true;
+                uses.commonjsHelpers = true;
               }
               return;
             case 'define':
@@ -286,7 +275,7 @@ export default function transformCommonjs(
             magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
               storeName: true
             });
-            usesCommonjsHelpers = true;
+            uses.commonjsHelpers = true;
             skippedNodes.add(node.object);
             skippedNodes.add(node.property);
           }
@@ -305,7 +294,7 @@ export default function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                 storeName: true
               });
-              usesCommonjsHelpers = true;
+              uses.commonjsHelpers = true;
             }
           }
           return;
@@ -340,10 +329,10 @@ export default function transformCommonjs(
     }
   });
 
-  let isCompiledEsm = false;
+  let isRestorableCompiledEsm = false;
   if (defineCompiledEsmExpressions.length > 0) {
     if (!shouldWrap && defineCompiledEsmExpressions.length === 1) {
-      isCompiledEsm = true;
+      isRestorableCompiledEsm = true;
       magicString.remove(
         defineCompiledEsmExpressions[0].start,
         defineCompiledEsmExpressions[0].end
@@ -356,7 +345,7 @@ export default function transformCommonjs(
 
   // We cannot wrap ES/mixed modules
   shouldWrap = shouldWrap && !disableWrap && !isEsModule;
-  usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
+  uses.commonjsHelpers = uses.commonjsHelpers || shouldWrap;
 
   if (
     !(
@@ -365,124 +354,42 @@ export default function transformCommonjs(
       uses.module ||
       uses.exports ||
       uses.require ||
-      usesCommonjsHelpers
+      uses.commonjsHelpers
     ) &&
     (ignoreGlobal || !uses.global)
   ) {
     return { meta: { commonjs: { isCommonJS: false } } };
   }
 
-  const namedExportDeclarations = [];
-  let wrapperStart = '';
-  let wrapperEnd = '';
-
   const moduleName = deconflict(scope, globals, getName(id));
-  const defaultExportPropertyAssignments = [];
-  let hasDefaultExport = false;
-  let deconflictedDefaultExportName;
-
   if (shouldWrap) {
-    const args = `module${uses.exports ? ', exports' : ''}`;
-
-    wrapperStart = `var ${moduleName} = ${HELPERS_NAME}.createCommonjsModule(function (${args}) {\n`;
-
-    wrapperEnd = `\n}`;
-    if (isDynamicRequireModulesEnabled) {
-      wrapperEnd += `, ${JSON.stringify(
-        getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
-      )}`;
-    }
-
-    wrapperEnd += `);`;
-  } else {
-    // TODO Lukas extract logic to generate exports
-    const names = [];
-
-    for (const { left } of topLevelModuleExportsAssignments) {
-      hasDefaultExport = true;
-      magicString.overwrite(left.start, left.end, `var ${moduleName}`);
-    }
-    for (const [exportName, node] of topLevelExportsAssignmentsByName) {
-      const deconflicted = deconflict(scope, globals, exportName);
-      names.push({ exportName, deconflicted });
-      magicString.overwrite(node.start, node.left.end, `var ${deconflicted}`);
-
-      if (exportName === 'default') {
-        deconflictedDefaultExportName = deconflicted;
-      } else {
-        namedExportDeclarations.push({
-          str:
-            exportName === deconflicted
-              ? `export { ${exportName} };`
-              : `export { ${deconflicted} as ${exportName} };`,
-          exportName
-        });
-      }
-
-      defaultExportPropertyAssignments.push(`${moduleName}.${exportName} = ${deconflicted};`);
-    }
-
-    if (!isEsModule && !hasDefaultExport) {
-      const moduleExports = `{\n${names
-        .map(({ exportName, deconflicted }) => `\t${exportName}: ${deconflicted}`)
-        .join(',\n')}\n}`;
-      wrapperEnd = `\n\nvar ${moduleName} = ${
-        isCompiledEsm
-          ? `/*#__PURE__*/Object.defineProperty(${moduleExports}, '__esModule', {value: true})`
-          : moduleExports
-      };`;
-    }
+    wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDynamicRequirePath);
   }
 
   if (!isEsModule) {
-    const exportModuleExports = {
-      str: `export { ${moduleName} as __moduleExports };`,
-      name: '__moduleExports'
-    };
-
-    namedExportDeclarations.unshift(exportModuleExports);
+    rewriteExportsAndAppendExportsBlock(
+      magicString,
+      moduleName,
+      shouldWrap,
+      topLevelModuleExportsAssignments,
+      topLevelExportsAssignmentsByName,
+      defineCompiledEsmExpressions,
+      (name) => deconflict(scope, globals, name),
+      isRestorableCompiledEsm,
+      code,
+      uses,
+      HELPERS_NAME
+    );
   }
 
-  const defaultExport = [];
-  if (!isEsModule) {
-    if (isCompiledEsm) {
-      defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
-    } else if (
-      (shouldWrap || deconflictedDefaultExportName) &&
-      (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0)
-    ) {
-      usesCommonjsHelpers = true;
-      defaultExport.push(
-        `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
-      );
-    } else {
-      defaultExport.push(`export default ${moduleName};`);
-    }
-  }
-
-  const named = namedExportDeclarations
-    .filter((x) => x.name !== 'default' || !hasDefaultExport)
-    .map((x) => x.str);
-
-  const importBlock = rewriteRequireExpressionsAndGetImportBlock(
+  rewriteRequireExpressionsAndPrependImportBlock(
     magicString,
     topLevelDeclarations,
     topLevelRequireDeclarators,
     reassignedNames,
-    usesCommonjsHelpers && HELPERS_NAME,
+    uses.commonjsHelpers && HELPERS_NAME,
     dynamicRegisterSources
   );
-
-  magicString
-    .trim()
-    .prepend(importBlock + wrapperStart)
-    .trim()
-    .append(
-      `${wrapperEnd}\n\n${defaultExport
-        .concat(named)
-        .concat(hasDefaultExport ? defaultExportPropertyAssignments : [])
-        .join('\n')}`
-    );
 
   return {
     code: magicString.toString(),

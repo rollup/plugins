@@ -1,13 +1,8 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-import {
-  DYNAMIC_PACKAGES_ID,
-  DYNAMIC_REGISTER_PREFIX,
-  getVirtualPathForDynamicRequirePath,
-  HELPERS_ID
-} from './helpers';
-import { normalizePathSlashes } from './utils';
+import { DYNAMIC_PACKAGES_ID, DYNAMIC_REGISTER_PREFIX, HELPERS_ID } from './helpers';
+import { getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
 
 export function getDynamicPackagesModule(dynamicRequireModuleDirPaths, commonDir) {
   let code = `const commonjsRegister = require('${HELPERS_ID}?commonjsRegister');`;

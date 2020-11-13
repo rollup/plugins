@@ -87,7 +87,6 @@ export function hasDynamicModuleForPath(source, id, dynamicRequireModuleSet) {
   return false;
 }
 
-// TODO Lukas sort this file by usage, starting with getRequireHandlers
 export function getRequireHandlers() {
   const requiredSources = [];
   const requiredBySource = Object.create(null);
@@ -136,32 +135,36 @@ export function getRequireHandlers() {
       magicString
     );
     removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
-    return `${(helpersNameIfUsed ? [`import * as ${helpersNameIfUsed} from '${HELPERS_ID}';`] : [])
-      .concat(
-        // dynamic registers first, as the may be required in the other modules
-        [...dynamicRegisterSources].map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
+    magicString.trim().prepend(
+      `${(helpersNameIfUsed ? [`import * as ${helpersNameIfUsed} from '${HELPERS_ID}';`] : [])
+        .concat(
+          // dynamic registers first, as the may be required in the other modules
+          [...dynamicRegisterSources].map(
+            (source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`
+          ),
 
-        // now the actual modules so that they are analyzed before creating the proxies;
-        // no need to do this for virtual modules as we never proxy them
-        requiredSources
-          .filter((source) => !source.startsWith('\0'))
-          .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
+          // now the actual modules so that they are analyzed before creating the proxies;
+          // no need to do this for virtual modules as we never proxy them
+          requiredSources
+            .filter((source) => !source.startsWith('\0'))
+            .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
 
-        // now the proxy modules
-        requiredSources.map((source) => {
-          const { name, nodesUsingRequired } = requiredBySource[source];
-          return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
-            source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
-          }';`;
-        })
-      )
-      .join('\n')}\n\n`;
+          // now the proxy modules
+          requiredSources.map((source) => {
+            const { name, nodesUsingRequired } = requiredBySource[source];
+            return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
+              source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
+            }';`;
+          })
+        )
+        .join('\n')}\n\n`
+    );
   }
 
   return {
     addRequireStatement,
     requiredSources,
-    rewriteRequireExpressionsAndGetImportBlock
+    rewriteRequireExpressionsAndPrependImportBlock: rewriteRequireExpressionsAndGetImportBlock
   };
 }
 

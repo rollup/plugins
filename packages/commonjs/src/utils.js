@@ -12,6 +12,7 @@ export function deconflict(scope, globals, identifier) {
     deconflicted = makeLegalIdentifier(`${identifier}_${i}`);
     i += 1;
   }
+  // eslint-disable-next-line no-param-reassign
   scope.declarations[deconflicted] = true;
 
   return deconflicted;
@@ -29,3 +30,11 @@ export function getName(id) {
 export function normalizePathSlashes(path) {
   return path.replace(/\\/g, '/');
 }
+
+const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
+export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
+  const normalizedPath = normalizePathSlashes(path);
+  return normalizedPath.startsWith(commonDir)
+    ? VIRTUAL_PATH_BASE + normalizedPath.slice(commonDir.length)
+    : normalizedPath;
+};
