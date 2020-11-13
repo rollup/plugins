@@ -3,6 +3,7 @@ import { dirname, resolve } from 'path';
 import { sync as nodeResolveSync } from 'resolve';
 
 import { isLocallyShadowed } from './ast-utils';
+import { HELPERS_ID, PROXY_SUFFIX, REQUIRE_SUFFIX, wrapId } from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -86,6 +87,7 @@ export function hasDynamicModuleForPath(source, id, dynamicRequireModuleSet) {
   return false;
 }
 
+// TODO Lukas sort this file by usage, starting with getRequireHandlers
 export function getRequireHandlers() {
   const requiredSources = [];
   const requiredBySource = Object.create(null);
@@ -115,70 +117,114 @@ export function getRequireHandlers() {
     return requiredBySource[sourceId];
   }
 
-  // TODO Lukas extract helpers
-  function rewriteRequireExpressions(
+  function rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
     topLevelRequireDeclarators,
-    reassignedNames
+    reassignedNames,
+    helpersNameIfUsed,
+    dynamicRegisterSources
   ) {
-    // Determine the used names and removed declarators
-    const removedDeclarators = new Set();
-    for (const declarator of topLevelRequireDeclarators) {
-      const { required } = requiredByNode.get(declarator.init);
-      if (!required.name) {
-        const potentialName = declarator.id.name;
-        if (
-          !reassignedNames.has(potentialName) &&
-          !required.nodesUsingRequired.some((node) =>
-            isLocallyShadowed(potentialName, requiredByNode.get(node).scope)
-          )
-        ) {
-          required.name = potentialName;
-          removedDeclarators.add(declarator);
-        }
-      }
-    }
+    const removedDeclarators = getDeclaratorsReplacedByImportsAndSetImportNames(
+      topLevelRequireDeclarators,
+      requiredByNode,
+      reassignedNames
+    );
+    setRemainingImportNamesAndRewriteRequires(
+      requireExpressionsWithUsedReturnValue,
+      requiredByNode,
+      magicString
+    );
+    removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
+    return `${(helpersNameIfUsed ? [`import * as ${helpersNameIfUsed} from '${HELPERS_ID}';`] : [])
+      .concat(
+        // dynamic registers first, as the may be required in the other modules
+        [...dynamicRegisterSources].map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
 
-    // Determine names where they are still missing and rewrite expressions
-    let uid = 0;
-    for (const requireExpression of requireExpressionsWithUsedReturnValue) {
-      const { required } = requiredByNode.get(requireExpression);
-      if (!required.name) {
-        let potentialName;
-        const isUsedName = (node) => requiredByNode.get(node).scope.contains(potentialName);
-        do {
-          potentialName = `require$$${uid}`;
-          uid += 1;
-        } while (required.nodesUsingRequired.some(isUsedName));
-        required.name = potentialName;
-      }
-      magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
-    }
+        // now the actual modules so that they are analyzed before creating the proxies;
+        // no need to do this for virtual modules as we never proxy them
+        requiredSources
+          .filter((source) => !source.startsWith('\0'))
+          .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
 
-    // Rewrite declarations, checking which declarators can be removed by their init
-    for (const declaration of topLevelDeclarations) {
-      let keepDeclaration = false;
-      let [{ start }] = declaration.declarations;
-      for (const declarator of declaration.declarations) {
-        if (removedDeclarators.has(declarator)) {
-          magicString.remove(start, declarator.end);
-        } else if (!keepDeclaration) {
-          magicString.remove(start, declarator.start);
-          keepDeclaration = true;
-        }
-        start = declarator.end;
-      }
-      if (!keepDeclaration) {
-        magicString.remove(declaration.start, declaration.end);
-      }
-    }
+        // now the proxy modules
+        requiredSources.map((source) => {
+          const { name, nodesUsingRequired } = requiredBySource[source];
+          return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
+            source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
+          }';`;
+        })
+      )
+      .join('\n')}\n\n`;
   }
 
   return {
     addRequireStatement,
-    requiredBySource,
     requiredSources,
-    rewriteRequireExpressions
+    rewriteRequireExpressionsAndGetImportBlock
   };
+}
+
+function getDeclaratorsReplacedByImportsAndSetImportNames(
+  topLevelRequireDeclarators,
+  requiredByNode,
+  reassignedNames
+) {
+  const removedDeclarators = new Set();
+  for (const declarator of topLevelRequireDeclarators) {
+    const { required } = requiredByNode.get(declarator.init);
+    if (!required.name) {
+      const potentialName = declarator.id.name;
+      if (
+        !reassignedNames.has(potentialName) &&
+        !required.nodesUsingRequired.some((node) =>
+          isLocallyShadowed(potentialName, requiredByNode.get(node).scope)
+        )
+      ) {
+        required.name = potentialName;
+        removedDeclarators.add(declarator);
+      }
+    }
+  }
+  return removedDeclarators;
+}
+
+function setRemainingImportNamesAndRewriteRequires(
+  requireExpressionsWithUsedReturnValue,
+  requiredByNode,
+  magicString
+) {
+  let uid = 0;
+  for (const requireExpression of requireExpressionsWithUsedReturnValue) {
+    const { required } = requiredByNode.get(requireExpression);
+    if (!required.name) {
+      let potentialName;
+      const isUsedName = (node) => requiredByNode.get(node).scope.contains(potentialName);
+      do {
+        potentialName = `require$$${uid}`;
+        uid += 1;
+      } while (required.nodesUsingRequired.some(isUsedName));
+      required.name = potentialName;
+    }
+    magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
+  }
+}
+
+function removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString) {
+  for (const declaration of topLevelDeclarations) {
+    let keepDeclaration = false;
+    let [{ start }] = declaration.declarations;
+    for (const declarator of declaration.declarations) {
+      if (removedDeclarators.has(declarator)) {
+        magicString.remove(start, declarator.end);
+      } else if (!keepDeclaration) {
+        magicString.remove(start, declarator.start);
+        keepDeclaration = true;
+      }
+      start = declarator.end;
+    }
+    if (!keepDeclaration) {
+      magicString.remove(declaration.start, declaration.end);
+    }
+  }
 }

@@ -28,11 +28,7 @@ import {
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_REGISTER_PREFIX,
-  getVirtualPathForDynamicRequirePath,
-  HELPERS_ID,
-  PROXY_SUFFIX,
-  REQUIRE_SUFFIX,
-  wrapId
+  getVirtualPathForDynamicRequirePath
 } from './helpers';
 import { tryParse } from './parse';
 import { deconflict, getName, normalizePathSlashes } from './utils';
@@ -61,13 +57,13 @@ export default function transformCommonjs(
     module: false,
     exports: false,
     global: false,
-    require: false,
-    commonjsHelpers: false
+    require: false
   };
   let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
   let shouldWrap = false;
+  let usesCommonjsHelpers = false;
   const defineCompiledEsmExpressions = [];
 
   const globals = new Set();
@@ -75,13 +71,12 @@ export default function transformCommonjs(
   // TODO technically wrong since globals isn't populated yet, but ¯\_(ツ)_/¯
   const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
   const namedExports = {};
-  const dynamicRegisterSources = [];
+  const dynamicRegisterSources = new Set();
 
   const {
     addRequireStatement,
-    requiredBySource,
     requiredSources,
-    rewriteRequireExpressions
+    rewriteRequireExpressionsAndGetImportBlock
   } = getRequireHandlers();
 
   // See which names are assigned to. This is necessary to prevent
@@ -186,34 +181,32 @@ export default function transformCommonjs(
               if (sourceId.endsWith('.json')) {
                 sourceId = DYNAMIC_JSON_PREFIX + sourceId;
               }
-              dynamicRegisterSources.push(sourceId);
+              dynamicRegisterSources.add(sourceId);
+            } else {
+              if (
+                !sourceId.endsWith('.json') &&
+                hasDynamicModuleForPath(sourceId, id, dynamicRequireModuleSet)
+              ) {
+                magicString.overwrite(
+                  node.start,
+                  node.end,
+                  `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
+                    getVirtualPathForDynamicRequirePath(normalizePathSlashes(sourceId), commonDir)
+                  )}, ${JSON.stringify(
+                    dirname(id) === '.'
+                      ? null /* default behavior */
+                      : getVirtualPathForDynamicRequirePath(
+                          normalizePathSlashes(dirname(id)),
+                          commonDir
+                        )
+                  )})`
+                );
+                usesCommonjsHelpers = true;
+                return;
+              }
+              addRequireStatement(sourceId, node, scope, usesReturnValue);
             }
 
-            if (
-              !isDynamicRegister &&
-              !sourceId.endsWith('.json') &&
-              hasDynamicModuleForPath(sourceId, id, dynamicRequireModuleSet)
-            ) {
-              magicString.overwrite(
-                node.start,
-                node.end,
-                `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-                  getVirtualPathForDynamicRequirePath(normalizePathSlashes(sourceId), commonDir)
-                )}, ${JSON.stringify(
-                  dirname(id) === '.'
-                    ? null /* default behavior */
-                    : getVirtualPathForDynamicRequirePath(
-                        normalizePathSlashes(dirname(id)),
-                        commonDir
-                      )
-                )})`
-              );
-              // eslint-disable-next-line no-param-reassign
-              uses.commonjsHelpers = true;
-              return;
-            }
-
-            addRequireStatement(sourceId, node, scope, usesReturnValue);
             if (usesReturnValue) {
               if (
                 parent.type === 'VariableDeclarator' &&
@@ -264,7 +257,7 @@ export default function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
                 storeName: true
               });
-              uses.commonjsHelpers = true;
+              usesCommonjsHelpers = true;
               return;
             case 'module':
             case 'exports':
@@ -277,7 +270,7 @@ export default function transformCommonjs(
                 magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                   storeName: true
                 });
-                uses.commonjsHelpers = true;
+                usesCommonjsHelpers = true;
               }
               return;
             case 'define':
@@ -293,7 +286,7 @@ export default function transformCommonjs(
             magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
               storeName: true
             });
-            uses.commonjsHelpers = true;
+            usesCommonjsHelpers = true;
             skippedNodes.add(node.object);
             skippedNodes.add(node.property);
           }
@@ -312,7 +305,7 @@ export default function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                 storeName: true
               });
-              uses.commonjsHelpers = true;
+              usesCommonjsHelpers = true;
             }
           }
           return;
@@ -363,16 +356,16 @@ export default function transformCommonjs(
 
   // We cannot wrap ES/mixed modules
   shouldWrap = shouldWrap && !disableWrap && !isEsModule;
-  uses.commonjsHelpers = uses.commonjsHelpers || shouldWrap;
+  usesCommonjsHelpers = usesCommonjsHelpers || shouldWrap;
 
   if (
     !(
       requiredSources.length ||
-      dynamicRegisterSources.length ||
+      dynamicRegisterSources.size ||
       uses.module ||
       uses.exports ||
       uses.require ||
-      uses.commonjsHelpers
+      usesCommonjsHelpers
     ) &&
     (ignoreGlobal || !uses.global)
   ) {
@@ -458,7 +451,7 @@ export default function transformCommonjs(
       (shouldWrap || deconflictedDefaultExportName) &&
       (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0)
     ) {
-      uses.commonjsHelpers = true;
+      usesCommonjsHelpers = true;
       defaultExport.push(
         `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
       );
@@ -471,37 +464,14 @@ export default function transformCommonjs(
     .filter((x) => x.name !== 'default' || !hasDefaultExport)
     .map((x) => x.str);
 
-  // TODO Lukas combine this with generating the imports
-  rewriteRequireExpressions(
+  const importBlock = rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
     topLevelRequireDeclarators,
-    reassignedNames
+    reassignedNames,
+    usesCommonjsHelpers && HELPERS_NAME,
+    dynamicRegisterSources
   );
-
-  const importBlock = `${(uses.commonjsHelpers
-    ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]
-    : []
-  )
-    .concat(
-      // dynamic registers first, as the may be required in the other modules
-      dynamicRegisterSources.map((source) => `import '${source}';`),
-
-      // now the actual modules so that they are analyzed before creating the proxies;
-      // no need to do this for virtual modules as we never proxy them
-      requiredSources
-        .filter((source) => !source.startsWith('\0'))
-        .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
-
-      // now the proxy modules
-      requiredSources.map((source) => {
-        const { name, nodesUsingRequired } = requiredBySource[source];
-        return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
-          source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
-        }';`;
-      })
-    )
-    .join('\n')}\n\n`;
 
   magicString
     .trim()
@@ -514,11 +484,9 @@ export default function transformCommonjs(
         .join('\n')}`
     );
 
-  code = magicString.toString();
-  const map = sourceMap ? magicString.generateMap() : null;
   return {
-    code,
-    map,
+    code: magicString.toString(),
+    map: sourceMap ? magicString.generateMap() : null,
     syntheticNamedExports: isEsModule ? false : '__moduleExports',
     meta: { commonjs: { isCommonJS: !isEsModule } }
   };
