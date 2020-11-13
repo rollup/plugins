@@ -167,7 +167,7 @@ Since most packages in your node_modules folder are probably legacy CommonJS rat
 
 ```js
 // rollup.config.js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
@@ -177,7 +177,7 @@ export default {
     format: 'iife',
     name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()],
+  plugins: [nodeResolve(), commonjs()],
 };
 ```
 
@@ -188,11 +188,11 @@ This plugin won't resolve any builtins (e.g. `fs`). If you need to resolve built
 If you want to silence warnings about builtins, you can add the list of builtins to the `externals` option; like so:
 
 ```js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import builtins from 'builtin-modules'
 export default ({
   input: ...,
-  plugins: [resolve()],
+  plugins: [nodeResolve()],
   external: builtins,
   output: ...
 })
