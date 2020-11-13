@@ -17,6 +17,8 @@ import {
 } from './ast-utils';
 import {
   getRequireHandlers,
+  getRequireStringArg,
+  hasDynamicModuleForPath,
   isIgnoredRequireStatement,
   isModuleRequire,
   isNodeRequirePropertyAccess,
@@ -24,6 +26,8 @@ import {
   isStaticRequireStatement
 } from './handle-require-expressions';
 import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_REGISTER_PREFIX,
   getVirtualPathForDynamicRequirePath,
   HELPERS_ID,
   PROXY_SUFFIX,
@@ -71,14 +75,14 @@ export default function transformCommonjs(
   // TODO technically wrong since globals isn't populated yet, but ¯\_(ツ)_/¯
   const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
   const namedExports = {};
+  const dynamicRegisterSources = [];
 
   const {
     addRequireStatement,
-    dynamicRegisterSources,
     requiredBySource,
     requiredSources,
     rewriteRequireExpressions
-  } = getRequireHandlers(id, dynamicRequireModuleSet);
+  } = getRequireHandlers();
 
   // See which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
@@ -105,22 +109,20 @@ export default function transformCommonjs(
         magicString.addSourcemapLocation(node.end);
       }
 
+      // eslint-disable-next-line default-case
       switch (node.type) {
         case 'AssignmentExpression':
           if (node.left.type === 'MemberExpression') {
             const flattened = getKeypath(node.left);
-            if (!flattened) return;
-
-            if (scope.contains(flattened.name)) return;
+            if (!flattened || scope.contains(flattened.name)) return;
 
             const exportsPatternMatch = exportsPattern.exec(flattened.keypath);
             if (!exportsPatternMatch || flattened.keypath === 'exports') return;
-            const [, exportName] = exportsPatternMatch;
 
+            const [, exportName] = exportsPatternMatch;
             uses[flattened.name] = true;
 
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
-            // if this isn't top-level or reassigns an export, we'll need to wrap the module
             if (programDepth > 3) {
               shouldWrap = true;
             } else if (exportName === KEY_COMPILED_ESM) {
@@ -150,7 +152,7 @@ export default function transformCommonjs(
               reassignedNames.add(name);
             }
           }
-          break;
+          return;
         case 'CallExpression': {
           if (isDefineCompiledEsm(node)) {
             if (programDepth === 3 && parent.type === 'ExpressionStatement') {
@@ -160,22 +162,58 @@ export default function transformCommonjs(
             } else {
               shouldWrap = true;
             }
-            break;
+            return;
           }
           const name = getDefinePropertyCallName(node, 'exports');
           if (name) {
             if (name === makeLegalIdentifier(name)) {
               namedExports[name] = true;
             }
-            break;
+            return;
           }
-          if (
-            isStaticRequireStatement(node, scope) &&
-            !isIgnoredRequireStatement(node, ignoreRequire)
-          ) {
+          if (!isStaticRequireStatement(node, scope)) return;
+          if (!isDynamicRequireModulesEnabled) {
+            skippedNodes.add(node.callee);
+          }
+          if (!isIgnoredRequireStatement(node, ignoreRequire)) {
             skippedNodes.add(node.callee);
             const usesReturnValue = parent.type !== 'ExpressionStatement';
-            addRequireStatement(node, scope, usesReturnValue);
+
+            let sourceId = getRequireStringArg(node);
+            const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
+            if (isDynamicRegister) {
+              sourceId = sourceId.substr(DYNAMIC_REGISTER_PREFIX.length);
+              if (sourceId.endsWith('.json')) {
+                sourceId = DYNAMIC_JSON_PREFIX + sourceId;
+              }
+              dynamicRegisterSources.push(sourceId);
+            }
+
+            if (
+              !isDynamicRegister &&
+              !sourceId.endsWith('.json') &&
+              hasDynamicModuleForPath(sourceId, id, dynamicRequireModuleSet)
+            ) {
+              magicString.overwrite(
+                node.start,
+                node.end,
+                `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
+                  getVirtualPathForDynamicRequirePath(normalizePathSlashes(sourceId), commonDir)
+                )}, ${JSON.stringify(
+                  dirname(id) === '.'
+                    ? null /* default behavior */
+                    : getVirtualPathForDynamicRequirePath(
+                        normalizePathSlashes(dirname(id)),
+                        commonDir
+                      )
+                )})`
+              );
+              // eslint-disable-next-line no-param-reassign
+              uses.commonjsHelpers = true;
+              return;
+            }
+
+            addRequireStatement(sourceId, node, scope, usesReturnValue);
             if (usesReturnValue) {
               if (
                 parent.type === 'VariableDeclarator' &&
@@ -191,7 +229,7 @@ export default function transformCommonjs(
               magicString.remove(parent.start, parent.end);
             }
           }
-          break;
+          return;
         }
         case 'ConditionalExpression':
         case 'IfStatement':
@@ -201,62 +239,55 @@ export default function transformCommonjs(
           } else if (node.alternate && isTruthy(node.test)) {
             skippedNodes.add(node.alternate);
           }
-          break;
-        case 'Identifier':
-          if (isReference(node, parent)) {
-            const { name } = node;
-            if (!scope.contains(name)) {
-              switch (name) {
-                case 'require':
-                  if (
-                    isNodeRequirePropertyAccess(parent) ||
-                    (!isDynamicRequireModulesEnabled && isStaticRequireStatement(parent, scope))
-                  ) {
-                    break;
-                  }
+          return;
+        case 'Identifier': {
+          const { name } = node;
+          if (!(isReference(node, parent) && !scope.contains(name))) return;
+          switch (name) {
+            case 'require':
+              if (isNodeRequirePropertyAccess(parent)) return;
 
-                  if (isDynamicRequireModulesEnabled && isRequireStatement(parent, scope)) {
-                    magicString.appendLeft(
-                      parent.end - 1,
-                      `,${JSON.stringify(
-                        dirname(id) === '.'
-                          ? null /* default behavior */
-                          : getVirtualPathForDynamicRequirePath(
-                              normalizePathSlashes(dirname(id)),
-                              commonDir
-                            )
-                      )}`
-                    );
-                  }
-
-                  magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
-                    storeName: true
-                  });
-                  uses.commonjsHelpers = true;
-                  break;
-                case 'module':
-                case 'exports':
-                  shouldWrap = true;
-                  uses[name] = true;
-                  break;
-                case 'global':
-                  uses.global = true;
-                  if (!ignoreGlobal) {
-                    magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
-                      storeName: true
-                    });
-                    uses.commonjsHelpers = true;
-                  }
-                  break;
-                case 'define':
-                  magicString.overwrite(node.start, node.end, 'undefined', { storeName: true });
-                  break;
-                default:
-                  globals.add(name);
+              if (isDynamicRequireModulesEnabled && isRequireStatement(parent, scope)) {
+                magicString.appendLeft(
+                  parent.end - 1,
+                  `,${JSON.stringify(
+                    dirname(id) === '.'
+                      ? null /* default behavior */
+                      : getVirtualPathForDynamicRequirePath(
+                          normalizePathSlashes(dirname(id)),
+                          commonDir
+                        )
+                  )}`
+                );
               }
-            }
+
+              magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                storeName: true
+              });
+              uses.commonjsHelpers = true;
+              return;
+            case 'module':
+            case 'exports':
+              shouldWrap = true;
+              uses[name] = true;
+              return;
+            case 'global':
+              uses.global = true;
+              if (!ignoreGlobal) {
+                magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
+                  storeName: true
+                });
+                uses.commonjsHelpers = true;
+              }
+              return;
+            case 'define':
+              magicString.overwrite(node.start, node.end, 'undefined', { storeName: true });
+              return;
+            default:
+              globals.add(name);
+              return;
           }
-          break;
+        }
         case 'MemberExpression':
           if (!isDynamicRequireModulesEnabled && isModuleRequire(node, scope)) {
             magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
@@ -266,13 +297,13 @@ export default function transformCommonjs(
             skippedNodes.add(node.object);
             skippedNodes.add(node.property);
           }
-          break;
+          return;
         case 'ReturnStatement':
           // if top-level return, we need to wrap it
           if (lexicalDepth === 0) {
             shouldWrap = true;
           }
-          break;
+          return;
         case 'ThisExpression':
           // rewrite top-level `this` as `commonjsHelpers.commonjsGlobal`
           if (lexicalDepth === 0) {
@@ -284,7 +315,7 @@ export default function transformCommonjs(
               uses.commonjsHelpers = true;
             }
           }
-          break;
+          return;
         case 'UnaryExpression':
           // rewrite `typeof module`, `typeof module.exports` and `typeof exports` (https://github.com/rollup/rollup-plugin-commonjs/issues/151)
           if (node.operator === 'typeof') {
@@ -301,13 +332,11 @@ export default function transformCommonjs(
               magicString.overwrite(node.start, node.end, `'object'`, { storeName: false });
             }
           }
-          break;
+          return;
         case 'VariableDeclaration':
           if (!scope.parent) {
             topLevelDeclarations.push(node);
           }
-          break;
-        default:
       }
     },
 
@@ -335,16 +364,6 @@ export default function transformCommonjs(
   // We cannot wrap ES/mixed modules
   shouldWrap = shouldWrap && !disableWrap && !isEsModule;
   uses.commonjsHelpers = uses.commonjsHelpers || shouldWrap;
-
-  rewriteRequireExpressions(
-    magicString,
-    topLevelDeclarations,
-    topLevelRequireDeclarators,
-    reassignedNames,
-    commonDir,
-    uses,
-    HELPERS_NAME
-  );
 
   if (
     !(
@@ -451,6 +470,14 @@ export default function transformCommonjs(
   const named = namedExportDeclarations
     .filter((x) => x.name !== 'default' || !hasDefaultExport)
     .map((x) => x.str);
+
+  // TODO Lukas combine this with generating the imports
+  rewriteRequireExpressions(
+    magicString,
+    topLevelDeclarations,
+    topLevelRequireDeclarators,
+    reassignedNames
+  );
 
   const importBlock = `${(uses.commonjsHelpers
     ? [`import * as ${HELPERS_NAME} from '${HELPERS_ID}';`]

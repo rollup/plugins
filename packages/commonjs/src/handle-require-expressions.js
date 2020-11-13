@@ -3,12 +3,6 @@ import { dirname, resolve } from 'path';
 import { sync as nodeResolveSync } from 'resolve';
 
 import { isLocallyShadowed } from './ast-utils';
-
-import {
-  DYNAMIC_JSON_PREFIX,
-  DYNAMIC_REGISTER_PREFIX,
-  getVirtualPathForDynamicRequirePath
-} from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -61,13 +55,13 @@ export function isIgnoredRequireStatement(requiredNode, ignoreRequire) {
   return ignoreRequire(requiredNode.arguments[0].value);
 }
 
-function getRequireStringArg(node) {
+export function getRequireStringArg(node) {
   return node.arguments[0].type === 'Literal'
     ? node.arguments[0].value
     : node.arguments[0].quasis[0].value.cooked;
 }
 
-function hasDynamicModuleForPath(source, id, dynamicRequireModuleSet) {
+export function hasDynamicModuleForPath(source, id, dynamicRequireModuleSet) {
   if (!/^(?:\.{0,2}[/\\]|[A-Za-z]:[/\\])/.test(source)) {
     try {
       const resolvedPath = normalizePathSlashes(nodeResolveSync(source, { basedir: dirname(id) }));
@@ -92,23 +86,14 @@ function hasDynamicModuleForPath(source, id, dynamicRequireModuleSet) {
   return false;
 }
 
-function shouldUseSimulatedRequire(required, id, dynamicRequireModuleSet) {
-  return (
-    hasDynamicModuleForPath(required.source, id, dynamicRequireModuleSet) &&
-    // We only do `commonjsRequire` for json if it's the `commonjsRegister` call.
-    (required.source.startsWith(DYNAMIC_REGISTER_PREFIX) || !required.source.endsWith('.json'))
-  );
-}
-
-export function getRequireHandlers(id, dynamicRequireModuleSet) {
+export function getRequireHandlers() {
   const requiredSources = [];
-  const dynamicRegisterSources = [];
   const requiredBySource = Object.create(null);
   const requiredByNode = new Map();
   const requireExpressionsWithUsedReturnValue = [];
 
-  function addRequireStatement(node, scope, usesReturnValue) {
-    const required = getRequired(node);
+  function addRequireStatement(sourceId, node, scope, usesReturnValue) {
+    const required = getRequired(sourceId);
     requiredByNode.set(node, { scope, required });
     if (usesReturnValue) {
       required.nodesUsingRequired.push(node);
@@ -116,31 +101,13 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
     }
   }
 
-  function getRequired(node) {
-    let sourceId = getRequireStringArg(node);
-    const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
-    if (isDynamicRegister) {
-      sourceId = sourceId.substr(DYNAMIC_REGISTER_PREFIX.length);
-    }
-
-    const existing = requiredBySource[sourceId];
-    if (!existing) {
-      const isDynamic = hasDynamicModuleForPath(sourceId, id, dynamicRequireModuleSet);
-      if (isDynamicRegister) {
-        if (sourceId.endsWith('.json')) {
-          sourceId = DYNAMIC_JSON_PREFIX + sourceId;
-        }
-        dynamicRegisterSources.push(sourceId);
-      }
-
-      if (!isDynamic || sourceId.endsWith('.json')) {
-        requiredSources.push(sourceId);
-      }
+  function getRequired(sourceId) {
+    if (!requiredBySource[sourceId]) {
+      requiredSources.push(sourceId);
 
       requiredBySource[sourceId] = {
         source: sourceId,
         name: null,
-        isDynamic,
         nodesUsingRequired: []
       };
     }
@@ -148,20 +115,18 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
     return requiredBySource[sourceId];
   }
 
+  // TODO Lukas extract helpers
   function rewriteRequireExpressions(
     magicString,
     topLevelDeclarations,
     topLevelRequireDeclarators,
-    reassignedNames,
-    commonDir,
-    uses,
-    HELPERS_NAME
+    reassignedNames
   ) {
     // Determine the used names and removed declarators
     const removedDeclarators = new Set();
     for (const declarator of topLevelRequireDeclarators) {
       const { required } = requiredByNode.get(declarator.init);
-      if (!(required.name || required.isDynamic)) {
+      if (!required.name) {
         const potentialName = declarator.id.name;
         if (
           !reassignedNames.has(potentialName) &&
@@ -179,32 +144,16 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
     let uid = 0;
     for (const requireExpression of requireExpressionsWithUsedReturnValue) {
       const { required } = requiredByNode.get(requireExpression);
-      if (shouldUseSimulatedRequire(required, id, dynamicRequireModuleSet)) {
-        magicString.overwrite(
-          requireExpression.start,
-          requireExpression.end,
-          `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-            getVirtualPathForDynamicRequirePath(normalizePathSlashes(required.source), commonDir)
-          )}, ${JSON.stringify(
-            dirname(id) === '.'
-              ? null /* default behavior */
-              : getVirtualPathForDynamicRequirePath(normalizePathSlashes(dirname(id)), commonDir)
-          )})`
-        );
-        // eslint-disable-next-line no-param-reassign
-        uses.commonjsHelpers = true;
-      } else {
-        if (!required.name) {
-          let potentialName;
-          const isUsedName = (node) => requiredByNode.get(node).scope.contains(potentialName);
-          do {
-            potentialName = `require$$${uid}`;
-            uid += 1;
-          } while (required.nodesUsingRequired.some(isUsedName));
-          required.name = potentialName;
-        }
-        magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
+      if (!required.name) {
+        let potentialName;
+        const isUsedName = (node) => requiredByNode.get(node).scope.contains(potentialName);
+        do {
+          potentialName = `require$$${uid}`;
+          uid += 1;
+        } while (required.nodesUsingRequired.some(isUsedName));
+        required.name = potentialName;
       }
+      magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
     }
 
     // Rewrite declarations, checking which declarators can be removed by their init
@@ -228,7 +177,6 @@ export function getRequireHandlers(id, dynamicRequireModuleSet) {
 
   return {
     addRequireStatement,
-    dynamicRegisterSources,
     requiredBySource,
     requiredSources,
     rewriteRequireExpressions
