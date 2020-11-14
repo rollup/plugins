@@ -15,7 +15,7 @@ import {
   isTruthy,
   KEY_COMPILED_ESM
 } from './ast-utils';
-import { rewriteExportsAndAppendExportsBlock, wrapCode } from './generate-exports';
+import { rewriteExportsAndGetExportsBlock, wrapCode } from './generate-exports';
 import {
   getRequireHandlers,
   getRequireStringArg,
@@ -75,7 +75,7 @@ export default function transformCommonjs(
   const {
     addRequireStatement,
     requiredSources,
-    rewriteRequireExpressionsAndPrependImportBlock
+    rewriteRequireExpressionsAndGetImportBlock
   } = getRequireHandlers();
 
   // See which names are assigned to. This is necessary to prevent
@@ -362,27 +362,24 @@ export default function transformCommonjs(
   }
 
   const moduleName = deconflict(scope, globals, getName(id));
-  if (shouldWrap) {
-    wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDynamicRequirePath);
-  }
 
-  if (!isEsModule) {
-    rewriteExportsAndAppendExportsBlock(
-      magicString,
-      moduleName,
-      shouldWrap,
-      topLevelModuleExportsAssignments,
-      topLevelExportsAssignmentsByName,
-      defineCompiledEsmExpressions,
-      (name) => deconflict(scope, globals, name),
-      isRestorableCompiledEsm,
-      code,
-      uses,
-      HELPERS_NAME
-    );
-  }
+  const exportBlock = isEsModule
+    ? ''
+    : rewriteExportsAndGetExportsBlock(
+        magicString,
+        moduleName,
+        shouldWrap,
+        topLevelModuleExportsAssignments,
+        topLevelExportsAssignmentsByName,
+        defineCompiledEsmExpressions,
+        (name) => deconflict(scope, globals, name),
+        isRestorableCompiledEsm,
+        code,
+        uses,
+        HELPERS_NAME
+      );
 
-  rewriteRequireExpressionsAndPrependImportBlock(
+  const importBlock = rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
     topLevelRequireDeclarators,
@@ -390,6 +387,15 @@ export default function transformCommonjs(
     uses.commonjsHelpers && HELPERS_NAME,
     dynamicRegisterSources
   );
+
+  if (shouldWrap) {
+    wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDynamicRequirePath);
+  }
+
+  magicString
+    .trim()
+    .prepend(importBlock)
+    .append(exportBlock);
 
   return {
     code: magicString.toString(),

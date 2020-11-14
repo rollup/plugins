@@ -9,7 +9,7 @@ export function wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDyn
     );
 }
 
-export function rewriteExportsAndAppendExportsBlock(
+export function rewriteExportsAndGetExportsBlock(
   magicString,
   moduleName,
   wrapped,
@@ -90,10 +90,8 @@ export function rewriteExportsAndAppendExportsBlock(
     defaultExport.push(`export default ${moduleName};`);
   }
 
-  magicString.trim().append(
-    `\n\n${defaultExport
-      .concat(namedExportDeclarations)
-      .concat(moduleExportsPropertyAssignments)
-      .join('\n')}`
-  );
+  return `\n\n${defaultExport
+    .concat(namedExportDeclarations)
+    .concat(moduleExportsPropertyAssignments)
+    .join('\n')}`;
 }
