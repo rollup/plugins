@@ -363,6 +363,13 @@ export default function transformCommonjs(
 
   const moduleName = deconflict(scope, globals, getName(id));
 
+  let leadingComment = '';
+  if (code.startsWith('/*')) {
+    const commentEnd = code.indexOf('*/', 2) + 2;
+    leadingComment = `${code.slice(0, commentEnd)}\n`;
+    magicString.remove(0, commentEnd).trim();
+  }
+
   const exportBlock = isEsModule
     ? ''
     : rewriteExportsAndGetExportsBlock(
@@ -394,7 +401,7 @@ export default function transformCommonjs(
 
   magicString
     .trim()
-    .prepend(importBlock)
+    .prepend(leadingComment + importBlock)
     .append(exportBlock);
 
   return {

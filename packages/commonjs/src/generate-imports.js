@@ -135,7 +135,10 @@ export function getRequireHandlers() {
       magicString
     );
     removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
-    return `${(helpersNameIfUsed ? [`import * as ${helpersNameIfUsed} from '${HELPERS_ID}';`] : [])
+    const importBlock = `${(helpersNameIfUsed
+      ? [`import * as ${helpersNameIfUsed} from '${HELPERS_ID}';`]
+      : []
+    )
       .concat(
         // dynamic registers first, as the may be required in the other modules
         [...dynamicRegisterSources].map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
@@ -154,7 +157,8 @@ export function getRequireHandlers() {
           }';`;
         })
       )
-      .join('\n')}\n\n`;
+      .join('\n')}`;
+    return importBlock ? `${importBlock}\n\n` : '';
   }
 
   return {
