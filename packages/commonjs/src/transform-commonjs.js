@@ -7,7 +7,6 @@ import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 
 import {
-  getDefinePropertyCallName,
   getKeypath,
   isDefineCompiledEsm,
   isFalsy,
@@ -155,13 +154,6 @@ export default function transformCommonjs(
               defineCompiledEsmExpressions.push(parent);
             } else {
               shouldWrap = true;
-            }
-            return;
-          }
-          const name = getDefinePropertyCallName(node, 'exports');
-          if (name) {
-            if (name === makeLegalIdentifier(name)) {
-              namedExports[name] = true;
             }
             return;
           }

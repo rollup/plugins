@@ -69,7 +69,7 @@ export function isDefineCompiledEsm(node) {
   return false;
 }
 
-export function getDefinePropertyCallName(node, targetName) {
+function getDefinePropertyCallName(node, targetName) {
   const targetNames = targetName.split('.');
 
   const {
