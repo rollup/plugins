@@ -927,6 +927,24 @@ test.serial('warns if sourceMap is set in Rollup but not Typescript', async (t) 
   );
 });
 
+test.serial('normalizes resolved ids to avoid duplicate output on windows', async (t) => {
+  const bundle = await rollup({
+    input: ['fixtures/normalize-ids/one.js', 'fixtures/normalize-ids/two.js'],
+    plugins: [
+      typescript({
+        include: ['*.js', '**/*.js'],
+        tsconfig: 'fixtures/normalize-ids/tsconfig.json'
+      })
+    ]
+  });
+
+  const files = await getCode(bundle, { format: 'esm' }, true);
+
+  t.is(files.length, 2);
+  t.true(files[1].fileName.includes('two.js'), files[1].fileName);
+  t.true(files[1].code.includes("import { one } from './one.js';"), files[1].code);
+});
+
 test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
   const warnings = [];
   const bundle = await rollup({

@@ -98,7 +98,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       if (resolved) {
         if (resolved.extension === '.d.ts') return null;
-        return resolved.resolvedFileName;
+        return path.normalize(resolved.resolvedFileName);
       }
 
       return null;
