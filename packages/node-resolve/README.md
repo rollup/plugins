@@ -62,18 +62,12 @@ Default: `false`
 
 If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
 
-### `customResolveOptions`
+### `moduleDirectory`
 
-Type: `Object`<br>
-Default: `null`
+Type: `String`<br>
+Default: `'node_modules'`
 
-An `Object` that specifies additional options that should be passed through to [`resolve`](https://www.npmjs.com/package/resolve).
-
-```
-customResolveOptions: {
-  moduleDirectory: 'js_modules'
-}
-```
+Directory in which to recursively look for modules.
 
 ### `dedupe`
 

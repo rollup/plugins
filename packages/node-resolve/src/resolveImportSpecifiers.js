@@ -4,8 +4,9 @@ import { promisify } from 'util';
 
 import resolve from 'resolve';
 
-import { getPackageName } from './util';
+import { getPackageInfo, getPackageName } from './util';
 import { exists, realpath } from './fs';
+import { isDirCached, isFileCached, readCachedFile } from './cache';
 
 const resolveImportPath = promisify(resolve);
 const readFile = promisify(fs.readFile);
@@ -124,13 +125,61 @@ export function findEntrypointTopLevel(pkgJsonPath, subPath, exportMap, conditio
   return findEntrypoint(pkgJsonPath, subPath, exportMapForSubPath, conditions, key);
 }
 
-async function resolveId(importPath, options, exportConditions, warn) {
+async function resolveId({
+  importPath,
+  exportConditions,
+  warn,
+  packageInfoCache,
+  extensions,
+  mainFields,
+  preserveSymlinks,
+  useBrowserOverrides,
+  baseDir,
+  moduleDirectory
+}) {
+  const resolveOptions = {
+    basedir: baseDir,
+    readFile: readCachedFile,
+    isFile: isFileCached,
+    isDirectory: isDirCached,
+    extensions,
+    includeCoreModules: false,
+    moduleDirectory,
+    preserveSymlinks
+  };
+
+  let hasModuleSideEffects = () => null;
+  let hasPackageEntry = true;
+  let packageBrowserField = false;
+  let packageInfo;
+
+  const filter = (pkg, pkgPath) => {
+    const info = getPackageInfo({
+      cache: packageInfoCache,
+      extensions,
+      pkg,
+      pkgPath,
+      mainFields,
+      preserveSymlinks,
+      useBrowserOverrides
+    });
+
+    ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
+
+    return info.cachedPkg;
+  };
+
+  let location;
+
   const pkgName = getPackageName(importPath);
   if (pkgName) {
     let pkgJsonPath;
     let pkgJson;
     try {
-      pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, options);
+      pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, {
+        ...resolveOptions,
+        packageFilter: filter
+      });
       pkgJson = JSON.parse(await readFile(pkgJsonPath, 'utf-8'));
     } catch (_) {
       // if there is no package.json we defer to regular resolve behavior
@@ -147,7 +196,7 @@ async function resolveId(importPath, options, exportConditions, warn) {
           exportConditions
         );
         const pkgDir = path.dirname(pkgJsonPath);
-        return path.join(pkgDir, mappedSubPath);
+        location = path.join(pkgDir, mappedSubPath);
       } catch (error) {
         warn(error);
         return null;
@@ -155,17 +204,39 @@ async function resolveId(importPath, options, exportConditions, warn) {
     }
   }
 
-  return resolveImportPath(importPath, options);
+  if (!location) {
+    location = await resolveImportPath(importPath, { ...resolveOptions, packageFilter: filter });
+  }
+
+  if (!preserveSymlinks) {
+    if (await exists(location)) {
+      location = await realpath(location);
+    }
+  }
+
+  return {
+    location,
+    hasModuleSideEffects,
+    hasPackageEntry,
+    packageBrowserField,
+    packageInfo
+  };
 }
 
 // Resolve module specifiers in order. Promise resolves to the first module that resolves
 // successfully, or the error that resulted from the last attempted module resolution.
-export function resolveImportSpecifiers(
+export function resolveImportSpecifiers({
   importSpecifierList,
-  resolveOptions,
   exportConditions,
-  warn
-) {
+  warn,
+  packageInfoCache,
+  extensions,
+  mainFields,
+  preserveSymlinks,
+  useBrowserOverrides,
+  baseDir,
+  moduleDirectory
+}) {
   let promise = Promise.resolve();
 
   for (let i = 0; i < importSpecifierList.length; i++) {
@@ -176,13 +247,18 @@ export function resolveImportSpecifiers(
         return value;
       }
 
-      let result = await resolveId(importSpecifierList[i], resolveOptions, exportConditions, warn);
-      if (!resolveOptions.preserveSymlinks) {
-        if (await exists(result)) {
-          result = await realpath(result);
-        }
-      }
-      return result;
+      return resolveId({
+        importPath: importSpecifierList[i],
+        exportConditions,
+        warn,
+        packageInfoCache,
+        extensions,
+        mainFields,
+        preserveSymlinks,
+        useBrowserOverrides,
+        baseDir,
+        moduleDirectory
+      });
     });
 
     // swallow MODULE_NOT_FOUND errors

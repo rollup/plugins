@@ -164,20 +164,18 @@ test('throws error if local id is not resolved', async (t) => {
   }
 });
 
-test('allows custom options', async (t) => {
+test('allows a custom moduleDirectory', async (t) => {
   const bundle = await rollup({
-    input: 'custom-resolve-options/main.js',
+    input: 'custom-module-dir/main.js',
     onwarn: () => t.fail('No warnings were expected'),
     plugins: [
       nodeResolve({
-        customResolveOptions: {
-          moduleDirectory: 'js_modules'
-        }
+        moduleDirectory: 'js_modules'
       })
     ]
   });
 
-  t.is(bundle.cache.modules[0].id, resolve('custom-resolve-options/js_modules/foo.js'));
+  t.is(bundle.cache.modules[0].id, resolve('custom-module-dir/js_modules/foo.js'));
 });
 
 test('ignores deep-import non-modules', async (t) => {

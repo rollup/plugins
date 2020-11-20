@@ -7,7 +7,7 @@ const { testBundle } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
-process.chdir(join(__dirname, 'fixtures', 'custom-resolve-options'));
+process.chdir(join(__dirname, 'fixtures', 'custom-module-dir'));
 
 test('can deduplicate custom module directory', async (t) => {
   const bundle = await rollup({
@@ -15,9 +15,7 @@ test('can deduplicate custom module directory', async (t) => {
     plugins: [
       nodeResolve({
         dedupe: ['package-b'],
-        customResolveOptions: {
-          moduleDirectory: 'js_modules'
-        }
+        moduleDirectory: 'js_modules'
       })
     ]
   });

@@ -1,10 +1,7 @@
-import { Plugin } from 'rollup';
-import { AsyncOpts } from 'resolve';
-
 export const DEFAULTS: {
   customResolveOptions: {};
   dedupe: [];
-  extensions: ['.mjs', '.js', '.json', '.node'];
+  extensions: [".mjs", ".js", ".json", ".node"];
   resolveOnly: [];
 };
 
@@ -20,6 +17,7 @@ export interface RollupNodeResolveOptions {
    * See https://nodejs.org/api/packages.html#packages_conditional_exports for more information.
    */
   exportConditions?: string[];
+
   /**
    * If `true`, instructs the plugin to use the `"browser"` property in `package.json`
    * files to specify alternative files to load for bundling. This is useful when
@@ -31,9 +29,10 @@ export interface RollupNodeResolveOptions {
   browser?: boolean;
 
   /**
-   * An `Object` that specifies additional options that should be passed through to `node-resolve`.
+   * Directory in which to recursively look for modules.
+   * @default 'node_modules'
    */
-  customResolveOptions?: AsyncOpts;
+  moduleDirectory?: string;
 
   /**
    * An `Array` of modules names, which instructs the plugin to force resolving for the
