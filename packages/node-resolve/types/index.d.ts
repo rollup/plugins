@@ -1,7 +1,7 @@
 export const DEFAULTS: {
   customResolveOptions: {};
   dedupe: [];
-  extensions: [".mjs", ".js", ".json", ".node"];
+  extensions: ['.mjs', '.js', '.json', '.node'];
   resolveOnly: [];
 };
 
