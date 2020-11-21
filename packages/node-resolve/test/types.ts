@@ -12,13 +12,10 @@ const config = {
   plugins: [
     nodeResolve({
       browser: true,
-      customResolveOptions: {
-        moduleDirectory: 'js_modules'
-      },
+      moduleDirectory: 'js_modules',
       dedupe: ['lodash'],
       extensions: ['.mjs', '.js', '.jsx', '.json'],
       jail: '/my/jail/path',
-      only: ['some_module', /^@some_scope\/.*$/],
       preferBuiltins: false,
       mainFields: ['untranspiled', 'module', 'main'],
       modulesOnly: true,
