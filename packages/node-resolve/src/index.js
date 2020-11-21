@@ -94,7 +94,6 @@ export function nodeResolve(opts = {}) {
     },
 
     async resolveId(importee, importer, opts) {
-      // console.log('resolveId', importee, importer);
       if (importee === ES6_BROWSER_EMPTY) {
         return importee;
       }
