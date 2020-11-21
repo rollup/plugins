@@ -33,6 +33,7 @@ module.exports = {
     'import/no-namespace': 'off',
     'import/no-named-export': 'off',
     'no-unused-vars': 'off',
+    'spaced-comment': 'off',
     'prettier/prettier': [
       'error',
       {
