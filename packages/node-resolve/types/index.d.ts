@@ -68,12 +68,6 @@ export interface RollupNodeResolveOptions {
   modulesOnly?: boolean;
 
   /**
-   * @deprecated use "resolveOnly" instead
-   * @default null
-   */
-  only?: ReadonlyArray<string | RegExp> | null;
-
-  /**
    * If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`,
    * the plugin will look for locally installed modules of the same name.
    * @default true
