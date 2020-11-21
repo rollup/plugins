@@ -53,11 +53,6 @@ export function nodeResolve(opts = {}) {
   let { dedupe } = options;
   let rollupOptions;
 
-  if (options.only) {
-    warnings.push('node-resolve: The `only` options is deprecated, please use `resolveOnly`');
-    options.resolveOnly = options.only;
-  }
-
   if (typeof dedupe !== 'function') {
     dedupe = (importee) =>
       options.dedupe.includes(importee) || options.dedupe.includes(getPackageName(importee));
