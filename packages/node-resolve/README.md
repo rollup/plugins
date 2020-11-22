@@ -151,6 +151,10 @@ Specifies the root directory from which to resolve modules. Typically used when 
 rootDir: path.join(process.cwd(), '..')
 ```
 
+## Preserving symlinks
+
+This plugin honours the rollup [`preserveSymlinks`](https://rollupjs.org/guide/en/#preservesymlinks) option.
+
 ## Using with @rollup/plugin-commonjs
 
 Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [@rollup/plugin-commonjs](https://github.com/rollup/plugins/tree/master/packages/commonjs):
