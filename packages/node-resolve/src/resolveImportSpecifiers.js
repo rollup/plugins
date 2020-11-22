@@ -137,17 +137,6 @@ async function resolveId({
   baseDir,
   moduleDirectories
 }) {
-  const resolveOptions = {
-    basedir: baseDir,
-    readFile: readCachedFile,
-    isFile: isFileCached,
-    isDirectory: isDirCached,
-    extensions,
-    includeCoreModules: false,
-    moduleDirectory: moduleDirectories,
-    preserveSymlinks
-  };
-
   let hasModuleSideEffects = () => null;
   let hasPackageEntry = true;
   let packageBrowserField = false;
@@ -169,6 +158,18 @@ async function resolveId({
     return info.cachedPkg;
   };
 
+  const resolveOptions = {
+    basedir: baseDir,
+    readFile: readCachedFile,
+    isFile: isFileCached,
+    isDirectory: isDirCached,
+    extensions,
+    includeCoreModules: false,
+    moduleDirectory: moduleDirectories,
+    preserveSymlinks,
+    packageFilter: filter
+  };
+
   let location;
 
   const pkgName = getPackageName(importPath);
@@ -176,10 +177,7 @@ async function resolveId({
     let pkgJsonPath;
     let pkgJson;
     try {
-      pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, {
-        ...resolveOptions,
-        packageFilter: filter
-      });
+      pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, resolveOptions);
       pkgJson = JSON.parse(await readFile(pkgJsonPath, 'utf-8'));
     } catch (_) {
       // if there is no package.json we defer to regular resolve behavior
@@ -205,7 +203,7 @@ async function resolveId({
   }
 
   if (!location) {
-    location = await resolveImportPath(importPath, { ...resolveOptions, packageFilter: filter });
+    location = await resolveImportPath(importPath, resolveOptions);
   }
 
   if (!preserveSymlinks) {
