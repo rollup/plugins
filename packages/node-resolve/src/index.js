@@ -33,13 +33,13 @@ const defaults = {
   // which deploy both ESM .mjs and CommonJS .js files as ESM.
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: [],
-  moduleDirectory: 'node_modules'
+  moduleDirectories: ['node_modules']
 };
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
 export function nodeResolve(opts = {}) {
   const options = { ...defaults, ...opts };
-  const { extensions, jail, moduleDirectory } = options;
+  const { extensions, jail, moduleDirectories } = options;
   const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
   const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
   const warnings = [];
@@ -187,7 +187,7 @@ export function nodeResolve(opts = {}) {
         preserveSymlinks,
         useBrowserOverrides,
         baseDir,
-        moduleDirectory
+        moduleDirectories
       });
 
       const resolved =

@@ -29,10 +29,10 @@ export interface RollupNodeResolveOptions {
   browser?: boolean;
 
   /**
-   * Directory in which to recursively look for modules.
-   * @default 'node_modules'
+   * One or more directories in which to recursively look for modules.
+   * @default ['node_modules']
    */
-  moduleDirectory?: string;
+  moduleDirectories?: string[];
 
   /**
    * An `Array` of modules names, which instructs the plugin to force resolving for the

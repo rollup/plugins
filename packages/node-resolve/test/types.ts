@@ -12,7 +12,7 @@ const config = {
   plugins: [
     nodeResolve({
       browser: true,
-      moduleDirectory: 'js_modules',
+      moduleDirectories: ['js_modules'],
       dedupe: ['lodash'],
       extensions: ['.mjs', '.js', '.jsx', '.json'],
       jail: '/my/jail/path',

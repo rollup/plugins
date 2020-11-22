@@ -164,13 +164,13 @@ test('throws error if local id is not resolved', async (t) => {
   }
 });
 
-test('allows a custom moduleDirectory', async (t) => {
+test('allows custom moduleDirectories', async (t) => {
   const bundle = await rollup({
     input: 'custom-module-dir/main.js',
     onwarn: () => t.fail('No warnings were expected'),
     plugins: [
       nodeResolve({
-        moduleDirectory: 'js_modules'
+        moduleDirectories: ['js_modules']
       })
     ]
   });

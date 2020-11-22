@@ -15,7 +15,7 @@ test('can deduplicate custom module directory', async (t) => {
     plugins: [
       nodeResolve({
         dedupe: ['package-b'],
-        moduleDirectory: 'js_modules'
+        moduleDirectories: ['js_modules']
       })
     ]
   });

@@ -135,7 +135,7 @@ async function resolveId({
   preserveSymlinks,
   useBrowserOverrides,
   baseDir,
-  moduleDirectory
+  moduleDirectories
 }) {
   const resolveOptions = {
     basedir: baseDir,
@@ -144,7 +144,7 @@ async function resolveId({
     isDirectory: isDirCached,
     extensions,
     includeCoreModules: false,
-    moduleDirectory,
+    moduleDirectory: moduleDirectories,
     preserveSymlinks
   };
 
@@ -235,7 +235,7 @@ export function resolveImportSpecifiers({
   preserveSymlinks,
   useBrowserOverrides,
   baseDir,
-  moduleDirectory
+  moduleDirectories
 }) {
   let promise = Promise.resolve();
 
@@ -257,7 +257,7 @@ export function resolveImportSpecifiers({
         preserveSymlinks,
         useBrowserOverrides,
         baseDir,
-        moduleDirectory
+        moduleDirectories
       });
     });
 

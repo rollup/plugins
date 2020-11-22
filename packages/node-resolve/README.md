@@ -62,12 +62,12 @@ Default: `false`
 
 If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
 
-### `moduleDirectory`
+### `moduleDirectories`
 
-Type: `String`<br>
-Default: `'node_modules'`
+Type: `Array[...String]`<br>
+Default: `['node_modules']`
 
-Directory in which to recursively look for modules.
+One or more directories in which to recursively look for modules.
 
 ### `dedupe`
 
