@@ -1,8 +1,9 @@
 const path = require('path');
+const fs = require('fs');
 
 const commonjs = require('@rollup/plugin-commonjs');
 const test = require('ava');
-const { rollup } = require('rollup');
+const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
 const { getCode, testBundle } = require('../../../util/test');
@@ -16,6 +17,20 @@ const outputOptions = { format: 'esm' };
 async function evaluateBundle(bundle) {
   const { module } = await testBundle(null, bundle);
   return module.exports;
+}
+
+function waitForWatcherEvent(watcher, eventCode) {
+  return new Promise((resolve, reject) => {
+    watcher.on('event', function handleEvent(event) {
+      if (event.code === eventCode) {
+        watcher.off('event', handleEvent);
+        resolve(event);
+      } else if (event.code === 'ERROR') {
+        watcher.off('event', handleEvent);
+        reject(event);
+      }
+    });
+  });
 }
 
 function onwarn(warning) {
@@ -1129,3 +1144,47 @@ function fakeTypescript(custom) {
     custom
   );
 }
+
+test.serial('picks up on newly included typescript files in watch mode', async (t) => {
+  // clean up artefacts from earlier builds
+  const fileNames = fs.readdirSync('fixtures/watch');
+  fileNames.forEach((fileName) => {
+    if (path.extname(fileName) === '.ts') {
+      fs.unlinkSync(path.join('fixtures/watch', fileName));
+    }
+  });
+
+  // set up initial main.ts
+  // (file will be modified later in the test)
+  fs.copyFileSync('fixtures/watch/main.ts.1', 'fixtures/watch/main.ts');
+
+  const watcher = watch({
+    input: 'fixtures/watch/main.ts',
+    output: {
+      dir: 'fixtures/watch/dist'
+    },
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/watch/tsconfig.json',
+        target: 'es5'
+      })
+    ],
+    onwarn
+  });
+
+  await waitForWatcherEvent(watcher, 'BUNDLE_END');
+
+  // add new .ts file
+  fs.copyFileSync('fixtures/watch/new.ts.1', 'fixtures/watch/new.ts');
+
+  // update main.ts file to include new.ts
+  fs.copyFileSync('fixtures/watch/main.ts.2', 'fixtures/watch/main.ts');
+
+  await waitForWatcherEvent(watcher, 'BUNDLE_END');
+
+  watcher.close();
+
+  const code = fs.readFileSync('fixtures/watch/dist/main.js');
+  const usage = code.includes('Is it me');
+  t.true(usage, 'should contain usage');
+});
