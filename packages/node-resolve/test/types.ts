@@ -11,6 +11,7 @@ const config = {
   },
   plugins: [
     nodeResolve({
+      exportConditions: ['a', 'b'],
       browser: true,
       moduleDirectories: ['js_modules'],
       dedupe: ['lodash'],
@@ -19,7 +20,8 @@ const config = {
       preferBuiltins: false,
       mainFields: ['untranspiled', 'module', 'main'],
       modulesOnly: true,
-      resolveOnly: ['some_module', /^@some_scope\/.*$/]
+      resolveOnly: ['some_module', /^@some_scope\/.*$/],
+      rootDir: 'root'
     })
   ]
 };
