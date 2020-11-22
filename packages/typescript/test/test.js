@@ -19,20 +19,6 @@ async function evaluateBundle(bundle) {
   return module.exports;
 }
 
-function waitForWatcherEvent(watcher, eventCode) {
-  return new Promise((resolve, reject) => {
-    watcher.on('event', function handleEvent(event) {
-      if (event.code === eventCode) {
-        watcher.off('event', handleEvent);
-        resolve(event);
-      } else if (event.code === 'ERROR') {
-        watcher.off('event', handleEvent);
-        reject(event);
-      }
-    });
-  });
-}
-
 function onwarn(warning) {
   // eslint-disable-next-line no-console
   console.warn(warning.toString());
@@ -1188,3 +1174,17 @@ test.serial('picks up on newly included typescript files in watch mode', async (
   const usage = code.includes('Is it me');
   t.true(usage, 'should contain usage');
 });
+
+function waitForWatcherEvent(watcher, eventCode) {
+  return new Promise((resolve, reject) => {
+    watcher.on('event', function handleEvent(event) {
+      if (event.code === eventCode) {
+        watcher.off('event', handleEvent);
+        resolve(event);
+      } else if (event.code === 'ERROR') {
+        watcher.off('event', handleEvent);
+        reject(event);
+      }
+    });
+  });
+}
