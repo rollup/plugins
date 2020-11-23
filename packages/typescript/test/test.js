@@ -1132,17 +1132,19 @@ function fakeTypescript(custom) {
 }
 
 test.serial('picks up on newly included typescript files in watch mode', async (t) => {
+  const dirName = path.join('fixtures', 'watch');
+
   // clean up artefacts from earlier builds
-  const fileNames = fs.readdirSync('fixtures/watch');
+  const fileNames = fs.readdirSync(dirName);
   fileNames.forEach((fileName) => {
     if (path.extname(fileName) === '.ts') {
-      fs.unlinkSync(path.join('fixtures/watch', fileName));
+      fs.unlinkSync(path.join(dirName, fileName));
     }
   });
 
   // set up initial main.ts
   // (file will be modified later in the test)
-  fs.copyFileSync('fixtures/watch/main.ts.1', 'fixtures/watch/main.ts');
+  fs.copyFileSync(path.join(dirName, 'main.ts.1'), path.join(dirName, 'main.ts'));
 
   const watcher = watch({
     input: 'fixtures/watch/main.ts',
@@ -1155,29 +1157,23 @@ test.serial('picks up on newly included typescript files in watch mode', async (
         target: 'es5'
       })
     ],
-    watch: {
-      chokidar: {
-        // make sure watch mode works in Windows CI; https://github.com/paulmillr/chokidar/issues/998
-        usePolling: true,
-        interval: 10
-      }
-    },
     onwarn
   });
 
   await waitForWatcherEvent(watcher, 'END');
 
   // add new .ts file
-  fs.copyFileSync('fixtures/watch/new.ts.1', 'fixtures/watch/new.ts');
+  fs.copyFileSync(path.join(dirName, 'new.ts.1'), path.join(dirName, 'new.ts'));
 
   // update main.ts file to include new.ts
-  fs.copyFileSync('fixtures/watch/main.ts.2', 'fixtures/watch/main.ts');
+  const newMain = fs.readFileSync(path.join(dirName, 'main.ts.2'));
+  fs.writeFileSync(path.join(dirName, 'main.ts'), newMain);
 
   await waitForWatcherEvent(watcher, 'END');
 
   watcher.close();
 
-  const code = fs.readFileSync('fixtures/watch/dist/main.js');
+  const code = fs.readFileSync(path.join(dirName, 'dist', 'main.js'));
   const usage = code.includes('Is it me');
   t.true(usage, 'should contain usage');
 });
