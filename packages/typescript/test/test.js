@@ -1,8 +1,9 @@
 const path = require('path');
+const fs = require('fs');
 
 const commonjs = require('@rollup/plugin-commonjs');
 const test = require('ava');
-const { rollup } = require('rollup');
+const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
 const { getCode, testBundle } = require('../../../util/test');
@@ -1128,4 +1129,65 @@ function fakeTypescript(custom) {
     },
     custom
   );
+}
+
+test.serial('picks up on newly included typescript files in watch mode', async (t) => {
+  const dirName = path.join('fixtures', 'watch');
+
+  // clean up artefacts from earlier builds
+  const fileNames = fs.readdirSync(dirName);
+  fileNames.forEach((fileName) => {
+    if (path.extname(fileName) === '.ts') {
+      fs.unlinkSync(path.join(dirName, fileName));
+    }
+  });
+
+  // set up initial main.ts
+  // (file will be modified later in the test)
+  fs.copyFileSync(path.join(dirName, 'main.ts.1'), path.join(dirName, 'main.ts'));
+
+  const watcher = watch({
+    input: 'fixtures/watch/main.ts',
+    output: {
+      dir: 'fixtures/watch/dist'
+    },
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/watch/tsconfig.json',
+        target: 'es5'
+      })
+    ],
+    onwarn
+  });
+
+  await waitForWatcherEvent(watcher, 'END');
+
+  // add new .ts file
+  fs.copyFileSync(path.join(dirName, 'new.ts.1'), path.join(dirName, 'new.ts'));
+
+  // update main.ts file to include new.ts
+  const newMain = fs.readFileSync(path.join(dirName, 'main.ts.2'));
+  fs.writeFileSync(path.join(dirName, 'main.ts'), newMain);
+
+  await waitForWatcherEvent(watcher, 'END');
+
+  watcher.close();
+
+  const code = fs.readFileSync(path.join(dirName, 'dist', 'main.js'));
+  const usage = code.includes('Is it me');
+  t.true(usage, 'should contain usage');
+});
+
+function waitForWatcherEvent(watcher, eventCode) {
+  return new Promise((resolve, reject) => {
+    watcher.on('event', function handleEvent(event) {
+      if (event.code === eventCode) {
+        watcher.off('event', handleEvent);
+        resolve(event);
+      } else if (event.code === 'ERROR') {
+        watcher.off('event', handleEvent);
+        reject(event);
+      }
+    });
+  });
 }
