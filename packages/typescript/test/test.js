@@ -1155,6 +1155,13 @@ test.serial('picks up on newly included typescript files in watch mode', async (
         target: 'es5'
       })
     ],
+    watch: {
+      chokidar: {
+        // make sure watch mode works in Windows CI; https://github.com/paulmillr/chokidar/issues/998
+        usePolling: (process.platform === 'win32'),
+        interval: 10 // only used when polling
+      }
+    },
     onwarn
   });
 
