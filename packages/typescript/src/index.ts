@@ -109,9 +109,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       await watchProgramHelper.wait();
 
-      if (!parsedOptions.fileNames.includes(id)) {
+      const fileName = normalizePath(id);
+      if (!parsedOptions.fileNames.includes(fileName)) {
         // Discovered new file that was not known when originally parsing the TypeScript config
-        parsedOptions.fileNames.push(id);
+        parsedOptions.fileNames.push(fileName);
       }
 
       const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles, tsCache);

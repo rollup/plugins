@@ -1158,7 +1158,7 @@ test.serial('picks up on newly included typescript files in watch mode', async (
     onwarn
   });
 
-  await waitForWatcherEvent(watcher, 'BUNDLE_END');
+  await waitForWatcherEvent(watcher, 'END');
 
   // add new .ts file
   fs.copyFileSync('fixtures/watch/new.ts.1', 'fixtures/watch/new.ts');
@@ -1166,7 +1166,7 @@ test.serial('picks up on newly included typescript files in watch mode', async (
   // update main.ts file to include new.ts
   fs.copyFileSync('fixtures/watch/main.ts.2', 'fixtures/watch/main.ts');
 
-  await waitForWatcherEvent(watcher, 'BUNDLE_END');
+  await waitForWatcherEvent(watcher, 'END');
 
   watcher.close();
 
