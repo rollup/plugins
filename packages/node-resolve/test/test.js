@@ -178,6 +178,25 @@ test('allows custom moduleDirectories', async (t) => {
   t.is(bundle.cache.modules[0].id, resolve('custom-module-dir/js_modules/foo.js'));
 });
 
+test('allows custom moduleDirectories with legacy customResolveOptions.moduleDirectory', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'custom-module-dir/main.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        customResolveOptions: {
+          moduleDirectory: 'js_modules'
+        }
+      })
+    ]
+  });
+
+  t.is(bundle.cache.modules[0].id, resolve('custom-module-dir/js_modules/foo.js'));
+  t.is(warnings.length, 1);
+  t.snapshot(warnings);
+});
+
 test('ignores deep-import non-modules', async (t) => {
   const warnings = [];
   const bundle = await rollup({
@@ -311,4 +330,34 @@ test('can resolve imports with search params and hash', async (t) => {
   const { module } = await testBundle(t, bundle);
 
   t.is(module.exports, 'resolved with search params and hash');
+});
+
+[
+  'preserveSymlinks',
+  'basedir',
+  'package',
+  'extensions',
+  'includeCoreModules',
+  'readFile',
+  'isFile',
+  'isDirectory',
+  'realpath',
+  'packageFilter',
+  'pathFilter',
+  'paths',
+  'packageIterator'
+].forEach((resolveOption) => {
+  test(`throws error for removed customResolveOptions.${resolveOption} option`, (t) => {
+    try {
+      nodeResolve({
+        customResolveOptions: {
+          [resolveOption]: 'something'
+        }
+      });
+    } catch (e) {
+      t.snapshot(e);
+      return;
+    }
+    t.fail('expecting error');
+  });
 });
