@@ -18,7 +18,6 @@ export function rewriteExportsAndGetExportsBlock(
   topLevelExportsAssignmentsByName,
   defineCompiledEsmExpressions,
   deconflict,
-  isRestorableCompiledEsm,
   code,
   uses,
   HELPERS_NAME,
@@ -65,6 +64,19 @@ export function rewriteExportsAndGetExportsBlock(
       magicString.appendLeft(
         code[node.end] === ';' ? node.end + 1 : node.end,
         `\n${moduleName}.exports.${exportName} = ${deconflicted};`
+      );
+    }
+
+    // Collect and rewrite exports.__esModule assignments
+    let isRestorableCompiledEsm = false;
+    for (const expression of defineCompiledEsmExpressions) {
+      isRestorableCompiledEsm = true;
+      const moduleExportsExpression =
+        expression.type === 'CallExpression' ? expression.arguments[0] : expression.left.object;
+      magicString.overwrite(
+        moduleExportsExpression.start,
+        moduleExportsExpression.end,
+        `${moduleName}.exports`
       );
     }
 

@@ -414,21 +414,6 @@ export default function transformCommonjs(
   // TODO Lukas we do not need this for ES modules
   const moduleName = deconflict(scope, globals, getName(id));
 
-  // TODO Lukas inline this into exports block
-  let isRestorableCompiledEsm = false;
-  if (!shouldWrap) {
-    for (const expression of defineCompiledEsmExpressions) {
-      isRestorableCompiledEsm = true;
-      const moduleExportsExpression =
-        expression.type === 'CallExpression' ? expression.arguments[0] : expression.left.object;
-      magicString.overwrite(
-        moduleExportsExpression.start,
-        moduleExportsExpression.end,
-        `${moduleName}.exports`
-      );
-    }
-  }
-
   // We cannot wrap ES/mixed modules
   shouldWrap = shouldWrap && !disableWrap && !isEsModule;
   uses.commonjsHelpers = uses.commonjsHelpers || shouldWrap;
@@ -466,7 +451,6 @@ export default function transformCommonjs(
         topLevelExportsAssignmentsByName,
         defineCompiledEsmExpressions,
         (name) => deconflict(scope, globals, name),
-        isRestorableCompiledEsm,
         code,
         uses,
         HELPERS_NAME,
