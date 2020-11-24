@@ -54,8 +54,8 @@ export function createCommonjsModule(fn) {
 	return fn(module, module.exports), module.exports;
 }
 
-export function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+export function commonjsRequire (target) {
+	throw new Error('Could not dynamically require "' + target + '". Please configure the dynamicRequireTargets option of @rollup/plugin-commonjs appropriately for this require call to behave properly.');
 }
 `;
 
