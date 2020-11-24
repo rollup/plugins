@@ -6,6 +6,7 @@ import { dirname, resolve, sep } from 'path';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
+  MODULE_SUFFIX,
   EXTERNAL_SUFFIX,
   HELPERS_ID,
   isWrappedId,
@@ -57,7 +58,11 @@ export default function getResolveId(extensions) {
         ? unwrapModuleRegisterProxy(rawImporter)
         : rawImporter;
 
-    // Proxies are only importing resolved ids, no need to resolve again
+    if (isWrappedId(importee, MODULE_SUFFIX)) {
+      return importee;
+    }
+    // Except for exports, proxies are only importing resolved ids,
+    // no need to resolve again
     if (importer && isWrappedId(importer, PROXY_SUFFIX)) {
       return importee;
     }

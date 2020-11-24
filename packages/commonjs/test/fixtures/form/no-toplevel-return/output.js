@@ -1,3 +1,5 @@
+import { __module as input } from "\u0000fixtures/form/no-toplevel-return/input.js?commonjs-module"
+
 var foo = function () {
 	return;
 };
@@ -10,7 +12,7 @@ function baz () {
 	return;
 }
 
-var input = 42;
+input.exports = 42;
 
-export default input;
-export { input as __moduleExports };
+export { exports as __moduleExports } from "\u0000fixtures/form/no-toplevel-return/input.js?commonjs-module"
+export default input.exports;

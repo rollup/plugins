@@ -1,15 +1,12 @@
-import '_./a?commonjs-require';
-import '_./b?commonjs-require';
-import require$$0 from '_./a?commonjs-proxy';
-import b from '_./b?commonjs-proxy';
+import { __module as input } from "\u0000fixtures/form/multiple-var-declarations/input.js?commonjs-module"
+import "\u0000./a?commonjs-require";
+import "\u0000./b?commonjs-require";
+import require$$0 from "\u0000./a?commonjs-proxy";
+import b from "\u0000./b?commonjs-proxy";
 
 var a = require$$0();
 
 console.log( a, b );
 
-var input = {
-
-};
-
-export default input;
-export { input as __moduleExports };
+export { exports as __moduleExports } from "\u0000fixtures/form/multiple-var-declarations/input.js?commonjs-module"
+export default input.exports;

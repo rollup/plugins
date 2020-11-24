@@ -1,6 +1,7 @@
-import * as commonjsHelpers from '_commonjsHelpers.js';
+import * as commonjsHelpers from "_commonjsHelpers.js";
+import { __module as input } from "\u0000fixtures/form/typeof-module-exports/input.js?commonjs-module"
 
-var input = commonjsHelpers.createCommonjsModule(function (module, exports) {
+(function (module, exports) {
 var foo = 42;
 
 if ( 'object' === 'object' && 'object' === 'object' ) {
@@ -10,7 +11,7 @@ if ( 'object' === 'object' && 'object' === 'object' ) {
 } else {
 	window.foo = foo;
 }
-});
+}(input, input.exports));
 
-export default input;
-export { input as __moduleExports };
+export { exports as __moduleExports } from "\u0000fixtures/form/typeof-module-exports/input.js?commonjs-module"
+export default input.exports;

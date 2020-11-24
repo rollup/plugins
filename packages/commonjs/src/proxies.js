@@ -1,12 +1,12 @@
 import { readFileSync } from 'fs';
 
-import { DYNAMIC_JSON_PREFIX, HELPERS_ID } from './helpers';
+import { DYNAMIC_JSON_PREFIX, MODULE_SUFFIX, HELPERS_ID, wrapId } from './helpers';
 import { getIsCjsPromise } from './is-cjs';
 import { getName, getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
 
 // e.g. id === "commonjsHelpers?commonjsRegister"
 export function getSpecificHelperProxy(id) {
-  return `export {${id.split('?')[1]} as default} from '${HELPERS_ID}';`;
+  return `export {${id.split('?')[1]} as default} from "${HELPERS_ID}";`;
 }
 
 export function getUnknownRequireProxy(id, requireReturnsDefault) {
@@ -51,7 +51,7 @@ export async function getStaticRequireProxy(
   const name = getName(id);
   const isCjs = await getIsCjsPromise(id);
   if (isCjs) {
-    return `import { __moduleExports } from ${JSON.stringify(id)}; export default __moduleExports;`;
+    return `export { exports as default } from ${JSON.stringify(wrapId(id, MODULE_SUFFIX))};`;
   } else if (isCjs === null) {
     return getUnknownRequireProxy(id, requireReturnsDefault);
   } else if (!requireReturnsDefault) {

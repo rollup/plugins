@@ -1,5 +1,6 @@
-import '_./dummy?commonjs-require';
-import dummy from '_./dummy?commonjs-proxy';
+import { __module as input_1 } from "\u0000fixtures/form/no-exports-entry/input.js?commonjs-module"
+import "\u0000./dummy?commonjs-require";
+import dummy from "\u0000./dummy?commonjs-proxy";
 
 var foo = function () {
 	return;
@@ -7,9 +8,5 @@ var foo = function () {
 
 var input = 42;
 
-var input_1 = {
-
-};
-
-export default input_1;
-export { input_1 as __moduleExports };
+export { exports as __moduleExports } from "\u0000fixtures/form/no-exports-entry/input.js?commonjs-module"
+export default input_1.exports;

@@ -15,15 +15,15 @@ module.exports = {
             commonjs: { isCommonJS }
           }
         }) {
-          if (id === ID_MAIN) {
-            if (isCommonJS !== false) {
+          if (id === ID_OTHER) {
+            if (isCommonJS !== true) {
               throw new Error(
-                `Main file wrongly detected: isCommonJS === ${JSON.stringify(isCommonJS)}`
+                `File "${id}" wrongly detected: isCommonJS === ${JSON.stringify(isCommonJS)}`
               );
             }
-          } else if (isCommonJS !== true) {
+          } else if (isCommonJS !== false) {
             throw new Error(
-              `Other file wrongly detected: isCommonJS === ${JSON.stringify(isCommonJS)}`
+              `File "${id}" wrongly detected: isCommonJS === ${JSON.stringify(isCommonJS)}`
             );
           }
         }

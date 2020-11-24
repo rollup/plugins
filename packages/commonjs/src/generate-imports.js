@@ -3,7 +3,7 @@ import { dirname, resolve } from 'path';
 import { sync as nodeResolveSync } from 'resolve';
 
 import { isLocallyShadowed } from './ast-utils';
-import { HELPERS_ID, PROXY_SUFFIX, REQUIRE_SUFFIX, wrapId } from './helpers';
+import { MODULE_SUFFIX, HELPERS_ID, PROXY_SUFFIX, REQUIRE_SUFFIX, wrapId } from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -122,7 +122,9 @@ export function getRequireHandlers() {
     topLevelRequireDeclarators,
     reassignedNames,
     helpersNameIfUsed,
-    dynamicRegisterSources
+    dynamicRegisterSources,
+    moduleName,
+    id
   ) {
     const removedDeclarators = getDeclaratorsReplacedByImportsAndSetImportNames(
       topLevelRequireDeclarators,
@@ -136,25 +138,30 @@ export function getRequireHandlers() {
     );
     removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
     const importBlock = `${(helpersNameIfUsed
-      ? [`import * as ${helpersNameIfUsed} from '${HELPERS_ID}';`]
+      ? [`import * as ${helpersNameIfUsed} from "${HELPERS_ID}";`]
       : []
     )
+      .concat([
+        `import { __module as ${moduleName} } from ${JSON.stringify(wrapId(id, MODULE_SUFFIX))}`
+      ])
       .concat(
         // dynamic registers first, as the may be required in the other modules
-        [...dynamicRegisterSources].map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
+        [...dynamicRegisterSources].map(
+          (source) => `import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`
+        ),
 
         // now the actual modules so that they are analyzed before creating the proxies;
         // no need to do this for virtual modules as we never proxy them
         requiredSources
           .filter((source) => !source.startsWith('\0'))
-          .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
+          .map((source) => `import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`),
 
         // now the proxy modules
         requiredSources.map((source) => {
           const { name, nodesUsingRequired } = requiredBySource[source];
-          return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
+          return `import ${nodesUsingRequired.length ? `${name} from ` : ''}${JSON.stringify(
             source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
-          }';`;
+          )};`;
         })
       )
       .join('\n')}`;

@@ -37,7 +37,7 @@ readdirSync('./fixtures/function').forEach((dir) => {
     );
 
     const bundle = await rollup(options);
-    const codeMap = await getCodeMapFromBundle(bundle);
+    const codeMap = await getCodeMapFromBundle(bundle, options.output || {});
     if (config.show || config.solo) {
       console.error();
       for (const chunkName of Object.keys(codeMap)) {

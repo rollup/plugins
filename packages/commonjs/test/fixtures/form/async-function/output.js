@@ -1,6 +1,8 @@
-var input = async function () {
+import { __module as input } from "\u0000fixtures/form/async-function/input.js?commonjs-module"
+
+input.exports = async function () {
 	// TODO
 };
 
-export default input;
-export { input as __moduleExports };
+export { exports as __moduleExports } from "\u0000fixtures/form/async-function/input.js?commonjs-module"
+export default input.exports;
