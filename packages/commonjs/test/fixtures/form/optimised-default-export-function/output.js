@@ -1,6 +1,4 @@
-import { __module as input } from "\u0000fixtures/form/optimised-default-export-function/input.js?commonjs-module"
+var input = function foo () {};
 
-input.exports = function foo () {};
-
-export { exports as __moduleExports } from "\u0000fixtures/form/optimised-default-export-function/input.js?commonjs-module"
-export default input.exports;
+export { input as __moduleExports };
+export { input as default };

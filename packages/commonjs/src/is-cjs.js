@@ -1,29 +1,29 @@
-const isCjsPromises = new Map();
+const commonJSMetaPromises = new Map();
 
-export function getIsCjsPromise(id) {
-  let isCjsPromise = isCjsPromises.get(id);
-  if (isCjsPromise) return isCjsPromise.promise;
+export function getCommonJSMetaPromise(id) {
+  let commonJSMetaPromise = commonJSMetaPromises.get(id);
+  if (commonJSMetaPromise) return commonJSMetaPromise.promise;
 
   const promise = new Promise((resolve) => {
-    isCjsPromise = {
+    commonJSMetaPromise = {
       resolve,
       promise: null
     };
-    isCjsPromises.set(id, isCjsPromise);
+    commonJSMetaPromises.set(id, commonJSMetaPromise);
   });
-  isCjsPromise.promise = promise;
+  commonJSMetaPromise.promise = promise;
 
   return promise;
 }
 
-export function setIsCjsPromise(id, resolution) {
-  const isCjsPromise = isCjsPromises.get(id);
-  if (isCjsPromise) {
-    if (isCjsPromise.resolve) {
-      isCjsPromise.resolve(resolution);
-      isCjsPromise.resolve = null;
+export function setCommonJSMetaPromise(id, commonjsMeta) {
+  const commonJSMetaPromise = commonJSMetaPromises.get(id);
+  if (commonJSMetaPromise) {
+    if (commonJSMetaPromise.resolve) {
+      commonJSMetaPromise.resolve(commonjsMeta);
+      commonJSMetaPromise.resolve = null;
     }
   } else {
-    isCjsPromises.set(id, { promise: Promise.resolve(resolution), resolve: null });
+    commonJSMetaPromises.set(id, { promise: Promise.resolve(commonjsMeta), resolve: null });
   }
 }

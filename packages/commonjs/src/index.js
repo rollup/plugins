@@ -26,7 +26,7 @@ import {
   PROXY_SUFFIX,
   unwrapId
 } from './helpers';
-import { setIsCjsPromise } from './is-cjs';
+import { setCommonJSMetaPromise } from './is-cjs';
 import { hasCjsKeywords } from './parse';
 import {
   getDynamicJsonProxy,
@@ -163,14 +163,12 @@ export default function commonjs(options = {}) {
 
     // TODO Lukas in Rollup, ensure synthetic namespace is only rendered when needed
     // TODO Lukas
+    //  - Use foo?exports instead of foo?module if there are no assignments to module.exports
     //  - Only wrap if
     //    - there is an assignment to module.exports (also check destructuring) or
     //    - unchecked usages of module or
     //    - direct eassignment to exports (also check destructuring)
-    //  - Use foo?exports instead of foo?module if there are no assignments to module.exports
     //    (also check destructring)
-    //  - Do not use foo?module and do not wrap if there are only direct top-level module.exports
-    //    assignments and no exports property assignments
     load(id) {
       if (id === HELPERS_ID) {
         return getHelpersModule(isDynamicRequireModulesEnabled);
@@ -269,14 +267,11 @@ export default function commonjs(options = {}) {
     },
 
     moduleParsed({ id, meta: { commonjs: commonjsMeta } }) {
-      if (commonjsMeta) {
-        const isCjs = commonjsMeta.isCommonJS;
-        if (isCjs != null) {
-          setIsCjsPromise(id, isCjs);
-          return;
-        }
+      if (commonjsMeta && commonjsMeta.isCommonJS != null) {
+        setCommonJSMetaPromise(id, commonjsMeta);
+        return;
       }
-      setIsCjsPromise(id, null);
+      setCommonJSMetaPromise(id, null);
     }
   };
 }

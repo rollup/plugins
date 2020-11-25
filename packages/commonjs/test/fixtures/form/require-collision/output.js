@@ -1,4 +1,3 @@
-import { __module as input } from "\u0000fixtures/form/require-collision/input.js?commonjs-module"
 import "\u0000foo?commonjs-require";
 import require$$1 from "\u0000foo?commonjs-proxy";
 
@@ -8,5 +7,6 @@ import require$$1 from "\u0000foo?commonjs-proxy";
   console.log(foo);
 })();
 
-export { exports as __moduleExports } from "\u0000fixtures/form/require-collision/input.js?commonjs-module"
-export default input.exports;
+var input = {};
+export { input as __moduleExports };
+export { input as default };

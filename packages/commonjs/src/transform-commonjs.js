@@ -441,6 +441,24 @@ export default function transformCommonjs(
     magicString.remove(0, commentEnd).trim();
   }
 
+  // TODO Lukas test all cases
+  const replacesModuleExports =
+    !shouldWrap &&
+    topLevelExportsAssignmentsByName.size === 0 &&
+    defineCompiledEsmExpressions.length === 0;
+
+  const importBlock = rewriteRequireExpressionsAndGetImportBlock(
+    magicString,
+    topLevelDeclarations,
+    topLevelRequireDeclarators,
+    reassignedNames,
+    uses.commonjsHelpers && HELPERS_NAME,
+    dynamicRegisterSources,
+    moduleName,
+    id,
+    replacesModuleExports
+  );
+
   const exportBlock = isEsModule
     ? ''
     : rewriteExportsAndGetExportsBlock(
@@ -454,19 +472,9 @@ export default function transformCommonjs(
         code,
         uses,
         HELPERS_NAME,
-        id
+        id,
+        replacesModuleExports
       );
-
-  const importBlock = rewriteRequireExpressionsAndGetImportBlock(
-    magicString,
-    topLevelDeclarations,
-    topLevelRequireDeclarators,
-    reassignedNames,
-    uses.commonjsHelpers && HELPERS_NAME,
-    dynamicRegisterSources,
-    moduleName,
-    id
-  );
 
   if (shouldWrap) {
     wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDynamicRequirePath);

@@ -124,7 +124,8 @@ export function getRequireHandlers() {
     helpersNameIfUsed,
     dynamicRegisterSources,
     moduleName,
-    id
+    id,
+    replacesModuleExports
   ) {
     const removedDeclarators = getDeclaratorsReplacedByImportsAndSetImportNames(
       topLevelRequireDeclarators,
@@ -141,9 +142,15 @@ export function getRequireHandlers() {
       ? [`import * as ${helpersNameIfUsed} from "${HELPERS_ID}";`]
       : []
     )
-      .concat([
-        `import { __module as ${moduleName} } from ${JSON.stringify(wrapId(id, MODULE_SUFFIX))}`
-      ])
+      .concat(
+        replacesModuleExports
+          ? []
+          : [
+              `import { __module as ${moduleName} } from ${JSON.stringify(
+                wrapId(id, MODULE_SUFFIX)
+              )}`
+            ]
+      )
       .concat(
         // dynamic registers first, as the may be required in the other modules
         [...dynamicRegisterSources].map(
