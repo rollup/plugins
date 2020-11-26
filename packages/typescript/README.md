@@ -279,6 +279,11 @@ export default {
 
 Previous versions of this plugin used Typescript's `transpileModule` API, which is faster but does not perform typechecking and does not support cross-file features like `const enum`s and emit-less types. If you want this behaviour, you can use [@rollup/plugin-sucrase](https://github.com/rollup/plugins/tree/master/packages/sucrase) instead.
 
+## Comparison
+
+- [rollup-plugin-typescript2](https://github.com/ezolenko/rollup-plugin-typescript2) is another popular option for using TypeScript with Rollup. However, that project does not contain any tests. `@rollup/plugin-typescript` aims to provide the same functionality while improving stability.
+- [rollup-plugin-ts](https://github.com/wessberg/rollup-plugin-ts) integrates Babel and Browserslist as well. It may be a useful option for users needing those features. `@rollup/plugin-typescript` aims to be a simpler plugin that solves just a single problem.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
