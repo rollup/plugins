@@ -1,9 +1,9 @@
-const getFilePath = function getFilePath(someFile) {
+var getFilePath = function getFilePath(someFile) {
   return require.resolve(someFile);
 };
 
-const input = {
-  getFilePath
+var input = {
+	getFilePath: getFilePath
 };
 
 export default input;
