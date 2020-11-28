@@ -206,7 +206,6 @@ async function resolveId({
     try {
       location = await resolveImportPath(importPath, resolveOptions);
     } catch (error) {
-      // swallow MODULE_NOT_FOUND errors
       if (error.code !== 'MODULE_NOT_FOUND') {
         throw error;
       }
