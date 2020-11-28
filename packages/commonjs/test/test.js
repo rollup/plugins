@@ -10,12 +10,17 @@ import { SourceMapConsumer } from 'source-map';
 import { install } from 'source-map-support';
 
 import { testBundle } from '../../../util/test';
+import { peerDependencies } from '../package.json';
 
 import { commonjs, executeBundle, getCodeFromBundle } from './helpers/util';
 
 install();
 
 process.chdir(__dirname);
+
+test('Rollup peer dependency has correct format', (t) => {
+  t.regex(peerDependencies.rollup, /^\^\d+\.\d+\.\d+(\|\|\^\d+\.\d+\.\d+)*$/);
+});
 
 // most of these should be moved over to function...
 test('generates a sourcemap', async (t) => {
