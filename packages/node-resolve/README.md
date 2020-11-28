@@ -166,7 +166,7 @@ Since most packages in your node_modules folder are probably legacy CommonJS rat
 
 ```js
 // rollup.config.js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
@@ -176,7 +176,7 @@ export default {
     format: 'iife',
     name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()],
+  plugins: [nodeResolve(), commonjs()],
 };
 ```
 
@@ -186,7 +186,18 @@ By default this plugin will prefer built-ins over local modules, marking them as
 
 See [`preferBuiltins`](#preferbuiltins).
 
-Use a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) to provide stubbed versions of built-ins, and set `preferBuiltins` to `false`.
+To provide stubbed versions of Node built-ins, yse a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) or use [`builtin-modules`](https://github.com/sindresorhus/builtin-modules) with `external`, and set `preferBuiltins` to `false`. e.g.
+
+```js
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import builtins from 'builtin-modules'
+export default ({
+  input: ...,
+  plugins: [nodeResolve()],
+  external: builtins,
+  output: ...
+})
+```
 
 ## Resolving require statements
 
