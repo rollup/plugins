@@ -234,7 +234,7 @@ export function nodeResolve(opts = {}) {
               `preferring built-in module '${importee}' over local alternative at '${resolvedWithoutBuiltins.location}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
             );
           }
-          return null;
+          return false;
         } else if (jail && location.indexOf(normalize(jail.trim(sep))) !== 0) {
           return null;
         }

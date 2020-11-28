@@ -106,7 +106,7 @@ Specifies the extensions of files that the plugin will operate on.
 Type: `String`<br>
 Default: `'/'`
 
-Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be marked as external.
+Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be ignored by this plugin.
 
 ### `mainFields`
 
@@ -161,7 +161,7 @@ Since most packages in your node_modules folder are probably legacy CommonJS rat
 
 ```js
 // rollup.config.js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
@@ -171,22 +171,24 @@ export default {
     format: 'iife',
     name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()],
+  plugins: [nodeResolve(), commonjs()],
 };
 ```
 
 ## Resolving Built-Ins (like `fs`)
 
-This plugin won't resolve any builtins (e.g. `fs`). If you need to resolve builtins you can install local modules and set `preferBuiltins` to `false`, or install a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) which provides stubbed versions of these methods.
+By default this plugin will prefer built-ins over local modules, marking them as external.
 
-If you want to silence warnings about builtins, you can add the list of builtins to the `externals` option; like so:
+See [`preferBuiltins`](#preferbuiltins).
+
+To provide stubbed versions of Node built-ins, yse a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) or use [`builtin-modules`](https://github.com/sindresorhus/builtin-modules) with `external`, and set `preferBuiltins` to `false`. e.g.
 
 ```js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import builtins from 'builtin-modules'
 export default ({
   input: ...,
-  plugins: [resolve()],
+  plugins: [nodeResolve()],
   external: builtins,
   output: ...
 })

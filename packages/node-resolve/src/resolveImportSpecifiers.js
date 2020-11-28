@@ -223,7 +223,7 @@ async function resolveId({
 
 // Resolve module specifiers in order. Promise resolves to the first module that resolves
 // successfully, or the error that resulted from the last attempted module resolution.
-export function resolveImportSpecifiers({
+export async function resolveImportSpecifiers({
   importSpecifierList,
   exportConditions,
   warn,
@@ -235,17 +235,10 @@ export function resolveImportSpecifiers({
   baseDir,
   moduleDirectories
 }) {
-  let promise = Promise.resolve();
-
   for (let i = 0; i < importSpecifierList.length; i++) {
-    // eslint-disable-next-line no-loop-func
-    promise = promise.then(async (value) => {
-      // if we've already resolved to something, just return it.
-      if (value) {
-        return value;
-      }
-
-      return resolveId({
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      return await resolveId({
         importPath: importSpecifierList[i],
         exportConditions,
         warn,
@@ -257,15 +250,12 @@ export function resolveImportSpecifiers({
         baseDir,
         moduleDirectories
       });
-    });
-
-    // swallow MODULE_NOT_FOUND errors
-    promise = promise.catch((error) => {
+    } catch (error) {
+      // swallow MODULE_NOT_FOUND errors
       if (error.code !== 'MODULE_NOT_FOUND') {
         throw error;
       }
-    });
+    }
   }
-
-  return promise;
+  return null;
 }

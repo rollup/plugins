@@ -18,6 +18,10 @@ readdirSync('./fixtures/function').forEach((dir) => {
     config = {};
   }
 
+  if (config.skip) {
+    console.error(`Skipped test "${dir}"`);
+    return;
+  }
   (config.solo ? test.only : test)(dir, async (t) => {
     const options = Object.assign(
       {
@@ -44,10 +48,13 @@ readdirSync('./fixtures/function').forEach((dir) => {
         console.groupEnd();
       }
     }
-    const { exports, global } = runCodeSplitTest(codeMap, t, config.context);
+    const { exports, global, error } = runCodeSplitTest(codeMap, t, config.context);
 
     if (config.exports) config.exports(exports, t);
     if (config.global) config.global(global, t);
+    if (error) {
+      throw error;
+    }
     t.snapshot(codeMap);
   });
 });
