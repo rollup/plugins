@@ -98,7 +98,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       if (resolved) {
         if (resolved.extension === '.d.ts') return null;
-        return resolved.resolvedFileName;
+        return path.normalize(resolved.resolvedFileName);
       }
 
       return null;
@@ -108,6 +108,12 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       if (!filter(id)) return null;
 
       await watchProgramHelper.wait();
+
+      const fileName = normalizePath(id);
+      if (!parsedOptions.fileNames.includes(fileName)) {
+        // Discovered new file that was not known when originally parsing the TypeScript config
+        parsedOptions.fileNames.push(fileName);
+      }
 
       const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles, tsCache);
 

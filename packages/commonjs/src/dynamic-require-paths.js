@@ -4,7 +4,7 @@ import { resolve } from 'path';
 
 import glob from 'glob';
 
-import { normalizePathSlashes } from './transform';
+import { normalizePathSlashes } from './utils';
 
 export default function getDynamicRequirePaths(patterns) {
   const dynamicRequireModuleSet = new Set();

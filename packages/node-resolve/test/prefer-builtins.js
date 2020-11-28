@@ -9,7 +9,7 @@ const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
 
-test('warns when importing builtins', async (t) => {
+test('handles importing builtins', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'builtins.js',
@@ -24,8 +24,7 @@ test('warns when importing builtins', async (t) => {
 
   const { module } = await testBundle(t, bundle);
 
-  t.is(warnings.length, 1);
-  t.snapshot(warnings);
+  t.is(warnings.length, 0);
   // eslint-disable-next-line global-require
   t.is(module.exports, require('path').sep);
 });
@@ -66,8 +65,7 @@ test('true allows preferring a builtin to a local module of the same name', asyn
 
   const imports = await getImports(bundle);
 
-  t.is(warnings.length, 1);
-  t.snapshot(warnings);
+  t.is(warnings.length, 0);
   t.deepEqual(imports, ['events']);
 });
 

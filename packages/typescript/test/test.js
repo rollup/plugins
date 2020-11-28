@@ -1,8 +1,9 @@
 const path = require('path');
+const fs = require('fs');
 
 const commonjs = require('@rollup/plugin-commonjs');
 const test = require('ava');
-const { rollup } = require('rollup');
+const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
 const { getCode, testBundle } = require('../../../util/test');
@@ -927,6 +928,24 @@ test.serial('warns if sourceMap is set in Rollup but not Typescript', async (t) 
   );
 });
 
+test.serial('normalizes resolved ids to avoid duplicate output on windows', async (t) => {
+  const bundle = await rollup({
+    input: ['fixtures/normalize-ids/one.js', 'fixtures/normalize-ids/two.js'],
+    plugins: [
+      typescript({
+        include: ['*.js', '**/*.js'],
+        tsconfig: 'fixtures/normalize-ids/tsconfig.json'
+      })
+    ]
+  });
+
+  const files = await getCode(bundle, { format: 'esm' }, true);
+
+  t.is(files.length, 2);
+  t.true(files[1].fileName.includes('two.js'), files[1].fileName);
+  t.true(files[1].code.includes("import { one } from './one.js';"), files[1].code);
+});
+
 test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
   const warnings = [];
   const bundle = await rollup({
@@ -1110,4 +1129,65 @@ function fakeTypescript(custom) {
     },
     custom
   );
+}
+
+test.serial('picks up on newly included typescript files in watch mode', async (t) => {
+  const dirName = path.join('fixtures', 'watch');
+
+  // clean up artefacts from earlier builds
+  const fileNames = fs.readdirSync(dirName);
+  fileNames.forEach((fileName) => {
+    if (path.extname(fileName) === '.ts') {
+      fs.unlinkSync(path.join(dirName, fileName));
+    }
+  });
+
+  // set up initial main.ts
+  // (file will be modified later in the test)
+  fs.copyFileSync(path.join(dirName, 'main.ts.1'), path.join(dirName, 'main.ts'));
+
+  const watcher = watch({
+    input: 'fixtures/watch/main.ts',
+    output: {
+      dir: 'fixtures/watch/dist'
+    },
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/watch/tsconfig.json',
+        target: 'es5'
+      })
+    ],
+    onwarn
+  });
+
+  await waitForWatcherEvent(watcher, 'END');
+
+  // add new .ts file
+  fs.copyFileSync(path.join(dirName, 'new.ts.1'), path.join(dirName, 'new.ts'));
+
+  // update main.ts file to include new.ts
+  const newMain = fs.readFileSync(path.join(dirName, 'main.ts.2'));
+  fs.writeFileSync(path.join(dirName, 'main.ts'), newMain);
+
+  await waitForWatcherEvent(watcher, 'END');
+
+  watcher.close();
+
+  const code = fs.readFileSync(path.join(dirName, 'dist', 'main.js'));
+  const usage = code.includes('Is it me');
+  t.true(usage, 'should contain usage');
+});
+
+function waitForWatcherEvent(watcher, eventCode) {
+  return new Promise((resolve, reject) => {
+    watcher.on('event', function handleEvent(event) {
+      if (event.code === eventCode) {
+        watcher.off('event', handleEvent);
+        resolve(event);
+      } else if (event.code === 'ERROR') {
+        watcher.off('event', handleEvent);
+        reject(event);
+      }
+    });
+  });
 }
