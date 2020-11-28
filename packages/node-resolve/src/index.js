@@ -259,14 +259,14 @@ export function nodeResolve(opts = {}) {
 
       if (hasPackageEntry) {
         if (builtins.has(resolved) && preferBuiltins && isPreferBuiltinsSet) {
-          return null;
+          return false;
         } else if (importeeIsBuiltin && preferBuiltins) {
           if (!isPreferBuiltinsSet) {
             this.warn(
               `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
             );
           }
-          return null;
+          return false;
         } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
           return null;
         }
