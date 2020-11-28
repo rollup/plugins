@@ -203,7 +203,15 @@ async function resolveId({
   }
 
   if (!location) {
-    location = await resolveImportPath(importPath, resolveOptions);
+    try {
+      location = await resolveImportPath(importPath, resolveOptions);
+    } catch (error) {
+      // swallow MODULE_NOT_FOUND errors
+      if (error.code !== 'MODULE_NOT_FOUND') {
+        throw error;
+      }
+      return null;
+    }
   }
 
   if (!preserveSymlinks) {
@@ -236,25 +244,21 @@ export async function resolveImportSpecifiers({
   moduleDirectories
 }) {
   for (let i = 0; i < importSpecifierList.length; i++) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      return await resolveId({
-        importPath: importSpecifierList[i],
-        exportConditions,
-        warn,
-        packageInfoCache,
-        extensions,
-        mainFields,
-        preserveSymlinks,
-        useBrowserOverrides,
-        baseDir,
-        moduleDirectories
-      });
-    } catch (error) {
-      // swallow MODULE_NOT_FOUND errors
-      if (error.code !== 'MODULE_NOT_FOUND') {
-        throw error;
-      }
+    // eslint-disable-next-line no-await-in-loop
+    const resolved = await resolveId({
+      importPath: importSpecifierList[i],
+      exportConditions,
+      warn,
+      packageInfoCache,
+      extensions,
+      mainFields,
+      preserveSymlinks,
+      useBrowserOverrides,
+      baseDir,
+      moduleDirectories
+    });
+    if (resolved) {
+      return resolved;
     }
   }
   return null;
