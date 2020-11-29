@@ -63,7 +63,7 @@ Controls what type of files ESLint should look at. The default of `null` is equa
 
 Type: `boolean`<br>
 Default: `false`<br>
-Utilized by: [The plugin itself](src/index.ts#l40)
+Utilized by: [The plugin itself](src/index.ts#L40)
 
 Controls whether or not to throw an error and exit the process when ESLint reports any warnings.
 
@@ -71,7 +71,7 @@ Controls whether or not to throw an error and exit the process when ESLint repor
 
 Type: `boolean`<br>
 Default: `false`<br>
-Utilized by: [The plugin itself](src/index.ts#l46)
+Utilized by: [The plugin itself](src/index.ts#L46)
 
 Controls whether or not to throw an error and exit the process when ESLint reports any errors.
 
@@ -79,7 +79,7 @@ Controls whether or not to throw an error and exit the process when ESLint repor
 
 Type: `string`<br>
 Default: `'stylish'`<br>
-Utilized by: [The plugin itself](src/index.ts#l32)
+Utilized by: [The plugin itself](src/index.ts#L32)
 
 The name of a (built-in) formatter or the path to a custom formatter.
 
