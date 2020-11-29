@@ -27,12 +27,15 @@ yarn add @rollup/plugin-eslint --dev
 import eslint from '@rollup/plugin-eslint';
 
 export default {
-  input: 'main.js',
+  input: 'src',
   plugins: [
     eslint({
-      /* your options */
+      /* options */
     }),
   ],
+  output: {
+    /* ... */
+  },
 };
 ```
 
@@ -60,7 +63,7 @@ Controls what type of files ESLint should look at. The default of `null` is equa
 
 Type: `boolean`<br>
 Default: `false`<br>
-Utilized by: [The plugin itself](https://github.com/robinloeffel/rollup-plugin-eslint/blob/master/src/index.js#L34)
+Utilized by: [The plugin itself](src/index.ts#l40)
 
 Controls whether or not to throw an error and exit the process when ESLint reports any warnings.
 
@@ -68,7 +71,7 @@ Controls whether or not to throw an error and exit the process when ESLint repor
 
 Type: `boolean`<br>
 Default: `false`<br>
-Utilized by: [The plugin itself](https://github.com/robinloeffel/rollup-plugin-eslint/blob/master/src/index.js#L38)
+Utilized by: [The plugin itself](src/index.ts#l46)
 
 Controls whether or not to throw an error and exit the process when ESLint reports any errors.
 
@@ -76,7 +79,7 @@ Controls whether or not to throw an error and exit the process when ESLint repor
 
 Type: `string`<br>
 Default: `'stylish'`<br>
-Utilized by: [The plugin itself](https://github.com/robinloeffel/rollup-plugin-eslint/blob/master/src/index.js#L38)
+Utilized by: [The plugin itself](src/index.ts#l32)
 
 The name of a (built-in) formatter or the path to a custom formatter.
 
