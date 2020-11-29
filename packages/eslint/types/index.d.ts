@@ -1,45 +1,44 @@
+import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import { CLIEngine } from 'eslint';
+import { ESLint } from 'eslint';
 
-export interface RollupEslintOptions extends CLIEngine.Options {
+export interface RollupEslintOptions extends ESLint.Options {
   /**
-   * If true, will auto fix source code.
-   * @default false
-   */
-  fix?: boolean;
-
-  /**
-   * If true, will throw an error if any errors were found.
+   * Controls whether or not to throw an error and exit the
+   * process when ESLint reports any errors.
    * @default false
    */
   throwOnError?: boolean;
 
   /**
-   * If true, will throw an error if any warnings were found.
+   * Controls whether or not to throw an error and exit the
+   * process when ESLint reports any warnings.
    * @default false
    */
   throwOnWarning?: boolean;
 
   /**
-   * A single file, or array of files, to include when linting.
-   * @default []
+   * A single picomatch pattern or an array of patterns controlling
+   * which files this plugin should include.
+   * @default undefined
    */
-  include?: string[] | string;
+  include?: FilterPattern;
 
   /**
-   * A single file, or array of files, to exclude when linting.
-   * @default node_modules/**
+   * A single picomatch pattern or an array of patterns controlling
+   * which files this plugin should exclude.
+   * @default 'node_modules/**'
    */
-  exclude?: string[] | string;
+  exclude?: FilterPattern;
 
   /**
-   * Custom error formatter or the name of a built-in formatter.
-   * @default stylish
+   * The name of a (built-in) formatter or the path to a custom formatter.
+   * @default 'stylish'
    */
-  formatter?: CLIEngine.Formatter | string;
+  formatter?: string;
 }
 
 /**
  * 🍣 A Rollup plugin for verifing entry points and all imported files with ESLint.
  */
-export default function eslint(options?: RollupEslintOptions | string): Plugin;
+export default function eslint(options?: RollupEslintOptions): Plugin;
