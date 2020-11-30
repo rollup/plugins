@@ -154,21 +154,21 @@ typescript({
       {
         // Allow the transformer to get a Program reference in it's factory
         type: 'program',
-        factory: program => {
+        factory: (program) => {
           return ProgramRequiringTransformerFactory(program);
-        }
+        },
       },
       {
         type: 'typeChecker',
-        factory: typeChecker => {
+        factory: (typeChecker) => {
           // Allow the transformer to get a Program reference in it's factory
           return TypeCheckerRequiringTransformerFactory(program);
-        }
-      }
+        },
+      },
     ],
     after: [
       // You can use normal transformers directly
-      require('custom-transformer-based-on-Context')
+      require('custom-transformer-based-on-Context'),
     ],
     afterDeclarations: [
       // Or even define in place
@@ -182,9 +182,9 @@ typescript({
 
           return ts.visitEachChild(source, visitor, context);
         };
-      }
-    ]
-  }
+      },
+    ],
+  },
 });
 ```
 
@@ -199,7 +199,7 @@ compilation.
 
 ```js
 typescript({
-  cacheDir: '.rollup.tscache'
+  cacheDir: '.rollup.tscache',
 });
 ```
 
