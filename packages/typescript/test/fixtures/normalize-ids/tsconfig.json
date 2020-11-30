@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": true
   },
   "include": ["*.js", "**/*.js"]
 }
