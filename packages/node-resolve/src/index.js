@@ -163,6 +163,16 @@ export function nodeResolve(opts = {}) {
 
       const importeeIsBuiltin = builtins.has(importee);
 
+      if (importeeIsBuiltin) {
+        // The `resolve` library will not resolve packages with the same
+        // name as a node built-in module. If we're resolving something
+        // that's a builtin, and we don't prefer to find built-ins, we
+        // first try to look up a local module with that name. If we don't
+        // find anything, we resolve the builtin which just returns back
+        // the built-in's name.
+        importSpecifierList.push(`${importee}/`);
+      }
+
       // TypeScript files may import '.js' to refer to either '.ts' or '.tsx'
       if (importer && importee.endsWith('.js')) {
         for (const ext of ['.ts', '.tsx']) {
@@ -229,7 +239,7 @@ export function nodeResolve(opts = {}) {
 
       if (hasPackageEntry) {
         if (importeeIsBuiltin && preferBuiltins) {
-          if (!isPreferBuiltinsSet && resolvedWithoutBuiltins) {
+          if (!isPreferBuiltinsSet && resolvedWithoutBuiltins && resolved !== importee) {
             this.warn(
               `preferring built-in module '${importee}' over local alternative at '${resolvedWithoutBuiltins.location}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
             );
