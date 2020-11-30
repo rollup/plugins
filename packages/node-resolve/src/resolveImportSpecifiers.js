@@ -11,8 +11,11 @@ import { isDirCached, isFileCached, readCachedFile } from './cache';
 const resolveImportPath = promisify(resolve);
 const readFile = promisify(fs.readFile);
 
-const pathNotFoundError = (subPath, pkgPath) =>
-  new Error(`Package subpath '${subPath}' is not defined by "exports" in ${pkgPath}`);
+const pathNotFoundError = (importPath, importer, subPath, pkgPath) =>
+  new Error(
+    `Could not resolve import "${importPath}" in "${importer}".` +
+      ` Package subpath "${subPath}" is not defined by "exports" in ${pkgPath}`
+  );
 
 function findExportKeyMatch(exportMap, subPath) {
   for (const key of Object.keys(exportMap)) {
@@ -37,7 +40,7 @@ function findExportKeyMatch(exportMap, subPath) {
   return null;
 }
 
-function mapSubPath(pkgJsonPath, subPath, key, value) {
+function mapSubPath({ importPath, importer, pkgJsonPath, subPath, key, value }) {
   if (typeof value === 'string') {
     if (typeof key === 'string' && key.endsWith('*')) {
       // star match: "./foo/*": "./foo/*.js"
@@ -60,34 +63,57 @@ function mapSubPath(pkgJsonPath, subPath, key, value) {
     return value.find((v) => v.startsWith('./'));
   }
 
-  throw pathNotFoundError(subPath, pkgJsonPath);
+  throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
 }
 
-function findEntrypoint(pkgJsonPath, subPath, exportMap, conditions, key) {
+function findEntrypoint({
+  importPath,
+  importer,
+  pkgJsonPath,
+  subPath,
+  exportMap,
+  conditions,
+  key
+}) {
   if (typeof exportMap !== 'object') {
-    return mapSubPath(pkgJsonPath, subPath, key, exportMap);
+    return mapSubPath({ importPath, importer, pkgJsonPath, subPath, key, value: exportMap });
   }
 
   // iterate conditions recursively, find the first that matches all conditions
   for (const [condition, subExportMap] of Object.entries(exportMap)) {
     if (conditions.includes(condition)) {
-      const mappedSubPath = findEntrypoint(pkgJsonPath, subPath, subExportMap, conditions, key);
+      const mappedSubPath = findEntrypoint({
+        importPath,
+        importer,
+        pkgJsonPath,
+        subPath,
+        exportMap: subExportMap,
+        conditions,
+        key
+      });
       if (mappedSubPath) {
         return mappedSubPath;
       }
     }
   }
-  throw pathNotFoundError(subPath, pkgJsonPath);
+  throw pathNotFoundError(importer, subPath, pkgJsonPath);
 }
 
-export function findEntrypointTopLevel(pkgJsonPath, subPath, exportMap, conditions) {
+export function findEntrypointTopLevel({
+  importPath,
+  importer,
+  pkgJsonPath,
+  subPath,
+  exportMap,
+  conditions
+}) {
   if (typeof exportMap !== 'object') {
     // the export map shorthand, for example { exports: "./index.js" }
     if (subPath !== '.') {
       // shorthand only supports a main entrypoint
-      throw pathNotFoundError(subPath, pkgJsonPath);
+      throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
     }
-    return mapSubPath(pkgJsonPath, subPath, null, exportMap);
+    return mapSubPath({ importPath, importer, pkgJsonPath, subPath, key: null, value: exportMap });
   }
 
   // export map is an object, the top level can be either conditions or sub path mappings
@@ -110,22 +136,31 @@ export function findEntrypointTopLevel(pkgJsonPath, subPath, exportMap, conditio
     // top level is conditions, for example { "import": ..., "require": ..., "module": ... }
     if (subPath !== '.') {
       // package with top level conditions means it only supports a main entrypoint
-      throw pathNotFoundError(subPath, pkgJsonPath);
+      throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
     }
     exportMapForSubPath = exportMap;
   } else {
     // top level is sub path mappings, for example { ".": ..., "./foo": ..., "./bar": ... }
     key = findExportKeyMatch(exportMap, subPath);
     if (!key) {
-      throw pathNotFoundError(subPath, pkgJsonPath);
+      throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
     }
     exportMapForSubPath = exportMap[key];
   }
 
-  return findEntrypoint(pkgJsonPath, subPath, exportMapForSubPath, conditions, key);
+  return findEntrypoint({
+    importPath,
+    importer,
+    pkgJsonPath,
+    subPath,
+    exportMap: exportMapForSubPath,
+    conditions,
+    key
+  });
 }
 
 async function resolveId({
+  importer,
   importPath,
   exportConditions,
   warn,
@@ -187,12 +222,14 @@ async function resolveId({
       try {
         const packageSubPath =
           pkgName === importPath ? '.' : `.${importPath.substring(pkgName.length)}`;
-        const mappedSubPath = findEntrypointTopLevel(
+        const mappedSubPath = findEntrypointTopLevel({
+          importer,
+          importPath,
           pkgJsonPath,
-          packageSubPath,
-          pkgJson.exports,
-          exportConditions
-        );
+          subPath: packageSubPath,
+          exportMap: pkgJson.exports,
+          conditions: exportConditions
+        });
         const pkgDir = path.dirname(pkgJsonPath);
         location = path.join(pkgDir, mappedSubPath);
       } catch (error) {
@@ -231,6 +268,7 @@ async function resolveId({
 // Resolve module specifiers in order. Promise resolves to the first module that resolves
 // successfully, or the error that resulted from the last attempted module resolution.
 export async function resolveImportSpecifiers({
+  importer,
   importSpecifierList,
   exportConditions,
   warn,
@@ -245,6 +283,7 @@ export async function resolveImportSpecifiers({
   for (let i = 0; i < importSpecifierList.length; i++) {
     // eslint-disable-next-line no-await-in-loop
     const resolved = await resolveId({
+      importer,
       importPath: importSpecifierList[i],
       exportConditions,
       warn,

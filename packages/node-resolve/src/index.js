@@ -190,6 +190,7 @@ export function nodeResolve(opts = {}) {
       const exportConditions = isRequire ? conditionsCjs : conditionsEsm;
 
       const resolvedWithoutBuiltins = await resolveImportSpecifiers({
+        importer,
         importSpecifierList,
         exportConditions,
         warn,
