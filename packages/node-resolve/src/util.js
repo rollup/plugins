@@ -56,7 +56,7 @@ export function getPackageInfo(options) {
 
   const packageInfo = {
     // copy as we are about to munge the `main` field of `pkg`.
-    packageJson: Object.assign({}, pkg),
+    packageJson: { ...pkg },
 
     // path to package.json file
     packageJsonPath: pkgPath,

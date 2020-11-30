@@ -4,8 +4,9 @@ import { promisify } from 'util';
 
 import resolve from 'resolve';
 
-import { getPackageName } from './util';
+import { getPackageInfo, getPackageName } from './util';
 import { exists, realpath } from './fs';
+import { isDirCached, isFileCached, readCachedFile } from './cache';
 
 const resolveImportPath = promisify(resolve);
 const readFile = promisify(fs.readFile);
@@ -124,13 +125,59 @@ export function findEntrypointTopLevel(pkgJsonPath, subPath, exportMap, conditio
   return findEntrypoint(pkgJsonPath, subPath, exportMapForSubPath, conditions, key);
 }
 
-async function resolveId(importPath, options, exportConditions, warn) {
+async function resolveId({
+  importPath,
+  exportConditions,
+  warn,
+  packageInfoCache,
+  extensions,
+  mainFields,
+  preserveSymlinks,
+  useBrowserOverrides,
+  baseDir,
+  moduleDirectories
+}) {
+  let hasModuleSideEffects = () => null;
+  let hasPackageEntry = true;
+  let packageBrowserField = false;
+  let packageInfo;
+
+  const filter = (pkg, pkgPath) => {
+    const info = getPackageInfo({
+      cache: packageInfoCache,
+      extensions,
+      pkg,
+      pkgPath,
+      mainFields,
+      preserveSymlinks,
+      useBrowserOverrides
+    });
+
+    ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
+
+    return info.cachedPkg;
+  };
+
+  const resolveOptions = {
+    basedir: baseDir,
+    readFile: readCachedFile,
+    isFile: isFileCached,
+    isDirectory: isDirCached,
+    extensions,
+    includeCoreModules: false,
+    moduleDirectory: moduleDirectories,
+    preserveSymlinks,
+    packageFilter: filter
+  };
+
+  let location;
+
   const pkgName = getPackageName(importPath);
   if (pkgName) {
     let pkgJsonPath;
     let pkgJson;
     try {
-      pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, options);
+      pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, resolveOptions);
       pkgJson = JSON.parse(await readFile(pkgJsonPath, 'utf-8'));
     } catch (_) {
       // if there is no package.json we defer to regular resolve behavior
@@ -147,7 +194,7 @@ async function resolveId(importPath, options, exportConditions, warn) {
           exportConditions
         );
         const pkgDir = path.dirname(pkgJsonPath);
-        return path.join(pkgDir, mappedSubPath);
+        location = path.join(pkgDir, mappedSubPath);
       } catch (error) {
         warn(error);
         return null;
@@ -155,34 +202,62 @@ async function resolveId(importPath, options, exportConditions, warn) {
     }
   }
 
-  return resolveImportPath(importPath, options);
+  if (!location) {
+    try {
+      location = await resolveImportPath(importPath, resolveOptions);
+    } catch (error) {
+      if (error.code !== 'MODULE_NOT_FOUND') {
+        throw error;
+      }
+      return null;
+    }
+  }
+
+  if (!preserveSymlinks) {
+    if (await exists(location)) {
+      location = await realpath(location);
+    }
+  }
+
+  return {
+    location,
+    hasModuleSideEffects,
+    hasPackageEntry,
+    packageBrowserField,
+    packageInfo
+  };
 }
 
 // Resolve module specifiers in order. Promise resolves to the first module that resolves
 // successfully, or the error that resulted from the last attempted module resolution.
-export async function resolveImportSpecifiers(
+export async function resolveImportSpecifiers({
   importSpecifierList,
-  resolveOptions,
   exportConditions,
-  warn
-) {
+  warn,
+  packageInfoCache,
+  extensions,
+  mainFields,
+  preserveSymlinks,
+  useBrowserOverrides,
+  baseDir,
+  moduleDirectories
+}) {
   for (let i = 0; i < importSpecifierList.length; i++) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      let result = await resolveId(importSpecifierList[i], resolveOptions, exportConditions, warn);
-      if (!resolveOptions.preserveSymlinks) {
-        // eslint-disable-next-line no-await-in-loop
-        if (await exists(result)) {
-          // eslint-disable-next-line no-await-in-loop
-          result = await realpath(result);
-        }
-      }
-      return result;
-    } catch (error) {
-      // swallow MODULE_NOT_FOUND errors
-      if (error.code !== 'MODULE_NOT_FOUND') {
-        throw error;
-      }
+    // eslint-disable-next-line no-await-in-loop
+    const resolved = await resolveId({
+      importPath: importSpecifierList[i],
+      exportConditions,
+      warn,
+      packageInfoCache,
+      extensions,
+      mainFields,
+      preserveSymlinks,
+      useBrowserOverrides,
+      baseDir,
+      moduleDirectories
+    });
+    if (resolved) {
+      return resolved;
     }
   }
   return null;
