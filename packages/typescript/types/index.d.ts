@@ -1,6 +1,6 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import { CompilerOptions, CustomTransformers } from 'typescript';
+import { CompilerOptions, CustomTransformers, Program, TypeChecker } from 'typescript';
 
 export interface RollupTypescriptPluginOptions {
   /**
