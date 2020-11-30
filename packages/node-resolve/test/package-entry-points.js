@@ -135,7 +135,7 @@ test('handles main directory exports', async (t) => {
 });
 
 test('logs a warning when using shorthand and importing a subpath', async (t) => {
-  t.plan(1);
+  t.plan(2);
   const errors = [];
   await rollup({
     input: 'exports-shorthand-subpath.js',
@@ -144,11 +144,12 @@ test('logs a warning when using shorthand and importing a subpath', async (t) =>
     },
     plugins: [nodeResolve()]
   });
+  t.true(errors[0].message.includes('Could not resolve import in'));
   t.true(errors[0].message.includes('Package subpath \'./foo\' is not defined by "exports" in'));
 });
 
 test('logs a warning when a subpath cannot be found', async (t) => {
-  t.plan(1);
+  t.plan(2);
   const errors = [];
   await rollup({
     input: 'exports-non-existing-subpath.js',
@@ -157,11 +158,12 @@ test('logs a warning when a subpath cannot be found', async (t) => {
     },
     plugins: [nodeResolve()]
   });
+  t.true(errors[0].message.includes('Could not resolve import in'));
   t.true(errors[0].message.includes('Package subpath \'./bar\' is not defined by "exports" in'));
 });
 
 test('prevents importing files not specified in exports map', async (t) => {
-  t.plan(1);
+  t.plan(2);
   const errors = [];
   await rollup({
     input: 'exports-prevent-unspecified-subpath.js',
@@ -170,6 +172,7 @@ test('prevents importing files not specified in exports map', async (t) => {
     },
     plugins: [nodeResolve()]
   });
+  t.true(errors[0].message.includes('Could not resolve import in'));
   t.true(errors[0].message.includes('Package subpath \'./bar\' is not defined by "exports" in'));
 });
 
