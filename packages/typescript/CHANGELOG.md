@@ -1,5 +1,26 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.0.0
+
+_2020-11-30_
+
+### Breaking Changes
+
+- fix: pick up new files in watch mode (#657)
+
+### Bugfixes
+
+- fix: add missing imports (#633)
+- fix: normalize returned module ids (#653)
+
+### Features
+
+- feat: Implement cached incremental code (#535)
+
+### Updates
+
+- docs: fix minor markdown syntax in transformers-section (#624)
+
 ## v7.0.0
 
 _2020-11-30_
