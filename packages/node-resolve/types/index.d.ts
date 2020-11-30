@@ -10,6 +10,17 @@ export const DEFAULTS: {
 
 export interface RollupNodeResolveOptions {
   /**
+   * Additional conditions of the package.json exports field to match when resolving modules.
+   * By default, this plugin looks for the `'default', 'module', 'import']` conditions when resolving imports.
+   *
+   * When using `@rollup/plugin-commonjs` v16 or higher, this plugin will use the
+   * `['default', 'module', 'import']` conditions when resolving require statements.
+   *
+   * Setting this option will add extra conditions on top of the default conditions.
+   * See https://nodejs.org/api/packages.html#packages_conditional_exports for more information.
+   */
+  exportConditions?: string[];
+  /**
    * If `true`, instructs the plugin to use the `"browser"` property in `package.json`
    * files to specify alternative files to load for bundling. This is useful when
    * bundling for a browser environment. Alternatively, a value of `'browser'` can be

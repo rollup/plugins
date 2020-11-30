@@ -34,7 +34,7 @@ npm install @rollup/plugin-dynamic-import-vars --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import dynamicImportVars from 'rollup/plugin-dynamic-import-vars';
+import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 
 export default {
   plugins: [

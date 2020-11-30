@@ -34,15 +34,26 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [nodeResolve()]
+  plugins: [nodeResolve()],
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 ## Options
+
+### `exportConditions`
+
+Type: `Array[...String]`<br>
+Default: `[]`
+
+Additional conditions of the package.json exports field to match when resolving modules. By default, this plugin looks for the `['default', 'module', 'import']` conditions when resolving imports.
+
+When using `@rollup/plugin-commonjs` v16 or higher, this plugin will use the `['default', 'module', 'require']` conditions when resolving require statements.
+
+Setting this option will add extra conditions on top of the default conditions. See https://nodejs.org/api/packages.html#packages_conditional_exports for more information.
 
 ### `browser`
 
@@ -101,7 +112,7 @@ Specifies the extensions of files that the plugin will operate on.
 Type: `String`<br>
 Default: `'/'`
 
-Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be marked as external.
+Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be ignored by this plugin.
 
 ### `mainFields`
 
@@ -118,7 +129,6 @@ DEPRECATED: use "resolveOnly" instead
 ### `preferBuiltins`
 
 Type: `Boolean`<br>
-Default: `true`
 
 If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
 
@@ -156,7 +166,7 @@ Since most packages in your node_modules folder are probably legacy CommonJS rat
 
 ```js
 // rollup.config.js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
@@ -164,27 +174,42 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule'
+    name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()]
+  plugins: [nodeResolve(), commonjs()],
 };
 ```
 
 ## Resolving Built-Ins (like `fs`)
 
-This plugin won't resolve any builtins (e.g. `fs`). If you need to resolve builtins you can install local modules and set `preferBuiltins` to `false`, or install a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) which provides stubbed versions of these methods.
+By default this plugin will prefer built-ins over local modules, marking them as external.
 
-If you want to silence warnings about builtins, you can add the list of builtins to the `externals` option; like so:
+See [`preferBuiltins`](#preferbuiltins).
+
+To provide stubbed versions of Node built-ins, yse a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) or use [`builtin-modules`](https://github.com/sindresorhus/builtin-modules) with `external`, and set `preferBuiltins` to `false`. e.g.
 
 ```js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import builtins from 'builtin-modules'
 export default ({
   input: ...,
-  plugins: [resolve()],
+  plugins: [nodeResolve()],
   external: builtins,
   output: ...
 })
+```
+
+## Resolving require statements
+
+According to [NodeJS module resolution](https://nodejs.org/api/packages.html#packages_package_entry_points) `require` statements should resolve using the `require` condition in the package exports field, while es modules should use the `import` condition.
+
+The node resolve plugin uses `import` by default, you can opt into using the `require` semantics by passing an extra option to the resolve function:
+
+```js
+this.resolve(importee, importer, {
+  skipSelf: true,
+  custom: { 'node-resolve': { isRequire: true } },
+});
 ```
 
 ## Meta

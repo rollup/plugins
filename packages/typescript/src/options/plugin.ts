@@ -16,18 +16,20 @@ import getTsLibPath from '../tslib';
  */
 export default function getPluginOptions(options: RollupTypescriptOptions) {
   const {
-    include,
+    cacheDir,
     exclude,
-    tsconfig,
-    typescript,
-    tslib,
+    include,
     transformers,
+    tsconfig,
+    tslib,
+    typescript,
     ...compilerOptions
   } = options;
 
   const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude);
 
   return {
+    cacheDir,
     filter,
     tsconfig,
     compilerOptions: compilerOptions as PartialCompilerOptions,

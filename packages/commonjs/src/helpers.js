@@ -6,12 +6,6 @@ export const PROXY_SUFFIX = '?commonjs-proxy';
 export const REQUIRE_SUFFIX = '?commonjs-require';
 export const EXTERNAL_SUFFIX = '?commonjs-external';
 
-export const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
-export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
-  if (path.startsWith(commonDir)) return VIRTUAL_PATH_BASE + path.slice(commonDir.length);
-  return path;
-};
-
 export const DYNAMIC_REGISTER_PREFIX = '\0commonjs-dynamic-register:';
 export const DYNAMIC_JSON_PREFIX = '\0commonjs-dynamic-json:';
 export const DYNAMIC_PACKAGES_ID = '\0commonjs-dynamic-packages';
@@ -23,26 +17,11 @@ export const HELPERS_ID = '\0commonjsHelpers.js';
 // This will no longer be necessary once Rollup switches to ES6 output, likely
 // in Rollup 3
 
-// The "hasOwnProperty" call in "getDefaultExportFromCjs" is technically not
-// needed, but for consumers that use Rollup's old interop pattern, it will fix
-// rollup/rollup-plugin-commonjs#224
-// We should remove it once Rollup core and this plugin are updated to not use
-// this pattern any more
 const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 export function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-export function createCommonjsModule(fn, basedir, module) {
-	return module = {
-		path: basedir,
-		exports: {},
-		require: function (path, base) {
-			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
-		}
-	}, fn(module, module.exports), module.exports;
 }
 
 export function getDefaultExportFromNamespaceIfPresent (n) {
@@ -70,12 +49,27 @@ export function getAugmentedNamespace(n) {
 `;
 
 const HELPER_NON_DYNAMIC = `
-export function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+export function createCommonjsModule(fn) {
+  var module = { exports: {} }
+	return fn(module, module.exports), module.exports;
+}
+
+export function commonjsRequire (target) {
+	throw new Error('Could not dynamically require "' + target + '". Please configure the dynamicRequireTargets option of @rollup/plugin-commonjs appropriately for this require call to behave properly.');
 }
 `;
 
 const HELPERS_DYNAMIC = `
+export function createCommonjsModule(fn, basedir, module) {
+	return module = {
+		path: basedir,
+		exports: {},
+		require: function (path, base) {
+			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+		}
+	}, fn(module, module.exports), module.exports;
+}
+
 export function commonjsRegister (path, loader) {
 	DYNAMIC_REQUIRE_LOADERS[path] = loader;
 }

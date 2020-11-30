@@ -1,10 +1,13 @@
 [cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/rollup/plugins
+[discord]: https://img.shields.io/discord/466787075518365708?color=778cd1&label=chat
+[discord-url]: https://is.gd/rollup_chat
 [tests]: https://img.shields.io/circleci/project/github/rollup/plugins.svg
 [tests-url]: https://circleci.com/gh/rollup/plugins
 
 [![tests][tests]][tests-url]
 [![cover][cover]][cover-url]
+[![discord][discord]][discord-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
 # Rollup Plugins
