@@ -11,18 +11,17 @@ const config = {
   },
   plugins: [
     nodeResolve({
+      exportConditions: ['a', 'b'],
       browser: true,
-      customResolveOptions: {
-        moduleDirectory: 'js_modules'
-      },
+      moduleDirectories: ['js_modules'],
       dedupe: ['lodash'],
       extensions: ['.mjs', '.js', '.jsx', '.json'],
       jail: '/my/jail/path',
-      only: ['some_module', /^@some_scope\/.*$/],
       preferBuiltins: false,
       mainFields: ['untranspiled', 'module', 'main'],
       modulesOnly: true,
-      resolveOnly: ['some_module', /^@some_scope\/.*$/]
+      resolveOnly: ['some_module', /^@some_scope\/.*$/],
+      rootDir: 'root'
     })
   ]
 };

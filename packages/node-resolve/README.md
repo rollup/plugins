@@ -62,18 +62,12 @@ Default: `false`
 
 If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
 
-### `customResolveOptions`
+### `moduleDirectories`
 
-Type: `Object`<br>
-Default: `null`
+Type: `Array[...String]`<br>
+Default: `['node_modules']`
 
-An `Object` that specifies additional options that should be passed through to [`resolve`](https://www.npmjs.com/package/resolve).
-
-```
-customResolveOptions: {
-  moduleDirectory: 'js_modules'
-}
-```
+One or more directories in which to recursively look for modules.
 
 ### `dedupe`
 
@@ -122,10 +116,6 @@ Valid values: `['browser', 'jsnext:main', 'module', 'main']`
 
 Specifies the properties to scan within a `package.json`, used to determine the bundle entry point. The order of property names is significant, as the first-found property is used as the resolved entry point. If the array contains `'browser'`, key/values specified in the `package.json` `browser` property will be used.
 
-### `only`
-
-DEPRECATED: use "resolveOnly" instead
-
 ### `preferBuiltins`
 
 Type: `Boolean`<br>
@@ -160,6 +150,10 @@ Specifies the root directory from which to resolve modules. Typically used when 
 // Set the root directory to be the parent folder
 rootDir: path.join(process.cwd(), '..')
 ```
+
+## Preserving symlinks
+
+This plugin honours the rollup [`preserveSymlinks`](https://rollupjs.org/guide/en/#preservesymlinks) option.
 
 ## Using with @rollup/plugin-commonjs
 

@@ -59,7 +59,7 @@
     "builtin-modules": "^3.1.0",
     "deepmerge": "^4.2.2",
     "is-module": "^1.0.0",
-    "resolve": "^1.17.0"
+    "resolve": "^1.19.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
