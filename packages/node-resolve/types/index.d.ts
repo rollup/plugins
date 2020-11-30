@@ -1,3 +1,5 @@
+import { Plugin } from 'rollup';
+
 export const DEFAULTS: {
   customResolveOptions: {};
   dedupe: [];
