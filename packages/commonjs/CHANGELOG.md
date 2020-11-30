@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v17.0.0
+
+_2020-11-30_
+
+### Breaking Changes
+
+- feat!: reconstruct real es module from \_\_esModule marker (#537)
+
 ## v16.0.0
 
 _2020-10-27_
