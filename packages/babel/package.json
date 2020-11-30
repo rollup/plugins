@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-babel",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "publishConfig": {
     "access": "public"
   },
