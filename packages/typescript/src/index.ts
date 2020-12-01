@@ -51,7 +51,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           formatHost,
           resolveModule,
           parsedOptions,
-          writeFile(fileName, data) {
+          writeFile(fileName: string, data: string) {
             if (parsedOptions.options.composite || parsedOptions.options.incremental) {
               tsCache.cacheCode(fileName, data);
             }
@@ -121,7 +121,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     generateBundle(outputOptions) {
-      parsedOptions.fileNames.forEach((fileName) => {
+      parsedOptions.fileNames.forEach((fileName: string) => {
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
           const code = getEmittedFile(id, emittedFiles, tsCache);

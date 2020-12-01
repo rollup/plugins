@@ -246,10 +246,10 @@ importers:
       rollup: ^2.23.0
   packages/html:
     devDependencies:
-      '@rollup/plugin-typescript': 6.1.0_rollup@2.32.1+typescript@4.1.2
+      '@rollup/plugin-typescript': 6.1.0_rollup@2.32.1+typescript@4.0.5
       rollup: 2.32.1
       rollup-plugin-postcss: 3.1.8
-      typescript: 4.1.2
+      typescript: 4.0.5
     specifiers:
       '@rollup/plugin-typescript': ^6.1.0
       rollup: ^2.23.0
@@ -448,6 +448,7 @@ importers:
       '@rollup/plugin-buble': 0.21.3_rollup@2.32.1
       '@rollup/plugin-commonjs': 11.1.0_rollup@2.32.1
       '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.1.2
+      '@types/node': 10.17.48
       buble: 0.20.0
       rollup: 2.32.1
       typescript: 4.1.2
@@ -456,6 +457,7 @@ importers:
       '@rollup/plugin-commonjs': ^11.1.0
       '@rollup/plugin-typescript': ^5.0.2
       '@rollup/pluginutils': ^3.1.0
+      '@types/node': ^10.0.0
       buble: ^0.20.0
       resolve: ^1.17.0
       rollup: ^2.14.0
@@ -1800,12 +1802,12 @@ packages:
       typescript: '>=3.4.0'
     resolution:
       integrity: sha512-Y5U2L4eaF3wUSgCZRMdvNmuzWkKMyN3OwvhAdbzAi5sUqedaBk/XbzO4T7RlViDJ78MOPhwAIv2FtId/jhMtbg==
-  /@rollup/plugin-typescript/6.1.0_rollup@2.32.1+typescript@4.1.2:
+  /@rollup/plugin-typescript/6.1.0_rollup@2.32.1+typescript@4.0.5:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
-      resolve: 1.19.0
+      resolve: 1.18.1
       rollup: 2.32.1
-      typescript: 4.1.2
+      typescript: 4.0.5
     dev: true
     engines:
       node: '>=8.0.0'
@@ -1999,6 +2001,10 @@ packages:
   /@types/minimist/1.2.0:
     resolution:
       integrity: sha1-aaI6OtKcrwCX8G7aWbNh7i8GOfY=
+  /@types/node/10.17.48:
+    dev: true
+    resolution:
+      integrity: sha512-Agl6xbYP6FOMDeAsr3QVZ+g7Yzg0uhPHWx0j5g4LFdUBHVtqtU+gH660k/lCEe506jJLOGbEzsnqPDTZGJQLag==
   /@types/node/14.0.26:
     dev: false
     resolution:
@@ -4542,6 +4548,7 @@ packages:
   /is-core-module/2.1.0:
     dependencies:
       has: 1.0.3
+    dev: false
     resolution:
       integrity: sha512-YcV7BgVMRFRua2FqQzKtTDMz8iCuLEyGKjr70q8Zm1yy2qKcurbFEd79PAdHV77oL3NrAaOVQIbMmiHQCHB7ZA==
   /is-date-object/1.0.2:
@@ -6606,6 +6613,7 @@ packages:
     dependencies:
       is-core-module: 2.1.0
       path-parse: 1.0.6
+    dev: false
     resolution:
       integrity: sha512-rArEXAgsBG4UgRGcynxWIWKFvh/XZCcS8UJdHhwy91zwAvCZIbcs+vAbflgBnNjYMs/i/i+/Ux6IZhML1yPvxg==
   /responselike/1.0.2:
@@ -7468,6 +7476,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
+  /typescript/4.0.5:
+    dev: true
+    engines:
+      node: '>=4.2.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-ywmr/VrTVCmNTJ6iV2LwIrfG1P+lv6luD8sUJs+2eI9NLGigaN+nUQc13iHqisq7bra9lnmUSYqbJvegraBOPQ==
   /typescript/4.1.2:
     dev: true
     engines:
