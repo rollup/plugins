@@ -87,3 +87,19 @@ test('false allows resolving a local module with the same name as a builtin modu
   t.snapshot(warnings);
   t.deepEqual(imports, []);
 });
+
+test('does not warn when using a builtin module when there is no local version, no explicit configuration', async (t) => {
+  let warning = null;
+  await rollup({
+    input: 'prefer-builtin-no-local.js',
+    onwarn({ message }) {
+      // eslint-disable-next-line no-bitwise
+      if (~message.indexOf('preferring')) {
+        warning = message;
+      }
+    },
+    plugins: [nodeResolve()]
+  });
+
+  t.is(warning, null);
+});

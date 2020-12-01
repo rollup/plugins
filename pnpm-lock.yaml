@@ -327,7 +327,7 @@ importers:
       builtin-modules: 3.1.0
       deepmerge: 4.2.2
       is-module: 1.0.0
-      resolve: 1.18.1
+      resolve: 1.19.0
     devDependencies:
       '@babel/core': 7.12.3
       '@babel/plugin-transform-typescript': 7.12.1_@babel+core@7.12.3
@@ -350,7 +350,7 @@ importers:
       deepmerge: ^4.2.2
       es5-ext: ^0.10.53
       is-module: ^1.0.0
-      resolve: ^1.17.0
+      resolve: ^1.19.0
       rollup: ^2.23.0
       source-map: ^0.7.3
       string-capitalize: ^1.0.1
@@ -4555,12 +4555,12 @@ packages:
       has: 1.0.3
     resolution:
       integrity: sha512-jq1AH6C8MuteOoBPwkxHafmByhL9j5q4OaPGdbuD+ZtQJVzH+i6E3BJDQcBA09k57i2Hh2yQbEG8yObZ0jdlWw==
-  /is-core-module/2.2.0:
+  /is-core-module/2.1.0:
     dependencies:
       has: 1.0.3
-    dev: true
+    dev: false
     resolution:
-      integrity: sha512-XRAfAdyyY5F5cOXn7hYQDqh2Xmii+DEfIcQGxK/uNwMHhIkPWO0g8msXcbzLe+MpGoR951MlqM/2iIlU4vKDdQ==
+      integrity: sha512-YcV7BgVMRFRua2FqQzKtTDMz8iCuLEyGKjr70q8Zm1yy2qKcurbFEd79PAdHV77oL3NrAaOVQIbMmiHQCHB7ZA==
   /is-date-object/1.0.2:
     dev: true
     engines:
@@ -6621,9 +6621,9 @@ packages:
       integrity: sha512-lDfCPaMKfOJXjy0dPayzPdF1phampNWr3qFCjAu+rw/qbQmr5jWH5xN2hwh9QKfw9E5v4hwV7A+jrCmL8yjjqA==
   /resolve/1.19.0:
     dependencies:
-      is-core-module: 2.2.0
+      is-core-module: 2.1.0
       path-parse: 1.0.6
-    dev: true
+    dev: false
     resolution:
       integrity: sha512-rArEXAgsBG4UgRGcynxWIWKFvh/XZCcS8UJdHhwy91zwAvCZIbcs+vAbflgBnNjYMs/i/i+/Ux6IZhML1yPvxg==
   /responselike/1.0.2:
