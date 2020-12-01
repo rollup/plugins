@@ -61,7 +61,7 @@
     "files": [
       "test/*"
     ],
-    "timeout": "1m"
+    "timeout": "20s"
   },
   "contributors": [
     "Andrew Powell <andrew@shellscape.org>",
