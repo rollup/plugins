@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 
 import { PluginContext } from 'rollup';
+import type { ExtendedConfigCacheEntry, ParsedCommandLine } from 'typescript';
 
 import { RollupTypescriptOptions } from '../../types';
 import diagnosticToWarning from '../diagnostics/toWarning';
@@ -71,9 +72,7 @@ function containsEnumOptions(
   return enums.some((prop) => prop in compilerOptions && typeof compilerOptions[prop] === 'number');
 }
 
-const configCache = new Map() as import('typescript').Map<
-  import('typescript').ExtendedConfigCacheEntry
->;
+const configCache = new Map() as import('typescript').Map<ExtendedConfigCacheEntry>;
 
 /**
  * Parse the Typescript config to use with the plugin.
@@ -94,7 +93,7 @@ export function parseTypescriptConfig(
   /* eslint-disable no-undefined */
   const cwd = process.cwd();
   makePathsAbsolute(compilerOptions, cwd);
-  let parsedConfig: import('typescript').ParsedCommandLine;
+  let parsedConfig: ParsedCommandLine;
 
   // Resolve path to file. If file is not found, pass undefined path to `parseJsonConfigFileContent`.
   // eslint-disable-next-line no-undefined
@@ -156,7 +155,7 @@ export function parseTypescriptConfig(
 export function emitParsedOptionsErrors(
   ts: typeof import('typescript'),
   context: PluginContext,
-  parsedOptions: import('typescript').ParsedCommandLine
+  parsedOptions: ParsedCommandLine
 ) {
   if (parsedOptions.errors.length > 0) {
     parsedOptions.errors.forEach((error) => context.warn(diagnosticToWarning(ts, null, error)));

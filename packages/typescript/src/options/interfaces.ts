@@ -1,10 +1,12 @@
+import type { CompilerOptions } from 'typescript';
+
 import { PartialCompilerOptions } from '../../types';
 
 export { EnumCompilerOptions, JsonCompilerOptions } from '../../types';
 export { PartialCompilerOptions };
 
 /** Typescript compiler options */
-export type CompilerOptions = import('typescript').CompilerOptions;
+export type { CompilerOptions } from 'typescript';
 
 export const DEFAULT_COMPILER_OPTIONS: PartialCompilerOptions = {
   module: 'esnext',

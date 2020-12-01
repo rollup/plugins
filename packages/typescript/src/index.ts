@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import { Plugin, SourceDescription } from 'rollup';
+import type { Watch } from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
@@ -33,7 +34,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const formatHost = createFormattingHost(ts, parsedOptions.options);
   const resolveModule = createModuleResolver(ts, formatHost);
 
-  let program: import('typescript').Watch<unknown> | null = null;
+  let program: Watch<unknown> | null = null;
 
   function normalizePath(fileName: string) {
     return fileName.split(path.win32.sep).join(path.posix.sep);
@@ -51,7 +52,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           formatHost,
           resolveModule,
           parsedOptions,
-          writeFile(fileName: string, data: string) {
+          writeFile(fileName, data) {
             if (parsedOptions.options.composite || parsedOptions.options.incremental) {
               tsCache.cacheCode(fileName, data);
             }
@@ -121,7 +122,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     generateBundle(outputOptions) {
-      parsedOptions.fileNames.forEach((fileName: string) => {
+      parsedOptions.fileNames.forEach((fileName) => {
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
           const code = getEmittedFile(id, emittedFiles, tsCache);
