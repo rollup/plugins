@@ -18,7 +18,15 @@ const pathNotFoundError = (importPath, importer, subPath, pkgPath) =>
   );
 
 function findExportKeyMatch(exportMap, subPath) {
-  for (const key of Object.keys(exportMap)) {
+  if (subPath in exportMap) {
+    return subPath;
+  }
+
+  const matchKeys = Object.keys(exportMap)
+    .filter((key) => key.endsWith('/') || key.endsWith('*'))
+    .sort((a, b) => b.length - a.length);
+
+  for (const key of matchKeys) {
     if (key.endsWith('*')) {
       // star match: "./foo/*": "./foo/*.js"
       const keyWithoutStar = key.substring(0, key.length - 1);

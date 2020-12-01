@@ -166,7 +166,7 @@ test('logs a warning when a subpath cannot be found', async (t) => {
   t.true(errors[0].message.includes('Package subpath "./bar" is not defined by "exports" in'));
 });
 
-test.only('prevents importing files not specified in exports map', async (t) => {
+test('prevents importing files not specified in exports map', async (t) => {
   t.plan(2);
   const errors = [];
   await rollup({
@@ -207,4 +207,34 @@ test('can use star pattern in exports field', async (t) => {
   const { module } = await testBundle(t, bundle);
 
   t.deepEqual(module.exports, { a: 'A', b: 'B', c: 'C' });
+});
+
+test('a literal match takes presedence', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-literal-specificity.js',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, { a: 'foo a' });
+});
+
+test('longest matching directory takes priority', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-directory-specificity.js',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, {
+    a1: 'foo-one a',
+    a2: 'foo-two a',
+    a3: 'foo-three a'
+  });
 });
