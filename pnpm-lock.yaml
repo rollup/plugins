@@ -459,7 +459,7 @@ importers:
       buble: ^0.20.0
       resolve: ^1.17.0
       rollup: ^2.14.0
-      typescript: ^4.0.0
+      typescript: ^4.1.2
   packages/url:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
