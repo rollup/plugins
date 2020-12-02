@@ -1,5 +1,4 @@
 import { Plugin } from 'rollup';
-import { AsyncOpts } from 'resolve';
 
 export const DEFAULTS: {
   customResolveOptions: {};
@@ -9,6 +8,18 @@ export const DEFAULTS: {
 };
 
 export interface RollupNodeResolveOptions {
+  /**
+   * Additional conditions of the package.json exports field to match when resolving modules.
+   * By default, this plugin looks for the `'default', 'module', 'import']` conditions when resolving imports.
+   *
+   * When using `@rollup/plugin-commonjs` v16 or higher, this plugin will use the
+   * `['default', 'module', 'import']` conditions when resolving require statements.
+   *
+   * Setting this option will add extra conditions on top of the default conditions.
+   * See https://nodejs.org/api/packages.html#packages_conditional_exports for more information.
+   */
+  exportConditions?: string[];
+
   /**
    * If `true`, instructs the plugin to use the `"browser"` property in `package.json`
    * files to specify alternative files to load for bundling. This is useful when
@@ -20,9 +31,10 @@ export interface RollupNodeResolveOptions {
   browser?: boolean;
 
   /**
-   * An `Object` that specifies additional options that should be passed through to `node-resolve`.
+   * One or more directories in which to recursively look for modules.
+   * @default ['node_modules']
    */
-  customResolveOptions?: AsyncOpts;
+  moduleDirectories?: string[];
 
   /**
    * An `Array` of modules names, which instructs the plugin to force resolving for the
@@ -56,12 +68,6 @@ export interface RollupNodeResolveOptions {
    * @default false
    */
   modulesOnly?: boolean;
-
-  /**
-   * @deprecated use "resolveOnly" instead
-   * @default null
-   */
-  only?: ReadonlyArray<string | RegExp> | null;
 
   /**
    * If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`,

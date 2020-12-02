@@ -329,12 +329,12 @@ importers:
       builtin-modules: 3.1.0
       deepmerge: 4.2.2
       is-module: 1.0.0
-      resolve: 1.18.1
+      resolve: 1.19.0
     devDependencies:
       '@babel/core': 7.12.3
       '@babel/plugin-transform-typescript': 7.12.1_@babel+core@7.12.3
       '@rollup/plugin-babel': 5.2.1_@babel+core@7.12.3+rollup@2.32.1
-      '@rollup/plugin-commonjs': 14.0.0_rollup@2.32.1
+      '@rollup/plugin-commonjs': 16.0.0_rollup@2.32.1
       '@rollup/plugin-json': 4.1.0_rollup@2.32.1
       es5-ext: 0.10.53
       rollup: 2.32.1
@@ -344,7 +344,7 @@ importers:
       '@babel/core': ^7.10.5
       '@babel/plugin-transform-typescript': ^7.10.5
       '@rollup/plugin-babel': ^5.1.0
-      '@rollup/plugin-commonjs': ^14.0.0
+      '@rollup/plugin-commonjs': ^16.0.0
       '@rollup/plugin-json': ^4.1.0
       '@rollup/pluginutils': ^3.1.0
       '@types/resolve': 1.17.1
@@ -352,7 +352,7 @@ importers:
       deepmerge: ^4.2.2
       es5-ext: ^0.10.53
       is-module: ^1.0.0
-      resolve: ^1.17.0
+      resolve: ^1.19.0
       rollup: ^2.23.0
       source-map: ^0.7.3
       string-capitalize: ^1.0.1
@@ -1665,6 +1665,23 @@ packages:
       rollup: ^2.3.4
     resolution:
       integrity: sha512-+PSmD9ePwTAeU106i9FRdc+Zb3XUWyW26mo5Atr2mk82hor8+nPwkztEjFo8/B1fJKfaQDg9aM2bzQkjhi7zOw==
+  /@rollup/plugin-commonjs/16.0.0_rollup@2.32.1:
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.32.1
+      commondir: 1.0.1
+      estree-walker: 2.0.1
+      glob: 7.1.6
+      is-reference: 1.2.1
+      magic-string: 0.25.7
+      resolve: 1.18.1
+      rollup: 2.32.1
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^2.30.0
+    resolution:
+      integrity: sha512-LuNyypCP3msCGVQJ7ki8PqYdpjfEkE/xtFa5DqlF+7IBD0JsfMZ87C58heSwIMint58sAUZbt3ITqOmdQv/dXw==
   /@rollup/plugin-json/4.1.0_rollup@2.32.1:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
@@ -3831,7 +3848,6 @@ packages:
     resolution:
       integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==
   /estree-walker/2.0.1:
-    dev: false
     resolution:
       integrity: sha512-tF0hv+Yi2Ot1cwj9eYHtxC0jB9bmjacjQs6ZBTj82H8JwUywFuc+7E83NWfNMwHXZc11mjfFcVXPe9gEP4B8dg==
   /esutils/2.0.3:
@@ -4506,6 +4522,12 @@ packages:
       has: 1.0.3
     resolution:
       integrity: sha512-jq1AH6C8MuteOoBPwkxHafmByhL9j5q4OaPGdbuD+ZtQJVzH+i6E3BJDQcBA09k57i2Hh2yQbEG8yObZ0jdlWw==
+  /is-core-module/2.1.0:
+    dependencies:
+      has: 1.0.3
+    dev: false
+    resolution:
+      integrity: sha512-YcV7BgVMRFRua2FqQzKtTDMz8iCuLEyGKjr70q8Zm1yy2qKcurbFEd79PAdHV77oL3NrAaOVQIbMmiHQCHB7ZA==
   /is-date-object/1.0.2:
     dev: true
     engines:
@@ -6564,6 +6586,13 @@ packages:
       path-parse: 1.0.6
     resolution:
       integrity: sha512-lDfCPaMKfOJXjy0dPayzPdF1phampNWr3qFCjAu+rw/qbQmr5jWH5xN2hwh9QKfw9E5v4hwV7A+jrCmL8yjjqA==
+  /resolve/1.19.0:
+    dependencies:
+      is-core-module: 2.1.0
+      path-parse: 1.0.6
+    dev: false
+    resolution:
+      integrity: sha512-rArEXAgsBG4UgRGcynxWIWKFvh/XZCcS8UJdHhwy91zwAvCZIbcs+vAbflgBnNjYMs/i/i+/Ux6IZhML1yPvxg==
   /responselike/1.0.2:
     dependencies:
       lowercase-keys: 1.0.1

@@ -1,8 +1,14 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import { CompilerOptions, CustomTransformers } from 'typescript';
+import { CompilerOptions, CustomTransformers, Program, TypeChecker } from 'typescript';
 
 export interface RollupTypescriptPluginOptions {
+  /**
+   * If using incremental this is the folder where the cached
+   * files will be created and kept for Typescript incremental
+   * compilation.
+   */
+  cacheDir?: string;
   /**
    * Determine which files are transpiled by Typescript (all `.ts` and
    * `.tsx` files by default).

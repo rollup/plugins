@@ -5,6 +5,8 @@ import getCommonDir from 'commondir';
 
 import { peerDependencies } from '../package.json';
 
+import analyzeTopLevelStatements from './analyze-top-level-statements';
+
 import {
   getDynamicPackagesEntryIntro,
   getDynamicPackagesModule,
@@ -22,6 +24,7 @@ import {
   unwrapId
 } from './helpers';
 import { setIsCjsPromise } from './is-cjs';
+import { hasCjsKeywords } from './parse';
 import {
   getDynamicJsonProxy,
   getDynamicRequireProxy,
@@ -30,12 +33,9 @@ import {
   getUnknownRequireProxy
 } from './proxies';
 import getResolveId from './resolve-id';
-import {
-  checkEsModule,
-  hasCjsKeywords,
-  normalizePathSlashes,
-  transformCommonjs
-} from './transform';
+import validateRollupVersion from './rollup-version';
+import transformCommonjs from './transform-commonjs';
+import { normalizePathSlashes } from './utils';
 
 export default function commonjs(options = {}) {
   const extensions = options.extensions || ['.js'];
@@ -85,7 +85,7 @@ export default function commonjs(options = {}) {
         getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
     }
 
-    const { isEsModule, hasDefaultExport, hasNamedExports, ast } = checkEsModule(
+    const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
       this.parse,
       code,
       id
@@ -127,18 +127,10 @@ export default function commonjs(options = {}) {
     name: 'commonjs',
 
     buildStart() {
+      validateRollupVersion(this.meta.rollupVersion, peerDependencies.rollup);
       if (options.namedExports != null) {
         this.warn(
           'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
-        );
-      }
-
-      const [major, minor] = this.meta.rollupVersion.split('.').map(Number);
-      const minVersion = peerDependencies.rollup.slice(2);
-      const [minMajor, minMinor] = minVersion.split('.').map(Number);
-      if (major < minMajor || (major === minMajor && minor < minMinor)) {
-        this.error(
-          `Insufficient Rollup version: "@rollup/plugin-commonjs" requires at least rollup@${minVersion} but found rollup@${this.meta.rollupVersion}.`
         );
       }
     },

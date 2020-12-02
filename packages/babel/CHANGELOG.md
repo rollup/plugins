@@ -1,5 +1,14 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.2.2
+
+_2020-11-30_
+
+### Bugfixes
+
+- fix: clone cached helper identifier before returning it (#584)
+- fix: strip hash and query param in extension filter (#533)
+
 ## v5.2.1
 
 _2020-09-09_
