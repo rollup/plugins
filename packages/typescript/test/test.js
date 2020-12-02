@@ -1085,48 +1085,50 @@ test('supports custom transformers', async (t) => {
 });
 
 function fakeTypescript(custom) {
-  return {
-    sys: ts.sys,
-    createModuleResolutionCache: ts.createModuleResolutionCache,
-    ModuleKind: ts.ModuleKind,
+  return Object.assign(
+    {
+      sys: ts.sys,
+      createModuleResolutionCache: ts.createModuleResolutionCache,
+      ModuleKind: ts.ModuleKind,
 
-    transpileModule() {
-      return {
-        outputText: '',
-        diagnostics: [],
-        sourceMapText: JSON.stringify({ mappings: '' })
-      };
+      transpileModule() {
+        return {
+          outputText: '',
+          diagnostics: [],
+          sourceMapText: JSON.stringify({ mappings: '' })
+        };
+      },
+
+      createWatchCompilerHost() {
+        return {
+          afterProgramCreate() {}
+        };
+      },
+
+      createWatchProgram() {
+        return {};
+      },
+
+      parseJsonConfigFileContent(json, host, basePath, existingOptions) {
+        return {
+          options: {
+            ...json.compilerOptions,
+            ...existingOptions
+          },
+          fileNames: [],
+          errors: []
+        };
+      },
+
+      getOutputFileNames(_, id) {
+        return [id.replace(/\.tsx?/, '.js')];
+      },
+
+      // eslint-disable-next-line no-undefined
+      getTsBuildInfoEmitOutputFilePath: () => undefined
     },
-
-    createWatchCompilerHost() {
-      return {
-        afterProgramCreate() {}
-      };
-    },
-
-    createWatchProgram() {
-      return {};
-    },
-
-    parseJsonConfigFileContent(json, host, basePath, existingOptions) {
-      return {
-        options: {
-          ...json.compilerOptions,
-          ...existingOptions
-        },
-        fileNames: [],
-        errors: []
-      };
-    },
-
-    getOutputFileNames(_, id) {
-      return [id.replace(/\.tsx?/, '.js')];
-    },
-
-    // eslint-disable-next-line no-undefined
-    getTsBuildInfoEmitOutputFilePath: () => undefined,
-    ...custom
-  };
+    custom
+  );
 }
 
 test.serial('picks up on newly included typescript files in watch mode', async (t) => {
