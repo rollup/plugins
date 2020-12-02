@@ -1,20 +1,27 @@
-const { extname } = require('path');
+import { extname } from 'path';
 
-const getFiles = (bundle) => {
+import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
+
+import { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
+
+const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
   const files = Object.values(bundle).filter(
-    (file) => file.isEntry || (typeof file.type === 'string' ? file.type === 'asset' : file.isAsset)
+    (file) =>
+      file.type === 'chunk' ||
+      (typeof file.type === 'string' ? file.type === 'asset' : file.isAsset)
   );
-  const result = {};
+  const result = {} as ReturnType<typeof getFiles>;
   for (const file of files) {
     const { fileName } = file;
     const extension = extname(fileName).substring(1);
+
     result[extension] = (result[extension] || []).concat(file);
   }
 
   return result;
 };
 
-const makeHtmlAttributes = (attributes) => {
+export const makeHtmlAttributes = (attributes: Record<string, any>): string => {
   if (!attributes) {
     return '';
   }
@@ -24,7 +31,13 @@ const makeHtmlAttributes = (attributes) => {
   return keys.reduce((result, key) => (result += ` ${key}="${attributes[key]}"`), '');
 };
 
-const defaultTemplate = async ({ attributes, files, meta, publicPath, title }) => {
+const defaultTemplate = async ({
+  attributes,
+  files,
+  meta,
+  publicPath,
+  title
+}: RollupHtmlTemplateOptions) => {
   const scripts = (files.js || [])
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
@@ -75,7 +88,7 @@ const defaults = {
   title: 'Rollup Bundle'
 };
 
-const html = (opts = {}) => {
+export default function html(opts: RollupHtmlOptions = {}): Plugin {
   const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
     {},
     defaults,
@@ -85,7 +98,7 @@ const html = (opts = {}) => {
   return {
     name: 'html',
 
-    async generateBundle(output, bundle) {
+    async generateBundle(output: NormalizedOutputOptions, bundle: OutputBundle) {
       if (!supportedFormats.includes(output.format) && !opts.template) {
         this.warn(
           `plugin-html: The output format '${
@@ -96,14 +109,23 @@ const html = (opts = {}) => {
         );
       }
 
-      if (output.format === 'esm' || output.format === 'es') {
-        attributes.script = Object.assign({}, attributes.script, { type: 'module' });
+      if (output.format === 'es') {
+        attributes.script = Object.assign({}, attributes.script, {
+          type: 'module'
+        });
       }
 
       const files = getFiles(bundle);
-      const source = await template({ attributes, bundle, files, meta, publicPath, title });
+      const source = await template({
+        attributes,
+        bundle,
+        files,
+        meta,
+        publicPath,
+        title
+      });
 
-      const htmlFile = {
+      const htmlFile: EmittedAsset = {
         type: 'asset',
         source,
         name: 'Rollup HTML Asset',
@@ -113,7 +135,4 @@ const html = (opts = {}) => {
       this.emitFile(htmlFile);
     }
   };
-};
-
-module.exports = html;
-module.exports.makeHtmlAttributes = makeHtmlAttributes;
+}

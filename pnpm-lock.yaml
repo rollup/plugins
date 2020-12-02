@@ -246,11 +246,15 @@ importers:
       rollup: ^2.23.0
   packages/html:
     devDependencies:
+      '@rollup/plugin-typescript': 6.1.0_rollup@2.32.1+typescript@4.0.5
       rollup: 2.32.1
       rollup-plugin-postcss: 3.1.8
+      typescript: 4.0.5
     specifiers:
+      '@rollup/plugin-typescript': ^6.1.0
       rollup: ^2.23.0
       rollup-plugin-postcss: ^3.1.3
+      typescript: ^4.0.5
   packages/image:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
@@ -1779,6 +1783,21 @@ packages:
       typescript: '>=3.4.0'
     resolution:
       integrity: sha512-Y5U2L4eaF3wUSgCZRMdvNmuzWkKMyN3OwvhAdbzAi5sUqedaBk/XbzO4T7RlViDJ78MOPhwAIv2FtId/jhMtbg==
+  /@rollup/plugin-typescript/6.1.0_rollup@2.32.1+typescript@4.0.5:
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.32.1
+      resolve: 1.18.1
+      rollup: 2.32.1
+      typescript: 4.0.5
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.4.0'
+    resolution:
+      integrity: sha512-hJxaiE6WyNOsK+fZpbFh9CUijZYqPQuAOWO5khaGTUkM8DYNNyA2TDlgamecE+qLOG1G1+CwbWMAx3rbqpp6xQ==
   /@rollup/plugin-virtual/2.0.3_rollup@2.32.1:
     dependencies:
       rollup: 2.32.1
@@ -7434,6 +7453,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
+  /typescript/4.0.5:
+    dev: true
+    engines:
+      node: '>=4.2.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-ywmr/VrTVCmNTJ6iV2LwIrfG1P+lv6luD8sUJs+2eI9NLGigaN+nUQc13iHqisq7bra9lnmUSYqbJvegraBOPQ==
   /unicode-canonical-property-names-ecmascript/1.0.4:
     engines:
       node: '>=4'
