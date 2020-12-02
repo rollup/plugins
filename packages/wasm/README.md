@@ -36,9 +36,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [wasm()],
+  plugins: [wasm()]
 };
 ```
 
@@ -99,7 +99,7 @@ Small modules (< 4KB) can be compiled synchronously by specifying them in the co
 
 ```js
 wasm({
-  sync: ['web/sample.wasm', 'web/foobar.wasm'],
+  sync: ['web/sample.wasm', 'web/foobar.wasm']
 });
 ```
 
