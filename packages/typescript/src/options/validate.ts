@@ -54,18 +54,14 @@ export function validatePaths(
 
   for (const dirProperty of DIRECTORY_PROPS) {
     if (compilerOptions[dirProperty]) {
-      if (!outputOptions.dir) {
-        context.error(
-          `@rollup/plugin-typescript: Rollup 'dir' option must be used when Typescript compiler option '${dirProperty}' is specified.`
-        );
-      }
-
       // Checks if the given path lies within Rollup output dir
-      const fromRollupDirToTs = relative(outputOptions.dir, compilerOptions[dirProperty]!);
-      if (fromRollupDirToTs.startsWith('..')) {
-        context.error(
-          `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside Rollup 'dir' option.`
-        );
+      if (outputOptions.dir) {
+       const fromRollupDirToTs = relative(outputOptions.dir, compilerOptions[dirProperty]!);
+        if (fromRollupDirToTs.startsWith('..')) {
+          context.error(
+            `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside Rollup 'dir' option.`
+          );
+        }
       }
     }
   }

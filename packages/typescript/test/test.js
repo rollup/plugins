@@ -206,16 +206,6 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     onwarn
   });
 
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'outDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
-
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
@@ -239,16 +229,6 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     ],
     onwarn
   });
-
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'declarationDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
 
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
