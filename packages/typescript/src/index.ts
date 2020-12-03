@@ -125,7 +125,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
           const code = getEmittedFile(id, emittedFiles, tsCache);
-          const baseDir = outputOptions.dir || (tsconfig && tsconfig.substring(0, tsconfig.lastIndexOf('/')));
+          let baseDir = outputOptions.dir;
+          if (!baseDir && tsconfig) {
+            baseDir = tsconfig.substring(0, tsconfig.lastIndexOf('/'));
+          }
           if (!code || !baseDir) return;
 
           this.emitFile({
