@@ -32,7 +32,7 @@ interface CreateProgramOptions {
   transformers?: CustomTransformerFactories;
 }
 
-type DeferredResolve = ((value?: boolean) => void) | (() => void);
+type DeferredResolve = ((value: boolean | PromiseLike<boolean>) => void) | (() => void);
 
 interface Deferred {
   promise: Promise<boolean | void>;
@@ -95,7 +95,7 @@ export class WatchProgramHelper {
 
   resolveFinish() {
     if (this._finishDeferred) {
-      this._finishDeferred.resolve();
+      this._finishDeferred.resolve(false);
       this._finishDeferred = null;
     }
   }

@@ -135,7 +135,7 @@ test('handles main directory exports', async (t) => {
 });
 
 test('logs a warning when using shorthand and importing a subpath', async (t) => {
-  t.plan(1);
+  t.plan(2);
   const errors = [];
   await rollup({
     input: 'exports-shorthand-subpath.js',
@@ -144,11 +144,13 @@ test('logs a warning when using shorthand and importing a subpath', async (t) =>
     },
     plugins: [nodeResolve()]
   });
-  t.true(errors[0].message.includes('Package subpath \'./foo\' is not defined by "exports" in'));
+
+  t.true(errors[0].message.includes('Could not resolve import "exports-shorthand/foo" in '));
+  t.true(errors[0].message.includes('Package subpath "./foo" is not defined by "exports" in'));
 });
 
 test('logs a warning when a subpath cannot be found', async (t) => {
-  t.plan(1);
+  t.plan(2);
   const errors = [];
   await rollup({
     input: 'exports-non-existing-subpath.js',
@@ -157,11 +159,15 @@ test('logs a warning when a subpath cannot be found', async (t) => {
     },
     plugins: [nodeResolve()]
   });
-  t.true(errors[0].message.includes('Package subpath \'./bar\' is not defined by "exports" in'));
+
+  t.true(
+    errors[0].message.includes('Could not resolve import "exports-non-existing-subpath/bar" in ')
+  );
+  t.true(errors[0].message.includes('Package subpath "./bar" is not defined by "exports" in'));
 });
 
 test('prevents importing files not specified in exports map', async (t) => {
-  t.plan(1);
+  t.plan(2);
   const errors = [];
   await rollup({
     input: 'exports-prevent-unspecified-subpath.js',
@@ -170,7 +176,11 @@ test('prevents importing files not specified in exports map', async (t) => {
     },
     plugins: [nodeResolve()]
   });
-  t.true(errors[0].message.includes('Package subpath \'./bar\' is not defined by "exports" in'));
+
+  t.true(
+    errors[0].message.includes('Could not resolve import "exports-top-level-mappings/bar" in ')
+  );
+  t.true(errors[0].message.includes('Package subpath "./bar" is not defined by "exports" in'));
 });
 
 test('uses "require" condition when a module is referenced with require', async (t) => {
@@ -197,4 +207,34 @@ test('can use star pattern in exports field', async (t) => {
   const { module } = await testBundle(t, bundle);
 
   t.deepEqual(module.exports, { a: 'A', b: 'B', c: 'C' });
+});
+
+test('a literal match takes presedence', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-literal-specificity.js',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, { a: 'foo a' });
+});
+
+test('longest matching directory takes priority', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-directory-specificity.js',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, {
+    a1: 'foo-one a',
+    a2: 'foo-two a',
+    a3: 'foo-three a'
+  });
 });
