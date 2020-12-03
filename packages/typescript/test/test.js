@@ -206,16 +206,6 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     onwarn
   });
 
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'outDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
-
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
@@ -240,16 +230,6 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     onwarn
   });
 
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'declarationDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
-
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
@@ -258,6 +238,29 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
       `Path of Typescript compiler option 'declarationDir' must be located inside Rollup 'dir' option`
     ),
     `Unexpected error message: ${wrongDirError.message}`
+  );
+});
+
+test.serial('ensures multiple outputs can be built', async (t) => {
+  // In a rollup.config.js we would pass an array
+  // The rollup method that's exported as a library won't do that so we must make two calls
+  const bundle1 = await rollup({
+    input: 'fixtures/multiple-files/src/index.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+  });
+
+  const output1 = await getCode(bundle1, { file: 'fixtures/multiple-files/index.js', format: 'cjs' }, true);
+
+  const bundle2 = await rollup({
+    input: 'fixtures/multiple-files/src/server.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+  });
+
+  const output2 = await getCode(bundle2, { file: 'fixtures/multiple-files/server.js', format: 'cjs' }, true);
+
+  t.deepEqual(
+    [...new Set(output1.concat(output2).map((out) => out.fileName))].sort(),
+    ['index.d.ts', 'index.js', 'server.d.ts', 'server.js']
   );
 });
 
