@@ -17,7 +17,9 @@ const isOutputAsset = (file: any): file is OutputAsset => file.type === 'asset' 
 
 const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
   const files = Object.values(bundle).filter(
-    (file) => (isOutputChunk(file) && file.isEntry) || isOutputAsset(file)
+    (file) =>
+      (isOutputChunk(file) && file.isEntry) ||
+      (isOutputAsset(file) && extname(file.fileName) !== '.js')
   );
   const result = {} as ReturnType<typeof getFiles>;
   for (const file of files) {

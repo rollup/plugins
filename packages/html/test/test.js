@@ -134,3 +134,19 @@ test.serial('template files should only include entry chunks', async (t) => {
   const code = await getCode(bundle, outputOptions, true);
   t.snapshot(code);
 });
+
+test.serial('template files should not include js assets', async (t) => {
+  const bundle = await rollup({
+    input: 'robin.js',
+    plugins: [
+      {
+        generateBundle() {
+          this.emitFile({ name: 'asset.js', source: '', type: 'asset' });
+        }
+      },
+      html()
+    ]
+  });
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
+});
