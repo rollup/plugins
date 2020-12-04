@@ -120,3 +120,17 @@ test.serial('template', async (t) => {
   const code = await getCode(bundle, output, true);
   t.snapshot(code);
 });
+
+test.serial('template files should only include entry chunks', async (t) => {
+  const bundle = await rollup({
+    input: 'robin.js',
+    manualChunks: {
+      batman: ['batman.js']
+    },
+    plugins: [html()],
+    treeshake: false
+  });
+  const outputOptions = { ...output, format: 'es' };
+  const code = await getCode(bundle, outputOptions, true);
+  t.snapshot(code);
+});
