@@ -15,8 +15,10 @@ export interface RollupHtmlTemplateOptions {
   publicPath: string;
   meta: Record<string, any>[];
   bundle: OutputBundle;
-  files: Record<string, (OutputChunk | OutputAsset)[]>;
+  files: RollupHtmlFileMap;
 }
+
+export type RollupHtmlFileMap = Record<string, (OutputChunk | OutputAsset)[]>;
 
 export function makeHtmlAttributes(attributes: Record<string, string>): string;
 

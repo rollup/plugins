@@ -2,13 +2,13 @@ import { extname } from 'path';
 
 import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
 
-import { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
+import { RollupHtmlFileMap, RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
 
-const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
+const getFiles = (bundle: OutputBundle): RollupHtmlFileMap => {
   const files = Object.values(bundle).filter(
     (file: any) => file.isEntry || !file.fileName.endsWith('.js')
   );
-  const result = {} as ReturnType<typeof getFiles>;
+  const result: RollupHtmlFileMap = {};
   for (const file of files) {
     const { fileName } = file;
     const extension = extname(fileName).substring(1);
