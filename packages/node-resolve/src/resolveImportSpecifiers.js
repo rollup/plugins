@@ -1,175 +1,22 @@
 import fs from 'fs';
-import path from 'path';
 import { promisify } from 'util';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 import resolve from 'resolve';
 
 import { getPackageInfo, getPackageName } from './util';
 import { exists, realpath } from './fs';
 import { isDirCached, isFileCached, readCachedFile } from './cache';
+import resolvePackageExports from './package/resolvePackageExports';
+import resolvePackageImports from './package/resolvePackageImports';
+import { ResolveError } from './package/utils';
 
 const resolveImportPath = promisify(resolve);
 const readFile = promisify(fs.readFile);
 
-const pathNotFoundError = (importPath, importer, subPath, pkgPath) =>
-  new Error(
-    `Could not resolve import "${importPath}" in "${importer}".` +
-      ` Package subpath "${subPath}" is not defined by "exports" in ${pkgPath}`
-  );
-
-function findExportKeyMatch(exportMap, subPath) {
-  if (subPath in exportMap) {
-    return subPath;
-  }
-
-  const matchKeys = Object.keys(exportMap)
-    .filter((key) => key.endsWith('/') || key.endsWith('*'))
-    .sort((a, b) => b.length - a.length);
-
-  for (const key of matchKeys) {
-    if (key.endsWith('*')) {
-      // star match: "./foo/*": "./foo/*.js"
-      const keyWithoutStar = key.substring(0, key.length - 1);
-      if (subPath.startsWith(keyWithoutStar)) {
-        return key;
-      }
-    }
-
-    if (key.endsWith('/') && subPath.startsWith(key)) {
-      // directory match (deprecated by node): "./foo/": "./foo/.js"
-      return key;
-    }
-
-    if (key === subPath) {
-      // literal match
-      return key;
-    }
-  }
-  return null;
-}
-
-function mapSubPath({ importPath, importer, pkgJsonPath, subPath, key, value }) {
-  if (typeof value === 'string') {
-    if (typeof key === 'string' && key.endsWith('*')) {
-      // star match: "./foo/*": "./foo/*.js"
-      const keyWithoutStar = key.substring(0, key.length - 1);
-      const subPathAfterKey = subPath.substring(keyWithoutStar.length);
-      return value.replace(/\*/g, subPathAfterKey);
-    }
-
-    if (value.endsWith('/')) {
-      // directory match (deprecated by node): "./foo/": "./foo/.js"
-      return `${value}${subPath.substring(key.length)}`;
-    }
-
-    // mapping is a string, for example { "./foo": "./dist/foo.js" }
-    return value;
-  }
-
-  if (Array.isArray(value)) {
-    // mapping is an array with fallbacks, for example { "./foo": ["foo:bar", "./dist/foo.js"] }
-    return value.find((v) => v.startsWith('./'));
-  }
-
-  throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
-}
-
-function findEntrypoint({
-  importPath,
-  importer,
-  pkgJsonPath,
-  subPath,
-  exportMap,
-  conditions,
-  key
-}) {
-  if (typeof exportMap !== 'object') {
-    return mapSubPath({ importPath, importer, pkgJsonPath, subPath, key, value: exportMap });
-  }
-
-  // iterate conditions recursively, find the first that matches all conditions
-  for (const [condition, subExportMap] of Object.entries(exportMap)) {
-    if (conditions.includes(condition)) {
-      const mappedSubPath = findEntrypoint({
-        importPath,
-        importer,
-        pkgJsonPath,
-        subPath,
-        exportMap: subExportMap,
-        conditions,
-        key
-      });
-      if (mappedSubPath) {
-        return mappedSubPath;
-      }
-    }
-  }
-  throw pathNotFoundError(importer, subPath, pkgJsonPath);
-}
-
-export function findEntrypointTopLevel({
-  importPath,
-  importer,
-  pkgJsonPath,
-  subPath,
-  exportMap,
-  conditions
-}) {
-  if (typeof exportMap !== 'object') {
-    // the export map shorthand, for example { exports: "./index.js" }
-    if (subPath !== '.') {
-      // shorthand only supports a main entrypoint
-      throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
-    }
-    return mapSubPath({ importPath, importer, pkgJsonPath, subPath, key: null, value: exportMap });
-  }
-
-  // export map is an object, the top level can be either conditions or sub path mappings
-  const keys = Object.keys(exportMap);
-  const isConditions = keys.every((k) => !k.startsWith('.'));
-  const isMappings = keys.every((k) => k.startsWith('.'));
-
-  if (!isConditions && !isMappings) {
-    throw new Error(
-      `Invalid package config ${pkgJsonPath}, "exports" cannot contain some keys starting with '.'` +
-        ' and some not. The exports object must either be an object of package subpath keys or an object of main entry' +
-        ' condition name keys only.'
-    );
-  }
-
-  let key = null;
-  let exportMapForSubPath;
-
-  if (isConditions) {
-    // top level is conditions, for example { "import": ..., "require": ..., "module": ... }
-    if (subPath !== '.') {
-      // package with top level conditions means it only supports a main entrypoint
-      throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
-    }
-    exportMapForSubPath = exportMap;
-  } else {
-    // top level is sub path mappings, for example { ".": ..., "./foo": ..., "./bar": ... }
-    key = findExportKeyMatch(exportMap, subPath);
-    if (!key) {
-      throw pathNotFoundError(importPath, importer, subPath, pkgJsonPath);
-    }
-    exportMapForSubPath = exportMap[key];
-  }
-
-  return findEntrypoint({
-    importPath,
-    importer,
-    pkgJsonPath,
-    subPath,
-    exportMap: exportMapForSubPath,
-    conditions,
-    key
-  });
-}
-
 async function resolveId({
   importer,
-  importPath,
+  importSpecifier,
   exportConditions,
   warn,
   packageInfoCache,
@@ -215,8 +62,33 @@ async function resolveId({
 
   let location;
 
-  const pkgName = getPackageName(importPath);
-  if (pkgName) {
+  const pkgName = getPackageName(importSpecifier);
+  if (importSpecifier.startsWith('#')) {
+    // this is a package internal import, resolve using package imports field
+    const resolveResult = await resolvePackageImports({
+      importSpecifier,
+      importer,
+      moduleDirs: moduleDirectories,
+      conditions: exportConditions,
+      resolveId(id, parent) {
+        return resolveId({
+          importSpecifier: id,
+          importer: parent,
+          exportConditions,
+          warn,
+          packageInfoCache,
+          extensions,
+          mainFields,
+          preserveSymlinks,
+          useBrowserOverrides,
+          baseDir,
+          moduleDirectories
+        });
+      }
+    });
+    location = fileURLToPath(resolveResult);
+  } else if (pkgName) {
+    // this is a bare import, resolve using package exports if possible
     let pkgJsonPath;
     let pkgJson;
     try {
@@ -228,19 +100,28 @@ async function resolveId({
 
     if (pkgJsonPath && pkgJson && pkgJson.exports) {
       try {
-        const packageSubPath =
-          pkgName === importPath ? '.' : `.${importPath.substring(pkgName.length)}`;
-        const mappedSubPath = findEntrypointTopLevel({
+        const subpath =
+          pkgName === importSpecifier ? '.' : `.${importSpecifier.substring(pkgName.length)}`;
+        const pkgDr = pkgJsonPath.replace('package.json', '');
+        const pkgURL = pathToFileURL(pkgDr);
+        const context = {
           importer,
-          importPath,
+          importSpecifier,
+          moduleDirs: moduleDirectories,
+          pkgURL,
           pkgJsonPath,
-          subPath: packageSubPath,
-          exportMap: pkgJson.exports,
           conditions: exportConditions
-        });
-        const pkgDir = path.dirname(pkgJsonPath);
-        location = path.join(pkgDir, mappedSubPath);
+        };
+        const resolvedPackageExport = await resolvePackageExports(
+          context,
+          subpath,
+          pkgJson.exports
+        );
+        location = fileURLToPath(resolvedPackageExport);
       } catch (error) {
+        if (!(error instanceof ResolveError)) {
+          throw error;
+        }
         warn(error);
         return null;
       }
@@ -248,8 +129,9 @@ async function resolveId({
   }
 
   if (!location) {
+    // package has no imports or exports, use classic node resolve
     try {
-      location = await resolveImportPath(importPath, resolveOptions);
+      location = await resolveImportPath(importSpecifier, resolveOptions);
     } catch (error) {
       if (error.code !== 'MODULE_NOT_FOUND') {
         throw error;
@@ -275,7 +157,7 @@ async function resolveId({
 
 // Resolve module specifiers in order. Promise resolves to the first module that resolves
 // successfully, or the error that resulted from the last attempted module resolution.
-export async function resolveImportSpecifiers({
+export default async function resolveImportSpecifiers({
   importer,
   importSpecifierList,
   exportConditions,
@@ -292,7 +174,7 @@ export async function resolveImportSpecifiers({
     // eslint-disable-next-line no-await-in-loop
     const resolved = await resolveId({
       importer,
-      importPath: importSpecifierList[i],
+      importSpecifier: importSpecifierList[i],
       exportConditions,
       warn,
       packageInfoCache,
