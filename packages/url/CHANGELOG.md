@@ -1,5 +1,21 @@
 # @rollup/plugin-url ChangeLog
 
+## v6.0.0
+
+_2020-11-30_
+
+### Breaking Changes
+
+- chore: update dependencies (1c971a5)
+
+### Features
+
+- feat: add jpeg and webp support by default (#625)
+
+### Updates
+
+- chore: linting update (9f389f1)
+
 ## v5.0.1
 
 _2020-06-05_

@@ -1,1 +1,2 @@
-module.exports = { default: 'foobar', __esModule: true };
+module.exports.__esModule = true;
+module.exports.default = 'foobar';

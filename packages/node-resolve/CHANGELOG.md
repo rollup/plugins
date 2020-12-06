@@ -1,5 +1,23 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v11.0.0
+
+_2020-11-30_
+
+### Breaking Changes
+
+- refactor!: simplify builtins and remove `customResolveOptions` (#656)
+- feat!: Mark built-ins as external (#627)
+- feat!: support package entry points (#540)
+
+### Bugfixes
+
+- fix: refactor handling builtins, do not log warning if no local version (#637)
+
+### Updates
+
+- docs: fix import statements in examples in README.md (#646)
+
 ## v10.0.0
 
 _2020-10-27_

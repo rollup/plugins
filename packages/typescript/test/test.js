@@ -1,8 +1,9 @@
 const path = require('path');
+const fs = require('fs');
 
 const commonjs = require('@rollup/plugin-commonjs');
 const test = require('ava');
-const { rollup } = require('rollup');
+const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
 const { getCode, testBundle } = require('../../../util/test');
@@ -205,16 +206,6 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     onwarn
   });
 
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'outDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
-
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
@@ -239,16 +230,6 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     onwarn
   });
 
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'declarationDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
-
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
@@ -257,6 +238,29 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
       `Path of Typescript compiler option 'declarationDir' must be located inside Rollup 'dir' option`
     ),
     `Unexpected error message: ${wrongDirError.message}`
+  );
+});
+
+test.serial('ensures multiple outputs can be built', async (t) => {
+  // In a rollup.config.js we would pass an array
+  // The rollup method that's exported as a library won't do that so we must make two calls
+  const bundle1 = await rollup({
+    input: 'fixtures/multiple-files/src/index.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+  });
+
+  const output1 = await getCode(bundle1, { file: 'fixtures/multiple-files/index.js', format: 'cjs' }, true);
+
+  const bundle2 = await rollup({
+    input: 'fixtures/multiple-files/src/server.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+  });
+
+  const output2 = await getCode(bundle2, { file: 'fixtures/multiple-files/server.js', format: 'cjs' }, true);
+
+  t.deepEqual(
+    [...new Set(output1.concat(output2).map((out) => out.fileName))].sort(),
+    ['index.d.ts', 'index.js', 'server.d.ts', 'server.js']
   );
 });
 
@@ -846,6 +850,33 @@ test.serial('supports incremental rebuild', async (t) => {
   );
 });
 
+test.serial('supports consecutive incremental rebuilds', async (t) => {
+  process.chdir('fixtures/incremental');
+
+  const firstBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+
+  const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    firstRun.map((out) => out.fileName),
+    ['main.js', '.tsbuildinfo']
+  );
+
+  const secondBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+  const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    secondRun.map((out) => out.fileName),
+    ['main.js', '.tsbuildinfo']
+  );
+});
+
 test.serial.skip('supports project references', async (t) => {
   process.chdir('fixtures/project-references');
 
@@ -898,6 +929,24 @@ test.serial('warns if sourceMap is set in Rollup but not Typescript', async (t) 
     ),
     warnings[0].message
   );
+});
+
+test.serial('normalizes resolved ids to avoid duplicate output on windows', async (t) => {
+  const bundle = await rollup({
+    input: ['fixtures/normalize-ids/one.js', 'fixtures/normalize-ids/two.js'],
+    plugins: [
+      typescript({
+        include: ['*.js', '**/*.js'],
+        tsconfig: 'fixtures/normalize-ids/tsconfig.json'
+      })
+    ]
+  });
+
+  const files = await getCode(bundle, { format: 'esm' }, true);
+
+  t.is(files.length, 2);
+  t.true(files[1].fileName.includes('two.js'), files[1].fileName);
+  t.true(files[1].code.includes("import { one } from './one.js';"), files[1].code);
 });
 
 test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
@@ -1083,4 +1132,65 @@ function fakeTypescript(custom) {
     },
     custom
   );
+}
+
+test.serial('picks up on newly included typescript files in watch mode', async (t) => {
+  const dirName = path.join('fixtures', 'watch');
+
+  // clean up artefacts from earlier builds
+  const fileNames = fs.readdirSync(dirName);
+  fileNames.forEach((fileName) => {
+    if (path.extname(fileName) === '.ts') {
+      fs.unlinkSync(path.join(dirName, fileName));
+    }
+  });
+
+  // set up initial main.ts
+  // (file will be modified later in the test)
+  fs.copyFileSync(path.join(dirName, 'main.ts.1'), path.join(dirName, 'main.ts'));
+
+  const watcher = watch({
+    input: 'fixtures/watch/main.ts',
+    output: {
+      dir: 'fixtures/watch/dist'
+    },
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/watch/tsconfig.json',
+        target: 'es5'
+      })
+    ],
+    onwarn
+  });
+
+  await waitForWatcherEvent(watcher, 'END');
+
+  // add new .ts file
+  fs.copyFileSync(path.join(dirName, 'new.ts.1'), path.join(dirName, 'new.ts'));
+
+  // update main.ts file to include new.ts
+  const newMain = fs.readFileSync(path.join(dirName, 'main.ts.2'));
+  fs.writeFileSync(path.join(dirName, 'main.ts'), newMain);
+
+  await waitForWatcherEvent(watcher, 'END');
+
+  watcher.close();
+
+  const code = fs.readFileSync(path.join(dirName, 'dist', 'main.js'));
+  const usage = code.includes('Is it me');
+  t.true(usage, 'should contain usage');
+});
+
+function waitForWatcherEvent(watcher, eventCode) {
+  return new Promise((resolve, reject) => {
+    watcher.on('event', function handleEvent(event) {
+      if (event.code === eventCode) {
+        watcher.off('event', handleEvent);
+        resolve(event);
+      } else if (event.code === 'ERROR') {
+        watcher.off('event', handleEvent);
+        reject(event);
+      }
+    });
+  });
 }

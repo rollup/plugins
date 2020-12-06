@@ -34,7 +34,7 @@ function normalizeId(id: string | undefined) {
   return id;
 }
 
-function getEntries({ entries }: RollupAliasOptions): Alias[] {
+function getEntries({ entries }: RollupAliasOptions): readonly Alias[] {
   if (!entries) {
     return [];
   }

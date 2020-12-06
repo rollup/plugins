@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { Plugin } from 'rollup';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 import { CLIEngine } from 'eslint';
 
 import { RollupEslintOptions } from '../types';
