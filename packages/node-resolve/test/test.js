@@ -246,6 +246,17 @@ test('resolves dynamic imports', async (t) => {
   t.is(result.default, 42);
 });
 
+test('ignores the package.json sideEffects property for files in root package', async (t) => {
+  const bundle = await rollup({
+    input: 'root-package-side-effect/index.js',
+    plugins: [nodeResolve()]
+  });
+  await testBundle(t, bundle);
+
+  const code = await getCode(bundle);
+  t.snapshot(code);
+});
+
 test('handles package side-effects', async (t) => {
   const bundle = await rollup({
     input: 'side-effects.js',
