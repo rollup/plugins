@@ -1,5 +1,4 @@
 {
-  "name": "test-package",
   "main": "./index.js",
   "sideEffects": false
 }
