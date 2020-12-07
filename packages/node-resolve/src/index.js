@@ -51,7 +51,7 @@ export function nodeResolve(opts = {}) {
   const useBrowserOverrides = mainFields.indexOf('browser') !== -1;
   const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
-  const rootDir = options.rootDir || process.cwd();
+  const rootDir = resolve(options.rootDir || process.cwd());
   let { dedupe } = options;
   let rollupOptions;
 
@@ -200,7 +200,8 @@ export function nodeResolve(opts = {}) {
         preserveSymlinks,
         useBrowserOverrides,
         baseDir,
-        moduleDirectories
+        moduleDirectories,
+        rootDir
       });
 
       const resolved =

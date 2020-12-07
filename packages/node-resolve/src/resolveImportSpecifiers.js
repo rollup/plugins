@@ -178,7 +178,8 @@ async function resolveId({
   preserveSymlinks,
   useBrowserOverrides,
   baseDir,
-  moduleDirectories
+  moduleDirectories,
+  rootDir
 }) {
   let hasModuleSideEffects = () => null;
   let hasPackageEntry = true;
@@ -193,7 +194,8 @@ async function resolveId({
       pkgPath,
       mainFields,
       preserveSymlinks,
-      useBrowserOverrides
+      useBrowserOverrides,
+      rootDir
     });
 
     ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
@@ -286,7 +288,8 @@ export async function resolveImportSpecifiers({
   preserveSymlinks,
   useBrowserOverrides,
   baseDir,
-  moduleDirectories
+  moduleDirectories,
+  rootDir
 }) {
   for (let i = 0; i < importSpecifierList.length; i++) {
     // eslint-disable-next-line no-await-in-loop
@@ -301,7 +304,8 @@ export async function resolveImportSpecifiers({
       preserveSymlinks,
       useBrowserOverrides,
       baseDir,
-      moduleDirectories
+      moduleDirectories,
+      rootDir
     });
     if (resolved) {
       return resolved;
