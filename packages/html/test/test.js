@@ -121,7 +121,7 @@ test.serial('template', async (t) => {
   t.snapshot(code);
 });
 
-test.serial('template files should only include entry chunks', async (t) => {
+test.serial('default template scripts should only include entry chunks', async (t) => {
   const bundle = await rollup({
     input: 'robin.js',
     manualChunks: {
@@ -135,7 +135,7 @@ test.serial('template files should only include entry chunks', async (t) => {
   t.snapshot(code);
 });
 
-test.serial('template files should not include js assets', async (t) => {
+test.serial('default template scripts should not include js assets', async (t) => {
   const bundle = await rollup({
     input: 'robin.js',
     plugins: [

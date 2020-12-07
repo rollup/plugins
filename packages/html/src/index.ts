@@ -4,18 +4,12 @@ import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rol
 
 import { RollupHtmlFileMap, RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
 
-const getFiles = (bundle: OutputBundle): RollupHtmlFileMap => {
-  const files = Object.values(bundle).filter(
-    (file: any) => file.isEntry || !file.fileName.endsWith('.js')
-  );
+const getFilesByExtension = (bundle: OutputBundle): RollupHtmlFileMap => {
   const result: RollupHtmlFileMap = {};
-  for (const file of files) {
-    const { fileName } = file;
-    const extension = extname(fileName).substring(1);
-
+  for (const file of Object.values(bundle)) {
+    const extension = extname(file.fileName).substring(1);
     result[extension] = (result[extension] || []).concat(file);
   }
-
   return result;
 };
 
@@ -37,6 +31,7 @@ const defaultTemplate = async ({
   title
 }: RollupHtmlTemplateOptions) => {
   const scripts = (files.js || [])
+    .filter((file: any) => file.isEntry)
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
       return `<script src="${publicPath}${fileName}"${attrs}></script>`;
@@ -113,7 +108,8 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
         });
       }
 
-      const files = getFiles(bundle);
+      const files = getFilesByExtension(bundle);
+
       const source = await template({
         attributes,
         bundle,
