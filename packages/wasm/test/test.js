@@ -51,6 +51,7 @@ test('fetching WASM from separate file', async (t) => {
 
   global.result = null;
   global.t = t;
+  // eslint-disable-next-line global-require, import/no-dynamic-require
   require(outputFile);
 
   await global.result;
@@ -97,6 +98,7 @@ test('imports', async (t) => {
 });
 
 try {
+  // eslint-disable-next-line global-require
   const { Worker } = require('worker_threads');
   test('worker', async (t) => {
     t.plan(2);

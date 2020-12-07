@@ -76,8 +76,13 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
           src = null;
         }
 
-        return `import { _loadWasmModule } from ${JSON.stringify(HELPERS_ID)};
-export default function(imports){return _loadWasmModule(${+isSync}, ${publicFilepath}, ${src}, imports)}`;
+        return {
+          map: {
+            mappings: ''
+          },
+          code: `import { _loadWasmModule } from ${JSON.stringify(HELPERS_ID)};
+export default function(imports){return _loadWasmModule(${+isSync}, ${publicFilepath}, ${src}, imports)}`
+        };
       }
       return null;
     },
