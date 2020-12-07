@@ -1,4 +1,5 @@
 import { SourceDescription } from 'rollup';
+import type { ParsedCommandLine } from 'typescript';
 
 import TSCache from './tscache';
 
@@ -51,7 +52,7 @@ export function getEmittedFile(
  */
 export default function findTypescriptOutput(
   ts: typeof import('typescript'),
-  parsedOptions: import('typescript').ParsedCommandLine,
+  parsedOptions: ParsedCommandLine,
   id: string,
   emittedFiles: ReadonlyMap<string, string>,
   tsCache: TSCache

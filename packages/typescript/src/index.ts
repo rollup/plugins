@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import { Plugin, SourceDescription } from 'rollup';
+import type { Watch } from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
@@ -33,7 +34,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const formatHost = createFormattingHost(ts, parsedOptions.options);
   const resolveModule = createModuleResolver(ts, formatHost);
 
-  let program: import('typescript').Watch<unknown> | null = null;
+  let program: Watch<unknown> | null = null;
 
   function normalizePath(fileName: string) {
     return fileName.split(path.win32.sep).join(path.posix.sep);
