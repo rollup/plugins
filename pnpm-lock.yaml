@@ -173,13 +173,15 @@ importers:
       typescript: ^3.9.7
   packages/data-uri:
     devDependencies:
-      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.1.2
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
       rollup: 2.32.1
+      typescript: 4.1.2
     specifiers:
       '@rollup/plugin-typescript': ^5.0.2
       '@rollup/pluginutils': ^3.0.1
       rollup: ^2.23.0
+      typescript: ^4.1.2
   packages/dsv:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
