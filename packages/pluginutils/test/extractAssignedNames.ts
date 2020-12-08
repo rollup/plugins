@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { extractAssignedNames } from '../';
+import { extractAssignedNames } from '../src/index';
 
 test('extracts an Identifier', (t) => {
   const node = {

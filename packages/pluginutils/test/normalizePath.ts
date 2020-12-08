@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { normalizePath } from '../';
+import { normalizePath } from '../src/index';
 
 test('replaces \\ with /', (t) => {
   t.is(normalizePath('foo\\bar'), 'foo/bar');

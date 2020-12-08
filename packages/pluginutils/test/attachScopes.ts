@@ -4,7 +4,8 @@ import * as estree from 'estree';
 import test from 'ava';
 import { parse } from 'acorn';
 
-import { attachScopes, AttachedScope } from '../';
+import { attachScopes } from '../src/index';
+import { AttachedScope } from '../types';
 
 test('attaches a scope to the top level', (t) => {
   const ast = parse('var foo;', { ecmaVersion: 2020, sourceType: 'module' });

@@ -2,7 +2,7 @@ import { resolve as rawResolve } from 'path';
 
 import test from 'ava';
 
-import { createFilter, normalizePath } from '../';
+import { createFilter, normalizePath } from '../src/index';
 
 const resolve = (...parts: string[]) => normalizePath(rawResolve(...parts));
 

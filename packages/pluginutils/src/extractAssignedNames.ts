@@ -1,3 +1,11 @@
+import type {
+  ArrayPattern,
+  AssignmentPattern,
+  Identifier,
+  ObjectPattern,
+  RestElement
+} from 'estree';
+
 import { ExtractAssignedNames } from '../types';
 
 interface Extractors {
@@ -5,23 +13,23 @@ interface Extractors {
 }
 
 const extractors: Extractors = {
-  ArrayPattern(names: string[], param: import('estree').ArrayPattern) {
+  ArrayPattern(names: string[], param: ArrayPattern) {
     for (const element of param.elements) {
       if (element) extractors[element.type](names, element);
     }
   },
 
-  AssignmentPattern(names: string[], param: import('estree').AssignmentPattern) {
+  AssignmentPattern(names: string[], param: AssignmentPattern) {
     extractors[param.left.type](names, param.left);
   },
 
-  Identifier(names: string[], param: import('estree').Identifier) {
+  Identifier(names: string[], param: Identifier) {
     names.push(param.name);
   },
 
   MemberExpression() {},
 
-  ObjectPattern(names: string[], param: import('estree').ObjectPattern) {
+  ObjectPattern(names: string[], param: ObjectPattern) {
     for (const prop of param.properties) {
       // @ts-ignore Typescript reports that this is not a valid type
       if (prop.type === 'RestElement') {
@@ -32,7 +40,7 @@ const extractors: Extractors = {
     }
   },
 
-  RestElement(names: string[], param: import('estree').RestElement) {
+  RestElement(names: string[], param: RestElement) {
     extractors[param.argument.type](names, param.argument);
   }
 };
