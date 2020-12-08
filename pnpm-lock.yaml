@@ -363,12 +363,13 @@ importers:
     devDependencies:
       '@rollup/plugin-commonjs': 14.0.0_rollup@2.32.1
       '@rollup/plugin-node-resolve': 8.4.0_rollup@2.32.1
-      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.1.2
       '@types/estree': 0.0.45
       '@types/node': 14.14.3
       '@types/picomatch': 2.2.1
       acorn: 8.0.4
       rollup: 2.32.1
+      typescript: 4.1.2
     specifiers:
       '@rollup/plugin-commonjs': ^14.0.0
       '@rollup/plugin-node-resolve': ^8.4.0
@@ -380,6 +381,7 @@ importers:
       estree-walker: ^2.0.1
       picomatch: ^2.2.2
       rollup: ^2.23.0
+      typescript: ^4.1.2
   packages/replace:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
