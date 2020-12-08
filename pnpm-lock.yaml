@@ -220,9 +220,10 @@ importers:
       eslint: 7.12.0
     devDependencies:
       '@rollup/plugin-node-resolve': 9.0.0_rollup@2.32.1
-      '@rollup/plugin-typescript': 6.0.0_rollup@2.32.1
+      '@rollup/plugin-typescript': 6.0.0_rollup@2.32.1+typescript@4.1.2
       '@types/eslint': 7.2.4
       rollup: 2.32.1
+      typescript: 4.1.2
     specifiers:
       '@rollup/plugin-node-resolve': ^9.0.0
       '@rollup/plugin-typescript': ^6.0.0
@@ -230,6 +231,7 @@ importers:
       '@types/eslint': ^7.2.2
       eslint: ^7.12.0
       rollup: ^2.23.0
+      typescript: ^4.1.2
   packages/graphql:
     dependencies:
       '@rollup/pluginutils': 4.0.0_rollup@2.32.1
@@ -1792,6 +1794,21 @@ packages:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
       resolve: 1.18.1
       rollup: 2.32.1
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.4.0'
+    resolution:
+      integrity: sha512-Y5U2L4eaF3wUSgCZRMdvNmuzWkKMyN3OwvhAdbzAi5sUqedaBk/XbzO4T7RlViDJ78MOPhwAIv2FtId/jhMtbg==
+  /@rollup/plugin-typescript/6.0.0_rollup@2.32.1+typescript@4.1.2:
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.32.1
+      resolve: 1.18.1
+      rollup: 2.32.1
+      typescript: 4.1.2
     dev: true
     engines:
       node: '>=8.0.0'
