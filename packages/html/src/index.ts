@@ -32,7 +32,8 @@ const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
 
 const makeCspDirective = async (
   files: Record<string, (OutputChunk | OutputAsset)[]>,
-  hashAlgorithm: string
+  hashAlgorithm: string,
+  additionalCspDirectives: Record<string, string[] | string>
 ): Promise<Record<'http-equiv', string>> => {
   const jsHashes = await Promise.all(
     (files.js || [])
@@ -55,12 +56,30 @@ const makeCspDirective = async (
       )
   );
 
-  const jsCsp = `script-src ${`${jsHashes.map((hash) => `${hashAlgorithm}-${hash}`).join(' ')}`};`;
+  const scriptSrc = additionalCspDirectives['script-src'];
+  const additionalScriptDirectives =
+    typeof scriptSrc === 'string' ? scriptSrc : (scriptSrc || []).join(' ');
+  const jsCsp = `script-src ${`${jsHashes
+    .map((hash) => `${hashAlgorithm}-${hash}`)
+    .join(' ')}`} ${additionalScriptDirectives};`;
+  // The deletes are necessary because otherwise these directives appear again in the `other` clause.
+  delete additionalCspDirectives['script-src'];
 
-  const cssCsp = `style-src ${`${cssHashes.map((hash) => `${hashAlgorithm}-${hash}`).join(' ')}`};`;
+  const styleSrc = additionalCspDirectives['style-src'];
+  const additionalStyleDirectives =
+    typeof styleSrc === 'string' ? styleSrc : (styleSrc || []).join(' ');
+  const cssCsp = `style-src ${`${cssHashes
+    .map((hash) => `${hashAlgorithm}-${hash}`)
+    .join(' ')}`} ${additionalStyleDirectives};`;
+  delete additionalCspDirectives['style-src'];
+
+  const otherCspDirectives = Object.keys(additionalCspDirectives).map((key) => {
+    const otherSrc = additionalCspDirectives[key];
+    return `${key} ${typeof otherSrc === 'string' ? otherSrc : (otherSrc || []).join(' ')}`;
+  });
 
   const cspDirectives = {
-    'http-equiv': ['content-security-policy:', ...(jsCsp || []), ...(cssCsp || [])].join(' ')
+    'http-equiv': `content-security-policy: ${jsCsp} ${cssCsp} ${otherCspDirectives}`
   };
   return cspDirectives;
 };
@@ -82,7 +101,8 @@ const defaultTemplate = async ({
   publicPath,
   title,
   shouldHash,
-  hashAlgorithm
+  hashAlgorithm,
+  additionalCspDirectives
 }: RollupHtmlTemplateOptions) => {
   const scripts = (files.js || [])
     .map(({ fileName }) => {
@@ -99,7 +119,7 @@ const defaultTemplate = async ({
     .join('\n');
 
   const metas = meta
-    .concat(shouldHash ? makeCspDirective(files, hashAlgorithm) : [])
+    .concat(shouldHash ? await makeCspDirective(files, hashAlgorithm, additionalCspDirectives) : [])
     .map((input) => {
       const attrs = makeHtmlAttributes(input);
       return `<meta${attrs}>`;
@@ -134,11 +154,22 @@ const defaults = {
   template: defaultTemplate,
   title: 'Rollup Bundle',
   shouldHash: false,
-  hashAlgorithm: 'sha256'
+  hashAlgorithm: 'sha256',
+  additionalCspDirectives: {}
 };
 
 export default function html(opts: RollupHtmlOptions = {}): Plugin {
-  const { attributes, fileName, meta, publicPath, template, title, shouldHash, hashAlgorithm } = {
+  const {
+    attributes,
+    fileName,
+    meta,
+    publicPath,
+    template,
+    title,
+    shouldHash,
+    hashAlgorithm,
+    additionalCspDirectives
+  } = {
     ...defaults,
     ...opts
   };
@@ -177,7 +208,8 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
         publicPath,
         title,
         shouldHash,
-        hashAlgorithm
+        hashAlgorithm,
+        additionalCspDirectives
       });
 
       const htmlFile: EmittedAsset = {

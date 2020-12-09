@@ -9,6 +9,7 @@ export interface RollupHtmlTemplateOptions {
   files: Record<string, (OutputChunk | OutputAsset)[]>;
   shouldHash: boolean;
   hashAlgorithm: string;
+  additionalCspDirectives: Record<string, string[] | string>;
 }
 
 export interface RollupHtmlOptions {
@@ -20,6 +21,7 @@ export interface RollupHtmlOptions {
   template?: (templateOptions: RollupHtmlTemplateOptions) => string;
   shouldHash?: boolean;
   hashAlgorithm?: string;
+  additionalCspDirectives?: Record<string, string[] | string>;
 }
 
 export function makeHtmlAttributes(attributes: Record<string, string>): string;
