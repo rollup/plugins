@@ -1,6 +1,15 @@
 import { extname } from 'path';
 
-import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
+import hasha from 'hasha';
+
+import {
+  Plugin,
+  NormalizedOutputOptions,
+  OutputBundle,
+  EmittedAsset,
+  OutputChunk,
+  OutputAsset
+} from 'rollup';
 
 import { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
 
@@ -21,6 +30,41 @@ const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
   return result;
 };
 
+const makeCspDirective = async (
+  files: Record<string, (OutputChunk | OutputAsset)[]>,
+  hashAlgorithm: string
+): Promise<Record<'http-equiv', string>> => {
+  const jsHashes = await Promise.all(
+    (files.js || [])
+      .filter((chunkOrAsset) => chunkOrAsset.type === 'chunk')
+      .map(async (chunk) =>
+        hasha.async((chunk as OutputChunk).code, { algorithm: hashAlgorithm, encoding: 'base64' })
+      )
+  );
+
+  const cssHashes = await Promise.all(
+    (files.css || [])
+      .filter(
+        (chunkOrAsset) => chunkOrAsset.type === 'asset' && typeof chunkOrAsset.source === 'string'
+      )
+      .map(async (asset) =>
+        hasha.async((asset as OutputAsset).source as string, {
+          algorithm: hashAlgorithm,
+          encoding: 'base64'
+        })
+      )
+  );
+
+  const jsCsp = `script-src ${`${jsHashes.map((hash) => `${hashAlgorithm}-${hash}`).join(' ')}`};`;
+
+  const cssCsp = `style-src ${`${cssHashes.map((hash) => `${hashAlgorithm}-${hash}`).join(' ')}`};`;
+
+  const cspDirectives = {
+    'http-equiv': ['content-security-policy:', ...(jsCsp || []), ...(cssCsp || [])].join(' ')
+  };
+  return cspDirectives;
+};
+
 export const makeHtmlAttributes = (attributes: Record<string, any>): string => {
   if (!attributes) {
     return '';
@@ -36,7 +80,9 @@ const defaultTemplate = async ({
   files,
   meta,
   publicPath,
-  title
+  title,
+  shouldHash,
+  hashAlgorithm
 }: RollupHtmlTemplateOptions) => {
   const scripts = (files.js || [])
     .map(({ fileName }) => {
@@ -53,6 +99,7 @@ const defaultTemplate = async ({
     .join('\n');
 
   const metas = meta
+    .concat(shouldHash ? makeCspDirective(files, hashAlgorithm) : [])
     .map((input) => {
       const attrs = makeHtmlAttributes(input);
       return `<meta${attrs}>`;
@@ -74,7 +121,7 @@ const defaultTemplate = async ({
 };
 
 const supportedFormats = ['es', 'esm', 'iife', 'umd'];
-
+const supportedHashAlgorithms = ['sha256', 'sha512'];
 const defaults = {
   attributes: {
     link: null,
@@ -85,15 +132,16 @@ const defaults = {
   meta: [{ charset: 'utf-8' }],
   publicPath: '',
   template: defaultTemplate,
-  title: 'Rollup Bundle'
+  title: 'Rollup Bundle',
+  shouldHash: false,
+  hashAlgorithm: 'sha256'
 };
 
 export default function html(opts: RollupHtmlOptions = {}): Plugin {
-  const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
-    {},
-    defaults,
-    opts
-  );
+  const { attributes, fileName, meta, publicPath, template, title, shouldHash, hashAlgorithm } = {
+    ...defaults,
+    ...opts
+  };
 
   return {
     name: 'html',
@@ -108,11 +156,16 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
           )}`
         );
       }
+      if (shouldHash && !supportedHashAlgorithms.includes(hashAlgorithm)) {
+        this.warn(
+          `plugin-html: '${hashAlgorithm}' is not recognized as a valid hash algorithm. Supported algorithms include: ${supportedHashAlgorithms.join(
+            ', '
+          )}`
+        );
+      }
 
       if (output.format === 'es') {
-        attributes.script = Object.assign({}, attributes.script, {
-          type: 'module'
-        });
+        attributes.script = { ...attributes.script, type: 'module' };
       }
 
       const files = getFiles(bundle);
@@ -122,7 +175,9 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
         files,
         meta,
         publicPath,
-        title
+        title,
+        shouldHash,
+        hashAlgorithm
       });
 
       const htmlFile: EmittedAsset = {
