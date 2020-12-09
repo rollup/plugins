@@ -8,7 +8,7 @@ const ts = require('typescript');
 
 const { getCode, testBundle } = require('../../../util/test');
 
-const typescript = require('..');
+const typescript = require('../dist');
 
 test.beforeEach(() => process.chdir(__dirname));
 
