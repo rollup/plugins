@@ -25,7 +25,9 @@ function matches(pattern: string | RegExp, importee: string) {
   return importeeStartsWithKey && importeeHasSlashAfterKey;
 }
 
-function normalizeId<T extends string | undefined>(id: T) {
+function normalizeId(id: string): string;
+function normalizeId(id: string | undefined): string | undefined;
+function normalizeId(id: string | undefined) {
   if (typeof id === 'string' && (IS_WINDOWS || VOLUME.test(id))) {
     return slash(id.replace(VOLUME, ''));
   }
