@@ -70,10 +70,12 @@ const makeCspDirective = (
     .join(' ')}`} ${additionalStyleDirectives};`;
   delete additionalCspDirectives['style-src'];
 
-  const otherCspDirectives = Object.keys(additionalCspDirectives).map((key) => {
-    const otherSrc = additionalCspDirectives[key];
-    return `${key} ${typeof otherSrc === 'string' ? otherSrc : (otherSrc || []).join(' ')}`;
-  });
+  const otherCspDirectives = Object.keys(additionalCspDirectives)
+    .map((key) => {
+      const otherSrc = additionalCspDirectives[key];
+      return `${key} ${typeof otherSrc === 'string' ? otherSrc : (otherSrc || []).join(' ')};`;
+    })
+    .join(' ');
 
   const cspDirectives = {
     'http-equiv': `content-security-policy: ${jsCsp} ${cssCsp} ${otherCspDirectives}`
