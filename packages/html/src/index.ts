@@ -1,6 +1,6 @@
 import { extname } from 'path';
 
-import hasha from 'hasha';
+import crypto from 'crypto';
 
 import {
   Plugin,
@@ -30,31 +30,28 @@ const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
   return result;
 };
 
-const makeCspDirective = async (
+const makeCspDirective = (
   files: Record<string, (OutputChunk | OutputAsset)[]>,
   hashAlgorithm: string,
   additionalCspDirectives: Record<string, string[] | string>
-): Promise<Record<'http-equiv', string>> => {
-  const jsHashes = await Promise.all(
-    (files.js || [])
-      .filter((chunkOrAsset) => chunkOrAsset.type === 'chunk')
-      .map(async (chunk) =>
-        hasha.async((chunk as OutputChunk).code, { algorithm: hashAlgorithm, encoding: 'base64' })
-      )
-  );
+): Record<'http-equiv', string> => {
+  const jsHashes = (files.js || [])
+    .filter((chunkOrAsset) => chunkOrAsset.type === 'chunk')
+    .map((chunk) => {
+      const hash = crypto.createHash(hashAlgorithm);
+      hash.update((chunk as OutputChunk).code);
+      return hash.digest('base64');
+    });
 
-  const cssHashes = await Promise.all(
-    (files.css || [])
-      .filter(
-        (chunkOrAsset) => chunkOrAsset.type === 'asset' && typeof chunkOrAsset.source === 'string'
-      )
-      .map(async (asset) =>
-        hasha.async((asset as OutputAsset).source as string, {
-          algorithm: hashAlgorithm,
-          encoding: 'base64'
-        })
-      )
-  );
+  const cssHashes = (files.css || [])
+    .filter(
+      (chunkOrAsset) => chunkOrAsset.type === 'asset' && typeof chunkOrAsset.source === 'string'
+    )
+    .map((asset) => {
+      const hash = crypto.createHash(hashAlgorithm);
+      hash.update((asset as OutputAsset).source as string);
+      return hash.digest('base64');
+    });
 
   const scriptSrc = additionalCspDirectives['script-src'];
   const additionalScriptDirectives =
@@ -119,7 +116,7 @@ const defaultTemplate = async ({
     .join('\n');
 
   const metas = meta
-    .concat(shouldHash ? await makeCspDirective(files, hashAlgorithm, additionalCspDirectives) : [])
+    .concat(shouldHash ? makeCspDirective(files, hashAlgorithm, additionalCspDirectives) : [])
     .map((input) => {
       const attrs = makeHtmlAttributes(input);
       return `<meta${attrs}>`;
@@ -141,7 +138,10 @@ const defaultTemplate = async ({
 };
 
 const supportedFormats = ['es', 'esm', 'iife', 'umd'];
-const supportedHashAlgorithms = ['sha256', 'sha512'];
+const supportedHashAlgorithms = crypto
+  .getHashes()
+  .filter((algo) => ['sha256', 'sha384', 'sha512'].includes(algo));
+
 const defaults = {
   attributes: {
     link: null,
