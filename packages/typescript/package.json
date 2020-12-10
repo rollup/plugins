@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
+    "common-path-prefix": "^3.0.0",
     "resolve": "^1.17.0"
   },
   "devDependencies": {

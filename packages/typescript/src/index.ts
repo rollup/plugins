@@ -1,7 +1,8 @@
 import * as path from 'path';
 
-import { Plugin, SourceDescription } from 'rollup';
-import type { Watch } from 'typescript';
+import { NormalizedOutputOptions, Plugin, SourceDescription } from 'rollup';
+import type { SourceFile, Watch } from 'typescript';
+import CommonPathPrefix from 'common-path-prefix';
 
 import { RollupTypescriptOptions } from '../types';
 
@@ -10,7 +11,7 @@ import createModuleResolver from './moduleResolution';
 import getPluginOptions from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
-import findTypescriptOutput, { getEmittedFile } from './outputFile';
+import getTSGeneratedOutput, { getEmittedFile, TSGeneratedFile } from './outputFile';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
 
@@ -25,7 +26,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     typescript: ts
   } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
-  const emittedFiles = new Map<string, string>();
+
+  const tsGeneratedFiles = new Map<string, TSGeneratedFile>();
+  let commonPathPrefix = ``;
   const watchProgramHelper = new WatchProgramHelper();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
@@ -52,11 +55,24 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           formatHost,
           resolveModule,
           parsedOptions,
-          writeFile(fileName, data) {
+          writeFile(
+            fileName: string,
+            data: string,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            _writeByteOrderMark,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            _onError?,
+            sourceFiles?: readonly SourceFile[]
+          ) {
             if (parsedOptions.options.composite || parsedOptions.options.incremental) {
               tsCache.cacheCode(fileName, data);
             }
-            emittedFiles.set(fileName, data);
+            tsGeneratedFiles.set(fileName, {
+              data,
+              sourceFileNames: sourceFiles?.map<string>(
+                (sourceFile: SourceFile) => sourceFile.fileName
+              )
+            });
           },
           status(diagnostic) {
             watchProgramHelper.handleStatus(diagnostic);
@@ -78,6 +94,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         // eslint-disable-next-line
         program?.close();
       }
+      // Calculate the common path prefix of all input & output file.
+      // We will use this as a fallback for the "baseDir" for outputting declarations in generateBundle.
+      const inputFilenames = [...parsedOptions.fileNames];
+      tsGeneratedFiles.forEach((_tsGeneratedFile: TSGeneratedFile, filename: string) =>
+        inputFilenames.push(filename)
+      );
+      commonPathPrefix = CommonPathPrefix(inputFilenames);
     },
 
     renderStart(outputOptions) {
@@ -116,21 +139,39 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         parsedOptions.fileNames.push(fileName);
       }
 
-      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles, tsCache);
+      const output = getTSGeneratedOutput(id, tsGeneratedFiles, tsCache);
 
       return output.code != null ? (output as SourceDescription) : null;
     },
 
-    generateBundle(outputOptions) {
+    generateBundle(outputOptions: NormalizedOutputOptions) {
       parsedOptions.fileNames.forEach((fileName) => {
-        const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
+        const output = getTSGeneratedOutput(fileName, tsGeneratedFiles, tsCache);
         output.declarations.forEach((id) => {
-          const code = getEmittedFile(id, emittedFiles, tsCache);
+          const code = getEmittedFile(id, tsGeneratedFiles, tsCache);
           let baseDir = outputOptions.dir;
-          if (!baseDir && tsconfig) {
-            baseDir = tsconfig.substring(0, tsconfig.lastIndexOf('/'));
+
+          // Use the same logic as typescript to decide where to put the declarations.
+          // https://www.typescriptlang.org/tsconfig#declarationDir
+          // https://www.typescriptlang.org/tsconfig#outDir
+          // Using the longest common path prefix as a fallback.
+          if (!baseDir) {
+            baseDir = parsedOptions.options.declarationDir
+              ? parsedOptions.options.declarationDir
+              : parsedOptions.options.outDir
+              ? parsedOptions.options.outDir
+              : commonPathPrefix;
           }
-          if (!code || !baseDir) return;
+
+          if (!baseDir) {
+            this.error(
+              `@rollup/plugin-typescript: Unable to determine directory to write typescript declaration files.  Please specify 'declarationDir' or 'outDir' in your compiler options.`
+            );
+          }
+
+          if (!code) {
+            return;
+          }
 
           this.emitFile({
             type: 'asset',
@@ -145,7 +186,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         this.emitFile({
           type: 'asset',
           fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
-          source: emittedFiles.get(tsBuildInfoPath)
+          source: tsGeneratedFiles.get(tsBuildInfoPath)?.data
         });
       }
     }

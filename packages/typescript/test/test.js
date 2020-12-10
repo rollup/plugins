@@ -75,10 +75,10 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', 'types/main.d.ts', 'types/main.d.ts.map']
+    ['main.js', 'types/main.d.ts.map', 'types/main.d.ts']
   );
 
-  const declarationSource = output[1].source;
+  const declarationSource = output[2].source;
   t.true(declarationSource.includes('declare const answer = 42;'), declarationSource);
   t.true(declarationSource.includes('//# sourceMappingURL=main.d.ts.map'), declarationSource);
 });
@@ -126,17 +126,17 @@ test.serial('supports creating declaration files for interface only source file'
   );
 
   t.deepEqual(
-    output.map((out) => out.fileName),
+    output.map((out) => out.fileName).sort(),
     [
       'main.js',
       'types/interface.d.ts',
       'types/interface.d.ts.map',
       'types/main.d.ts',
       'types/main.d.ts.map'
-    ]
+    ].sort()
   );
 
-  const declarationSource = output[1].source;
+  const declarationSource = output[2].source;
   t.true(declarationSource.includes('export interface ITest'), declarationSource);
   t.true(declarationSource.includes('//# sourceMappingURL=interface.d.ts.map'), declarationSource);
 });
@@ -149,6 +149,30 @@ test.serial('supports creating declaration files in declarationDir', async (t) =
         tsconfig: 'fixtures/basic/tsconfig.json',
         declarationDir: 'fixtures/basic/dist/types',
         declaration: true
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName).sort(),
+    ['main.js', 'types/main.d.ts'].sort()
+  );
+
+  t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
+});
+
+test.serial('Should support creating declaration files when not using tsconfig.json', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        include: 'fixtures/basic/*.ts',
+        exclude: 'fixtures/basic/dist/types',
+        tsconfig: false,
+        declaration: true,
+        declarationDir: 'fixtures/basic/dist/types'
       })
     ],
     onwarn
@@ -260,7 +284,7 @@ test.serial('ensures multiple outputs can be built', async (t) => {
 
   t.deepEqual(
     [...new Set(output1.concat(output2).map((out) => out.fileName))].sort(),
-    ['index.d.ts', 'index.js', 'server.d.ts', 'server.js']
+    ['index.d.ts', 'index.js', 'server.d.ts', 'server.js'].sort()
   );
 });
 
@@ -461,7 +485,10 @@ test.serial('supports overriding the TypeScript version', async (t) => {
               emit(_, writeFile) {
                 writeFile(
                   path.join(__dirname, 'fixtures/overriding-typescript/main.js'),
-                  'export default 1337;'
+                  'export default 1337;',
+                  false,
+                  undefined,
+                  [{ fileName: path.join(__dirname, 'fixtures/overriding-typescript/main.ts') }]
                 );
               }
             };
@@ -470,7 +497,7 @@ test.serial('supports overriding the TypeScript version', async (t) => {
             // Call the overrided emit function to trigger writeFile
             program.emit();
 
-            return { close() {} };
+            return { close() { } };
           }
         })
       })
@@ -1081,8 +1108,8 @@ test('supports custom transformers', async (t) => {
   // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
   t.deepEqual(
     typeChecker &&
-      typeChecker.getTypeAtLocation &&
-      typeof typeChecker.getTypeAtLocation === 'function',
+    typeChecker.getTypeAtLocation &&
+    typeof typeChecker.getTypeAtLocation === 'function',
     true
   );
 });
@@ -1104,7 +1131,7 @@ function fakeTypescript(custom) {
 
       createWatchCompilerHost() {
         return {
-          afterProgramCreate() {}
+          afterProgramCreate() { }
         };
       },
 

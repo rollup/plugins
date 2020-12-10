@@ -1,12 +1,14 @@
 import { SourceDescription } from 'rollup';
-import type { ParsedCommandLine } from 'typescript';
 
 import TSCache from './tscache';
 
 export interface TypescriptSourceDescription extends Partial<SourceDescription> {
   declarations: string[];
 }
-
+export interface TSGeneratedFile {
+  data: string;
+  sourceFileNames?: string[];
+}
 /**
  * Checks if the given OutputFile represents some code
  */
@@ -30,13 +32,13 @@ function isMapOutputFile(name: string): boolean {
  */
 export function getEmittedFile(
   fileName: string | undefined,
-  emittedFiles: ReadonlyMap<string, string>,
+  emittedFiles: ReadonlyMap<string, TSGeneratedFile>,
   tsCache: TSCache
 ): string | undefined {
   let code: string | undefined;
   if (fileName) {
     if (emittedFiles.has(fileName)) {
-      code = emittedFiles.get(fileName);
+      code = emittedFiles.get(fileName)?.data;
     } else {
       code = tsCache.getCached(fileName);
     }
@@ -46,29 +48,38 @@ export function getEmittedFile(
 
 /**
  * Finds the corresponding emitted Javascript files for a given Typescript file.
- * @param id Path to the Typescript file.
+ * @param source Path to the Typescript file.
  * @param emittedFiles Map of file names to source code,
  * containing files emitted by the Typescript compiler.
  */
-export default function findTypescriptOutput(
-  ts: typeof import('typescript'),
-  parsedOptions: ParsedCommandLine,
-  id: string,
-  emittedFiles: ReadonlyMap<string, string>,
+export default function getTSGeneratedOutput(
+  sourceFilename: string,
+  tsGeneratedFiles: ReadonlyMap<string, TSGeneratedFile>,
   tsCache: TSCache
 ): TypescriptSourceDescription {
-  const emittedFileNames = ts.getOutputFileNames(
-    parsedOptions,
-    id,
-    !ts.sys.useCaseSensitiveFileNames
+  // We only want to consider tsGeneratedFiles that have the source listed as one of their inputs.
+  const tsGeneratedFileNames: string[] = [];
+  tsGeneratedFiles.forEach((tsGeneratedFile: TSGeneratedFile, filename: string) => {
+    if (tsGeneratedFile.sourceFileNames?.includes(sourceFilename)) {
+      tsGeneratedFileNames.push(filename);
+    }
+  });
+
+  const codeFilename = tsGeneratedFileNames.find(isCodeOutputFile);
+  const mapFilename = tsGeneratedFileNames.find(
+    (candidateMapFilename) =>
+      codeFilename &&
+      isMapOutputFile(candidateMapFilename) &&
+      candidateMapFilename.includes(codeFilename)
   );
 
-  const codeFile = emittedFileNames.find(isCodeOutputFile);
-  const mapFile = emittedFileNames.find(isMapOutputFile);
-
   return {
-    code: getEmittedFile(codeFile, emittedFiles, tsCache),
-    map: getEmittedFile(mapFile, emittedFiles, tsCache),
-    declarations: emittedFileNames.filter((name) => name !== codeFile && name !== mapFile)
+    code: getEmittedFile(codeFilename, tsGeneratedFiles, tsCache),
+    map: getEmittedFile(mapFilename, tsGeneratedFiles, tsCache),
+    declarations: tsGeneratedFileNames.filter(
+      (candidateDeclarationFilename) =>
+        candidateDeclarationFilename !== codeFilename &&
+        candidateDeclarationFilename !== mapFilename
+    )
   };
 }
