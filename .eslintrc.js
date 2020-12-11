@@ -44,5 +44,13 @@ module.exports = {
         plugins: ['prettier-plugin-package']
       }
     ]
-  }
+  },
+  overrides: [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ]
 };
