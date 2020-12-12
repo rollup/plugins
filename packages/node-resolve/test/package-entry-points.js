@@ -349,3 +349,19 @@ test('can override a star pattern using null', async (t) => {
 
   t.true(errors[0].message.includes('Could not resolve import "exports-null-override/foo/a" in '));
 });
+
+test('can self-import a package when using exports field', async (t) => {
+  const bundle = await rollup({
+    input: 'self-package-import',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, {
+    a: 'a',
+    b: 'b'
+  });
+});

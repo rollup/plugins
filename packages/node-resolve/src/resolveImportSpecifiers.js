@@ -9,10 +9,28 @@ import { exists, realpath } from './fs';
 import { isDirCached, isFileCached, readCachedFile } from './cache';
 import resolvePackageExports from './package/resolvePackageExports';
 import resolvePackageImports from './package/resolvePackageImports';
-import { ResolveError } from './package/utils';
+import { findPackageJson, ResolveError } from './package/utils';
 
 const resolveImportPath = promisify(resolve);
 const readFile = promisify(fs.readFile);
+
+async function getPackageJson(importer, pkgName, resolveOptions, moduleDirectories) {
+  if (importer) {
+    const selfPackageJsonResult = await findPackageJson(importer, moduleDirectories);
+    if (selfPackageJsonResult && selfPackageJsonResult.pkgJson.name === pkgName) {
+      // the referenced package name is the current package
+      return selfPackageJsonResult;
+    }
+  }
+
+  try {
+    const pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, resolveOptions);
+    const pkgJson = JSON.parse(await readFile(pkgJsonPath, 'utf-8'));
+    return { pkgJsonPath, pkgJson };
+  } catch (_) {
+    return null;
+  }
+}
 
 async function resolveId({
   importer,
@@ -88,22 +106,17 @@ async function resolveId({
     });
     location = fileURLToPath(resolveResult);
   } else if (pkgName) {
-    // this is a bare import, resolve using package exports if possible
-    let pkgJsonPath;
-    let pkgJson;
-    try {
-      pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, resolveOptions);
-      pkgJson = JSON.parse(await readFile(pkgJsonPath, 'utf-8'));
-    } catch (_) {
-      // if there is no package.json we defer to regular resolve behavior
-    }
+    // it's a bare import, find the package.json and resolve using package exports if available
+    const result = await getPackageJson(importer, pkgName, resolveOptions, moduleDirectories);
 
-    if (pkgJsonPath && pkgJson && pkgJson.exports) {
+    if (result && result.pkgJson.exports) {
+      const { pkgJson, pkgJsonPath } = result;
       try {
         const subpath =
           pkgName === importSpecifier ? '.' : `.${importSpecifier.substring(pkgName.length)}`;
         const pkgDr = pkgJsonPath.replace('package.json', '');
         const pkgURL = pathToFileURL(pkgDr);
+
         const context = {
           importer,
           importSpecifier,
