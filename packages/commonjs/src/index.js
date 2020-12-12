@@ -75,6 +75,25 @@ export default function commonjs(options = {}) {
       ? (id) => options.ignore.includes(id)
       : () => false;
 
+  const getIgnoreTryCatchRequireStatementMode = (id) => {
+    let mode =
+      typeof options.ignoreTryCatch === 'function'
+        ? options.ignoreTryCatch(id)
+        : Array.isArray(options.ignoreTryCatch)
+        ? options.ignoreTryCatch.includes(id)
+        : options.ignoreTryCatch || false;
+
+    if (mode !== 'remove' && mode !== true) {
+      // default - do not ignore, convert as usual
+      mode = false;
+    }
+
+    return {
+      canConvertRequire: mode === false,
+      shouldRemoveRequireStatement: mode === 'remove'
+    };
+  };
+
   const resolveId = getResolveId(extensions);
 
   const sourceMap = options.sourceMap !== false;
@@ -114,6 +133,7 @@ export default function commonjs(options = {}) {
       isEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
+      getIgnoreTryCatchRequireStatementMode,
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
