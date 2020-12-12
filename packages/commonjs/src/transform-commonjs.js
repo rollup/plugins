@@ -169,6 +169,32 @@ export default function transformCommonjs(
             }
             return;
           }
+
+          if (
+            node.callee.object &&
+            node.callee.object.name === 'require' &&
+            node.callee.property.name === 'resolve' &&
+            hasDynamicModuleForPath(id, '/', dynamicRequireModuleSet)
+          ) {
+            const requireNode = node.callee.object;
+            magicString.appendLeft(
+              node.end - 1,
+              `,${JSON.stringify(
+                dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
+              )}`
+            );
+            magicString.overwrite(
+              requireNode.start,
+              requireNode.end,
+              `${HELPERS_NAME}.commonjsRequire`,
+              {
+                storeName: true
+              }
+            );
+            uses.commonjsHelpers = true;
+            return;
+          }
+
           if (!isStaticRequireStatement(node, scope)) return;
           if (!isDynamicRequireModulesEnabled) {
             skippedNodes.add(node.callee);
@@ -267,7 +293,18 @@ export default function transformCommonjs(
           if (!(isReference(node, parent) && !scope.contains(name))) return;
           switch (name) {
             case 'require':
-              if (isNodeRequirePropertyAccess(parent)) return;
+              if (isNodeRequirePropertyAccess(parent)) {
+                if (hasDynamicModuleForPath(id, '/', dynamicRequireModuleSet)) {
+                  if (parent.property.name === 'cache') {
+                    magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                      storeName: true
+                    });
+                    uses.commonjsHelpers = true;
+                  }
+                }
+
+                return;
+              }
 
               if (isDynamicRequireModulesEnabled && isRequireStatement(parent, scope)) {
                 magicString.appendLeft(
