@@ -14,7 +14,7 @@
     "preinstall": "node scripts/disallow-npm.js",
     "pub": "node scripts/pub.js",
     "publish": "node scripts/publish.js",
-    "security": "pnpm audit",
+    "security": "pnpm audit --audit-level=moderate",
     "test": "node scripts/run-changed.js test"
   },
   "dependencies": {
