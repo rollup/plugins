@@ -1,5 +1,19 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.1.0
+
+_2020-12-14_
+
+### Features
+
+- feat: support multiple output targets with declarations (#687)
+
+### Updates
+
+- chore: fix TypeScript warnings (#673)
+- test: code in src sub-directory (#682)
+- chore: use TypeScript 4 (#674)
+
 ## v8.0.0
 
 _2020-11-30_
