@@ -1,5 +1,18 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v11.0.1
+
+_2020-12-14_
+
+### Bugfixes
+
+- fix: export map specificity (#675)
+- fix: add missing type import (#668)
+
+### Updates
+
+- docs: corrected word "yse" to "use" (#723)
+
 ## v11.0.0
 
 _2020-11-30_
