@@ -7,7 +7,7 @@ import isModule from 'is-module';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
 import { exists, readFile, realpath } from './fs';
-import { resolveImportSpecifiers } from './resolveImportSpecifiers';
+import resolveImportSpecifiers from './resolveImportSpecifiers';
 import { getMainFields, getPackageName, normalizeInput } from './util';
 import handleDeprecatedOptions from './deprecated-options';
 

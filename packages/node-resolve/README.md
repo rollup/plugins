@@ -34,13 +34,17 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [nodeResolve()],
+  plugins: [nodeResolve()]
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
+
+## Package entrypoints
+
+This plugin supports the package entrypoints feature from node js, specified in the `exports` or `imports` field of a package. Check the [official documentation](https://nodejs.org/api/packages.html#packages_package_entry_points) for more information on how this works.
 
 ## Options
 
@@ -61,6 +65,8 @@ Type: `Boolean`<br>
 Default: `false`
 
 If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
+
+> This option does not work when a package is using [package entrypoints](https://nodejs.org/api/packages.html#packages_package_entry_points)
 
 ### `moduleDirectories`
 
@@ -169,9 +175,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule',
+    name: 'MyModule'
   },
-  plugins: [nodeResolve(), commonjs()],
+  plugins: [nodeResolve(), commonjs()]
 };
 ```
 
@@ -203,7 +209,7 @@ The node resolve plugin uses `import` by default, you can opt into using the `re
 ```js
 this.resolve(importee, importer, {
   skipSelf: true,
-  custom: { 'node-resolve': { isRequire: true } },
+  custom: { 'node-resolve': { isRequire: true } }
 });
 ```
 
