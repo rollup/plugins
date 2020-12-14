@@ -2,11 +2,11 @@
   "name": "@rollup/plugins",
   "private": true,
   "scripts": {
-    "ci:coverage": "node scripts/run-changed.js ci:coverage",
+    "ci:coverage": "pnpm -r ci:coverage",
     "ci:coverage:submit": "node scripts/codecov",
-    "ci:lint": "node scripts/run-changed.js ci:lint",
-    "ci:test": "node scripts/run-changed.js ci:test",
-    "lint": "pnpm run lint:docs && npm run lint:json && pnpm run lint:package && node scripts/run-changed.js lint",
+    "ci:lint": "pnpm -r ci:lint",
+    "ci:test": "pnpm -r ci:test",
+    "lint": "pnpm run lint:docs && npm run lint:json && pnpm run lint:package && pnpm -r lint",
     "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint scripts util",
     "lint:json": "prettier --write tsconfig.*.json codecov.yml pnpm-workspace.yaml",
@@ -15,7 +15,7 @@
     "pub": "node scripts/pub.js",
     "publish": "node scripts/publish.js",
     "security": "pnpm audit --audit-level=moderate",
-    "test": "node scripts/run-changed.js test"
+    "test": "pnpm -r test"
   },
   "dependencies": {
     "conventional-commits-parser": "^3.1.0",
@@ -36,14 +36,13 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.5.2",
     "nyc": "^15.1.0",
-    "pnpm": "5.13.5",
+    "pnpm": "5.13.6",
     "prettier": "^2.2.1",
     "prettier-plugin-package": "^1.3.0",
     "ts-node": "^8.10.2",
     "tsconfig-paths": "^3.9.0",
     "tslib": "^2.0.0",
-    "typescript": "^3.9.7",
-    "yaml": "^1.10.0"
+    "typescript": "^3.9.7"
   },
   "ava": {
     "files": [
