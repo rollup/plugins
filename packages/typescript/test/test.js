@@ -249,19 +249,29 @@ test.serial('ensures multiple outputs can be built', async (t) => {
     plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
   });
 
-  const output1 = await getCode(bundle1, { file: 'fixtures/multiple-files/index.js', format: 'cjs' }, true);
+  const output1 = await getCode(
+    bundle1,
+    { file: 'fixtures/multiple-files/index.js', format: 'cjs' },
+    true
+  );
 
   const bundle2 = await rollup({
     input: 'fixtures/multiple-files/src/server.ts',
     plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
   });
 
-  const output2 = await getCode(bundle2, { file: 'fixtures/multiple-files/server.js', format: 'cjs' }, true);
-
-  t.deepEqual(
-    [...new Set(output1.concat(output2).map((out) => out.fileName))].sort(),
-    ['index.d.ts', 'index.js', 'server.d.ts', 'server.js']
+  const output2 = await getCode(
+    bundle2,
+    { file: 'fixtures/multiple-files/server.js', format: 'cjs' },
+    true
   );
+
+  t.deepEqual([...new Set(output1.concat(output2).map((out) => out.fileName))].sort(), [
+    'index.d.ts',
+    'index.js',
+    'server.d.ts',
+    'server.js'
+  ]);
 });
 
 test.serial('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
@@ -1088,50 +1098,48 @@ test('supports custom transformers', async (t) => {
 });
 
 function fakeTypescript(custom) {
-  return Object.assign(
-    {
-      sys: ts.sys,
-      createModuleResolutionCache: ts.createModuleResolutionCache,
-      ModuleKind: ts.ModuleKind,
+  return {
+    sys: ts.sys,
+    createModuleResolutionCache: ts.createModuleResolutionCache,
+    ModuleKind: ts.ModuleKind,
 
-      transpileModule() {
-        return {
-          outputText: '',
-          diagnostics: [],
-          sourceMapText: JSON.stringify({ mappings: '' })
-        };
-      },
-
-      createWatchCompilerHost() {
-        return {
-          afterProgramCreate() {}
-        };
-      },
-
-      createWatchProgram() {
-        return {};
-      },
-
-      parseJsonConfigFileContent(json, host, basePath, existingOptions) {
-        return {
-          options: {
-            ...json.compilerOptions,
-            ...existingOptions
-          },
-          fileNames: [],
-          errors: []
-        };
-      },
-
-      getOutputFileNames(_, id) {
-        return [id.replace(/\.tsx?/, '.js')];
-      },
-
-      // eslint-disable-next-line no-undefined
-      getTsBuildInfoEmitOutputFilePath: () => undefined
+    transpileModule() {
+      return {
+        outputText: '',
+        diagnostics: [],
+        sourceMapText: JSON.stringify({ mappings: '' })
+      };
     },
-    custom
-  );
+
+    createWatchCompilerHost() {
+      return {
+        afterProgramCreate() {}
+      };
+    },
+
+    createWatchProgram() {
+      return {};
+    },
+
+    parseJsonConfigFileContent(json, host, basePath, existingOptions) {
+      return {
+        options: {
+          ...json.compilerOptions,
+          ...existingOptions
+        },
+        fileNames: [],
+        errors: []
+      };
+    },
+
+    getOutputFileNames(_, id) {
+      return [id.replace(/\.tsx?/, '.js')];
+    },
+
+    // eslint-disable-next-line no-undefined
+    getTsBuildInfoEmitOutputFilePath: () => undefined,
+    ...custom
+  };
 }
 
 test.serial('picks up on newly included typescript files in watch mode', async (t) => {
@@ -1208,6 +1216,43 @@ test.serial.skip('works when code is in src directory', async (t) => {
     ['index.js', 'types/index.d.ts', 'types/index.d.ts.map']
   );
 });
+/* Illustrates issue
+Produces Error {
+  code: 'PLUGIN_ERROR',
+  hook: 'load',
+  plugin: 'typescript',
+  watchFiles: [
+    '/plugins/packages/typescript/test/fixtures/basic/main.ts',],
+      message: 'Could not load /plugins/packages/typescript/test/fixtures/basic/main.ts: Debug Failure.',
+}
+*/
+
+test.serial.skip(
+  'Should support creating declaration files when not using tsconfig.json',
+  async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [
+        typescript({
+          include: 'fixtures/basic/*.ts',
+          exclude: 'fixtures/basic/dist/types',
+          tsconfig: false,
+          declaration: true,
+          declarationDir: 'fixtures/basic/dist/types'
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+
+    t.deepEqual(
+      output.map((out) => out.fileName),
+      ['main.js', 'types/main.d.ts']
+    );
+
+    t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
+  }
+);
 
 function waitForWatcherEvent(watcher, eventCode) {
   return new Promise((resolve, reject) => {
