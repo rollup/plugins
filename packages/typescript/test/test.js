@@ -1253,6 +1253,43 @@ test.serial.skip(
     t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
   }
 );
+/* Illustrates issue #735
+Produces Error {
+  code: 'PLUGIN_ERROR',
+  hook: 'load',
+  plugin: 'typescript',
+  watchFiles: [
+    '/plugins/packages/typescript/test/fixtures/basic/main.ts',],
+      message: 'Could not load /plugins/packages/typescript/test/fixtures/basic/main.ts: Debug Failure.',
+}
+*/
+
+test.serial.skip(
+  'Should support creating declaration files when not using tsconfig.json',
+  async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [
+        typescript({
+          include: 'fixtures/basic/*.ts',
+          exclude: 'fixtures/basic/dist/types',
+          tsconfig: false,
+          declaration: true,
+          declarationDir: 'fixtures/basic/dist/types'
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+
+    t.deepEqual(
+      output.map((out) => out.fileName),
+      ['main.js', 'types/main.d.ts']
+    );
+
+    t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
+  }
+);
 
 function waitForWatcherEvent(watcher, eventCode) {
   return new Promise((resolve, reject) => {
