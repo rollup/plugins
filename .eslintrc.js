@@ -35,6 +35,7 @@ module.exports = {
     'import/no-named-export': 'off',
     'no-redeclare': 'off',
     'no-unused-vars': 'off',
+    'prefer-object-spread': 'off',
     'spaced-comment': 'off',
     'prettier/prettier': [
       'error',
