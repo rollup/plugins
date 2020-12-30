@@ -132,11 +132,10 @@ async function resolveId({
         );
         location = fileURLToPath(resolvedPackageExport);
       } catch (error) {
-        if (!(error instanceof ResolveError)) {
-          throw error;
+        if (error instanceof ResolveError) {
+          return error;
         }
-        warn(error);
-        return null;
+        throw error;
       }
     }
   }
@@ -183,9 +182,11 @@ export default async function resolveImportSpecifiers({
   baseDir,
   moduleDirectories
 }) {
+  let lastResolveError;
+
   for (let i = 0; i < importSpecifierList.length; i++) {
     // eslint-disable-next-line no-await-in-loop
-    const resolved = await resolveId({
+    const result = await resolveId({
       importer,
       importSpecifier: importSpecifierList[i],
       exportConditions,
@@ -198,9 +199,17 @@ export default async function resolveImportSpecifiers({
       baseDir,
       moduleDirectories
     });
-    if (resolved) {
-      return resolved;
+
+    if (result instanceof ResolveError) {
+      lastResolveError = result;
+    } else if (result) {
+      return result;
     }
+  }
+
+  if (lastResolveError) {
+    // only log the last failed resolve error
+    warn(lastResolveError);
   }
   return null;
 }
