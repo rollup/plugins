@@ -51,7 +51,7 @@ The content of the generated html file:
 <link href="./example3.css" rel="stylesheet">
     </head>
     <body>
-      <script src="./cgsdk-all.js"></script>
+      <script src="./example1.js"></script>
 <script src="./example2.js"></script>
 <script src="./example4.js"></script>
 <script src="./demo.js"></script>
