@@ -1,5 +1,5 @@
 /**
- * The generated HTML can reference external files.
+ * Provides the ability to reference external css/js files for the generated html
  * Method source once issues: https://github.com/rollup/plugins/issues/755
  * @param {Array} externals List of external files.
  *   The format is: [{ type: 'js', file: '//xxxx1.js', pos: 'before' }, { type: 'css', file: '//xxxx1.css' }]
