@@ -2,5 +2,4 @@ var input2 = {
   a: 2
 };
 
-export { input2 as __moduleExports };
-export { input2 as default };
+export { input2 as __moduleExports, input2 as default };

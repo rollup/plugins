@@ -3,7 +3,7 @@ import { dirname, resolve } from 'path';
 import { sync as nodeResolveSync } from 'resolve';
 
 import { isLocallyShadowed } from './ast-utils';
-import { MODULE_SUFFIX, HELPERS_ID, PROXY_SUFFIX, REQUIRE_SUFFIX, wrapId } from './helpers';
+import { HELPERS_ID, MODULE_SUFFIX, PROXY_SUFFIX, REQUIRE_SUFFIX, wrapId } from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -124,6 +124,7 @@ export function getRequireHandlers() {
     helpersNameIfUsed,
     dynamicRegisterSources,
     moduleName,
+    exportsName,
     id,
     replacesModuleExports
   ) {
@@ -138,41 +139,32 @@ export function getRequireHandlers() {
       magicString
     );
     removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
-    const importBlock = `${(helpersNameIfUsed
-      ? [`import * as ${helpersNameIfUsed} from "${HELPERS_ID}";`]
-      : []
-    )
-      .concat(
-        replacesModuleExports
-          ? []
-          : [
-              `import { __module as ${moduleName} } from ${JSON.stringify(
-                wrapId(id, MODULE_SUFFIX)
-              )}`
-            ]
-      )
-      .concat(
-        // dynamic registers first, as the may be required in the other modules
-        [...dynamicRegisterSources].map(
-          (source) => `import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`
-        ),
-
-        // now the actual modules so that they are analyzed before creating the proxies;
-        // no need to do this for virtual modules as we never proxy them
-        requiredSources
-          .filter((source) => !source.startsWith('\0'))
-          .map((source) => `import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`),
-
-        // now the proxy modules
-        requiredSources.map((source) => {
-          const { name, nodesUsingRequired } = requiredBySource[source];
-          return `import ${nodesUsingRequired.length ? `${name} from ` : ''}${JSON.stringify(
-            source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
-          )};`;
-        })
-      )
-      .join('\n')}`;
-    return importBlock ? `${importBlock}\n\n` : '';
+    const imports = [];
+    if (helpersNameIfUsed) {
+      imports.push(`import * as ${helpersNameIfUsed} from "${HELPERS_ID}";`);
+    }
+    if (!replacesModuleExports) {
+      imports.push(
+        `import { __module as ${moduleName}, exports as ${exportsName} } from ${JSON.stringify(
+          wrapId(id, MODULE_SUFFIX)
+        )}`
+      );
+    }
+    for (const source of dynamicRegisterSources) {
+      imports.push(`import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`);
+    }
+    for (const source of requiredSources) {
+      if (!source.startsWith('\0')) {
+        imports.push(`import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`);
+      }
+      const { name, nodesUsingRequired } = requiredBySource[source];
+      imports.push(
+        `import ${nodesUsingRequired.length ? `${name} from ` : ''}${JSON.stringify(
+          source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
+        )};`
+      );
+    }
+    return imports.length ? `${imports.join('\n')}\n\n` : '';
   }
 
   return {

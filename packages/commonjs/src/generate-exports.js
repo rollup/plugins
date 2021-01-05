@@ -1,18 +1,14 @@
-import { MODULE_SUFFIX, wrapId } from './helpers';
-
 export function wrapCode(magicString, uses, moduleName) {
   const args = `module${uses.exports ? ', exports' : ''}`;
   const passedArgs = `${moduleName}${uses.exports ? `, ${moduleName}.exports` : ''}`;
 
-  magicString
-    .trim()
-    .prepend(`(function (${args}) {\n`)
-    .append(`\n}(${passedArgs}));`);
+  magicString.trim().prepend(`(function (${args}) {\n`).append(`\n}(${passedArgs}));`);
 }
 
 export function rewriteExportsAndGetExportsBlock(
   magicString,
   moduleName,
+  exportsName,
   wrapped,
   topLevelModuleExportsAssignments,
   topLevelExportsAssignmentsByName,
@@ -24,6 +20,7 @@ export function rewriteExportsAndGetExportsBlock(
   id,
   replacesModuleExports
 ) {
+  const exports = [];
   const exportDeclarations = [];
 
   // TODO Lukas maybe introduce an export mode with
@@ -31,23 +28,18 @@ export function rewriteExportsAndGetExportsBlock(
   //  - 'wrapped'
   //  - 'module'
   //  - 'exports'
-  //  then consider extracting parts that "getExportDeclarations"
+  // TODO Lukas consider extracting parts that "getExportDeclarations" for the specific cases
   if (replacesModuleExports) {
     if (topLevelModuleExportsAssignments.length > 0) {
       for (const { left } of topLevelModuleExportsAssignments) {
-        magicString.overwrite(left.start, left.end, `var ${moduleName}`);
+        magicString.overwrite(left.start, left.end, `var ${exportsName}`);
       }
     } else {
-      exportDeclarations.unshift(`var ${moduleName} = {};`);
+      exportDeclarations.unshift(`var ${exportsName} = {};`);
     }
-    exportDeclarations.push(
-      `export { ${moduleName} as __moduleExports };`,
-      `export { ${moduleName} as default };`
-    );
+    exports.push(`${exportsName} as __moduleExports`, `${exportsName} as default`);
   } else {
-    exportDeclarations.push(
-      `export { exports as __moduleExports } from ${JSON.stringify(wrapId(id, MODULE_SUFFIX))}`
-    );
+    exports.push(`${exportsName} as __moduleExports`);
     if (wrapped) {
       if (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0) {
         // eslint-disable-next-line no-param-reassign
@@ -56,13 +48,20 @@ export function rewriteExportsAndGetExportsBlock(
           `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName}.exports);`
         );
       } else {
-        exportDeclarations.push(`export default ${moduleName}.exports;`);
+        exports.push(`${exportsName} as default`);
       }
     } else {
       let deconflictedDefaultExportName;
+      // TODO Lukas wrap if (exportMode: wrapped)
+      //  - There is an assignment to module or exports
+      //  - There is an assignment to module.exports but exports is used separately (module.exports.foo is ok if we create the corresponding variable at the top)
+      // TODO Lukas replace if (exportMode: replaced)
+      //  - There are top-level module.exports assignments
+      // TODO Lukas use only exports if (exportMode: exports)
+      //  - There are no assignments to module.exports (except module.exports.foo)
+      //  - module is not used as a variable
+      // TODO Lukas use module otherwise (exportMode: module)
 
-      // TODO Lukas if we have an assignment to module.exports and assignments to exports.foo or usages of exports we need to wrap
-      // TODO Lukas remove?
       // Collect and rewrite module.exports assignments
       for (const { left } of topLevelModuleExportsAssignments) {
         magicString.overwrite(left.start, left.end, `${moduleName}.exports`);
@@ -76,16 +75,14 @@ export function rewriteExportsAndGetExportsBlock(
         if (exportName === 'default') {
           deconflictedDefaultExportName = deconflicted;
         } else {
-          exportDeclarations.push(
-            exportName === deconflicted
-              ? `export { ${exportName} };`
-              : `export { ${deconflicted} as ${exportName} };`
+          exports.push(
+            exportName === deconflicted ? exportName : `${deconflicted} as ${exportName}`
           );
         }
 
         magicString.appendLeft(
           code[node.end] === ';' ? node.end + 1 : node.end,
-          `\n${moduleName}.exports.${exportName} = ${deconflicted};`
+          `\n${exportsName}.${exportName} = ${deconflicted};`
         );
       }
 
@@ -98,16 +95,12 @@ export function rewriteExportsAndGetExportsBlock(
         magicString.overwrite(
           moduleExportsExpression.start,
           moduleExportsExpression.end,
-          `${moduleName}.exports`
+          exportsName
         );
       }
 
       if (isRestorableCompiledEsm) {
-        exportDeclarations.push(
-          deconflictedDefaultExportName
-            ? `export {${deconflictedDefaultExportName} as default};`
-            : `export default ${moduleName}.exports;`
-        );
+        exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
       } else if (deconflictedDefaultExportName && code.indexOf('__esModule') >= 0) {
         // eslint-disable-next-line no-param-reassign
         uses.commonjsHelpers = true;
@@ -115,9 +108,12 @@ export function rewriteExportsAndGetExportsBlock(
           `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName}.exports);`
         );
       } else {
-        exportDeclarations.push(`export default ${moduleName}.exports;`);
+        exports.push(`${exportsName} as default`);
       }
     }
+  }
+  if (exports.length) {
+    exportDeclarations.push(`export { ${exports.join(', ')} };`);
   }
 
   return `\n\n${exportDeclarations.join('\n')}`;

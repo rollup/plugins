@@ -4,5 +4,4 @@ import bar from "\u0000bar?commonjs-proxy";
 var foo = require( 'foo' );
 
 var input = {};
-export { input as __moduleExports };
-export { input as default };
+export { input as __moduleExports, input as default };

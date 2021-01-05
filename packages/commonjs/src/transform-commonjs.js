@@ -148,12 +148,14 @@ export default function transformCommonjs(
 
             skippedNodes.add(node.left);
 
+            // TODO Lukas this actually has no effect unless we start tracking named exports again
+            //  to generate named exports for entry points
             if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
-              node.right.properties.forEach((prop) => {
+              for (const prop of node.right.properties) {
                 if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
                 const { name } = prop.key;
                 if (name === makeLegalIdentifier(name)) namedExports[name] = true;
-              });
+              }
               return;
             }
 
@@ -412,7 +414,9 @@ export default function transformCommonjs(
   });
 
   // TODO Lukas we do not need this for ES modules
-  const moduleName = deconflict(scope, globals, getName(id));
+  const nameBase = getName(id);
+  const exportsName = deconflict(scope, globals, nameBase);
+  const moduleName = deconflict(scope, globals, `${nameBase}Module`);
 
   // We cannot wrap ES/mixed modules
   shouldWrap = shouldWrap && !disableWrap && !isEsModule;
@@ -455,6 +459,7 @@ export default function transformCommonjs(
     uses.commonjsHelpers && HELPERS_NAME,
     dynamicRegisterSources,
     moduleName,
+    exportsName,
     id,
     replacesModuleExports
   );
@@ -464,6 +469,7 @@ export default function transformCommonjs(
     : rewriteExportsAndGetExportsBlock(
         magicString,
         moduleName,
+        exportsName,
         shouldWrap,
         topLevelModuleExportsAssignments,
         topLevelExportsAssignmentsByName,
@@ -486,9 +492,9 @@ export default function transformCommonjs(
     .append(exportBlock);
 
   // TODO Lukas remove
-  // console.log('<===', id);
-  // console.log(magicString.toString());
-  // console.log();
+  console.log('<===', id);
+  console.log(magicString.toString());
+  console.log();
 
   return {
     code: magicString.toString(),

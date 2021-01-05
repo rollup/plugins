@@ -8,5 +8,4 @@ import require$$1 from "\u0000foo?commonjs-proxy";
 })();
 
 var input = {};
-export { input as __moduleExports };
-export { input as default };
+export { input as __moduleExports, input as default };

@@ -12,5 +12,4 @@ function baz () {
 
 var input = 42;
 
-export { input as __moduleExports };
-export { input as default };
+export { input as __moduleExports, input as default };

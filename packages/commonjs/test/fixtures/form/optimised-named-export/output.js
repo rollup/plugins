@@ -1,11 +1,8 @@
-import { __module as input } from "\u0000fixtures/form/optimised-named-export/input.js?commonjs-module"
+import { __module as inputModule, exports as input } from "\u0000fixtures/form/optimised-named-export/input.js?commonjs-module"
 
 var foo = 'a';
-input.exports.foo = foo;
+input.foo = foo;
 var bar = 'b';
-input.exports.bar = bar;
+input.bar = bar;
 
-export { exports as __moduleExports } from "\u0000fixtures/form/optimised-named-export/input.js?commonjs-module"
-export { foo };
-export { bar };
-export default input.exports;
+export { input as __moduleExports, foo, bar, input as default };
