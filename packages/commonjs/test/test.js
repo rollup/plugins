@@ -734,7 +734,7 @@ test('does not replace shorthand `require` property in object', async (t) => {
 
   const code = await getCodeFromBundle(bundle, { exports: 'named' });
 
-  t.is(/require: commonjsRequire,/.test(code), true);
+  t.is(/require: commonjsRequire/.test(code), true);
 });
 
 // This test uses worker threads to simulate an empty internal cache and needs at least Node 12
