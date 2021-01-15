@@ -44,7 +44,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Package entrypoints
 
-This plugin supports the package entrypoints feature from node js, specified in the `exports` or `imports` field of a package. Check the [official documentation](https://nodejs.org/api/packages.html#packages_package_entry_points) for more information on how this works.
+This plugin supports the package entrypoints feature from node js, specified in the `exports` or `imports` field of a package. Check the [official documentation](https://nodejs.org/api/packages.html#packages_package_entry_points) for more information on how this works. This is the default behavior. In the abscence of these fields, the fields in `mainFields` will be the ones to be used.
 
 ## Options
 
