@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v11.1.0
+
+_2021-01-15_
+
+### Features
+
+- feat: support pkg imports and export array (#693)
+
 ## v11.0.1
 
 _2020-12-14_
