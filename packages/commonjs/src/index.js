@@ -83,13 +83,8 @@ export default function commonjs(options = {}) {
         ? options.ignoreTryCatch.includes(id)
         : options.ignoreTryCatch || false;
 
-    if (mode !== 'remove' && mode !== true) {
-      // default - do not ignore, convert as usual
-      mode = false;
-    }
-
     return {
-      canConvertRequire: mode === false,
+      canConvertRequire: mode !== 'remove' && mode !== true,
       shouldRemoveRequireStatement: mode === 'remove'
     };
   };

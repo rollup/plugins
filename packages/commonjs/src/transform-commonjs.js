@@ -72,7 +72,7 @@ export default function transformCommonjs(
   const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
   const namedExports = {};
   const dynamicRegisterSources = new Set();
-  let removedRequireCount = 0;
+  let hasRemovedRequire = false;
 
   const {
     addRequireStatement,
@@ -187,7 +187,7 @@ export default function transformCommonjs(
               } = getIgnoreTryCatchRequireStatementMode(node.arguments[0].value));
 
               if (shouldRemoveRequireStatement) {
-                removedRequireCount += 1;
+                hasRemovedRequire = true;
               }
             }
 
@@ -390,7 +390,7 @@ export default function transformCommonjs(
       uses.exports ||
       uses.require ||
       uses.commonjsHelpers ||
-      removedRequireCount > 0
+      hasRemovedRequire
     ) &&
     (ignoreGlobal || !uses.global)
   ) {
