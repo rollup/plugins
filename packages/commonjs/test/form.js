@@ -70,7 +70,12 @@ readdirSync('./fixtures/form').forEach((dir) => {
       const transformed = transform.call(transformContext, input, id);
       const actual = (transformed ? transformed.code : input).trim().replace(/\0/g, '_');
 
-      t.is(actual, expected);
+      // trim whitespace from line endings,
+      // this will benefit issues like `form/try-catch-remove` where whitespace is left in the line,
+      // and testing on windows (\r\n)
+      t.is(
+        actual.split('\n').map(x => x.trimEnd()).join('\n'),
+        expected.split('\n').map(x => x.trimEnd()).join('\n'));
     }
   });
 });
