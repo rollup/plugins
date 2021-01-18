@@ -142,11 +142,15 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
       if (tsBuildInfoPath) {
-        this.emitFile({
-          type: 'asset',
-          fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
-          source: emittedFiles.get(tsBuildInfoPath)
-        });
+        const tsBuildInfoSource = emittedFiles.get(tsBuildInfoPath);
+        // https://github.com/rollup/plugins/issues/681
+        if (tsBuildInfoSource) {
+          this.emitFile({
+            type: 'asset',
+            fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
+            source: tsBuildInfoSource
+          });
+        }
       }
     }
   };
