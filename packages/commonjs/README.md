@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [commonjs()],
+  plugins: [commonjs()]
 };
 ```
 
@@ -66,8 +66,8 @@ commonjs({
     '!node_modules/logform/index.js',
     '!node_modules/logform/format.js',
     '!node_modules/logform/levels.js',
-    '!node_modules/logform/browser.js',
-  ],
+    '!node_modules/logform/browser.js'
+  ]
 });
 ```
 
@@ -119,6 +119,20 @@ Type: `string[] | ((id: string) => boolean)`<br>
 Default: `[]`
 
 Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function.
+
+### `ignoreTryCatch`
+
+Type: `boolean | 'remove' | string[] | ((id: string) => boolean)`<br>
+Default: `false`
+
+In most cases, where `require` calls are inside a `try-catch` clause, they should be left unconverted as it requires an optional dependency that may or may not be installed beside the rolled up package.
+Due to the conversion of `require` to a static `import` - the call is hoisted to the top of the file, outside of the `try-catch` clause.
+
+- `true`: All `require` calls inside a `try` will be left unconverted.
+- `false`: All `require` calls inside a `try` will be converted as if the `try-catch` clause is not there.
+- `remove`: Remove all `require` calls from inside any `try` block.
+- `string[]`: Pass an array containing the IDs to left unconverted.
+- `((id: string) => boolean|'remove')`: Pass a function that control individual IDs.
 
 ### `esmExternals`
 
@@ -174,7 +188,7 @@ This is in line with how other bundlers handle this situation and is also the mo
 
   var dep$1 = /*#__PURE__*/ Object.freeze({
     __proto__: null,
-    default: dep,
+    default: dep
   });
 
   console.log(dep$1.default);
@@ -205,7 +219,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
               enumerable: true,
               get: function () {
                 return n[k];
-              },
+              }
             }
       );
     });
@@ -281,9 +295,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule',
+    name: 'MyModule'
   },
-  plugins: [resolve(), commonjs()],
+  plugins: [resolve(), commonjs()]
 };
 ```
 
@@ -293,7 +307,7 @@ Symlinks are common in monorepos and are also created by the `npm link` command.
 
 ```js
 commonjs({
-  include: /node_modules/,
+  include: /node_modules/
 });
 ```
 
@@ -316,11 +330,11 @@ function cjsDetectionPlugin() {
     moduleParsed({
       id,
       meta: {
-        commonjs: { isCommonJS },
-      },
+        commonjs: { isCommonJS }
+      }
     }) {
       console.log(`File ${id} is CommonJS: ${isCommonJS}`);
-    },
+    }
   };
 }
 ```

@@ -40,6 +40,7 @@ export default function transformCommonjs(
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
+  getIgnoreTryCatchRequireStatementMode,
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
@@ -61,6 +62,7 @@ export default function transformCommonjs(
   let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
+  let currentTryBlockEnd = null;
   let shouldWrap = false;
   const defineCompiledEsmExpressions = [];
 
@@ -70,6 +72,7 @@ export default function transformCommonjs(
   const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
   const namedExports = {};
   const dynamicRegisterSources = new Set();
+  let hasRemovedRequire = false;
 
   const {
     addRequireStatement,
@@ -94,6 +97,10 @@ export default function transformCommonjs(
         return;
       }
 
+      if (currentTryBlockEnd !== null && node.start > currentTryBlockEnd) {
+        currentTryBlockEnd = null;
+      }
+
       programDepth += 1;
       if (node.scope) ({ scope } = node);
       if (functionType.test(node.type)) lexicalDepth += 1;
@@ -104,6 +111,11 @@ export default function transformCommonjs(
 
       // eslint-disable-next-line default-case
       switch (node.type) {
+        case 'TryStatement':
+          if (currentTryBlockEnd === null) {
+            currentTryBlockEnd = node.block.end;
+          }
+          return;
         case 'AssignmentExpression':
           if (node.left.type === 'MemberExpression') {
             const flattened = getKeypath(node.left);
@@ -165,6 +177,20 @@ export default function transformCommonjs(
             skippedNodes.add(node.callee);
             const usesReturnValue = parent.type !== 'ExpressionStatement';
 
+            let canConvertRequire = true;
+            let shouldRemoveRequireStatement = false;
+
+            if (currentTryBlockEnd !== null) {
+              ({
+                canConvertRequire,
+                shouldRemoveRequireStatement
+              } = getIgnoreTryCatchRequireStatementMode(node.arguments[0].value));
+
+              if (shouldRemoveRequireStatement) {
+                hasRemovedRequire = true;
+              }
+            }
+
             let sourceId = getRequireStringArg(node);
             const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
             if (isDynamicRegister) {
@@ -178,22 +204,34 @@ export default function transformCommonjs(
                 !sourceId.endsWith('.json') &&
                 hasDynamicModuleForPath(sourceId, id, dynamicRequireModuleSet)
               ) {
-                magicString.overwrite(
-                  node.start,
-                  node.end,
-                  `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-                    getVirtualPathForDynamicRequirePath(sourceId, commonDir)
-                  )}, ${JSON.stringify(
-                    dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
-                  )})`
-                );
-                uses.commonjsHelpers = true;
+                if (shouldRemoveRequireStatement) {
+                  magicString.overwrite(node.start, node.end, `undefined`);
+                } else if (canConvertRequire) {
+                  magicString.overwrite(
+                    node.start,
+                    node.end,
+                    `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
+                      getVirtualPathForDynamicRequirePath(sourceId, commonDir)
+                    )}, ${JSON.stringify(
+                      dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
+                    )})`
+                  );
+                  uses.commonjsHelpers = true;
+                }
                 return;
               }
-              addRequireStatement(sourceId, node, scope, usesReturnValue);
+
+              if (canConvertRequire) {
+                addRequireStatement(sourceId, node, scope, usesReturnValue);
+              }
             }
 
             if (usesReturnValue) {
+              if (shouldRemoveRequireStatement) {
+                magicString.overwrite(node.start, node.end, `undefined`);
+                return;
+              }
+
               if (
                 parent.type === 'VariableDeclarator' &&
                 !scope.parent &&
@@ -205,6 +243,11 @@ export default function transformCommonjs(
               }
             } else {
               // This is a bare import, e.g. `require('foo');`
+
+              if (!canConvertRequire && !shouldRemoveRequireStatement) {
+                return;
+              }
+
               magicString.remove(parent.start, parent.end);
             }
           }
@@ -346,7 +389,8 @@ export default function transformCommonjs(
       uses.module ||
       uses.exports ||
       uses.require ||
-      uses.commonjsHelpers
+      uses.commonjsHelpers ||
+      hasRemovedRequire
     ) &&
     (ignoreGlobal || !uses.global)
   ) {
