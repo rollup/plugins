@@ -365,3 +365,18 @@ test('can self-import a package when using exports field', async (t) => {
     b: 'b'
   });
 });
+
+test('does not warn when resolving typescript imports with fallback', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-ts-fallback.ts',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve({ extensions: ['.js', '.ts'] })]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, {
+    a: 'A'
+  });
+});
