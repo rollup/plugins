@@ -117,5 +117,5 @@ export function isLocallyShadowed(name, scope) {
 }
 
 export function isShorthandProperty(parent) {
-  return parent && parent.shorthand;
+  return parent && parent.type === 'Property' && parent.shorthand;
 }
