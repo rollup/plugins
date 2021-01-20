@@ -9,7 +9,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "pretty": true,
-    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "es2017"
