@@ -14,6 +14,11 @@ import {
   unwrapId,
   wrapId
 } from './helpers';
+import {
+  isModuleRegisterProxy,
+  unwrapModuleRegisterProxy,
+  wrapModuleRegisterProxy
+} from './dynamic-packages-manager';
 
 function getCandidatesForExtension(resolved, extension) {
   return [resolved + extension, `${resolved}${sep}index${extension}`];
@@ -46,7 +51,12 @@ export default function getResolveId(extensions) {
     return undefined;
   }
 
-  return function resolveId(importee, importer) {
+  return function resolveId(importee, rawImporter) {
+    const importer =
+      rawImporter && isModuleRegisterProxy(rawImporter)
+        ? unwrapModuleRegisterProxy(rawImporter)
+        : rawImporter;
+
     // Proxies are only importing resolved ids, no need to resolve again
     if (importer && isWrappedId(importer, PROXY_SUFFIX)) {
       return importee;
@@ -54,19 +64,28 @@ export default function getResolveId(extensions) {
 
     const isProxyModule = isWrappedId(importee, PROXY_SUFFIX);
     const isRequiredModule = isWrappedId(importee, REQUIRE_SUFFIX);
+    let isModuleRegistration = false;
+
     if (isProxyModule) {
       importee = unwrapId(importee, PROXY_SUFFIX);
     } else if (isRequiredModule) {
       importee = unwrapId(importee, REQUIRE_SUFFIX);
-    }
-    if (importee.startsWith('\0')) {
-      if (
-        importee.startsWith(HELPERS_ID) ||
-        importee === DYNAMIC_PACKAGES_ID ||
-        importee.startsWith(DYNAMIC_JSON_PREFIX)
-      ) {
-        return importee;
+
+      isModuleRegistration = isModuleRegisterProxy(importee);
+      if (isModuleRegistration) {
+        importee = unwrapModuleRegisterProxy(importee);
       }
+    }
+
+    if (
+      importee.startsWith(HELPERS_ID) ||
+      importee === DYNAMIC_PACKAGES_ID ||
+      importee.startsWith(DYNAMIC_JSON_PREFIX)
+    ) {
+      return importee;
+    }
+
+    if (importee.startsWith('\0')) {
       return null;
     }
 
@@ -80,6 +99,8 @@ export default function getResolveId(extensions) {
       if (resolved && isProxyModule) {
         resolved.id = wrapId(resolved.id, resolved.external ? EXTERNAL_SUFFIX : PROXY_SUFFIX);
         resolved.external = false;
+      } else if (resolved && isModuleRegistration) {
+        resolved.id = wrapModuleRegisterProxy(resolved.id);
       } else if (!resolved && (isProxyModule || isRequiredModule)) {
         return { id: wrapId(importee, EXTERNAL_SUFFIX), external: false };
       }

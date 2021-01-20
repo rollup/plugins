@@ -25,9 +25,14 @@ import {
   isRequireStatement,
   isStaticRequireStatement
 } from './generate-imports';
-import { DYNAMIC_JSON_PREFIX, DYNAMIC_REGISTER_PREFIX } from './helpers';
+import { DYNAMIC_JSON_PREFIX } from './helpers';
 import { tryParse } from './parse';
 import { deconflict, getName, getVirtualPathForDynamicRequirePath } from './utils';
+import {
+  isModuleRegisterProxy,
+  unwrapModuleRegisterProxy,
+  wrapModuleRegisterProxy
+} from './dynamic-packages-manager';
 
 const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/;
 
@@ -218,13 +223,13 @@ export default function transformCommonjs(
             }
 
             let sourceId = getRequireStringArg(node);
-            const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
+            const isDynamicRegister = isModuleRegisterProxy(sourceId);
             if (isDynamicRegister) {
-              sourceId = sourceId.substr(DYNAMIC_REGISTER_PREFIX.length);
+              sourceId = unwrapModuleRegisterProxy(sourceId);
               if (sourceId.endsWith('.json')) {
                 sourceId = DYNAMIC_JSON_PREFIX + sourceId;
               }
-              dynamicRegisterSources.add(sourceId);
+              dynamicRegisterSources.add(wrapModuleRegisterProxy(sourceId));
             } else {
               if (
                 !sourceId.endsWith('.json') &&
