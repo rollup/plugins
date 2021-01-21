@@ -17,25 +17,15 @@ export function rewriteExportsAndGetExportsBlock(
   code,
   uses,
   HELPERS_NAME,
-  id,
-  replacesModuleExports
+  exportMode
 ) {
   const exports = [];
   const exportDeclarations = [];
 
-  // TODO Lukas maybe introduce an export mode with
-  //  - 'replace'
-  //  - 'wrapped'
-  //  - 'module'
-  //  - 'exports'
   // TODO Lukas consider extracting parts that "getExportDeclarations" for the specific cases
-  if (replacesModuleExports) {
-    if (topLevelModuleExportsAssignments.length > 0) {
-      for (const { left } of topLevelModuleExportsAssignments) {
-        magicString.overwrite(left.start, left.end, `var ${exportsName}`);
-      }
-    } else {
-      exportDeclarations.unshift(`var ${exportsName} = {};`);
+  if (exportMode === 'replace') {
+    for (const { left } of topLevelModuleExportsAssignments) {
+      magicString.overwrite(left.start, left.end, `var ${exportsName}`);
     }
     exports.push(`${exportsName} as __moduleExports`, `${exportsName} as default`);
   } else {
@@ -105,7 +95,7 @@ export function rewriteExportsAndGetExportsBlock(
         // eslint-disable-next-line no-param-reassign
         uses.commonjsHelpers = true;
         exportDeclarations.push(
-          `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName}.exports);`
+          `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
         );
       } else {
         exports.push(`${exportsName} as default`);

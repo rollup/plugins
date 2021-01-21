@@ -1,4 +1,4 @@
-import { __module as inputModule, exports as input } from "\u0000fixtures/form/optimised-named-export-conflicts/input.js?commonjs-module"
+import { __exports as input } from "\u0000fixtures/form/optimised-named-export-conflicts/input.js?commonjs-exports"
 
 var foo = 1;
 var bar = 2;

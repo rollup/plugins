@@ -1,4 +1,4 @@
-import { __module as inputModule, exports as input } from "\u0000fixtures/form/compiled-esm-define-module/input.js?commonjs-module"
+import { __exports as input } from "\u0000fixtures/form/compiled-esm-define-module/input.js?commonjs-exports"
 
 Object.defineProperty(input, '__esModule', { value: true });
 var _default = 'x';

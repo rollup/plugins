@@ -3,7 +3,14 @@ import { dirname, resolve } from 'path';
 import { sync as nodeResolveSync } from 'resolve';
 
 import { isLocallyShadowed } from './ast-utils';
-import { HELPERS_ID, MODULE_SUFFIX, PROXY_SUFFIX, REQUIRE_SUFFIX, wrapId } from './helpers';
+import {
+  EXPORTS_SUFFIX,
+  HELPERS_ID,
+  MODULE_SUFFIX,
+  PROXY_SUFFIX,
+  REQUIRE_SUFFIX,
+  wrapId
+} from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -126,7 +133,7 @@ export function getRequireHandlers() {
     moduleName,
     exportsName,
     id,
-    replacesModuleExports
+    exportMode
   ) {
     const removedDeclarators = getDeclaratorsReplacedByImportsAndSetImportNames(
       topLevelRequireDeclarators,
@@ -143,11 +150,15 @@ export function getRequireHandlers() {
     if (helpersNameIfUsed) {
       imports.push(`import * as ${helpersNameIfUsed} from "${HELPERS_ID}";`);
     }
-    if (!replacesModuleExports) {
+    if (exportMode === 'module') {
       imports.push(
         `import { __module as ${moduleName}, exports as ${exportsName} } from ${JSON.stringify(
           wrapId(id, MODULE_SUFFIX)
         )}`
+      );
+    } else if (exportMode === 'exports') {
+      imports.push(
+        `import { __exports as ${exportsName} } from ${JSON.stringify(wrapId(id, EXPORTS_SUFFIX))}`
       );
     }
     for (const source of dynamicRegisterSources) {

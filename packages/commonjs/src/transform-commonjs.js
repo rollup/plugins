@@ -39,6 +39,17 @@ const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/
 
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
 
+// TODO Lukas
+//  in Rollup: Replace unused declarations with side-effects in their right side by just their right side. Then merge `var a = 1; foo.a = a` to become `var a = foo.a = 1`;
+
+// TODO Lukas
+//  There should be three export modes:
+//   - exports (the default?)
+//   - module (if we mutate module.exports or module)
+//   - replaced (if we replace module.exports top-level)
+//  The shouldWrap flag can be present for both exports and module, but not for replaced
+
+// TODO Lukas can there be issues when assigning module.exports.foo.bar?
 export default function transformCommonjs(
   parse,
   code,
@@ -94,7 +105,7 @@ export default function transformCommonjs(
   const skippedNodes = new Set();
   const topLevelModuleExportsAssignments = [];
   const topLevelExportsAssignmentsByName = new Map();
-  const defineCompiledEsmExpressions = [];
+  const topLevelDefineCompiledEsmExpressions = [];
 
   walk(ast, {
     enter(node, parent) {
@@ -137,12 +148,16 @@ export default function transformCommonjs(
             if (programDepth > 3) {
               shouldWrap = true;
             } else if (exportName === KEY_COMPILED_ESM) {
-              defineCompiledEsmExpressions.push(node);
+              topLevelDefineCompiledEsmExpressions.push(node);
             } else if (flattened.keypath === 'module.exports') {
               topLevelModuleExportsAssignments.push(node);
             } else if (!topLevelExportsAssignmentsByName.has(exportName)) {
               topLevelExportsAssignmentsByName.set(exportName, node);
             } else {
+              // TODO Lukas this is the case for multiple assignments to the same export
+              //  we could handle this instead by collecting all assignments
+              //  if there are only top-level assignments, turn the first to export var foo = ...;
+              //  otherwise prefix the code with export var foo;
               shouldWrap = true;
             }
 
@@ -171,7 +186,7 @@ export default function transformCommonjs(
             if (programDepth === 3 && parent.type === 'ExpressionStatement') {
               // skip special handling for [module.]exports until we know we render this
               skippedNodes.add(node.arguments[0]);
-              defineCompiledEsmExpressions.push(node);
+              topLevelDefineCompiledEsmExpressions.push(node);
             } else {
               shouldWrap = true;
             }
@@ -347,7 +362,9 @@ export default function transformCommonjs(
               }
               return;
             case 'define':
-              magicString.overwrite(node.start, node.end, 'undefined', { storeName: true });
+              magicString.overwrite(node.start, node.end, 'undefined', {
+                storeName: true
+              });
               return;
             default:
               globals.add(name);
@@ -395,7 +412,9 @@ export default function transformCommonjs(
               flattened.keypath === 'module' ||
               flattened.keypath === 'exports'
             ) {
-              magicString.overwrite(node.start, node.end, `'object'`, { storeName: false });
+              magicString.overwrite(node.start, node.end, `'object'`, {
+                storeName: false
+              });
             }
           }
           return;
@@ -445,11 +464,14 @@ export default function transformCommonjs(
     magicString.remove(0, commentEnd).trim();
   }
 
-  // TODO Lukas test all cases
-  const replacesModuleExports =
-    !shouldWrap &&
-    topLevelExportsAssignmentsByName.size === 0 &&
-    defineCompiledEsmExpressions.length === 0;
+  const exportMode = shouldWrap
+    ? 'module'
+    : topLevelModuleExportsAssignments.length === 0
+    ? 'exports'
+    : topLevelExportsAssignmentsByName.size === 0 &&
+      topLevelDefineCompiledEsmExpressions.length === 0
+    ? 'replace'
+    : 'module';
 
   const importBlock = rewriteRequireExpressionsAndGetImportBlock(
     magicString,
@@ -461,7 +483,7 @@ export default function transformCommonjs(
     moduleName,
     exportsName,
     id,
-    replacesModuleExports
+    exportMode
   );
 
   const exportBlock = isEsModule
@@ -473,13 +495,12 @@ export default function transformCommonjs(
         shouldWrap,
         topLevelModuleExportsAssignments,
         topLevelExportsAssignmentsByName,
-        defineCompiledEsmExpressions,
+        topLevelDefineCompiledEsmExpressions,
         (name) => deconflict(scope, globals, name),
         code,
         uses,
         HELPERS_NAME,
-        id,
-        replacesModuleExports
+        exportMode
       );
 
   if (shouldWrap) {

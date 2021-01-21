@@ -18,6 +18,7 @@ import getDynamicRequirePaths from './dynamic-require-paths';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
+  EXPORTS_SUFFIX,
   EXTERNAL_SUFFIX,
   getHelpersModule,
   HELPERS_ID,
@@ -198,6 +199,15 @@ export default function commonjs(options = {}) {
         return {
           code,
           syntheticNamedExports: '__module',
+          meta: { commonjs: { isCommonJS: false } }
+        };
+      }
+
+      if (isWrappedId(id, EXPORTS_SUFFIX)) {
+        const actualId = unwrapId(id, EXPORTS_SUFFIX);
+        const name = getName(actualId);
+        return {
+          code: `var ${name} = {}; export {${name} as __exports}`,
           meta: { commonjs: { isCommonJS: false } }
         };
       }

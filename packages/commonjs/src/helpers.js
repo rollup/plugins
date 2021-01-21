@@ -5,7 +5,7 @@ export const unwrapId = (wrappedId, suffix) => wrappedId.slice(1, -suffix.length
 export const PROXY_SUFFIX = '?commonjs-proxy';
 export const REQUIRE_SUFFIX = '?commonjs-require';
 export const EXTERNAL_SUFFIX = '?commonjs-external';
-// export const EXPORTS_SUFFIX = '?commonjs-exports';
+export const EXPORTS_SUFFIX = '?commonjs-exports';
 export const MODULE_SUFFIX = '?commonjs-module';
 
 export const DYNAMIC_REGISTER_SUFFIX = '?commonjs-dynamic-register';

@@ -1,3 +1,4 @@
+import { __exports as input } from "\u0000fixtures/form/multiple-var-declarations-c/input.js?commonjs-exports"
 import "\u0000./b?commonjs-require";
 import b from "\u0000./b?commonjs-proxy";
 
@@ -6,5 +7,4 @@ var a = 'a'
 
 console.log( a, b, c );
 
-var input = {};
 export { input as __moduleExports, input as default };
