@@ -1,8 +1,18 @@
-export function wrapCode(magicString, uses, moduleName) {
-  const args = `module${uses.exports ? ', exports' : ''}`;
-  const passedArgs = `${moduleName}${uses.exports ? `, ${moduleName}.exports` : ''}`;
-
-  magicString.trim().prepend(`(function (${args}) {\n`).append(`\n}(${passedArgs}));`);
+export function wrapCode(magicString, uses, moduleName, exportsName) {
+  const args = [];
+  const passedArgs = [];
+  if (uses.module) {
+    args.push('module');
+    passedArgs.push(moduleName);
+  }
+  if (uses.exports) {
+    args.push('exports');
+    passedArgs.push(exportsName);
+  }
+  magicString
+    .trim()
+    .prepend(`(function (${args.join(', ')}) {\n`)
+    .append(`\n}(${passedArgs.join(', ')}));`);
 }
 
 export function rewriteExportsAndGetExportsBlock(
@@ -32,10 +42,11 @@ export function rewriteExportsAndGetExportsBlock(
     exports.push(`${exportsName} as __moduleExports`);
     if (wrapped) {
       if (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0) {
+        // TODO Lukas this can have no effect, is it covered? Inline?
         // eslint-disable-next-line no-param-reassign
         uses.commonjsHelpers = true;
         exportDeclarations.push(
-          `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName}.exports);`
+          `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
         );
       } else {
         exports.push(`${exportsName} as default`);

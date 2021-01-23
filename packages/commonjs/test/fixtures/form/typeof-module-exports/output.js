@@ -11,6 +11,6 @@ if ( 'object' === 'object' && 'object' === 'object' ) {
 } else {
 	window.foo = foo;
 }
-}(inputModule, inputModule.exports));
+}(inputModule, input));
 
 export { input as __moduleExports, input as default };

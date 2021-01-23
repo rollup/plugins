@@ -39,8 +39,7 @@ const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/
 
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
 
-// TODO Lukas
-//  in Rollup: Replace unused declarations with side-effects in their right side by just their right side. Then merge `var a = 1; foo.a = a` to become `var a = foo.a = 1`;
+// TODO Lukas When wrapping but module is not needed, use exports
 
 // TODO Lukas
 //  There should be three export modes:
@@ -465,7 +464,9 @@ export default function transformCommonjs(
   }
 
   const exportMode = shouldWrap
-    ? 'module'
+    ? uses.module
+      ? 'module'
+      : 'exports'
     : topLevelModuleExportsAssignments.length === 0
     ? 'exports'
     : topLevelExportsAssignmentsByName.size === 0 &&
@@ -504,7 +505,7 @@ export default function transformCommonjs(
       );
 
   if (shouldWrap) {
-    wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDynamicRequirePath);
+    wrapCode(magicString, uses, moduleName, exportsName);
   }
 
   magicString
@@ -513,9 +514,9 @@ export default function transformCommonjs(
     .append(exportBlock);
 
   // TODO Lukas remove
-  console.log('<===', id);
-  console.log(magicString.toString());
-  console.log();
+  // console.log('<===', id);
+  // console.log(magicString.toString());
+  // console.log();
 
   return {
     code: magicString.toString(),
