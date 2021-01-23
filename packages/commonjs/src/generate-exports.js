@@ -25,9 +25,9 @@ export function rewriteExportsAndGetExportsBlock(
   defineCompiledEsmExpressions,
   deconflict,
   code,
-  uses,
   HELPERS_NAME,
-  exportMode
+  exportMode,
+  detectWrappedDefault
 ) {
   const exports = [];
   const exportDeclarations = [];
@@ -41,10 +41,7 @@ export function rewriteExportsAndGetExportsBlock(
   } else {
     exports.push(`${exportsName} as __moduleExports`);
     if (wrapped) {
-      if (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0) {
-        // TODO Lukas this can have no effect, is it covered? Inline?
-        // eslint-disable-next-line no-param-reassign
-        uses.commonjsHelpers = true;
+      if (detectWrappedDefault) {
         exportDeclarations.push(
           `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
         );
@@ -102,12 +99,6 @@ export function rewriteExportsAndGetExportsBlock(
 
       if (isRestorableCompiledEsm) {
         exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
-      } else if (deconflictedDefaultExportName && code.indexOf('__esModule') >= 0) {
-        // eslint-disable-next-line no-param-reassign
-        uses.commonjsHelpers = true;
-        exportDeclarations.push(
-          `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
-        );
       } else {
         exports.push(`${exportsName} as default`);
       }

@@ -71,7 +71,7 @@ fs.readdirSync('./fixtures/form').forEach((dir) => {
       const actual = (transformed ? transformed.code : input).trim().replace(/\0/g, '_');
 
       // uncomment to update snapshots
-      fs.writeFileSync(outputFile, `${actual}\n`);
+      // fs.writeFileSync(outputFile, `${actual}\n`);
 
       // trim whitespace from line endings,
       // this will benefit issues like `form/try-catch-remove` where whitespace is left in the line,
