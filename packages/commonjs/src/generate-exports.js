@@ -68,7 +68,11 @@ export function rewriteExportsAndGetExportsBlock(
       // Collect and rewrite named exports
       for (const [exportName, node] of topLevelExportsAssignmentsByName) {
         const deconflicted = deconflict(exportName);
-        magicString.overwrite(node.start, node.left.end, `var ${deconflicted}`);
+        magicString.overwrite(
+          node.start,
+          node.left.end,
+          `var ${deconflicted} = ${exportsName}.${exportName}`
+        );
 
         if (exportName === 'default') {
           deconflictedDefaultExportName = deconflicted;
@@ -77,11 +81,6 @@ export function rewriteExportsAndGetExportsBlock(
             exportName === deconflicted ? exportName : `${deconflicted} as ${exportName}`
           );
         }
-
-        magicString.appendLeft(
-          code[node.end] === ';' ? node.end + 1 : node.end,
-          `\n${exportsName}.${exportName} = ${deconflicted};`
-        );
       }
 
       // Collect and rewrite exports.__esModule assignments

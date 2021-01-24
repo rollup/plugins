@@ -517,9 +517,9 @@ export default function transformCommonjs(
     .append(exportBlock);
 
   // TODO Lukas remove
-  // console.log('<===', id);
-  // console.log(magicString.toString());
-  // console.log();
+  console.log('<===', id);
+  console.log(magicString.toString());
+  console.log();
 
   return {
     code: magicString.toString(),

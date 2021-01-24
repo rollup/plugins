@@ -1,8 +1,7 @@
 import { __exports as input } from "\u0000fixtures/form/compiled-esm-deconflict/input.js?commonjs-exports"
 
 Object.defineProperty(input, '__esModule', { value: true });
-var foo_1 = 'bar';
-input.foo = foo_1;
+var foo_1 = input.foo = 'bar';
 
 const foo = 'also bar';
 
