@@ -21,6 +21,7 @@ export function rewriteExportsAndGetExportsBlock(
   exportsName,
   wrapped,
   topLevelModuleExportsAssignments,
+  nestedModuleExportsAssignments,
   topLevelExportsAssignmentsByName,
   defineCompiledEsmExpressions,
   deconflict,
@@ -34,8 +35,17 @@ export function rewriteExportsAndGetExportsBlock(
 
   // TODO Lukas consider extracting parts that "getExportDeclarations" for the specific cases
   if (exportMode === 'replace') {
+    let needsDeclaration = true;
     for (const { left } of topLevelModuleExportsAssignments) {
-      magicString.overwrite(left.start, left.end, `var ${exportsName}`);
+      if (needsDeclaration) {
+        magicString.overwrite(left.start, left.end, `var ${exportsName}`);
+        needsDeclaration = false;
+      } else {
+        magicString.overwrite(left.start, left.end, exportsName);
+      }
+    }
+    for (const { left } of nestedModuleExportsAssignments) {
+      magicString.overwrite(left.start, left.end, exportsName);
     }
     exports.push(`${exportsName} as __moduleExports`, `${exportsName} as default`);
   } else {
@@ -61,7 +71,9 @@ export function rewriteExportsAndGetExportsBlock(
       // TODO Lukas use module otherwise (exportMode: module)
 
       // Collect and rewrite module.exports assignments
-      for (const { left } of topLevelModuleExportsAssignments) {
+      for (const { left } of topLevelModuleExportsAssignments.concat(
+        nestedModuleExportsAssignments
+      )) {
         magicString.overwrite(left.start, left.end, `${moduleName}.exports`);
       }
 

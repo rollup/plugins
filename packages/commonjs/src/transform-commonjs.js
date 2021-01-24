@@ -39,16 +39,9 @@ const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/
 
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
 
-// TODO Lukas When wrapping but module is not needed, use exports
-
 // TODO Lukas
-//  There should be three export modes:
-//   - exports (the default?)
-//   - module (if we mutate module.exports or module)
-//   - replaced (if we replace module.exports top-level)
-//  The shouldWrap flag can be present for both exports and module, but not for replaced
+//  if we first replace module.exports nested but then define __esModule, the default export should be correct using the right helper
 
-// TODO Lukas can there be issues when assigning module.exports.foo.bar?
 export default function transformCommonjs(
   parse,
   code,
@@ -103,6 +96,7 @@ export default function transformCommonjs(
   const topLevelRequireDeclarators = new Set();
   const skippedNodes = new Set();
   const topLevelModuleExportsAssignments = [];
+  const nestedModuleExportsAssignments = [];
   const topLevelExportsAssignmentsByName = new Map();
   const topLevelDefineCompiledEsmExpressions = [];
 
@@ -144,12 +138,15 @@ export default function transformCommonjs(
             uses[flattened.name] = true;
 
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
-            if (programDepth > 3) {
+            if (flattened.keypath === 'module.exports') {
+              (programDepth > 3
+                ? nestedModuleExportsAssignments
+                : topLevelModuleExportsAssignments
+              ).push(node);
+            } else if (programDepth > 3) {
               shouldWrap = true;
             } else if (exportName === KEY_COMPILED_ESM) {
               topLevelDefineCompiledEsmExpressions.push(node);
-            } else if (flattened.keypath === 'module.exports') {
-              topLevelModuleExportsAssignments.push(node);
             } else if (!topLevelExportsAssignmentsByName.has(exportName)) {
               topLevelExportsAssignmentsByName.set(exportName, node);
             } else {
@@ -471,7 +468,9 @@ export default function transformCommonjs(
       ? 'module'
       : 'exports'
     : topLevelModuleExportsAssignments.length === 0
-    ? 'exports'
+    ? nestedModuleExportsAssignments.length === 0
+      ? 'exports'
+      : 'module'
     : topLevelExportsAssignmentsByName.size === 0 &&
       topLevelDefineCompiledEsmExpressions.length === 0
     ? 'replace'
@@ -498,6 +497,7 @@ export default function transformCommonjs(
         exportsName,
         shouldWrap,
         topLevelModuleExportsAssignments,
+        nestedModuleExportsAssignments,
         topLevelExportsAssignmentsByName,
         topLevelDefineCompiledEsmExpressions,
         (name) => deconflict(scope, globals, name),
