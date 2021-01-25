@@ -141,6 +141,8 @@ export default function transformCommonjs(
               topLevelModuleExportsAssignments.push(node);
             } else if (!topLevelExportsAssignmentsByName.has(exportName)) {
               topLevelExportsAssignmentsByName.set(exportName, node);
+              if (topLevelModuleExportsAssignments.length > 0 && exportName !== 'default')
+                shouldWrap = true;
             } else {
               shouldWrap = true;
             }
