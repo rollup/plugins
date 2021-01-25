@@ -1,20 +1,23 @@
 import { resolve } from 'path';
 
+import { normalizePath } from '@rollup/pluginutils';
+
 const validName = /^[a-zA-Z_$][a-zA-Z$_0-9]*$/;
 
 export default function legacy(options) {
   const exports = {};
   Object.keys(options).forEach((file) => {
-    exports[resolve(file)] = options[file];
+    exports[normalizePath(resolve(file))] = options[file];
   });
 
   return {
     name: 'legacy',
 
     transform(content, id) {
-      if (id in exports) {
+      const normalizedId = normalizePath(id);
+      if (normalizedId in exports) {
         let code = content;
-        const value = exports[id];
+        const value = exports[normalizedId];
 
         if (typeof value === 'string') {
           // default export

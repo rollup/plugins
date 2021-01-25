@@ -40,6 +40,9 @@
   "peerDependencies": {
     "rollup": "^1.20.0||^2.0.0"
   },
+  "dependencies": {
+    "@rollup/pluginutils": "^4.1.0"
+  },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.3",
     "del-cli": "^3.0.1",
