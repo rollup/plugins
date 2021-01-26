@@ -128,7 +128,7 @@ export function getRequireHandlers() {
     topLevelDeclarations,
     topLevelRequireDeclarators,
     reassignedNames,
-    helpersNameIfUsed,
+    helpersName,
     dynamicRegisterSources,
     moduleName,
     exportsName,
@@ -147,9 +147,7 @@ export function getRequireHandlers() {
     );
     removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
     const imports = [];
-    if (helpersNameIfUsed) {
-      imports.push(`import * as ${helpersNameIfUsed} from "${HELPERS_ID}";`);
-    }
+    imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
     if (exportMode === 'module') {
       imports.push(
         `import { __module as ${moduleName}, exports as ${exportsName} } from ${JSON.stringify(

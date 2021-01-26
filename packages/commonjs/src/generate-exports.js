@@ -109,7 +109,16 @@ export function rewriteExportsAndGetExportsBlock(
       }
 
       if (isRestorableCompiledEsm) {
-        exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
+        if (
+          topLevelModuleExportsAssignments.length === 0 &&
+          nestedModuleExportsAssignments.length === 0
+        ) {
+          exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
+        } else {
+          exportDeclarations.push(
+            `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
+          );
+        }
       } else {
         exports.push(`${exportsName} as default`);
       }

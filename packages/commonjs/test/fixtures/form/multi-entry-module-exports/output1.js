@@ -1,3 +1,4 @@
+import * as commonjsHelpers from "_commonjsHelpers.js";
 import "\u0000./input2.js?commonjs-require";
 import t2 from "\u0000./input2.js?commonjs-proxy";
 

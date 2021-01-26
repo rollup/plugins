@@ -1,3 +1,5 @@
+import * as commonjsHelpers from "_commonjsHelpers.js";
+
 var foo = function () {
 	return;
 };

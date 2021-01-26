@@ -40,7 +40,11 @@ const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
 
 // TODO Lukas
-//  if we first replace module.exports nested but then define __esModule, the default export should be correct using the right helper
+//  do not forget: If we lose track of exports, both __esModule and a default export may be defined
+
+// TODO Lukas
+//  in the export names PR: Also note if a module may be compiled ESM and forward this if a require
+//  is assigned to module.exports
 
 export default function transformCommonjs(
   parse,
@@ -434,7 +438,13 @@ export default function transformCommonjs(
   const moduleName = deconflict(scope, globals, `${nameBase}Module`);
 
   // We cannot wrap ES/mixed modules
-  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
+  shouldWrap =
+    !isEsModule &&
+    !disableWrap &&
+    (shouldWrap ||
+      (uses.exports &&
+        (topLevelModuleExportsAssignments.length > 0 ||
+          nestedModuleExportsAssignments.length > 0)));
   const detectWrappedDefault =
     shouldWrap &&
     (topLevelDefineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0);
@@ -447,6 +457,7 @@ export default function transformCommonjs(
       uses.module ||
       uses.exports ||
       uses.require ||
+      // TODO Lukas can we get rid of this here and everywhere?
       usesCommonjsHelpers ||
       hasRemovedRequire ||
       topLevelDefineCompiledEsmExpressions.length > 0
@@ -481,7 +492,7 @@ export default function transformCommonjs(
     topLevelDeclarations,
     topLevelRequireDeclarators,
     reassignedNames,
-    usesCommonjsHelpers && HELPERS_NAME,
+    HELPERS_NAME,
     dynamicRegisterSources,
     moduleName,
     exportsName,

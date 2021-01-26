@@ -1,3 +1,4 @@
+import * as commonjsHelpers from "_commonjsHelpers.js";
 import { __module as inputModule, exports as input } from "\u0000fixtures/form/typeof-module-exports/input.js?commonjs-module"
 
 (function (module, exports) {
