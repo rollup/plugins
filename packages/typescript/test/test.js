@@ -890,7 +890,16 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
 // https://github.com/rollup/plugins/issues/681
 test.serial('supports incremental rebuilds with no change to cache', async (t) => {
   process.chdir('fixtures/incremental-output-cache');
-  const cleanup = () => fs.rmdirSync('dist', { recursive: true });
+  const cleanup = () => {
+    let files;
+    try {
+      files = fs.readdirSync('dist');
+    } catch (error) {
+      if (error.code === 'ENOENT') return;
+      throw error;
+    }
+    files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
+  };
 
   cleanup();
 
