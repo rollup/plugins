@@ -249,19 +249,29 @@ test.serial('ensures multiple outputs can be built', async (t) => {
     plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
   });
 
-  const output1 = await getCode(bundle1, { file: 'fixtures/multiple-files/index.js', format: 'cjs' }, true);
+  const output1 = await getCode(
+    bundle1,
+    { file: 'fixtures/multiple-files/index.js', format: 'cjs' },
+    true
+  );
 
   const bundle2 = await rollup({
     input: 'fixtures/multiple-files/src/server.ts',
     plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
   });
 
-  const output2 = await getCode(bundle2, { file: 'fixtures/multiple-files/server.js', format: 'cjs' }, true);
-
-  t.deepEqual(
-    [...new Set(output1.concat(output2).map((out) => out.fileName))].sort(),
-    ['index.d.ts', 'index.js', 'server.d.ts', 'server.js']
+  const output2 = await getCode(
+    bundle2,
+    { file: 'fixtures/multiple-files/server.js', format: 'cjs' },
+    true
   );
+
+  t.deepEqual([...new Set(output1.concat(output2).map((out) => out.fileName))].sort(), [
+    'index.d.ts',
+    'index.js',
+    'server.d.ts',
+    'server.js'
+  ]);
 });
 
 test.serial('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
@@ -877,6 +887,50 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
   );
 });
 
+// https://github.com/rollup/plugins/issues/681
+test.serial('supports incremental rebuilds with no change to cache', async (t) => {
+  process.chdir('fixtures/incremental-output-cache');
+  const cleanup = () => {
+    let files;
+    try {
+      files = fs.readdirSync('dist');
+    } catch (error) {
+      if (error.code === 'ENOENT') return;
+      throw error;
+    }
+    files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
+  };
+
+  cleanup();
+
+  const firstBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+
+  const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    firstRun.map((out) => out.fileName),
+    ['main.js', '.tsbuildinfo']
+  );
+  await firstBundle.write({ dir: 'dist' });
+
+  const secondBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+  const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    secondRun.map((out) => out.fileName),
+    // .tsbuildinfo should not be emitted
+    ['main.js']
+  );
+
+  cleanup();
+});
+
 test.serial.skip('supports project references', async (t) => {
   process.chdir('fixtures/project-references');
 
@@ -1088,50 +1142,48 @@ test('supports custom transformers', async (t) => {
 });
 
 function fakeTypescript(custom) {
-  return Object.assign(
-    {
-      sys: ts.sys,
-      createModuleResolutionCache: ts.createModuleResolutionCache,
-      ModuleKind: ts.ModuleKind,
+  return {
+    sys: ts.sys,
+    createModuleResolutionCache: ts.createModuleResolutionCache,
+    ModuleKind: ts.ModuleKind,
 
-      transpileModule() {
-        return {
-          outputText: '',
-          diagnostics: [],
-          sourceMapText: JSON.stringify({ mappings: '' })
-        };
-      },
-
-      createWatchCompilerHost() {
-        return {
-          afterProgramCreate() {}
-        };
-      },
-
-      createWatchProgram() {
-        return {};
-      },
-
-      parseJsonConfigFileContent(json, host, basePath, existingOptions) {
-        return {
-          options: {
-            ...json.compilerOptions,
-            ...existingOptions
-          },
-          fileNames: [],
-          errors: []
-        };
-      },
-
-      getOutputFileNames(_, id) {
-        return [id.replace(/\.tsx?/, '.js')];
-      },
-
-      // eslint-disable-next-line no-undefined
-      getTsBuildInfoEmitOutputFilePath: () => undefined
+    transpileModule() {
+      return {
+        outputText: '',
+        diagnostics: [],
+        sourceMapText: JSON.stringify({ mappings: '' })
+      };
     },
-    custom
-  );
+
+    createWatchCompilerHost() {
+      return {
+        afterProgramCreate() {}
+      };
+    },
+
+    createWatchProgram() {
+      return {};
+    },
+
+    parseJsonConfigFileContent(json, host, basePath, existingOptions) {
+      return {
+        options: {
+          ...json.compilerOptions,
+          ...existingOptions
+        },
+        fileNames: [],
+        errors: []
+      };
+    },
+
+    getOutputFileNames(_, id) {
+      return [id.replace(/\.tsx?/, '.js')];
+    },
+
+    // eslint-disable-next-line no-undefined
+    getTsBuildInfoEmitOutputFilePath: () => undefined,
+    ...custom
+  };
 }
 
 test.serial('picks up on newly included typescript files in watch mode', async (t) => {
