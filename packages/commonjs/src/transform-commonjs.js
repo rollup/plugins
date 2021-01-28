@@ -28,7 +28,12 @@ import {
 } from './generate-imports';
 import { DYNAMIC_JSON_PREFIX } from './helpers';
 import { tryParse } from './parse';
-import { deconflict, getName, getVirtualPathForDynamicRequirePath } from './utils';
+import {
+  deconflict,
+  deconflictScopes,
+  getName,
+  getVirtualPathForDynamicRequirePath
+} from './utils';
 import {
   isModuleRegisterProxy,
   unwrapModuleRegisterProxy,
@@ -101,6 +106,7 @@ export default function transformCommonjs(
   const skippedNodes = new Set();
   const topLevelModuleExportsAssignments = [];
   const nestedModuleExportsAssignments = [];
+  const moduleAccessScopes = new Set([scope]);
   const topLevelExportsAssignmentsByName = new Map();
   const topLevelDefineCompiledEsmExpressions = [];
 
@@ -147,6 +153,7 @@ export default function transformCommonjs(
                 ? nestedModuleExportsAssignments
                 : topLevelModuleExportsAssignments
               ).push(node);
+              moduleAccessScopes.add(scope);
             } else if (programDepth > 3) {
               shouldWrap = true;
             } else if (exportName === KEY_COMPILED_ESM) {
@@ -428,10 +435,11 @@ export default function transformCommonjs(
     }
   });
 
-  // TODO Lukas we do not need this for ES modules
   const nameBase = getName(id);
+  // TODO Lukas for nested support, we need to take all scopes into account
+  //  also deconflict named export names here
   const exportsName = deconflict(scope, globals, nameBase);
-  const moduleName = deconflict(scope, globals, `${nameBase}Module`);
+  const moduleName = deconflictScopes([...moduleAccessScopes], globals, `${nameBase}Module`);
 
   // We cannot wrap ES/mixed modules
   shouldWrap =
@@ -524,9 +532,9 @@ export default function transformCommonjs(
     .append(exportBlock);
 
   // TODO Lukas remove
-  // console.log('<===', id);
-  // console.log(magicString.toString());
-  // console.log();
+  console.log('<===', id);
+  console.log(magicString.toString());
+  console.log();
 
   return {
     code: magicString.toString(),
