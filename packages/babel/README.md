@@ -55,6 +55,23 @@ export default config;
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
+### Using With `@rollup/plugin-commonjs`
+
+When using `@rollup/plugin-babel` with `@rollup/plugin-commonjs` in the same Rollup configuration, it's important to note that `@rollup/plugin-commonjs` _must_ be placed before this plugin in the `plugins` array for the two to work together properly. e.g.
+
+```js
+import { babel } from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+
+const config = {
+  ...
+  plugins: [
+    commonjs(),
+    babel({ babelHelpers: 'bundled' })
+  ],
+};
+```
+
 ## Options
 
 This plugin respects Babel [configuration files](https://babeljs.io/docs/en/configuration) by default and they are generally the best place to put your configuration.
