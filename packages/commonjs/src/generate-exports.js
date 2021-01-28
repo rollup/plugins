@@ -78,13 +78,16 @@ export function rewriteExportsAndGetExportsBlock(
       }
 
       // Collect and rewrite named exports
-      for (const [exportName, node] of topLevelExportsAssignmentsByName) {
+      for (const [exportName, nodes] of topLevelExportsAssignmentsByName) {
+        // TODO Lukas if we allow nested assignments, we would need to deconflict all of them
         const deconflicted = deconflict(exportName);
-        magicString.overwrite(
-          node.start,
-          node.left.end,
-          `var ${deconflicted} = ${exportsName}.${exportName}`
-        );
+        for (const node of nodes) {
+          magicString.overwrite(
+            node.start,
+            node.left.end,
+            `var ${deconflicted} = ${exportsName}.${exportName}`
+          );
+        }
 
         if (exportName === 'default') {
           deconflictedDefaultExportName = deconflicted;

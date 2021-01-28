@@ -151,14 +151,10 @@ export default function transformCommonjs(
               shouldWrap = true;
             } else if (exportName === KEY_COMPILED_ESM) {
               topLevelDefineCompiledEsmExpressions.push(node);
-            } else if (!topLevelExportsAssignmentsByName.has(exportName)) {
-              topLevelExportsAssignmentsByName.set(exportName, node);
             } else {
-              // TODO Lukas this is the case for multiple assignments to the same export
-              //  we could handle this instead by collecting all assignments
-              //  if there are only top-level assignments, turn the first to export var foo = ...;
-              //  otherwise prefix the code with export var foo;
-              shouldWrap = true;
+              const exportAssignments = topLevelExportsAssignmentsByName.get(exportName) || [];
+              exportAssignments.push(node);
+              topLevelExportsAssignmentsByName.set(exportName, exportAssignments);
             }
 
             skippedNodes.add(node.left);
