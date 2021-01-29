@@ -1,5 +1,17 @@
 # @rollup/plugin-legacy ChangeLog
 
+## v2.1.0
+
+_2021-01-29_
+
+### Features
+
+- feat: normalize exports paths (#775)
+
+### Updates
+
+- chore: update dependencies (5a2e4de)
+
 ## 2.0.0
 
 _2019-11-24_
