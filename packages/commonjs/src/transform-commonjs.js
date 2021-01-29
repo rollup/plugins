@@ -11,6 +11,7 @@ import {
   isDefineCompiledEsm,
   isFalsy,
   isReference,
+  isShorthandProperty,
   isTruthy,
   KEY_COMPILED_ESM
 } from './ast-utils';
@@ -319,10 +320,14 @@ export default function transformCommonjs(
                   )}`
                 );
               }
+              if (isShorthandProperty(parent)) {
+                magicString.appendRight(node.end, `: ${HELPERS_NAME}.commonjsRequire`);
+              } else {
+                magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                  storeName: true
+                });
+              }
 
-              magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
-                storeName: true
-              });
               uses.commonjsHelpers = true;
               return;
             case 'module':
