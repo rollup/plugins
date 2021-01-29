@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-html",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publishConfig": {
     "access": "public"
   },
@@ -26,7 +26,7 @@
     "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
-    "prepublishOnly": "pnpm lint && pnpm build",
+    "prepublishOnly": "pnpm build && pnpm lint",
     "pretest": "pnpm run build",
     "test": "ava"
   },
