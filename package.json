@@ -15,7 +15,8 @@
     "pub": "node scripts/pub.js",
     "publish": "node scripts/publish.js",
     "security": "pnpm audit --audit-level=moderate",
-    "test": "node scripts/run-changed.js test"
+    "test": "node scripts/run-changed.js test",
+    "test:ts": "node scripts/run-changed.js test:ts"
   },
   "dependencies": {
     "conventional-commits-parser": "^3.1.0",
