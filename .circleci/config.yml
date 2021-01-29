@@ -71,7 +71,7 @@ jobs:
           name: Run linting.
           command: pnpm run ci:lint
       - run:
-          name: Run check TS types.
+          name: Check TypeScript types.
           command: pnpm run test:ts
       - save_cache:
           key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
