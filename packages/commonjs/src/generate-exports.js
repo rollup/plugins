@@ -20,11 +20,11 @@ export function rewriteExportsAndGetExportsBlock(
   moduleName,
   exportsName,
   wrapped,
-  topLevelModuleExportsAssignments,
-  nestedModuleExportsAssignments,
+  moduleExportsAssignments,
+  firstTopLevelModuleExportsAssignment,
   topLevelExportsAssignmentsByName,
   defineCompiledEsmExpressions,
-  deconflict,
+  deconflictedExportNames,
   code,
   HELPERS_NAME,
   exportMode,
@@ -35,18 +35,10 @@ export function rewriteExportsAndGetExportsBlock(
 
   // TODO Lukas consider extracting parts that "getExportDeclarations" for the specific cases
   if (exportMode === 'replace') {
-    let needsDeclaration = true;
-    for (const { left } of topLevelModuleExportsAssignments) {
-      if (needsDeclaration) {
-        magicString.overwrite(left.start, left.end, `var ${exportsName}`);
-        needsDeclaration = false;
-      } else {
-        magicString.overwrite(left.start, left.end, exportsName);
-      }
-    }
-    for (const { left } of nestedModuleExportsAssignments) {
+    for (const { left } of moduleExportsAssignments) {
       magicString.overwrite(left.start, left.end, exportsName);
     }
+    magicString.prependRight(firstTopLevelModuleExportsAssignment.left.start, 'var ');
     exports.push(`${exportsName} as __moduleExports`, `${exportsName} as default`);
   } else {
     exports.push(`${exportsName} as __moduleExports`);
@@ -71,16 +63,14 @@ export function rewriteExportsAndGetExportsBlock(
       // TODO Lukas use module otherwise (exportMode: module)
 
       // Collect and rewrite module.exports assignments
-      for (const { left } of topLevelModuleExportsAssignments.concat(
-        nestedModuleExportsAssignments
-      )) {
+      for (const { left } of moduleExportsAssignments) {
         magicString.overwrite(left.start, left.end, `${moduleName}.exports`);
       }
 
       // Collect and rewrite named exports
       for (const [exportName, nodes] of topLevelExportsAssignmentsByName) {
         // TODO Lukas if we allow nested assignments, we would need to deconflict all of them
-        const deconflicted = deconflict(exportName);
+        const deconflicted = deconflictedExportNames[exportName];
         for (const node of nodes) {
           magicString.overwrite(
             node.start,
@@ -112,10 +102,7 @@ export function rewriteExportsAndGetExportsBlock(
       }
 
       if (isRestorableCompiledEsm) {
-        if (
-          topLevelModuleExportsAssignments.length === 0 &&
-          nestedModuleExportsAssignments.length === 0
-        ) {
+        if (moduleExportsAssignments.length === 0) {
           exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
         } else {
           exportDeclarations.push(

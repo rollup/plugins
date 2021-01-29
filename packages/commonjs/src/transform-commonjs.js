@@ -104,8 +104,8 @@ export default function transformCommonjs(
   const topLevelDeclarations = [];
   const topLevelRequireDeclarators = new Set();
   const skippedNodes = new Set();
-  const topLevelModuleExportsAssignments = [];
-  const nestedModuleExportsAssignments = [];
+  let firstTopLevelModuleExportsAssignment = null;
+  const moduleExportsAssignments = [];
   const moduleAccessScopes = new Set([scope]);
   const topLevelExportsAssignmentsByName = new Map();
   const topLevelDefineCompiledEsmExpressions = [];
@@ -149,11 +149,12 @@ export default function transformCommonjs(
 
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
             if (flattened.keypath === 'module.exports') {
-              (programDepth > 3
-                ? nestedModuleExportsAssignments
-                : topLevelModuleExportsAssignments
-              ).push(node);
-              moduleAccessScopes.add(scope);
+              moduleExportsAssignments.push(node);
+              if (programDepth > 3) {
+                moduleAccessScopes.add(scope);
+              } else if (!firstTopLevelModuleExportsAssignment) {
+                firstTopLevelModuleExportsAssignment = node;
+              }
             } else if (programDepth > 3) {
               shouldWrap = true;
             } else if (exportName === KEY_COMPILED_ESM) {
@@ -440,15 +441,16 @@ export default function transformCommonjs(
   //  also deconflict named export names here
   const exportsName = deconflict(scope, globals, nameBase);
   const moduleName = deconflictScopes([...moduleAccessScopes], globals, `${nameBase}Module`);
+  const deconflictedExportNames = Object.create(null);
+  for (const exportName of topLevelExportsAssignmentsByName.keys()) {
+    deconflictedExportNames[exportName] = deconflict(scope, globals, exportName);
+  }
 
   // We cannot wrap ES/mixed modules
   shouldWrap =
     !isEsModule &&
     !disableWrap &&
-    (shouldWrap ||
-      (uses.exports &&
-        (topLevelModuleExportsAssignments.length > 0 ||
-          nestedModuleExportsAssignments.length > 0)));
+    (shouldWrap || (uses.exports && moduleExportsAssignments.length > 0));
   const detectWrappedDefault =
     shouldWrap &&
     (topLevelDefineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0);
@@ -482,13 +484,13 @@ export default function transformCommonjs(
     ? uses.module
       ? 'module'
       : 'exports'
-    : topLevelModuleExportsAssignments.length === 0
-    ? nestedModuleExportsAssignments.length === 0
-      ? 'exports'
-      : 'module'
-    : topLevelExportsAssignmentsByName.size === 0 &&
+    : firstTopLevelModuleExportsAssignment
+    ? topLevelExportsAssignmentsByName.size === 0 &&
       topLevelDefineCompiledEsmExpressions.length === 0
-    ? 'replace'
+      ? 'replace'
+      : 'module'
+    : moduleExportsAssignments.length === 0
+    ? 'exports'
     : 'module';
 
   const importBlock = rewriteRequireExpressionsAndGetImportBlock(
@@ -511,11 +513,11 @@ export default function transformCommonjs(
         moduleName,
         exportsName,
         shouldWrap,
-        topLevelModuleExportsAssignments,
-        nestedModuleExportsAssignments,
+        moduleExportsAssignments,
+        firstTopLevelModuleExportsAssignment,
         topLevelExportsAssignmentsByName,
         topLevelDefineCompiledEsmExpressions,
-        (name) => deconflict(scope, globals, name),
+        deconflictedExportNames,
         code,
         HELPERS_NAME,
         exportMode,
