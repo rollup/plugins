@@ -1,5 +1,14 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.1.1
+
+_2021-01-29_
+
+### Bugfixes
+
+- fix: fix plugin type declarations (#647)
+- fix: only emit tsbuildinfo file when there is something to emit (#771)
+
 ## v8.1.0
 
 _2020-12-14_
