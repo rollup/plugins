@@ -162,13 +162,6 @@ export default function commonjs(options = {}) {
 
     resolveId,
 
-    // TODO Lukas in Rollup, ensure synthetic namespace is only rendered when needed
-    // TODO Lukas
-    //  - Only wrap if
-    //    - there is an assignment to module.exports (also check destructuring) or
-    //    - unchecked usages of module or
-    //    - direct assignment to exports (also check destructuring)
-    //    (also check destructring)
     load(id) {
       if (id === HELPERS_ID) {
         return getHelpersModule(isDynamicRequireModulesEnabled);
