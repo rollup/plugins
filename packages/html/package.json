@@ -26,7 +26,7 @@
     "lint:js": "eslint --fix --cache src test --ext .js,.ts",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
-    "prepublishOnly": "pnpm run lint",
+    "prepublishOnly": "pnpm lint && pnpm build",
     "pretest": "pnpm run build",
     "test": "ava"
   },
