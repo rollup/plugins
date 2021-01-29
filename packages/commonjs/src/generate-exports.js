@@ -22,7 +22,8 @@ export function rewriteExportsAndGetExportsBlock(
   wrapped,
   moduleExportsAssignments,
   firstTopLevelModuleExportsAssignment,
-  topLevelExportsAssignmentsByName,
+  exportsAssignmentsByName,
+  topLevelAssignments,
   defineCompiledEsmExpressions,
   deconflictedExportNames,
   code,
@@ -52,31 +53,25 @@ export function rewriteExportsAndGetExportsBlock(
       }
     } else {
       let deconflictedDefaultExportName;
-      // TODO Lukas wrap if (exportMode: wrapped)
-      //  - There is an assignment to module or exports
-      //  - There is an assignment to module.exports but exports is used separately (module.exports.foo is ok if we create the corresponding variable at the top)
-      // TODO Lukas replace if (exportMode: replaced)
-      //  - There are top-level module.exports assignments
-      // TODO Lukas use only exports if (exportMode: exports)
-      //  - There are no assignments to module.exports (except module.exports.foo)
-      //  - module is not used as a variable
-      // TODO Lukas use module otherwise (exportMode: module)
-
       // Collect and rewrite module.exports assignments
       for (const { left } of moduleExportsAssignments) {
         magicString.overwrite(left.start, left.end, `${moduleName}.exports`);
       }
 
       // Collect and rewrite named exports
-      for (const [exportName, nodes] of topLevelExportsAssignmentsByName) {
-        // TODO Lukas if we allow nested assignments, we would need to deconflict all of them
+      for (const [exportName, { nodes }] of exportsAssignmentsByName) {
         const deconflicted = deconflictedExportNames[exportName];
+        let needsDeclaration = true;
         for (const node of nodes) {
-          magicString.overwrite(
-            node.start,
-            node.left.end,
-            `var ${deconflicted} = ${exportsName}.${exportName}`
-          );
+          let replacement = `${deconflicted} = ${exportsName}.${exportName}`;
+          if (needsDeclaration && topLevelAssignments.has(node)) {
+            replacement = `var ${replacement}`;
+            needsDeclaration = false;
+          }
+          magicString.overwrite(node.start, node.left.end, replacement);
+        }
+        if (needsDeclaration) {
+          magicString.prepend(`var ${deconflicted};\n`);
         }
 
         if (exportName === 'default') {

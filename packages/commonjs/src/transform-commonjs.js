@@ -104,10 +104,12 @@ export default function transformCommonjs(
   const topLevelDeclarations = [];
   const topLevelRequireDeclarators = new Set();
   const skippedNodes = new Set();
-  let firstTopLevelModuleExportsAssignment = null;
-  const moduleExportsAssignments = [];
   const moduleAccessScopes = new Set([scope]);
-  const topLevelExportsAssignmentsByName = new Map();
+  const exportsAccessScopes = new Set([scope]);
+  const moduleExportsAssignments = [];
+  let firstTopLevelModuleExportsAssignment = null;
+  const exportsAssignmentsByName = new Map();
+  const topLevelAssignments = new Set();
   const topLevelDefineCompiledEsmExpressions = [];
 
   walk(ast, {
@@ -155,14 +157,24 @@ export default function transformCommonjs(
               } else if (!firstTopLevelModuleExportsAssignment) {
                 firstTopLevelModuleExportsAssignment = node;
               }
-            } else if (programDepth > 3) {
-              shouldWrap = true;
             } else if (exportName === KEY_COMPILED_ESM) {
-              topLevelDefineCompiledEsmExpressions.push(node);
+              if (programDepth > 3) {
+                shouldWrap = true;
+              } else {
+                topLevelDefineCompiledEsmExpressions.push(node);
+              }
             } else {
-              const exportAssignments = topLevelExportsAssignmentsByName.get(exportName) || [];
-              exportAssignments.push(node);
-              topLevelExportsAssignmentsByName.set(exportName, exportAssignments);
+              const exportsAssignments = exportsAssignmentsByName.get(exportName) || {
+                nodes: [],
+                scopes: new Set()
+              };
+              exportsAssignments.nodes.push(node);
+              exportsAssignments.scopes.add(scope);
+              exportsAccessScopes.add(scope);
+              exportsAssignmentsByName.set(exportName, exportsAssignments);
+              if (programDepth <= 3) {
+                topLevelAssignments.add(node);
+              }
             }
 
             skippedNodes.add(node.left);
@@ -437,13 +449,11 @@ export default function transformCommonjs(
   });
 
   const nameBase = getName(id);
-  // TODO Lukas for nested support, we need to take all scopes into account
-  //  also deconflict named export names here
-  const exportsName = deconflict(scope, globals, nameBase);
+  const exportsName = deconflictScopes([...exportsAccessScopes], globals, nameBase);
   const moduleName = deconflictScopes([...moduleAccessScopes], globals, `${nameBase}Module`);
   const deconflictedExportNames = Object.create(null);
-  for (const exportName of topLevelExportsAssignmentsByName.keys()) {
-    deconflictedExportNames[exportName] = deconflict(scope, globals, exportName);
+  for (const [exportName, { scopes }] of exportsAssignmentsByName) {
+    deconflictedExportNames[exportName] = deconflictScopes([...scopes], globals, exportName);
   }
 
   // We cannot wrap ES/mixed modules
@@ -485,8 +495,7 @@ export default function transformCommonjs(
       ? 'module'
       : 'exports'
     : firstTopLevelModuleExportsAssignment
-    ? topLevelExportsAssignmentsByName.size === 0 &&
-      topLevelDefineCompiledEsmExpressions.length === 0
+    ? exportsAssignmentsByName.size === 0 && topLevelDefineCompiledEsmExpressions.length === 0
       ? 'replace'
       : 'module'
     : moduleExportsAssignments.length === 0
@@ -515,7 +524,8 @@ export default function transformCommonjs(
         shouldWrap,
         moduleExportsAssignments,
         firstTopLevelModuleExportsAssignment,
-        topLevelExportsAssignmentsByName,
+        exportsAssignmentsByName,
+        topLevelAssignments,
         topLevelDefineCompiledEsmExpressions,
         deconflictedExportNames,
         code,
