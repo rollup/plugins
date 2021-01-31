@@ -9,7 +9,7 @@
 
 # @rollup/plugin-replace
 
-🍣 A Rollup plugin which replaces strings in files while bundling.
+🍣 A Rollup plugin which replaces targeted strings in files while bundling.
 
 ## Requirements
 
@@ -34,43 +34,25 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
   plugins: [
     replace({
-      __buildEnv__: 'production',
-      __buildDate__: () => new Date(),
-      __buildVersion: 15
-    })
-  ]
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      __buildDate__: () => JSON.stringify(new Date()),
+      __buildVersion: 15,
+    }),
+  ],
 };
 ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
-The configuration above will replace every instance of `__buildEnv__` with `'production'` and `__buildDate__` with the result of the given function in any file included in the build. _Note: Values have to be either primitives or functions that return a string. For complex values, use `JSON.stringify`._
+The configuration above will replace every instance of `process.env.NODE_ENV` with `"production"` and `__buildDate__` with the result of the given function in any file included in the build.
+
+_Note: Values must be either primitives (e.g. string, number) or `function` that returns a string. For complex values, use `JSON.stringify`. To replace a target with a value that will be evaluated as a string, set the value to a quoted string (e.g. `"test"`) or use `JSON.stringify` to preprocess the target string safely._
 
 Typically, `@rollup/plugin-replace` should be placed in `plugins` _before_ other plugins so that they may apply optimizations, such as dead code removal.
-
-The most popular case is replacing process.env.NODE_ENV with development or production environment.
-
-```js
-import replace from '@rollup/plugin-replace';
-
-export default {
-  input: 'src/index.js',
-  output: {
-    dir: 'output',
-    format: 'cjs'
-  },
-  plugins: [
-    replace({
-      // alternatively, one could pass process.env.NODE_ENV or 'development` to stringify
-      'process.env.NODE_ENV': JSON.stringify('production')
-    })
-  ]
-};
-```
 
 ## Options
 
