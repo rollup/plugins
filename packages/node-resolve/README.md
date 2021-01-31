@@ -187,14 +187,17 @@ By default this plugin will prefer built-ins over local modules, marking them as
 
 See [`preferBuiltins`](#preferbuiltins).
 
-To provide stubbed versions of Node built-ins, use a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) or use [`builtin-modules`](https://github.com/sindresorhus/builtin-modules) with `external`, and set `preferBuiltins` to `false`. e.g.
+To provide stubbed versions of Node built-ins, use a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) and set `preferBuiltins` to `false`. e.g.
 
 ```js
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import builtins from 'builtin-modules'
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 export default ({
   input: ...,
-  plugins: [nodeResolve()],
+  plugins: [
+    nodePolyfills(),
+    nodeResolve({ preferBuiltins: false })
+  ],
   external: builtins,
   output: ...
 })
