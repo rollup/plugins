@@ -1,5 +1,14 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.2.3
+
+_2021-01-29_
+
+### Updates
+
+- docs: add usage with commonjs. fixes #622 (6b4b7b6)
+- docs: update export in README (#690)
+
 ## v5.2.2
 
 _2020-11-30_

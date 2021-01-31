@@ -10,7 +10,9 @@ import analyzeTopLevelStatements from './analyze-top-level-statements';
 import {
   getDynamicPackagesEntryIntro,
   getDynamicPackagesModule,
-  isModuleRegistrationProxy
+  isDynamicModuleImport,
+  isModuleRegisterProxy,
+  unwrapModuleRegisterProxy
 } from './dynamic-packages-manager';
 import getDynamicRequirePaths from './dynamic-require-paths';
 import {
@@ -75,6 +77,20 @@ export default function commonjs(options = {}) {
       ? (id) => options.ignore.includes(id)
       : () => false;
 
+  const getIgnoreTryCatchRequireStatementMode = (id) => {
+    const mode =
+      typeof options.ignoreTryCatch === 'function'
+        ? options.ignoreTryCatch(id)
+        : Array.isArray(options.ignoreTryCatch)
+        ? options.ignoreTryCatch.includes(id)
+        : options.ignoreTryCatch || false;
+
+    return {
+      canConvertRequire: mode !== 'remove' && mode !== true,
+      shouldRemoveRequireStatement: mode === 'remove'
+    };
+  };
+
   const resolveId = getResolveId(extensions);
 
   const sourceMap = options.sourceMap !== false;
@@ -104,8 +120,13 @@ export default function commonjs(options = {}) {
       return { meta: { commonjs: { isCommonJS: false } } };
     }
 
+    let disableWrap = false;
+
     // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
-    const disableWrap = isModuleRegistrationProxy(id, dynamicRequireModuleSet);
+    if (isModuleRegisterProxy(id)) {
+      disableWrap = true;
+      id = unwrapModuleRegisterProxy(id);
+    }
 
     return transformCommonjs(
       this.parse,
@@ -114,6 +135,7 @@ export default function commonjs(options = {}) {
       isEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
+      getIgnoreTryCatchRequireStatementMode,
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
@@ -162,8 +184,15 @@ export default function commonjs(options = {}) {
         return getDynamicJsonProxy(id, commonDir);
       }
 
-      if (isModuleRegistrationProxy(id, dynamicRequireModuleSet)) {
-        return getDynamicRequireProxy(normalizePathSlashes(id), commonDir);
+      if (isDynamicModuleImport(id, dynamicRequireModuleSet)) {
+        return `export default require(${JSON.stringify(normalizePathSlashes(id))});`;
+      }
+
+      if (isModuleRegisterProxy(id)) {
+        return getDynamicRequireProxy(
+          normalizePathSlashes(unwrapModuleRegisterProxy(id)),
+          commonDir
+        );
       }
 
       if (isWrappedId(id, PROXY_SUFFIX)) {
@@ -179,7 +208,13 @@ export default function commonjs(options = {}) {
       return null;
     },
 
-    transform(code, id) {
+    transform(code, rawId) {
+      let id = rawId;
+
+      if (isModuleRegisterProxy(id)) {
+        id = unwrapModuleRegisterProxy(id);
+      }
+
       const extName = extname(id);
       if (
         extName !== '.cjs' &&
@@ -191,7 +226,7 @@ export default function commonjs(options = {}) {
       }
 
       try {
-        return transformAndCheckExports.call(this, code, id);
+        return transformAndCheckExports.call(this, code, rawId);
       } catch (err) {
         return this.error(err, err.loc);
       }

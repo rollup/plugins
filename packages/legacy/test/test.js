@@ -1,5 +1,9 @@
+const path = require('path');
+
 const test = require('ava');
 const { rollup } = require('rollup');
+
+const { normalizePath } = require('@rollup/pluginutils');
 
 const { testBundle } = require('../../../util/test');
 
@@ -58,6 +62,28 @@ test('adds a unchanged named export', async (t) => {
         './fixtures/named-exports-unchanged/answer.js': {
           answer: 'answer'
         }
+      })
+    ]
+  });
+  t.plan(1);
+  await testBundle(t, bundle);
+});
+
+test('normalized paths', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/default-export/main.js',
+    plugins: [
+      {
+        name: 'NormalizedPath',
+        resolveId(importee) {
+          if (importee === './answer') {
+            return normalizePath(path.resolve('./fixtures/default-export/answer.js'));
+          }
+          return null;
+        }
+      },
+      legacy({
+        './fixtures/default-export/answer.js': 'answer'
       })
     ]
   });

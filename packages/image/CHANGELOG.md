@@ -1,5 +1,17 @@
 # @rollup/plugin-image ChangeLog
 
+## v2.0.6
+
+_2020-12-14_
+
+### Bugfixes
+
+- fix: use 'var' instead of 'const' (#691)
+
+### Updates
+
+- chore: update dependencies (0c57b08)
+
 ## v2.0.5
 
 _2020-05-11_

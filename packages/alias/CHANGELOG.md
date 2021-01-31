@@ -1,5 +1,16 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.2
+
+_2021-01-29_
+
+### Updates
+
+- chore: upgrade TypeScript (#708)
+- chore: add missing readonly to internal function (#680)
+- chore: fix TS error in function call (d04778c)
+- chore: update dependencies (b3b8efd)
+
 ## v3.1.1
 
 _2020-06-05_

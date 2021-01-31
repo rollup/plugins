@@ -78,7 +78,7 @@ const getNewVersion = (version, commits) => {
 
   const types = new Set(commits.map(({ type }) => type));
   const breaking = commits.some((commit) => !!commit.breaking);
-  const level = breaking ? 'major' : types.has('feat') ? 'minor' : 'patch';
+  const level = breaking ? 'major' : types.has('feat') || types.has('feature') ? 'minor' : 'patch';
 
   return semver.inc(version, level);
 };
@@ -134,7 +134,7 @@ const updateChangelog = (commits, cwd, pluginName, version) => {
       notes.breaking.push(message);
     } else if (type === 'fix') {
       notes.fixes.push(message);
-    } else if (type === 'feat') {
+    } else if (type === 'feat' || type === 'feature') {
       notes.features.push(message);
     } else {
       notes.updates.push(message);

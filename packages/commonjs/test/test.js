@@ -726,6 +726,17 @@ test('does not wrap commonjsRegister calls in createCommonjsModule', async (t) =
   t.not(/createCommonjsModule\(function/.test(code), true);
 });
 
+test('does not replace shorthand `require` property in object', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/shorthand-require/main.js',
+    plugins: [commonjs()]
+  });
+
+  const code = await getCodeFromBundle(bundle, { exports: 'named' });
+
+  t.is(/require: commonjsRequire/.test(code), true);
+});
+
 // This test uses worker threads to simulate an empty internal cache and needs at least Node 12
 if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
   test('can be cached across instances', async (t) => {

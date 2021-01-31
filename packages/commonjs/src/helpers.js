@@ -6,7 +6,7 @@ export const PROXY_SUFFIX = '?commonjs-proxy';
 export const REQUIRE_SUFFIX = '?commonjs-require';
 export const EXTERNAL_SUFFIX = '?commonjs-external';
 
-export const DYNAMIC_REGISTER_PREFIX = '\0commonjs-dynamic-register:';
+export const DYNAMIC_REGISTER_SUFFIX = '?commonjs-dynamic-register';
 export const DYNAMIC_JSON_PREFIX = '\0commonjs-dynamic-json:';
 export const DYNAMIC_PACKAGES_ID = '\0commonjs-dynamic-packages';
 
@@ -156,10 +156,13 @@ function dirname (path) {
   return '.';
 }
 
-export function commonjsRequire (path, originalModuleDir) {
+export function commonjsResolveImpl (path, originalModuleDir, testCache) {
 	const shouldTryNodeModules = isPossibleNodeModulesPath(path);
 	path = normalize(path);
 	let relPath;
+	if (path[0] === '/') {
+		originalModuleDir = '/';
+	}
 	while (true) {
 		if (!shouldTryNodeModules) {
 			relPath = originalModuleDir ? normalize(originalModuleDir + '/' + path) : path;
@@ -168,33 +171,18 @@ export function commonjsRequire (path, originalModuleDir) {
 		} else {
 			relPath = normalize(join('node_modules', path));
 		}
+
+		if (relPath.endsWith('/..')) {
+			break; // Travelled too far up, avoid infinite loop
+		}
+
 		for (let extensionIndex = 0; extensionIndex < CHECKED_EXTENSIONS.length; extensionIndex++) {
 			const resolvedPath = relPath + CHECKED_EXTENSIONS[extensionIndex];
-			let cachedModule = DYNAMIC_REQUIRE_CACHE[resolvedPath];
-			if (cachedModule) return cachedModule.exports;
-			const loader = DYNAMIC_REQUIRE_LOADERS[resolvedPath];
-			if (loader) {
-				DYNAMIC_REQUIRE_CACHE[resolvedPath] = cachedModule = {
-					id: resolvedPath,
-					filename: resolvedPath,
-					path: dirname(resolvedPath),
-					exports: {},
-					parent: DEFAULT_PARENT_MODULE,
-					loaded: false,
-					children: [],
-					paths: [],
-					require: function (path, base) {
-					  return commonjsRequire(path, (base === undefined || base === null) ? cachedModule.path : base);
-					}
-				};
-				try {
-					loader.call(commonjsGlobal, cachedModule, cachedModule.exports);
-				} catch (error) {
-					delete DYNAMIC_REQUIRE_CACHE[resolvedPath];
-					throw error;
-				}
-				cachedModule.loaded = true;
-				return cachedModule.exports;
+			if (DYNAMIC_REQUIRE_CACHE[resolvedPath]) {
+				return resolvedPath;
+			};
+			if (DYNAMIC_REQUIRE_LOADERS[resolvedPath]) {
+				return resolvedPath;
 			};
 		}
 		if (!shouldTryNodeModules) break;
@@ -202,10 +190,52 @@ export function commonjsRequire (path, originalModuleDir) {
 		if (nextDir === originalModuleDir) break;
 		originalModuleDir = nextDir;
 	}
+	return null;
+}
+
+export function commonjsResolve (path, originalModuleDir) {
+	const resolvedPath = commonjsResolveImpl(path, originalModuleDir);
+	if (resolvedPath !== null) {
+		return resolvedPath;
+	}
+	return require.resolve(path);
+}
+
+export function commonjsRequire (path, originalModuleDir) {
+	const resolvedPath = commonjsResolveImpl(path, originalModuleDir, true);
+	if (resolvedPath !== null) {
+    let cachedModule = DYNAMIC_REQUIRE_CACHE[resolvedPath];
+    if (cachedModule) return cachedModule.exports;
+    const loader = DYNAMIC_REQUIRE_LOADERS[resolvedPath];
+    if (loader) {
+      DYNAMIC_REQUIRE_CACHE[resolvedPath] = cachedModule = {
+        id: resolvedPath,
+        filename: resolvedPath,
+        path: dirname(resolvedPath),
+        exports: {},
+        parent: DEFAULT_PARENT_MODULE,
+        loaded: false,
+        children: [],
+        paths: [],
+        require: function (path, base) {
+          return commonjsRequire(path, (base === undefined || base === null) ? cachedModule.path : base);
+        }
+      };
+      try {
+        loader.call(commonjsGlobal, cachedModule, cachedModule.exports);
+      } catch (error) {
+        delete DYNAMIC_REQUIRE_CACHE[resolvedPath];
+        throw error;
+      }
+      cachedModule.loaded = true;
+      return cachedModule.exports;
+    };
+	}
 	return require(path);
 }
 
 commonjsRequire.cache = DYNAMIC_REQUIRE_CACHE;
+commonjsRequire.resolve = commonjsResolve;
 `;
 
 export function getHelpersModule(isDynamicRequireModulesEnabled) {

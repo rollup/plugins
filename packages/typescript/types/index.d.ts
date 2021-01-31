@@ -38,7 +38,7 @@ export interface RollupTypescriptPluginOptions {
   transformers?: CustomTransformerFactories;
 }
 
-type ElementType<T extends Array<any>> = T extends (infer U)[] ? U : never;
+type ElementType<T extends Array<any> | undefined> = T extends (infer U)[] ? U : never;
 
 export type TransformerStage = keyof CustomTransformers;
 type StagedTransformerFactory<T extends TransformerStage> = ElementType<CustomTransformers[T]>;

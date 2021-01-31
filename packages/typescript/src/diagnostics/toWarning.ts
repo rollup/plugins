@@ -1,12 +1,13 @@
 import { RollupLogProps } from 'rollup';
+import type { Diagnostic, FormatDiagnosticsHost } from 'typescript';
 
 /**
  * Converts a Typescript type error into an equivalent Rollup warning object.
  */
 export default function diagnosticToWarning(
   ts: typeof import('typescript'),
-  host: import('typescript').FormatDiagnosticsHost | null,
-  diagnostic: import('typescript').Diagnostic
+  host: FormatDiagnosticsHost | null,
+  diagnostic: Diagnostic
 ) {
   const pluginCode = `TS${diagnostic.code}`;
   const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');

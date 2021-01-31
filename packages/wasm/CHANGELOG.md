@@ -1,5 +1,13 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v5.1.2
+
+_2020-12-14_
+
+### Bugfixes
+
+- fix: Remove `eval` calls and enable dummy sourcemap (#685)
+
 ## v5.1.1
 
 _2020-10-27_

@@ -1,5 +1,38 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v11.1.1
+
+_2021-01-29_
+
+### Bugfixes
+
+- fix: only log last resolve error (#750)
+
+### Updates
+
+- docs: add clarification on the order of package entrypoints (#768)
+
+## v11.1.0
+
+_2021-01-15_
+
+### Features
+
+- feat: support pkg imports and export array (#693)
+
+## v11.0.1
+
+_2020-12-14_
+
+### Bugfixes
+
+- fix: export map specificity (#675)
+- fix: add missing type import (#668)
+
+### Updates
+
+- docs: corrected word "yse" to "use" (#723)
+
 ## v11.0.0
 
 _2020-11-30_

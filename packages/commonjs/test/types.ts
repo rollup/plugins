@@ -1,6 +1,8 @@
+import type { RollupOptions } from 'rollup';
+
 import commonjs from '../types';
 
-const config: import('rollup').RollupOptions = {
+const config: RollupOptions = {
   input: 'main.js',
   output: {
     file: 'bundle.js',
