@@ -1,4 +1,4 @@
-import { Plugin } from 'rollup';
+import { Plugin, PluginContext, TransformPluginContext } from 'rollup';
 import { FilterPattern } from '@rollup/pluginutils';
 import * as babelCore from '@babel/core';
 
@@ -53,10 +53,12 @@ export type RollupBabelCustomOutputPluginOptions = (
   pluginOptions: RollupBabelOutputPluginOptions;
 };
 export type RollupBabelCustomPluginConfig = (
+  this: PluginContext | TransformPluginContext,
   cfg: babelCore.PartialConfig,
   options: { code: string; customOptions: Record<string, any> }
 ) => babelCore.TransformOptions;
 export type RollupBabelCustomPluginResult = (
+  this: PluginContext | TransformPluginContext,
   result: babelCore.BabelFileResult,
   options: {
     code: string;
