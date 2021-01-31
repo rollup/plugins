@@ -257,7 +257,7 @@ test('respects the package.json sideEffects property for files in root package b
   });
 
   const code = await getCode(bundle);
-  t.false(code.includes('should be kept'));
+  t.false(code.includes('side effect'));
   t.snapshot(code);
 });
 
@@ -273,7 +273,7 @@ test('ignores the package.json sideEffects property for files in root package wi
   });
 
   const code = await getCode(bundle);
-  t.true(code.includes('should be kept'));
+  t.true(code.includes('side effect'));
   t.snapshot(code);
 });
 
