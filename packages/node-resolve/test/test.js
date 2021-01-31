@@ -246,7 +246,7 @@ test('resolves dynamic imports', async (t) => {
   t.is(result.default, 42);
 });
 
-test('ignores the package.json sideEffects property for files in root package', async (t) => {
+test('respects the package.json sideEffects property for files in root package by default', async (t) => {
   const bundle = await rollup({
     input: 'root-package-side-effect/index.js',
     plugins: [
@@ -255,9 +255,25 @@ test('ignores the package.json sideEffects property for files in root package', 
       })
     ]
   });
-  await testBundle(t, bundle);
 
   const code = await getCode(bundle);
+  t.false(code.includes('should be kept'));
+  t.snapshot(code);
+});
+
+test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async (t) => {
+  const bundle = await rollup({
+    input: 'root-package-side-effect/index.js',
+    plugins: [
+      nodeResolve({
+        rootDir: 'root-package-side-effect',
+        ignoreSideEffectsForRoot: true
+      })
+    ]
+  });
+
+  const code = await getCode(bundle);
+  t.true(code.includes('should be kept'));
   t.snapshot(code);
 });
 

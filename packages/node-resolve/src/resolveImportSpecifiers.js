@@ -179,7 +179,8 @@ async function resolveId({
   useBrowserOverrides,
   baseDir,
   moduleDirectories,
-  rootDir
+  rootDir,
+  ignoreSideEffectsForRoot
 }) {
   let hasModuleSideEffects = () => null;
   let hasPackageEntry = true;
@@ -195,7 +196,8 @@ async function resolveId({
       mainFields,
       preserveSymlinks,
       useBrowserOverrides,
-      rootDir
+      rootDir,
+      ignoreSideEffectsForRoot
     });
 
     ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
@@ -289,7 +291,8 @@ export async function resolveImportSpecifiers({
   useBrowserOverrides,
   baseDir,
   moduleDirectories,
-  rootDir
+  rootDir,
+  ignoreSideEffectsForRoot
 }) {
   for (let i = 0; i < importSpecifierList.length; i++) {
     // eslint-disable-next-line no-await-in-loop
@@ -305,7 +308,8 @@ export async function resolveImportSpecifiers({
       useBrowserOverrides,
       baseDir,
       moduleDirectories,
-      rootDir
+      rootDir,
+      ignoreSideEffectsForRoot
     });
     if (resolved) {
       return resolved;

@@ -151,6 +151,10 @@ Specifies the root directory from which to resolve modules. Typically used when 
 rootDir: path.join(process.cwd(), '..')
 ```
 
+## `ignoreSideEffectsForRoot`
+
+If you use the `sideEffects` property in the package.json, by default this is respected for files in the root package. Set to `true` to ignore the `sideEffects` configuration for the root package.
+
 ## Preserving symlinks
 
 This plugin honours the rollup [`preserveSymlinks`](https://rollupjs.org/guide/en/#preservesymlinks) option.

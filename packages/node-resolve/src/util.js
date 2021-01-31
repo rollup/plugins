@@ -47,7 +47,8 @@ export function getPackageInfo(options) {
     mainFields,
     preserveSymlinks,
     useBrowserOverrides,
-    rootDir
+    rootDir,
+    ignoreSideEffectsForRoot
   } = options;
   let { pkgPath } = options;
 
@@ -138,7 +139,7 @@ export function getPackageInfo(options) {
     packageInfo.browserMappedMain = false;
   }
 
-  if (rootDir !== pkgRoot) {
+  if (!ignoreSideEffectsForRoot || rootDir !== pkgRoot) {
     const packageSideEffects = pkg.sideEffects;
     if (typeof packageSideEffects === 'boolean') {
       internalPackageInfo.hasModuleSideEffects = () => packageSideEffects;
