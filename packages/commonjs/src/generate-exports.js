@@ -38,6 +38,7 @@ export function rewriteExportsAndGetExportsBlock(
     getExportsForReplacedModuleExports(
       magicString,
       exports,
+      exportDeclarations,
       moduleExportsAssignments,
       firstTopLevelModuleExportsAssignment,
       exportsName
@@ -78,6 +79,7 @@ export function rewriteExportsAndGetExportsBlock(
 function getExportsForReplacedModuleExports(
   magicString,
   exports,
+  exportDeclarations,
   moduleExportsAssignments,
   firstTopLevelModuleExportsAssignment,
   exportsName
@@ -86,7 +88,8 @@ function getExportsForReplacedModuleExports(
     magicString.overwrite(left.start, left.end, exportsName);
   }
   magicString.prependRight(firstTopLevelModuleExportsAssignment.left.start, 'var ');
-  exports.push(`${exportsName} as __moduleExports`, `${exportsName} as default`);
+  exports.push(`${exportsName} as __moduleExports`);
+  exportDeclarations.push(`export default ${exportsName};`);
 }
 
 function getExportsWhenWrapping(
@@ -156,6 +159,7 @@ function getExports(
     magicString.overwrite(moduleExportsExpression.start, moduleExportsExpression.end, exportsName);
   }
 
+  // TODO Lukas test remaining cases of default exports
   if (isRestorableCompiledEsm) {
     if (moduleExportsAssignments.length === 0) {
       exports.push(`${deconflictedDefaultExportName || exportsName} as default`);

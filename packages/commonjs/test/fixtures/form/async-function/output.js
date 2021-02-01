@@ -4,4 +4,5 @@ var input = async function () {
 	// TODO
 };
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };

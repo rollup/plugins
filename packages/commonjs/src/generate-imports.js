@@ -2,7 +2,6 @@ import { dirname, resolve } from 'path';
 
 import { sync as nodeResolveSync } from 'resolve';
 
-import { isLocallyShadowed } from './ast-utils';
 import {
   EXPORTS_SUFFIX,
   HELPERS_ID,
@@ -135,17 +134,11 @@ export function getRequireHandlers() {
     id,
     exportMode
   ) {
-    const removedDeclarators = getDeclaratorsReplacedByImportsAndSetImportNames(
-      topLevelRequireDeclarators,
-      requiredByNode,
-      reassignedNames
-    );
     setRemainingImportNamesAndRewriteRequires(
       requireExpressionsWithUsedReturnValue,
       requiredByNode,
       magicString
     );
-    removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
     const imports = [];
     imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
     if (exportMode === 'module') {
@@ -183,30 +176,6 @@ export function getRequireHandlers() {
   };
 }
 
-function getDeclaratorsReplacedByImportsAndSetImportNames(
-  topLevelRequireDeclarators,
-  requiredByNode,
-  reassignedNames
-) {
-  const removedDeclarators = new Set();
-  for (const declarator of topLevelRequireDeclarators) {
-    const { required } = requiredByNode.get(declarator.init);
-    if (!required.name) {
-      const potentialName = declarator.id.name;
-      if (
-        !reassignedNames.has(potentialName) &&
-        !required.nodesUsingRequired.some((node) =>
-          isLocallyShadowed(potentialName, requiredByNode.get(node).scope)
-        )
-      ) {
-        required.name = potentialName;
-        removedDeclarators.add(declarator);
-      }
-    }
-  }
-  return removedDeclarators;
-}
-
 function setRemainingImportNamesAndRewriteRequires(
   requireExpressionsWithUsedReturnValue,
   requiredByNode,
@@ -225,24 +194,5 @@ function setRemainingImportNamesAndRewriteRequires(
       required.name = potentialName;
     }
     magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
-  }
-}
-
-function removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString) {
-  for (const declaration of topLevelDeclarations) {
-    let keepDeclaration = false;
-    let [{ start }] = declaration.declarations;
-    for (const declarator of declaration.declarations) {
-      if (removedDeclarators.has(declarator)) {
-        magicString.remove(start, declarator.end);
-      } else if (!keepDeclaration) {
-        magicString.remove(start, declarator.start);
-        keepDeclaration = true;
-      }
-      start = declarator.end;
-    }
-    if (!keepDeclaration) {
-      magicString.remove(declaration.start, declaration.end);
-    }
   }
 }

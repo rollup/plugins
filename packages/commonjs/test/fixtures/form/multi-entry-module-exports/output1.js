@@ -1,8 +1,11 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 import "\u0000./input2.js?commonjs-require";
-import t2 from "\u0000./input2.js?commonjs-proxy";
+import require$$0 from "\u0000./input2.js?commonjs-proxy";
+
+const t2 = require$$0;
 
 console.log(t2);
 var input1 = 1;
 
-export { input1 as __moduleExports, input1 as default };
+export default input1;
+export { input1 as __moduleExports };

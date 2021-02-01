@@ -104,17 +104,6 @@ function getDefinePropertyCallName(node, targetName) {
   return { key: key.value, value: valueProperty.value };
 }
 
-export function isLocallyShadowed(name, scope) {
-  while (scope.parent) {
-    if (scope.declarations[name]) {
-      return true;
-    }
-    // eslint-disable-next-line no-param-reassign
-    scope = scope.parent;
-  }
-  return false;
-}
-
 export function isShorthandProperty(parent) {
   return parent && parent.type === 'Property' && parent.shorthand;
 }

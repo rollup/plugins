@@ -28,12 +28,7 @@ import {
 } from './generate-imports';
 import { DYNAMIC_JSON_PREFIX } from './helpers';
 import { tryParse } from './parse';
-import {
-  deconflict,
-  deconflictScopes,
-  getName,
-  getVirtualPathForDynamicRequirePath
-} from './utils';
+import { deconflict, getName, getVirtualPathForDynamicRequirePath } from './utils';
 import {
   isModuleRegisterProxy,
   unwrapModuleRegisterProxy,
@@ -79,7 +74,7 @@ export default function transformCommonjs(
   const globals = new Set();
 
   // TODO technically wrong since globals isn't populated yet, but ¯\_(ツ)_/¯
-  const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
+  const HELPERS_NAME = deconflict([scope], globals, 'commonjsHelpers');
   const dynamicRegisterSources = new Set();
   let hasRemovedRequire = false;
 
@@ -423,11 +418,11 @@ export default function transformCommonjs(
   });
 
   const nameBase = getName(id);
-  const exportsName = deconflictScopes([...exportsAccessScopes], globals, nameBase);
-  const moduleName = deconflictScopes([...moduleAccessScopes], globals, `${nameBase}Module`);
+  const exportsName = deconflict([...exportsAccessScopes], globals, nameBase);
+  const moduleName = deconflict([...moduleAccessScopes], globals, `${nameBase}Module`);
   const deconflictedExportNames = Object.create(null);
   for (const [exportName, { scopes }] of exportsAssignmentsByName) {
-    deconflictedExportNames[exportName] = deconflictScopes([...scopes], globals, exportName);
+    deconflictedExportNames[exportName] = deconflict([...scopes], globals, exportName);
   }
 
   // We cannot wrap ES/mixed modules

@@ -4,4 +4,5 @@ var input2 = {
   a: 2
 };
 
-export { input2 as __moduleExports, input2 as default };
+export default input2;
+export { input2 as __moduleExports };
