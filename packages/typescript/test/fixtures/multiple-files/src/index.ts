@@ -1,2 +1,2 @@
-const anExampleVariable = 'Index Page';
+const anExampleVariable: string = 'Index Page';
 console.log(anExampleVariable);

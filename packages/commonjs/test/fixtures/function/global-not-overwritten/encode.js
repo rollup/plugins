@@ -1,4 +1,4 @@
-exports.encodeURIComponent = function () {
+exports.encodeURIComponent = function() {
   return encodeURIComponent(this.str);
 };
 
