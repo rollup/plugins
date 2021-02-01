@@ -199,3 +199,13 @@ test('pkg.browser with mapping to prevent bundle by specifying a value of false'
 
   t.is(module.exports, 'ok');
 });
+
+test('pkg.browser can override the export map result', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-override-exports.js',
+    plugins: [nodeResolve({ browser: true }), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'browser');
+})
