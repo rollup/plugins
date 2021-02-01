@@ -12,7 +12,7 @@ export default {
     throw new Error(warning);
   },
   output: [
-    { file: pkg.main, format: 'cjs', exports: 'named' },
+    { file: pkg.main, format: 'cjs', exports: 'named', sourcemap: true },
     { file: pkg.module, format: 'es', plugins: [emitModulePackageFile()] }
   ]
 };

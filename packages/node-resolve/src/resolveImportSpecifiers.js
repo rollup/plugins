@@ -92,6 +92,8 @@ async function resolveId({
       importer,
       moduleDirs: moduleDirectories,
       conditions: exportConditions,
+      useBrowserOverrides,
+      packageBrowserField,
       resolveId(id, parent) {
         return resolveId({
           importSpecifier: id,
@@ -103,6 +105,7 @@ async function resolveId({
           mainFields,
           preserveSymlinks,
           useBrowserOverrides,
+          packageBrowserField,
           baseDir,
           moduleDirectories
         });
@@ -127,7 +130,9 @@ async function resolveId({
           moduleDirs: moduleDirectories,
           pkgURL,
           pkgJsonPath,
-          conditions: exportConditions
+          conditions: exportConditions,
+          useBrowserOverrides,
+          packageBrowserField
         };
         const resolvedPackageExport = await resolvePackageExports(
           context,
