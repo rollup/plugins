@@ -13,4 +13,5 @@ if ( 'object' === 'object' && 'object' === 'object' ) {
 }
 }(inputModule, input));
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };

@@ -8,4 +8,5 @@ try {
   /* ignore */
 }
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };

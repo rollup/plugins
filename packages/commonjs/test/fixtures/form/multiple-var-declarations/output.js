@@ -10,4 +10,5 @@ var a = require$$0()
 
 console.log( a, b );
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };

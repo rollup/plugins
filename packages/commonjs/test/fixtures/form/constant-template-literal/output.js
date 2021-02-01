@@ -6,4 +6,5 @@ import require$$0 from "\u0000tape?commonjs-proxy";
 var foo = require$$0;
 console.log(foo);
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };

@@ -5,4 +5,5 @@ var pe = 'pe';
 var foo = commonjsHelpers.commonjsRequire(`ta${pe}`);
 console.log(foo);
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };

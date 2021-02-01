@@ -6,4 +6,5 @@ import require$$0 from "\u0000bar?commonjs-proxy";
 var foo = require( 'foo' );
 var bar = require$$0;
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };

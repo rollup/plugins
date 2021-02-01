@@ -46,13 +46,7 @@ export function rewriteExportsAndGetExportsBlock(
   } else {
     exports.push(`${exportsName} as __moduleExports`);
     if (wrapped) {
-      getExportsWhenWrapping(
-        exports,
-        exportDeclarations,
-        exportsName,
-        detectWrappedDefault,
-        HELPERS_NAME
-      );
+      getExportsWhenWrapping(exportDeclarations, exportsName, detectWrappedDefault, HELPERS_NAME);
     } else {
       getExports(
         magicString,
@@ -93,19 +87,18 @@ function getExportsForReplacedModuleExports(
 }
 
 function getExportsWhenWrapping(
-  exports,
   exportDeclarations,
   exportsName,
   detectWrappedDefault,
   HELPERS_NAME
 ) {
-  if (detectWrappedDefault) {
-    exportDeclarations.push(
-      `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
-    );
-  } else {
-    exports.push(`${exportsName} as default`);
-  }
+  exportDeclarations.push(
+    `export default ${
+      detectWrappedDefault
+        ? `/*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName})`
+        : exportsName
+    };`
+  );
 }
 
 function getExports(
@@ -159,7 +152,6 @@ function getExports(
     magicString.overwrite(moduleExportsExpression.start, moduleExportsExpression.end, exportsName);
   }
 
-  // TODO Lukas test remaining cases of default exports
   if (isRestorableCompiledEsm) {
     if (moduleExportsAssignments.length === 0) {
       exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
@@ -169,6 +161,6 @@ function getExports(
       );
     }
   } else {
-    exports.push(`${exportsName} as default`);
+    exportDeclarations.push(`export default ${exportsName};`);
   }
 }

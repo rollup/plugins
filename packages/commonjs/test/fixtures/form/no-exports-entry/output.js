@@ -11,4 +11,5 @@ var foo = function () {
 
 var input = 42;
 
-export { input_1 as __moduleExports, input_1 as default };
+export default input_1;
+export { input_1 as __moduleExports };

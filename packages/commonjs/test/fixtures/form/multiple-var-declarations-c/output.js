@@ -9,4 +9,5 @@ var a = 'a'
 
 console.log( a, b, c );
 
-export { input as __moduleExports, input as default };
+export default input;
+export { input as __moduleExports };
