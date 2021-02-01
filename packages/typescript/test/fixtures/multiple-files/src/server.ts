@@ -1,2 +1,2 @@
-const anotherExampleVariable: string = 'Server File';
+const anotherExampleVariable = 'Server File';
 console.log(anotherExampleVariable);
