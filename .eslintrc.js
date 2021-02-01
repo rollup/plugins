@@ -37,22 +37,13 @@ module.exports = {
     'no-unused-vars': 'off',
     'prefer-object-spread': 'off',
     'spaced-comment': 'off',
-    'prettier/prettier': [
-      'error',
-      {
-        arrowParens: 'always',
-        printWidth: 100,
-        singleQuote: true,
-        trailingComma: 'none',
-        plugins: ['prettier-plugin-package']
-      }
-    ]
+    'prettier/prettier': ['error']
   },
   overrides: [
     {
-      "files": ["**/*.ts"],
-      "rules": {
-        "no-undef": "off"
+      files: ['**/*.ts'],
+      rules: {
+        'no-undef': 'off'
       }
     }
   ]
