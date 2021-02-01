@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['rollup', 'plugin:import/typescript'],
+  extends: ['rollup', 'plugin:import/typescript', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: ['./tsconfig.eslint.json', './packages/*/tsconfig.json'],

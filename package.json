@@ -30,6 +30,7 @@
     "chalk": "^4.1.0",
     "codecov-lite": "^1.0.3",
     "del-cli": "^3.0.1",
+    "eslint-config-prettier": "^7.2.0",
     "eslint-config-rollup": "^1.0.0",
     "execa": "^4.0.3",
     "globby": "^11.0.1",
