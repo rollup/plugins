@@ -11,6 +11,7 @@
     "lint:js": "eslint scripts util",
     "lint:json": "prettier --write tsconfig.*.json codecov.yml pnpm-workspace.yaml",
     "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "prettier": "prettier --write .",
     "preinstall": "node scripts/disallow-npm.js",
     "pub": "node scripts/pub.js",
     "publish": "node scripts/publish.js",
