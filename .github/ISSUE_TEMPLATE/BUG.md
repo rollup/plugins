@@ -1,7 +1,6 @@
 ---
 name: 🐞 Bug Report
 about: Something went awry and you'd like to tell us about it.
-
 ---
 
 <!--
@@ -38,12 +37,9 @@ about: Something went awry and you'd like to tell us about it.
   ⚠️ ZIP Files are unsafe and maintainers will NOT download them.
 -->
 
-
 ### Expected Behavior
 
-
 ### Actual Behavior
-
 
 ### Additional Information
 

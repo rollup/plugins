@@ -1,7 +1,6 @@
 ---
 name: 🔌 New Plugin Request
 about: Request a new Core plugin
-
 ---
 
 <!--
@@ -24,6 +23,7 @@ Request Checklist:
   Required Steps Before Opening This Issue
   Please [x] check the boxes to acknowledge you have performed these tasks
 -->
+
 - [ ] I have searched https://npmjs.com/ before opening this issue
 - [ ] I have searched https://github.com/rollup/awesome before opening this issue
 

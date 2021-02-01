@@ -41,9 +41,9 @@ export default {
   input: 'src/index.ts',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [typescript()],
+  plugins: [typescript()]
 };
 ```
 
@@ -95,7 +95,7 @@ Overrides the TypeScript module used for transpilation.
 
 ```js
 typescript({
-  typescript: require('some-fork-of-typescript'),
+  typescript: require('some-fork-of-typescript')
 });
 ```
 
@@ -108,7 +108,7 @@ Overrides the injected TypeScript helpers with a custom version.
 
 ```js
 typescript({
-  tslib: require.resolve('some-fork-of-tslib'),
+  tslib: require.resolve('some-fork-of-tslib')
 });
 ```
 
@@ -156,19 +156,19 @@ typescript({
         type: 'program',
         factory: (program) => {
           return ProgramRequiringTransformerFactory(program);
-        },
+        }
       },
       {
         type: 'typeChecker',
         factory: (typeChecker) => {
           // Allow the transformer to get a Program reference in it's factory
           return TypeCheckerRequiringTransformerFactory(program);
-        },
-      },
+        }
+      }
     ],
     after: [
       // You can use normal transformers directly
-      require('custom-transformer-based-on-Context'),
+      require('custom-transformer-based-on-Context')
     ],
     afterDeclarations: [
       // Or even define in place
@@ -182,9 +182,9 @@ typescript({
 
           return ts.visitEachChild(source, visitor, context);
         };
-      },
-    ],
-  },
+      }
+    ]
+  }
 });
 ```
 
@@ -199,7 +199,7 @@ compilation.
 
 ```js
 typescript({
-  cacheDir: '.rollup.tscache',
+  cacheDir: '.rollup.tscache'
 });
 ```
 
@@ -242,8 +242,8 @@ export default {
   input: './main.ts',
   plugins: [
     typescript({ module: 'CommonJS' }),
-    commonjs({ extensions: ['.js', '.ts'] }), // the ".ts" extension is required
-  ],
+    commonjs({ extensions: ['.js', '.ts'] }) // the ".ts" extension is required
+  ]
 };
 ```
 
@@ -271,7 +271,7 @@ import typescript from '@rollup/plugin-typescript';
 export default {
   // … other options …
   acornInjectPlugins: [jsx()],
-  plugins: [typescript({ jsx: 'preserve' })],
+  plugins: [typescript({ jsx: 'preserve' })]
 };
 ```
 
