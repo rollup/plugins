@@ -86,10 +86,21 @@ async function resolvePackageTarget(context, { target, subpath, pattern, interna
   }
 
   if (target && typeof target === 'object') {
+    const { packageBrowserField, useBrowserOverrides } = context;
+    let browserTarget = null;
+
+    if (useBrowserOverrides) {
+      for (const [, value] of Object.entries(target)) {
+        if (packageBrowserField[value]) {
+          browserTarget = value;
+        }
+      }
+    }
+
     for (const [key, value] of Object.entries(target)) {
       if (key === 'default' || context.conditions.includes(key)) {
         const resolved = await resolvePackageTarget(context, {
-          target: value,
+          target: browserTarget || value,
           subpath,
           pattern,
           internal
