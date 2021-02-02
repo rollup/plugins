@@ -6,6 +6,7 @@ import { rollup } from 'rollup';
 import { SourceMapConsumer } from 'source-map';
 import jsonPlugin from '@rollup/plugin-json';
 import nodeResolvePlugin from '@rollup/plugin-node-resolve';
+import { createFilter } from '@rollup/pluginutils';
 
 import { getCode } from '../../../util/test';
 
@@ -97,6 +98,44 @@ test('does not babelify excluded code', async (t) => {
 const foo = () => 42;
 
 console.log("the answer is ".concat(foo()));
+`
+  );
+});
+
+test('does not babelify excluded code with custom filter', async (t) => {
+  const filter = createFilter([], '**/foo.js');
+  const code = await generate('fixtures/exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.false(code.includes('${foo()}'));
+  t.true(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+const foo = () => 42;
+
+console.log("the answer is ".concat(foo()));
+`
+  );
+});
+
+test('does babelify included code with custom filter', async (t) => {
+  const filter = createFilter('**/foo.js', [], {
+    resolve: __dirname
+  });
+  const code = await generate('fixtures/exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.true(code.includes('${foo()}'));
+  t.false(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+var foo = function foo() {
+  return 42;
+};
+
+console.log(\`the answer is \${foo()}\`);
 `
   );
 });

@@ -122,12 +122,14 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
         let exclude;
         let include;
         let extensions;
+        let customFilter;
 
         ({
           exclude,
           extensions,
           babelHelpers,
           include,
+          filter: customFilter,
           skipPreflightCheck,
           ...babelOptions
         } = unpackInputPluginOptions(pluginOptionsWithOverrides, this.meta.rollupVersion));
@@ -135,8 +137,14 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
         const extensionRegExp = new RegExp(
           `(${extensions.map(escapeRegExpCharacters).join('|')})$`
         );
-        const includeExcludeFilter = createFilter(include, exclude);
-        filter = (id) => extensionRegExp.test(stripQuery(id).bareId) && includeExcludeFilter(id);
+        const userDefinedFilter = (id) => {
+          let ret = createFilter(include, exclude)(id);
+          if (typeof customFilter === 'function') {
+            ret = ret && customFilter(id);
+          }
+          return ret;
+        };
+        filter = (id) => extensionRegExp.test(stripQuery(id).bareId) && userDefinedFilter(id);
 
         return null;
       },

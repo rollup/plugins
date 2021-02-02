@@ -92,6 +92,21 @@ Type: `String | RegExp | Array[...String|RegExp]`<br>
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
 
+### `filter`
+
+Type: (id: unknown) => boolean<br>
+
+Custom [filter function](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter) can be used to determine whether or not certain modules should be operated upon.
+
+Usage:
+
+```js
+import { createFilter } from '@rollup/pluginutils';
+const include = 'include/**.js';
+const exclude = 'exclude/**.js';
+const filter = createFilter(include, exclude, {});
+```
+
 ### `extensions`
 
 Type: `Array[...String]`<br>
