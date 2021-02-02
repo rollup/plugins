@@ -11,8 +11,8 @@
     "lint:js": "eslint scripts util",
     "lint:json": "prettier --write tsconfig.*.json codecov.yml pnpm-workspace.yaml",
     "lint:package": "prettier --write package.json",
-    "prettier": "prettier --write .",
     "preinstall": "node scripts/disallow-npm.js",
+    "prettier": "prettier --write .",
     "pub": "node scripts/pub.js",
     "publish": "node scripts/publish.js",
     "security": "pnpm audit --audit-level=moderate",
@@ -37,7 +37,6 @@
     "globby": "^11.0.1",
     "husky": "^4.2.5",
     "lint-staged": "^10.5.2",
-    "micromatch": "^4.0.2",
     "nyc": "^15.1.0",
     "pnpm": "5.13.5",
     "prettier": "^2.2.1",
@@ -60,6 +59,17 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix"
+    ],
+    "*.{ts,js,json,yaml,yml,md}": [
+      "prettier --single-quote --write"
+    ],
+    "*package.json": [
+      "prettier --write --plugin=prettier-plugin-package"
+    ]
   },
   "nyc": {
     "include": [
