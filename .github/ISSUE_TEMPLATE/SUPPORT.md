@@ -1,6 +1,7 @@
 ---
 name: 🆘 Support, Help, and Advice
 about: 👉🏽 Need help or tech support? Please don't open an issue! Head to https://is.gd/rollup_chat or https://stackoverflow.com/questions/tagged/rollupjs.
+
 ---
 
 Hey there! If you need help or tech support then this is not the place to

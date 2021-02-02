@@ -4,27 +4,28 @@ on: [push, pull_request]
 
 jobs:
   build:
+
     runs-on: windows-2019
 
     strategy:
       matrix:
-        node: ['12', '10']
+        node: [ '12', '10' ]
 
     name: ${{ matrix.node }} (Windows)
     steps:
-      - name: Configure git line-breaks
-        run: git config --global core.autocrlf false
-      - name: Checkout Commit
-        uses: actions/checkout@v1
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
-      - name: checkout master
-        run: git branch -f master origin/master
-      - name: install pnpm
-        run: npm install pnpm -g
-      - name: pnpm install
-        run: pnpm install --ignore-scripts
-      - name: run tests
-        run: pnpm run ci:test
+    - name: Configure git line-breaks
+      run: git config --global core.autocrlf false
+    - name: Checkout Commit
+      uses: actions/checkout@v1
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node }}
+    - name: checkout master
+      run: git branch -f master origin/master
+    - name: install pnpm
+      run: npm install pnpm -g
+    - name: pnpm install
+      run: pnpm install --ignore-scripts
+    - name: run tests
+      run: pnpm run ci:test

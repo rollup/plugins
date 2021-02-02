@@ -92,7 +92,7 @@ test('supports empty keys', (t) => {
 test('avoid U+2029 U+2029 -0 be ignored by JSON.stringify, and avoid it return non-string (undefined) before replacing', (t) => {
   t.is(
     // eslint-disable-next-line no-undefined, func-names
-    dataToEsm([-0, '\u2028\u2029', undefined, function () {}], { compact: true }),
+    dataToEsm([-0, '\u2028\u2029', undefined, function() {}], { compact: true }),
     'export default[-0,"\\u2028\\u2029",undefined,undefined];'
   );
 });

@@ -7,7 +7,10 @@ import { CLIEngine } from 'eslint';
 import { RollupEslintOptions } from '../types';
 
 function normalizePath(id: string) {
-  return path.relative(process.cwd(), id).split(path.sep).join('/');
+  return path
+    .relative(process.cwd(), id)
+    .split(path.sep)
+    .join('/');
 }
 
 export default function eslint(options = {} as RollupEslintOptions): Plugin {

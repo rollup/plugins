@@ -37,7 +37,10 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       return Promise.all([fs.promises.stat(id), fs.promises.readFile(id)]).then(
         ([stats, buffer]) => {
           if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
-            const hash = createHash('sha1').update(buffer).digest('hex').substr(0, 16);
+            const hash = createHash('sha1')
+              .update(buffer)
+              .digest('hex')
+              .substr(0, 16);
 
             const filename = `${hash}.wasm`;
             const publicFilepath = `${publicPath}${filename}`;

@@ -1,14 +1,8 @@
-import { Plugin } from 'rollup';
+import { Plugin } from "rollup";
 
 type Injectment = string | [string, string];
 
 export interface RollupInjectOptions {
-  /**
-   * All other options are treated as `string: injectment` injectrs,
-   * or `string: (id) => injectment` functions.
-   */
-  [str: string]: Injectment | RollupInjectOptions['include'] | RollupInjectOptions['modules'];
-
   /**
    * A minimatch pattern, or array of patterns, of files that should be
    * processed by this plugin (if omitted, all files are included by default)
@@ -24,6 +18,12 @@ export interface RollupInjectOptions {
    * You can separate values to inject from other options.
    */
   modules?: { [str: string]: Injectment };
+
+  /**
+   * All other options are treated as `string: injectment` injectrs,
+   * or `string: (id) => injectment` functions.
+   */
+  [str: string]: Injectment | RollupInjectOptions["include"] | RollupInjectOptions["modules"];
 }
 
 /**

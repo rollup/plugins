@@ -74,15 +74,8 @@ readdirSync('./fixtures/form').forEach((dir) => {
       // this will benefit issues like `form/try-catch-remove` where whitespace is left in the line,
       // and testing on windows (\r\n)
       t.is(
-        actual
-          .split('\n')
-          .map((x) => x.trimEnd())
-          .join('\n'),
-        expected
-          .split('\n')
-          .map((x) => x.trimEnd())
-          .join('\n')
-      );
+        actual.split('\n').map(x => x.trimEnd()).join('\n'),
+        expected.split('\n').map(x => x.trimEnd()).join('\n'));
     }
   });
 });

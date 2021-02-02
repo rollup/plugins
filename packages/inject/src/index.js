@@ -73,7 +73,12 @@ export default function inject(options) {
     });
   }
 
-  const firstpass = new RegExp(`(?:${Array.from(modulesMap.keys()).map(escape).join('|')})`, 'g');
+  const firstpass = new RegExp(
+    `(?:${Array.from(modulesMap.keys())
+      .map(escape)
+      .join('|')})`,
+    'g'
+  );
   const sourceMap = options.sourceMap !== false && options.sourcemap !== false;
 
   return {

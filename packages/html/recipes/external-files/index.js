@@ -12,7 +12,7 @@ export default function htmlTemplate(externals) {
     let links = [...(files.css || [])];
 
     // externals = [{ type: 'js', file: '//xxxx1.js', pos: 'before' }, { type: 'css', file: '//xxxx1.css' }]
-    if (Array.isArray(externals)) {
+    if(Array.isArray(externals)) {
       const beforeLinks = [];
       const beforeScripts = [];
       externals.forEach((node) => {
@@ -23,25 +23,21 @@ export default function htmlTemplate(externals) {
         } else {
           fileList = isCssFile ? links : scripts;
         }
-        fileList.push({ fileName: node.file });
+        fileList.push({fileName: node.file});
       });
       scripts = beforeScripts.concat(scripts);
       links = beforeLinks.concat(links);
     }
 
-    scripts = scripts
-      .map(({ fileName }) => {
-        const attrs = makeHtmlAttributes(attributes.script);
-        return `<script src="${publicPath}${fileName}"${attrs}></script>`;
-      })
-      .join('\n');
+    scripts = scripts.map(({ fileName }) => {
+      const attrs = makeHtmlAttributes(attributes.script);
+      return `<script src="${publicPath}${fileName}"${attrs}></script>`;
+    }).join('\n');
 
-    links = links
-      .map(({ fileName }) => {
-        const attrs = makeHtmlAttributes(attributes.link);
-        return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`;
-      })
-      .join('\n');
+    links = links.map(({ fileName }) => {
+      const attrs = makeHtmlAttributes(attributes.link);
+      return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`;
+    }).join('\n');
 
     const metas = meta
       .map((input) => {

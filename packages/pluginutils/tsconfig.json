@@ -4,5 +4,9 @@
     "esModuleInterop": true,
     "module": "commonjs"
   },
-  "include": ["src/**/*", "test/**/*", "types/**/*"]
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "types/**/*"
+  ]
 }
