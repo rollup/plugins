@@ -11,6 +11,7 @@ import getPluginOptions from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
 import findTypescriptOutput, { getEmittedFile } from './outputFile';
+import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
 
@@ -45,6 +46,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     buildStart() {
       emitParsedOptionsErrors(ts, this, parsedOptions);
+
+      preflight(parsedOptions, this);
 
       // Fixes a memory leak https://github.com/rollup/plugins/issues/322
       if (!program) {

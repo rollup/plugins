@@ -31,6 +31,7 @@
     "codecov-lite": "^1.0.3",
     "del-cli": "^3.0.1",
     "eslint-config-rollup": "^1.0.0",
+    "esm": "^3.2.25",
     "execa": "^4.0.3",
     "globby": "^11.0.1",
     "husky": "^4.2.5",
