@@ -34,15 +34,15 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
       __buildDate__: () => JSON.stringify(new Date()),
-      __buildVersion: 15,
-    }),
-  ],
+      __buildVersion: 15
+    })
+  ]
 };
 ```
 

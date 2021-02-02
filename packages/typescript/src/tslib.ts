@@ -2,7 +2,9 @@ import resolveId, { AsyncOpts } from 'resolve';
 
 const resolveIdAsync = (file: string, opts: AsyncOpts) =>
   new Promise<string>((fulfil, reject) =>
-    resolveId(file, opts, (err, contents) => (err || typeof contents === 'undefined' ? reject(err) : fulfil(contents)))
+    resolveId(file, opts, (err, contents) =>
+      err || typeof contents === 'undefined' ? reject(err) : fulfil(contents)
+    )
   );
 
 /**

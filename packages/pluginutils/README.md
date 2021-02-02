@@ -52,7 +52,7 @@ export default function myPlugin(options = {}) {
       // only adds an extension if there isn't one already
       id = addExtension(id); // `foo` -> `foo.js`, `foo.js` -> `foo.js`
       id = addExtension(id, '.myext'); // `foo` -> `foo.myext`, `foo.js` -> `foo.js`
-    },
+    }
   };
 }
 ```
@@ -88,9 +88,9 @@ export default function myPlugin(options = {}) {
         },
         leave(node) {
           if (node.scope) scope = scope.parent;
-        },
+        }
       });
-    },
+    }
   };
 }
 ```
@@ -126,7 +126,7 @@ import { createFilter } from '@rollup/pluginutils';
 export default function myPlugin(options = {}) {
   // assume that the myPlugin accepts options of `options.include` and `options.exclude`
   var filter = createFilter(options.include, options.exclude, {
-    resolve: '/my/base/dir',
+    resolve: '/my/base/dir'
   });
 
   return {
@@ -134,7 +134,7 @@ export default function myPlugin(options = {}) {
       if (!filter(id)) return;
 
       // proceed with the transformation...
-    },
+    }
   };
 }
 ```
@@ -160,14 +160,14 @@ import { dataToEsm } from '@rollup/pluginutils';
 const esModuleSource = dataToEsm(
   {
     custom: 'data',
-    to: ['treeshake'],
+    to: ['treeshake']
   },
   {
     compact: false,
     indent: '\t',
     preferConst: false,
     objectShorthand: false,
-    namedExports: true,
+    namedExports: true
   }
 );
 /*
@@ -209,9 +209,9 @@ export default function myPlugin(options = {}) {
             // do something with the declared names
             // e.g. for `const {x, y: z} = ...` => declaredNames = ['x', 'z']
           }
-        },
+        }
       });
-    },
+    }
   };
 }
 ```

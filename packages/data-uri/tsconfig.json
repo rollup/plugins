@@ -4,9 +4,6 @@
     "lib": ["es6", "dom"],
     "esModuleInterop": true
   },
-  "include": [
-    "src/**/*",
-    "types/**/*"
-  ],
+  "include": ["src/**/*", "types/**/*"],
   "exclude": ["test/fixtures/*.*"]
 }
