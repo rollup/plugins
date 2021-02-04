@@ -13,6 +13,7 @@ importers:
       codecov-lite: 1.0.3
       del-cli: 3.0.1
       eslint-config-rollup: 1.0.0_typescript@3.9.7
+      esm: 3.2.25
       execa: 4.0.3
       globby: 11.0.1
       husky: 4.3.0
@@ -36,6 +37,7 @@ importers:
       conventional-commits-parser: ^3.1.0
       del-cli: ^3.0.1
       eslint-config-rollup: ^1.0.0
+      esm: ^3.2.25
       execa: ^4.0.3
       globby: ^11.0.1
       husky: ^4.2.5
@@ -3059,7 +3061,7 @@ packages:
     resolution:
       integrity: sha512-7ItTKOhOZbznhXAQ2g/slGg1PJV5zDO/WdkTwi7UEOJmkvsE32PWvx6mKtDjiMpjnR2CNf6BAD6sSxIlv7ptng==
   /core-js/2.6.11:
-    deprecated: core-js@<3 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.
+    deprecated: 'core-js@<3 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.'
     dev: true
     requiresBuild: true
     resolution:
@@ -3312,7 +3314,7 @@ packages:
   /debug/4.2.0:
     dependencies:
       ms: 2.1.2
-    deprecated: Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)
+    deprecated: 'Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)'
     engines:
       node: '>=6.0'
     peerDependencies:
@@ -3821,6 +3823,12 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-n5pEU27DRxCSlOhJ2rO57GDLcNsxO0LPpAbpFdh7xmcDmjmlGUfoyrsB3I7yYdQXO5N3gkSTiDrPSPNFiiirXA==
+  /esm/3.2.25:
+    dev: true
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==
   /espower-location-detector/1.0.0:
     dependencies:
       is-url: 1.2.4

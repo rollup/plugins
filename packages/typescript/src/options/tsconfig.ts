@@ -2,7 +2,16 @@ import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 
 import { PluginContext } from 'rollup';
-import type { ExtendedConfigCacheEntry, ParsedCommandLine } from 'typescript';
+import type {
+  Diagnostic,
+  ExtendedConfigCacheEntry,
+  MapLike,
+  ParsedCommandLine,
+  ProjectReference,
+  TypeAcquisition,
+  WatchDirectoryFlags,
+  WatchOptions
+} from 'typescript';
 
 import { RollupTypescriptOptions } from '../../types';
 import diagnosticToWarning from '../diagnostics/toWarning';
@@ -15,6 +24,19 @@ import {
   PartialCompilerOptions
 } from './interfaces';
 import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
+
+export interface TypeScriptConfig {
+  autoSetSourceMap: boolean;
+  options: CompilerOptions;
+  typeAcquisition?: TypeAcquisition | undefined;
+  fileNames: string[];
+  projectReferences?: readonly ProjectReference[] | undefined;
+  watchOptions?: WatchOptions | undefined;
+  raw?: any;
+  errors: Diagnostic[];
+  wildcardDirectories?: MapLike<WatchDirectoryFlags> | undefined;
+  compileOnSave?: boolean | undefined;
+}
 
 /**
  * Finds the path to the tsconfig file relative to the current working directory.
@@ -89,7 +111,7 @@ export function parseTypescriptConfig(
   ts: typeof import('typescript'),
   tsconfig: RollupTypescriptOptions['tsconfig'],
   compilerOptions: PartialCompilerOptions
-) {
+): TypeScriptConfig {
   /* eslint-disable no-undefined */
   const cwd = process.cwd();
   makePathsAbsolute(compilerOptions, cwd);
