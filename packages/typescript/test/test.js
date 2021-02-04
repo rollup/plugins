@@ -1257,7 +1257,7 @@ test.serial.skip('works when code is in src directory', async (t) => {
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['index.js', 'types/index.d.ts', 'types/index.d.ts.map']
+    ['index.js', 'index.d.ts']
   );
 });
 
