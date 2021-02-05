@@ -17,7 +17,7 @@ ${pluginName}: Rollup requires that TypeScript produces ES Modules. Unfortunatel
  "module" other than "esnext". Unless you know what you're doing, please change "module" to "esnext"
  in the target tsconfig.json file or plugin options.`.replace(/\n/g, '');
 
-const rootDirErrorMessage = `${pluginName}: The "rootDir" or "rootDirs" option is required when the "tsconfig" option is not specified.`;
+const rootDirErrorMessage = `${pluginName}: The "rootDir" or "rootDirs" option is required when the "tsconfig" option is not specified and "declaration" is "true".`;
 
 const tsLibErrorMessage = `${pluginName}: Could not find module 'tslib', which is required by this plugin. Is it installed?`;
 
@@ -31,7 +31,7 @@ export const preflight = ({ config, context, rollupOptions, tslib }: PreflightOp
   }
 
   const { options } = config;
-  if (!options.configFilePath && !options.rootDir && !options.rootDirs) {
+  if (options.declaration && !options.configFilePath && !options.rootDir && !options.rootDirs) {
     context.error(rootDirErrorMessage);
   }
 
