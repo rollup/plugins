@@ -31,6 +31,7 @@ module.exports = {
         tsx: 'never'
       }
     ],
+    'import/prefer-default-export': 'off',
     'import/no-namespace': 'off',
     'import/no-named-export': 'off',
     'no-redeclare': 'off',

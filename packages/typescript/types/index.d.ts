@@ -1,6 +1,38 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import { CompilerOptions, CustomTransformers, Program, TypeChecker } from 'typescript';
+import {
+  CompilerOptions,
+  CompilerOptionsValue,
+  CustomTransformers,
+  Program,
+  TsConfigSourceFile,
+  TypeChecker
+} from 'typescript';
+
+type ElementType<T extends Array<any> | undefined> = T extends (infer U)[] ? U : never;
+
+export type TransformerStage = keyof CustomTransformers;
+type StagedTransformerFactory<T extends TransformerStage> = ElementType<CustomTransformers[T]>;
+type TransformerFactory<T extends TransformerStage> =
+  | StagedTransformerFactory<T>
+  | ProgramTransformerFactory<T>
+  | TypeCheckerTransformerFactory<T>;
+
+export type CustomTransformerFactories = {
+  [stage in TransformerStage]?: Array<TransformerFactory<stage>>;
+};
+
+interface ProgramTransformerFactory<T extends TransformerStage> {
+  type: 'program';
+
+  factory(program: Program): StagedTransformerFactory<T>;
+}
+
+interface TypeCheckerTransformerFactory<T extends TransformerStage> {
+  type: 'typeChecker';
+
+  factory(typeChecker: TypeChecker): StagedTransformerFactory<T>;
+}
 
 export interface RollupTypescriptPluginOptions {
   /**
@@ -38,40 +70,21 @@ export interface RollupTypescriptPluginOptions {
   transformers?: CustomTransformerFactories;
 }
 
-type ElementType<T extends Array<any> | undefined> = T extends (infer U)[] ? U : never;
-
-export type TransformerStage = keyof CustomTransformers;
-type StagedTransformerFactory<T extends TransformerStage> = ElementType<CustomTransformers[T]>;
-type TransformerFactory<T extends TransformerStage> =
-  | StagedTransformerFactory<T>
-  | ProgramTransformerFactory<T>
-  | TypeCheckerTransformerFactory<T>;
-
-export type CustomTransformerFactories = {
-  [stage in TransformerStage]?: Array<TransformerFactory<stage>>;
-};
-
-interface ProgramTransformerFactory<T extends TransformerStage> {
-  type: 'program';
-
-  factory(program: Program): StagedTransformerFactory<T>;
-}
-
-interface TypeCheckerTransformerFactory<T extends TransformerStage> {
-  type: 'typeChecker';
-
-  factory(typeChecker: TypeChecker): StagedTransformerFactory<T>;
+export interface FlexibleCompilerOptions extends CompilerOptions {
+  [option: string]: CompilerOptionsValue | TsConfigSourceFile | undefined | any;
 }
 
 /** Properties of `CompilerOptions` that are normally enums */
 export type EnumCompilerOptions = 'module' | 'moduleResolution' | 'newLine' | 'jsx' | 'target';
 
 /** JSON representation of Typescript compiler options */
-export type JsonCompilerOptions = Omit<CompilerOptions, EnumCompilerOptions> &
+export type JsonCompilerOptions = Omit<FlexibleCompilerOptions, EnumCompilerOptions> &
   Record<EnumCompilerOptions, string>;
 
 /** Compiler options set by the plugin user. */
-export type PartialCompilerOptions = Partial<CompilerOptions> | Partial<JsonCompilerOptions>;
+export type PartialCompilerOptions =
+  | Partial<FlexibleCompilerOptions>
+  | Partial<JsonCompilerOptions>;
 
 export type RollupTypescriptOptions = RollupTypescriptPluginOptions & PartialCompilerOptions;
 

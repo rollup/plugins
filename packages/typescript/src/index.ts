@@ -1,13 +1,13 @@
 import * as path from 'path';
 
-import { Plugin, SourceDescription } from 'rollup';
+import { Plugin, RollupOptions, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
 import createModuleResolver from './moduleResolution';
-import getPluginOptions from './options/plugin';
+import { getPluginOptions } from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
 import findTypescriptOutput, { getEmittedFile } from './outputFile';
@@ -44,10 +44,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   return {
     name: 'typescript',
 
-    buildStart() {
+    buildStart(rollupOptions: RollupOptions) {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
-      preflight(parsedOptions, this);
+      preflight({ config: parsedOptions, context: this, rollupOptions, tslib });
 
       // Fixes a memory leak https://github.com/rollup/plugins/issues/322
       if (!program) {

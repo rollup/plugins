@@ -30,6 +30,9 @@ const getResolvedModules = async (bundle) => {
   return modules;
 };
 
+// eslint-disable-next-line no-console
+const onwarn = (warning) => console.warn(warning.toString());
+
 /**
  * @param {import('ava').Assertions} t
  * @param {import('rollup').RollupBuild} bundle
@@ -59,9 +62,16 @@ const testBundle = async (t, bundle, args = {}) => {
   return { code, error, module, result };
 };
 
+const evaluateBundle = async (bundle) => {
+  const { module } = await testBundle(null, bundle);
+  return module.exports;
+};
+
 module.exports = {
+  evaluateBundle,
   getCode,
   getImports,
   getResolvedModules,
+  onwarn,
   testBundle
 };
