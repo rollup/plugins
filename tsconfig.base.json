@@ -9,6 +9,7 @@
     "noEmitOnError": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "resolveJsonModule": true,
     "pretty": true,
     "sourceMap": true,
     "strict": true,

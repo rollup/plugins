@@ -6,23 +6,13 @@ const test = require('ava');
 const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
-const { getCode, testBundle } = require('../../../util/test');
+const { evaluateBundle, getCode, onwarn } = require('../../../util/test');
 
 const typescript = require('..');
 
 test.beforeEach(() => process.chdir(__dirname));
 
 const outputOptions = { format: 'esm' };
-
-async function evaluateBundle(bundle) {
-  const { module } = await testBundle(null, bundle);
-  return module.exports;
-}
-
-function onwarn(warning) {
-  // eslint-disable-next-line no-console
-  console.warn(warning.toString());
-}
 
 test.serial('runs code through typescript', async (t) => {
   const bundle = await rollup({
@@ -421,7 +411,7 @@ test.serial('ignore type errors if noEmitOnError is false', async (t) => {
 
   t.true(code.includes(`console.log('hello world')`));
 
-  t.is(warnings.length, 1);
+  t.is(warnings.length, 2);
 
   t.is(warnings[0].code, 'PLUGIN_WARNING');
   t.is(warnings[0].plugin, 'typescript');
@@ -489,38 +479,6 @@ test.serial('supports overriding the TypeScript version', async (t) => {
   const result = await evaluateBundle(bundle);
 
   t.is(result, 1337);
-});
-
-test.serial('supports overriding tslib with a custom path', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/overriding-tslib/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
-        tslib: 'fixtures/overriding-tslib/tslib.js'
-      })
-    ],
-    onwarn
-  });
-  const code = await evaluateBundle(bundle);
-
-  t.is(code.myParent.baseMethod(), 'base method');
-});
-
-test.serial('supports overriding tslib with a custom path in a promise', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/overriding-tslib/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
-        tslib: Promise.resolve('fixtures/overriding-tslib/tslib.js')
-      })
-    ],
-    onwarn
-  });
-  const code = await evaluateBundle(bundle);
-
-  t.is(code.myParent.baseMethod(), 'base method');
 });
 
 test.serial('should not resolve .d.ts files', async (t) => {
@@ -677,19 +635,6 @@ test.serial('should throw on bad options', async (t) => {
       message: `@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
     }
   ]);
-});
-
-test.serial('creates _tslib.js file when preserveModules is used', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/preserve-modules/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/preserve-modules/tsconfig.json' })],
-    preserveModules: true,
-    onwarn
-  });
-
-  const files = await getCode(bundle, { format: 'es' }, true);
-  t.true(files[0].fileName.includes('main.js'), files[0].fileName);
-  t.true(files[1].fileName.includes('tslib.es6.js'), files[1].fileName);
 });
 
 test.serial('should handle re-exporting types', async (t) => {
