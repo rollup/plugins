@@ -52,30 +52,45 @@ export type RollupBabelCustomOutputPluginOptions = (
   customOptions: Record<string, any>;
   pluginOptions: RollupBabelOutputPluginOptions;
 };
-export type RollupBabelCustomPluginConfig = (
-  this: PluginContext | TransformPluginContext,
+export interface RollupBabelCustomPluginConfigOptions {
+  code: string;
+  customOptions: Record<string, any>;
+}
+export interface RollupBabelCustomPluginResultOptions {
+  code: string;
+  customOptions: Record<string, any>;
+  config: babelCore.PartialConfig;
+  transformOptions: babelCore.TransformOptions;
+}
+export type RollupBabelCustomInputPluginConfig = (
+  this: TransformPluginContext,
   cfg: babelCore.PartialConfig,
-  options: { code: string; customOptions: Record<string, any> }
+  options: RollupBabelCustomPluginConfigOptions
 ) => babelCore.TransformOptions;
-export type RollupBabelCustomPluginResult = (
-  this: PluginContext | TransformPluginContext,
+export type RollupBabelCustomInputPluginResult = (
+  this: TransformPluginContext,
   result: babelCore.BabelFileResult,
-  options: {
-    code: string;
-    customOptions: Record<string, any>;
-    config: babelCore.PartialConfig;
-    transformOptions: babelCore.TransformOptions;
-  }
+  options: RollupBabelCustomPluginResultOptions
+) => babelCore.BabelFileResult;
+export type RollupBabelCustomOutputPluginConfig = (
+  this: PluginContext,
+  cfg: babelCore.PartialConfig,
+  options: RollupBabelCustomPluginConfigOptions
+) => babelCore.TransformOptions;
+export type RollupBabelCustomOutputPluginResult = (
+  this: PluginContext,
+  result: babelCore.BabelFileResult,
+  options: RollupBabelCustomPluginResultOptions
 ) => babelCore.BabelFileResult;
 export interface RollupBabelCustomInputPlugin {
   options?: RollupBabelCustomInputPluginOptions;
-  config?: RollupBabelCustomPluginConfig;
-  result?: RollupBabelCustomPluginResult;
+  config?: RollupBabelCustomInputPluginConfig;
+  result?: RollupBabelCustomInputPluginResult;
 }
 export interface RollupBabelCustomOutputPlugin {
   options?: RollupBabelCustomOutputPluginOptions;
-  config?: RollupBabelCustomPluginConfig;
-  result?: RollupBabelCustomPluginResult;
+  config?: RollupBabelCustomOutputPluginConfig;
+  result?: RollupBabelCustomOutputPluginResult;
 }
 export type RollupBabelCustomInputPluginBuilder = (
   babel: typeof babelCore
