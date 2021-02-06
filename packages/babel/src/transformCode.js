@@ -18,7 +18,7 @@ export default async function transformCode(
 
   let transformOptions = !overrides.config
     ? config.options
-    : await overrides.config.call(this, config, {
+    : await overrides.config.call(ctx, config, {
         code: inputCode,
         customOptions
       });
