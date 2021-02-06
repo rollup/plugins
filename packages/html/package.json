@@ -28,7 +28,8 @@
     "prebuild": "del-cli dist",
     "prepublishOnly": "pnpm build && pnpm lint",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
     "lib",
