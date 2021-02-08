@@ -94,7 +94,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 ### `filter`
 
-Type: (id: unknown) => boolean<br>
+Type: (id: string) => boolean<br>
 
 Custom [filter function](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter) can be used to determine whether or not certain modules should be operated upon.
 
