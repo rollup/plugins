@@ -43,8 +43,8 @@ export default function replace(options = {}) {
     .sort(longest)
     .map(escape);
   const pattern = delimiters
-    ? new RegExp(`${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}`, 'g')
-    : new RegExp(`\\b(${keys.join('|')})\\b`, 'g');
+    ? new RegExp(`${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}(?!\\s*=[^=])`, 'g')
+    : new RegExp(`\\b(${keys.join('|')})\\b(?!\\s*=[^=])`, 'g');
 
   return {
     name: 'replace',
