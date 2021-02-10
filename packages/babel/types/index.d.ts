@@ -1,5 +1,5 @@
 import { Plugin, PluginContext, TransformPluginContext } from 'rollup';
-import { FilterPattern } from '@rollup/pluginutils';
+import { FilterPattern, CreateFilter } from '@rollup/pluginutils';
 import * as babelCore from '@babel/core';
 
 export interface RollupBabelInputPluginOptions
@@ -14,6 +14,16 @@ export interface RollupBabelInputPluginOptions
    * @default undefined;
    */
   exclude?: FilterPattern;
+  /**
+   * Custom filter function can be used to determine whether or not certain modules should be operated upon.
+   * Example:
+   *   import { createFilter } from '@rollup/pluginutils';
+   *   const include = 'include/**.js';
+   *   const exclude = 'exclude/**.js';
+   *   const filter = createFilter(include, exclude, {});
+   * @default undefined;
+   */
+  filter?: ReturnType<CreateFilter>;
   /**
    * An array of file extensions that Babel should transpile. If you want to transpile TypeScript files with this plugin it's essential to include .ts and .tsx in this option.
    * @default ['.js', '.jsx', '.es6', '.es', '.mjs']
