@@ -270,8 +270,11 @@ export function nodeResolve(opts = {}) {
       }
 
       const resolved = await doResolveId(this, importee, importer, opts);
-      if (resolved && (await this.resolve(resolved.id, importer, { skipSelf: true }))?.external) {
-        return false;
+      if (resolved) {
+        const resolvedResolved = await this.resolve(resolved.id, importer, { skipSelf: true });
+        if (resolvedResolved && resolvedResolved.external) {
+          return false;
+        }
       }
 
       return resolved;
