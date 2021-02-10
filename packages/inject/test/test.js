@@ -70,3 +70,7 @@ test('generates * imports', (t) => {
 test('transpiles non-JS files but handles failures to parse', (t) => {
   compare(t, 'non-js', { relative: ['path', 'relative'] });
 });
+
+test('ignores check isReference is false', (t) => {
+  compare(t, 'is-reference', { bar:'path' });
+});
