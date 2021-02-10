@@ -140,6 +140,27 @@ console.log(\`the answer is \${foo()}\`);
   );
 });
 
+test('can not pass include or exclude when custom filter specified', async (t) => {
+  const filter = createFilter('**/foo.js', [], {
+    resolve: __dirname
+  });
+  let errorWithExclude = '';
+  try {
+    await generate('fixtures/exclusions/main.js', { filter, exclude: [] });
+  } catch (e) {
+    errorWithExclude = e.message;
+  }
+  t.true(!!errorWithExclude);
+
+  let errorWithInclude = '';
+  try {
+    await generate('fixtures/exclusions/main.js', { filter, include: [] });
+  } catch (e) {
+    errorWithInclude = e.message;
+  }
+  t.true(!!errorWithInclude);
+});
+
 test('generates sourcemap by default', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/class/main.js',

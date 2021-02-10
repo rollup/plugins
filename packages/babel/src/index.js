@@ -137,13 +137,11 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
         const extensionRegExp = new RegExp(
           `(${extensions.map(escapeRegExpCharacters).join('|')})$`
         );
-        const userDefinedFilter = (id) => {
-          let ret = createFilter(include, exclude)(id);
-          if (typeof customFilter === 'function') {
-            ret = ret && customFilter(id);
-          }
-          return ret;
-        };
+        if (customFilter && (include || exclude)) {
+          throw new Error('Could not handle include or exclude with custom filter together');
+        }
+        const userDefinedFilter =
+          typeof customFilter === 'function' ? customFilter : createFilter(include, exclude);
         filter = (id) => extensionRegExp.test(stripQuery(id).bareId) && userDefinedFilter(id);
 
         return null;
