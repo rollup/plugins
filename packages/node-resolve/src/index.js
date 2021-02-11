@@ -54,6 +54,7 @@ export function nodeResolve(opts = {}) {
   const rootDir = options.rootDir || process.cwd();
   let { dedupe } = options;
   let rollupOptions;
+  let inNestedResolve = false;
 
   if (typeof dedupe !== 'function') {
     dedupe = (importee) =>
@@ -270,10 +271,17 @@ export function nodeResolve(opts = {}) {
       }
 
       const resolved = await doResolveId(this, importee, importer, opts);
-      if (resolved) {
-        const resolvedResolved = await this.resolve(resolved.id, importer, { skipSelf: true });
-        if (resolvedResolved && resolvedResolved.external) {
-          return false;
+      if (resolved && !inNestedResolve) {
+        // if a plugin invoked by `this.resolve` also does `this.resolve`
+        // we need to break the loop
+        inNestedResolve = true;
+        try {
+          const resolvedResolved = await this.resolve(resolved.id, importer, { skipSelf: true });
+          if (resolvedResolved && resolvedResolved.external) {
+            return false;
+          }
+        } finally {
+          inNestedResolve = false;
         }
       }
 
