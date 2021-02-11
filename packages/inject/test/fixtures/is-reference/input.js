@@ -1,4 +1,5 @@
 import { bar as foo } from "path";
 console.log({ bar: foo });
-console.log(class Foo { bar () {} });
+class Foo { bar () { console.log(this) } }
+export { Foo }
 export { foo as bar }
