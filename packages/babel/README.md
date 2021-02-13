@@ -84,7 +84,7 @@ All options are as per the [Babel documentation](https://babeljs.io/docs/en/opti
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. When relaying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. When relying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
 
 ### `include`
 
