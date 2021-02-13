@@ -31,7 +31,8 @@
     "test": "ava"
   },
   "files": [
-    "lib",
+    "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
