@@ -1,5 +1,13 @@
 # @rollup/plugin-html ChangeLog
 
+## v0.2.3
+
+_2021-02-14_
+
+### Bugfixes
+
+- fix: package.json files (#802)
+
 ## v0.2.2
 
 _2021-01-29_
