@@ -30,7 +30,8 @@
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
     "dist",
