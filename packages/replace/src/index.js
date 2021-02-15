@@ -40,12 +40,6 @@ export default function replace(options = {}) {
   const { delimiters, preventAssignment } = options;
   const functionValues = mapToFunctions(getReplacements(options));
   const keys = Object.keys(functionValues).sort(longest).map(escape);
-  if (![true, false].includes(preventAssignment)) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "replace: 'preventAssignment' currently defaults to false. It is recommended to configure this option explicitly, as it may default to true in a future major version."
-    );
-  }
   const lookahead = preventAssignment ? '(?!\\s*=[^=])' : '';
   const pattern = delimiters
     ? new RegExp(
@@ -56,6 +50,15 @@ export default function replace(options = {}) {
 
   return {
     name: 'replace',
+
+    buildStart() {
+      if (!preventAssignment) {
+        this.warn({
+          message:
+            "@rollup/plugin-replace: 'preventAssignment' currently defaults to false. It is recommended to set this option to `true`, as the next major version will default this option to `true`."
+        });
+      }
+    },
 
     renderChunk(code, chunk) {
       const id = chunk.fileName;
