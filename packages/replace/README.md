@@ -70,7 +70,7 @@ Specifies the boundaries around which strings will be replaced. By default, deli
 Type: `Boolean`<br>
 Default: `false`
 
-Prevents replacing strings where they are followed by a single equals sign (e.g. `process.env.DEBUG = false'`).
+Prevents replacing strings where they are followed by a single equals sign (e.g. `process.env.DEBUG = false`).
 
 ### `exclude`
 
