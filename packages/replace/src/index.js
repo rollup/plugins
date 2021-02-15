@@ -52,7 +52,7 @@ export default function replace(options = {}) {
     name: 'replace',
 
     buildStart() {
-      if (!preventAssignment) {
+      if (![true, false].includes(preventAssignment)) {
         this.warn({
           message:
             "@rollup/plugin-replace: 'preventAssignment' currently defaults to false. It is recommended to set this option to `true`, as the next major version will default this option to `true`."
