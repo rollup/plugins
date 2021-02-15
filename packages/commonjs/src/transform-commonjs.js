@@ -26,14 +26,15 @@ import {
   isRequireStatement,
   isStaticRequireStatement
 } from './generate-imports';
-import { DYNAMIC_JSON_PREFIX } from './helpers';
+import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_REGISTER_SUFFIX,
+  isWrappedId,
+  unwrapId,
+  wrapId
+} from './helpers';
 import { tryParse } from './parse';
 import { deconflict, getName, getVirtualPathForDynamicRequirePath } from './utils';
-import {
-  isModuleRegisterProxy,
-  unwrapModuleRegisterProxy,
-  wrapModuleRegisterProxy
-} from './dynamic-packages-manager';
 
 const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/;
 
@@ -230,13 +231,13 @@ export default function transformCommonjs(
             }
 
             let sourceId = getRequireStringArg(node);
-            const isDynamicRegister = isModuleRegisterProxy(sourceId);
+            const isDynamicRegister = isWrappedId(sourceId, DYNAMIC_REGISTER_SUFFIX);
             if (isDynamicRegister) {
-              sourceId = unwrapModuleRegisterProxy(sourceId);
+              sourceId = unwrapId(sourceId, DYNAMIC_REGISTER_SUFFIX);
               if (sourceId.endsWith('.json')) {
                 sourceId = DYNAMIC_JSON_PREFIX + sourceId;
               }
-              dynamicRegisterSources.add(wrapModuleRegisterProxy(sourceId));
+              dynamicRegisterSources.add(wrapId(sourceId, DYNAMIC_REGISTER_SUFFIX));
             } else {
               if (
                 !sourceId.endsWith('.json') &&
@@ -332,7 +333,6 @@ export default function transformCommonjs(
                   storeName: true
                 });
               }
-
               usesDynamicRequire = true;
               return;
             case 'module':

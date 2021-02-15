@@ -10,14 +10,13 @@ import analyzeTopLevelStatements from './analyze-top-level-statements';
 import {
   getDynamicPackagesEntryIntro,
   getDynamicPackagesModule,
-  isDynamicModuleImport,
-  isModuleRegisterProxy,
-  unwrapModuleRegisterProxy
+  isDynamicModuleImport
 } from './dynamic-packages-manager';
 import getDynamicRequirePaths from './dynamic-require-paths';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
+  DYNAMIC_REGISTER_SUFFIX,
   EXPORTS_SUFFIX,
   EXTERNAL_SUFFIX,
   getHelpersModule,
@@ -123,12 +122,11 @@ export default function commonjs(options = {}) {
       return { meta: { commonjs: { isCommonJS: false } } };
     }
 
-    let disableWrap = false;
-
     // avoid wrapping as this is a commonjsRegister call
-    if (isModuleRegisterProxy(id)) {
-      disableWrap = true;
-      id = unwrapModuleRegisterProxy(id);
+    const disableWrap = isWrappedId(id, DYNAMIC_REGISTER_SUFFIX);
+    if (disableWrap) {
+      // eslint-disable-next-line no-param-reassign
+      id = unwrapId(id, DYNAMIC_REGISTER_SUFFIX);
     }
 
     return transformCommonjs(
@@ -224,9 +222,9 @@ export default function commonjs(options = {}) {
         return `export default require(${JSON.stringify(normalizePathSlashes(id))});`;
       }
 
-      if (isModuleRegisterProxy(id)) {
+      if (isWrappedId(id, DYNAMIC_REGISTER_SUFFIX)) {
         return getDynamicRequireProxy(
-          normalizePathSlashes(unwrapModuleRegisterProxy(id)),
+          normalizePathSlashes(unwrapId(id, DYNAMIC_REGISTER_SUFFIX)),
           commonDir
         );
       }
@@ -247,8 +245,8 @@ export default function commonjs(options = {}) {
     transform(code, rawId) {
       let id = rawId;
 
-      if (isModuleRegisterProxy(id)) {
-        id = unwrapModuleRegisterProxy(id);
+      if (isWrappedId(id, DYNAMIC_REGISTER_SUFFIX)) {
+        id = unwrapId(id, DYNAMIC_REGISTER_SUFFIX);
       }
 
       const extName = extname(id);
