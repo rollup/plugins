@@ -70,7 +70,35 @@ Specifies the boundaries around which strings will be replaced. By default, deli
 Type: `Boolean`<br>
 Default: `false`
 
-Prevents replacing strings where they are followed by a single equals sign (e.g. `process.env.DEBUG = false`).
+Prevents replacing strings where they are followed by a single equals sign. For example, where the plugin is called as follows:
+
+```js
+replace({
+  values: {
+    'process.env.DEBUG': 'false',
+  },
+});
+```
+
+Observe the following code:
+
+```js
+// Input
+process.env.DEBUG = false;
+if (process.env.DEBUG == true) {
+  //
+}
+// Without `preventAssignment`
+false = false; // this throws an error because false cannot be assigned to
+if (false == true) {
+  //
+}
+// With `preventAssignment`
+process.env.DEBUG = false;
+if (false == true) {
+  //
+}
+```
 
 ### `exclude`
 
