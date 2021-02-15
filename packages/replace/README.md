@@ -65,6 +65,13 @@ Default: `['\b', '\b']`
 
 Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html). See [Word Boundaries](#word-boundaries) below for more information.
 
+### `preventAssignment`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Prevents replacing strings where they are followed by a single equals sign (e.g. `process.env.DEBUG = false'`).
+
 ### `exclude`
 
 Type: `String` | `Array[...String]`<br>

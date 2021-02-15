@@ -37,17 +37,22 @@ function mapToFunctions(object) {
 
 export default function replace(options = {}) {
   const filter = createFilter(options.include, options.exclude);
-  const { delimiters } = options;
+  const { delimiters, preventAssignment } = options;
   const functionValues = mapToFunctions(getReplacements(options));
-  const keys = Object.keys(functionValues)
-    .sort(longest)
-    .map(escape);
+  const keys = Object.keys(functionValues).sort(longest).map(escape);
+  if (![true, false].includes(preventAssignment)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "replace: 'preventAssignment' currently defaults to false. It is recommended to configure this option explicitly, as it may default to true in a future major version."
+    );
+  }
+  const lookahead = preventAssignment ? '(?!\\s*=[^=])' : '';
   const pattern = delimiters
     ? new RegExp(
-        `${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}(?!\\s*=[^=])`,
+        `${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}${lookahead}`,
         'g'
       )
-    : new RegExp(`\\b(${keys.join('|')})\\b(?!\\s*=[^=])`, 'g');
+    : new RegExp(`\\b(${keys.join('|')})\\b${lookahead}`, 'g');
 
   return {
     name: 'replace',
