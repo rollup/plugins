@@ -44,7 +44,7 @@ test('generates sourcemaps by default', async (t) => {
     onwarn(warning) {
       throw new Error(warning.message);
     },
-    plugins: [replace({ values: { ANSWER: '42' } }), testPlugin]
+    plugins: [replace({ values: { ANSWER: '42' }, preventAssignment: true }), testPlugin]
   });
 
   const { code, map } = getOutputFromGenerated(
@@ -60,7 +60,14 @@ test('generates sourcemaps if enabled in plugin', async (t) => {
     onwarn(warning) {
       throw new Error(warning.message);
     },
-    plugins: [replace({ values: { ANSWER: '42' }, sourcemap: true }), testPlugin]
+    plugins: [
+      replace({
+        values: { ANSWER: '42' },
+        sourcemap: true,
+        preventAssignment: true
+      }),
+      testPlugin
+    ]
   });
 
   const { code, map } = getOutputFromGenerated(
@@ -76,7 +83,14 @@ test('generates sourcemaps if enabled in plugin (camelcase)', async (t) => {
     onwarn(warning) {
       throw new Error(warning.message);
     },
-    plugins: [replace({ values: { ANSWER: '42' }, sourceMap: true }), testPlugin]
+    plugins: [
+      replace({
+        values: { ANSWER: '42' },
+        sourceMap: true,
+        preventAssignment: true
+      }),
+      testPlugin
+    ]
   });
 
   const { code, map } = getOutputFromGenerated(
@@ -98,7 +112,14 @@ test('does not generate sourcemaps if disabled in plugin', async (t) => {
       );
       warned = true;
     },
-    plugins: [replace({ values: { ANSWER: '42' }, sourcemap: false }), testPlugin]
+    plugins: [
+      replace({
+        values: { ANSWER: '42' },
+        sourcemap: false,
+        preventAssignment: true
+      }),
+      testPlugin
+    ]
   });
 
   t.truthy(!warned);
@@ -118,7 +139,14 @@ test('does not generate sourcemaps if disabled in plugin (camelcase)', async (t)
       );
       warned = true;
     },
-    plugins: [replace({ values: { ANSWER: '42' }, sourceMap: false }), testPlugin]
+    plugins: [
+      replace({
+        values: { ANSWER: '42' },
+        sourceMap: false,
+        preventAssignment: true
+      }),
+      testPlugin
+    ]
   });
 
   t.truthy(!warned);
