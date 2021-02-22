@@ -28,6 +28,11 @@ export interface RollupReplaceOptions {
    * You can separate values to replace from other options.
    */
   values?: { [str: string]: Replacement };
+  /**
+   * Prevents replacing strings where they are followed by a single equals sign
+   * It is recommended to set this option to `true`, as the next major version will default this option to `true`
+   */
+  preventAssignment?: Boolean;
 }
 
 /**
