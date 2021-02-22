@@ -8,7 +8,11 @@ export interface RollupReplaceOptions {
    * All other options are treated as `string: replacement` replacers,
    * or `string: (id) => replacement` functions.
    */
-  [str: string]: Replacement | RollupReplaceOptions['include'] | RollupReplaceOptions['values'];
+  [str: string]:
+    | Replacement
+    | RollupReplaceOptions['include']
+    | RollupReplaceOptions['values']
+    | RollupReplaceOptions['preventAssignment'];
 
   /**
    * A minimatch pattern, or array of patterns, of files that should be
@@ -24,6 +28,11 @@ export interface RollupReplaceOptions {
    * of `foo`, supply delimiters
    */
   delimiters?: [string, string];
+  /**
+   * Prevents replacing strings where they are followed by a single equals
+   * sign.
+   */
+  preventAssignment?: boolean;
   /**
    * You can separate values to replace from other options.
    */
