@@ -437,7 +437,8 @@ export default function transformCommonjs(
       uses.exports ||
       uses.require ||
       uses.commonjsHelpers ||
-      hasRemovedRequire
+      hasRemovedRequire ||
+      isRestorableCompiledEsm
     ) &&
     (ignoreGlobal || !uses.global)
   ) {
