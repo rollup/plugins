@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v2.4.1
+
+_2021-02-22_
+
+### Bugfixes
+
+- fix: add missing types for new `preventAssignment` option (#813)
+
 ## v2.4.0
 
 _2021-02-22_
