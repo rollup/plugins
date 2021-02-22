@@ -114,6 +114,29 @@ Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
 
+### `values`
+
+Type: `{ [key: String]: Replacement }`, where `Replacement` is either a string or a `function` that returns a string.
+Default: `{}`
+
+To avoid mixing replacement strings with the other options, you can specify replacements in the `values` option:
+
+```js
+replace({
+  include: [/src/],
+  changed: "replaced"
+});
+
+// ⬇ ⬇ ⬇ ⬇ ⬇ ⬇ ⬇ ⬇ ⬇
+
+replace({
+  include: [/src/],
+  values: {
+    changed: "replaced"
+  }
+});
+```
+
 ## Word Boundaries
 
 By default, values will only match if they are surrounded by _word boundaries_.
