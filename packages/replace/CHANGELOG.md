@@ -1,5 +1,17 @@
 # @rollup/plugin-replace ChangeLog
 
+## v2.4.0
+
+_2021-02-22_
+
+### Features
+
+- feat: prevent accidental replacement within assignment (#798)
+
+### Updates
+
+- docs: clarify replacement. fixes #737 (#785)
+
 ## v2.3.4
 
 _2020-10-27_
