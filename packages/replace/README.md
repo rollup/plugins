@@ -123,14 +123,14 @@ To avoid mixing replacement strings with the other options, you can specify repl
 
 ```js
 replace({
-  include: [/src/],
+  include: ["src/**/*.js"],
   changed: "replaced"
 });
 
 // ⬇ ⬇ ⬇ ⬇ ⬇ ⬇ ⬇ ⬇ ⬇
 
 replace({
-  include: [/src/],
+  include: ["src/**/*.js"],
   values: {
     changed: "replaced"
   }
