@@ -119,7 +119,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 Type: `{ [key: String]: Replacement }`, where `Replacement` is either a string or a `function` that returns a string.
 Default: `{}`
 
-To avoid mixing replacement strings with the other options, you can specify replacements in the `values` option. For example, the following two signatures are equivalent:
+To avoid mixing replacement strings with the other options, you can specify replacements in the `values` option. For example, the following signatures:
 
 ```js
 replace({
@@ -127,6 +127,9 @@ replace({
   changed: "replaced"
 });
 ```
+
+Can be replaced with:
+
 ```js
 replace({
   include: ["src/**/*.js"],
