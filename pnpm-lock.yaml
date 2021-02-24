@@ -460,11 +460,11 @@ importers:
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@2.32.1
       '@rollup/plugin-commonjs': 11.1.0_rollup@2.32.1
-      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.1.2
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.2.2
       '@types/node': 10.17.48
       buble: 0.20.0
       rollup: 2.32.1
-      typescript: 4.1.2
+      typescript: 4.2.2
     specifiers:
       '@rollup/plugin-buble': ^0.21.3
       '@rollup/plugin-commonjs': ^11.1.0
@@ -474,7 +474,7 @@ importers:
       buble: ^0.20.0
       resolve: ^1.17.0
       rollup: ^2.14.0
-      typescript: ^4.1.2
+      typescript: ^4.2.2
   packages/url:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
@@ -1781,6 +1781,21 @@ packages:
       resolve: 1.18.1
       rollup: 2.32.1
       typescript: 4.1.2
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.4.0'
+    resolution:
+      integrity: sha512-CkS028Itwjqm1uLbFVfpJgtVtnNvZ+og/m6UlNRR5wOOnNTWPcVQzOu5xGdEX+WWJxdvWIqUq2uR/RBt2ZipWg==
+  /@rollup/plugin-typescript/5.0.2_rollup@2.32.1+typescript@4.2.2:
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.32.1
+      resolve: 1.18.1
+      rollup: 2.32.1
+      typescript: 4.2.2
     dev: true
     engines:
       node: '>=8.0.0'
@@ -7441,6 +7456,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-thGloWsGH3SOxv1SoY7QojKi0tc+8FnOmiarEGMbd/lar7QOEd3hvlx3Fp5y6FlDUGl9L+pd4n2e+oToGMmhRQ==
+  /typescript/4.2.2:
+    dev: true
+    engines:
+      node: '>=4.2.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-tbb+NVrLfnsJy3M59lsDgrzWIflR4d4TIUjz+heUnHZwdF7YsrMTKoRERiIvI2lvBG95dfpLxB21WZhys1bgaQ==
   /unicode-canonical-property-names-ecmascript/1.0.4:
     engines:
       node: '>=4'
