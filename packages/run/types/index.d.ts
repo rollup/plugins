@@ -5,6 +5,7 @@ import { Plugin } from 'rollup';
 export interface RollupRunOptions extends ForkOptions {
   args?: readonly string[];
   options?: ForkOptions;
+  allowRestarts?: boolean;
 }
 
 /**

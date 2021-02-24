@@ -110,6 +110,15 @@ test('detects changes - forks a new child process and kills older process', asyn
   t.is(mockChildProcess().kill.callCount, 1);
 });
 
+test('allow the allowRestart option', async (t) => {
+  const bundle = await rollup({
+    input,
+    plugins: [run({ allowRestarts: true })]
+  });
+  await bundle.write(outputOptions);
+  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+});
+
 test.after(async () => {
   await del(['output']);
 });
