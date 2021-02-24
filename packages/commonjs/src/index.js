@@ -44,6 +44,7 @@ export default function commonjs(options = {}) {
   const filter = createFilter(options.include, options.exclude);
   const {
     ignoreGlobal,
+    ignoreDynamicRequires,
     requireReturnsDefault: requireReturnsDefaultOption,
     esmExternals
   } = options;
@@ -97,6 +98,7 @@ export default function commonjs(options = {}) {
 
   function transformAndCheckExports(code, id) {
     if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
+      // eslint-disable-next-line no-param-reassign
       code =
         getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
     }
@@ -125,6 +127,7 @@ export default function commonjs(options = {}) {
     // avoid wrapping in createCommonjsModule, as this is a commonjsRegister call
     if (isModuleRegisterProxy(id)) {
       disableWrap = true;
+      // eslint-disable-next-line no-param-reassign
       id = unwrapModuleRegisterProxy(id);
     }
 
@@ -135,6 +138,7 @@ export default function commonjs(options = {}) {
       isEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
+      ignoreDynamicRequires && !isDynamicRequireModulesEnabled,
       getIgnoreTryCatchRequireStatementMode,
       sourceMap,
       isDynamicRequireModulesEnabled,
@@ -161,7 +165,7 @@ export default function commonjs(options = {}) {
 
     load(id) {
       if (id === HELPERS_ID) {
-        return getHelpersModule(isDynamicRequireModulesEnabled);
+        return getHelpersModule(isDynamicRequireModulesEnabled, ignoreDynamicRequires);
       }
 
       if (id.startsWith(HELPERS_ID)) {
@@ -232,6 +236,7 @@ export default function commonjs(options = {}) {
       }
     },
 
+    // eslint-disable-next-line no-shadow
     moduleParsed({ id, meta: { commonjs } }) {
       if (commonjs) {
         const isCjs = commonjs.isCommonJS;

@@ -48,18 +48,20 @@ export function getAugmentedNamespace(n) {
 }
 `;
 
+const FAILED_REQUIRE_ERROR = `throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');`;
+
 const HELPER_NON_DYNAMIC = `
 export function createCommonjsModule(fn) {
   var module = { exports: {} }
 	return fn(module, module.exports), module.exports;
 }
 
-export function commonjsRequire (target) {
-	throw new Error('Could not dynamically require "' + target + '". Please configure the dynamicRequireTargets option of @rollup/plugin-commonjs appropriately for this require call to behave properly.');
+export function commonjsRequire (path) {
+	${FAILED_REQUIRE_ERROR}
 }
 `;
 
-const HELPERS_DYNAMIC = `
+const getDynamicHelpers = (ignoreDynamicRequires) => `
 export function createCommonjsModule(fn, basedir, module) {
 	return module = {
 		path: basedir,
@@ -231,13 +233,15 @@ export function commonjsRequire (path, originalModuleDir) {
       return cachedModule.exports;
     };
 	}
-	return require(path);
+	${ignoreDynamicRequires ? 'return require(path);' : FAILED_REQUIRE_ERROR}
 }
 
 commonjsRequire.cache = DYNAMIC_REQUIRE_CACHE;
 commonjsRequire.resolve = commonjsResolve;
 `;
 
-export function getHelpersModule(isDynamicRequireModulesEnabled) {
-  return `${HELPERS}${isDynamicRequireModulesEnabled ? HELPERS_DYNAMIC : HELPER_NON_DYNAMIC}`;
+export function getHelpersModule(isDynamicRequireModulesEnabled, ignoreDynamicRequires) {
+  return `${HELPERS}${
+    isDynamicRequireModulesEnabled ? getDynamicHelpers(ignoreDynamicRequires) : HELPER_NON_DYNAMIC
+  }`;
 }
