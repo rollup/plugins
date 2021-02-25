@@ -14,7 +14,7 @@ const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
   for (const file of files) {
     const { fileName } = file;
     const extension = extname(fileName).substring(1);
-
+    result.$assets = (result.$assets || []).concat(file);
     result[extension] = (result[extension] || []).concat(file);
   }
 
@@ -36,20 +36,31 @@ const defaultTemplate = async ({
   files,
   meta,
   publicPath,
-  title
+  title,
+  injectAssets
 }: RollupHtmlTemplateOptions) => {
   const scripts = (files.js || [])
-    .map(({ fileName }) => {
+    .map(({ fileName, code, source }) => {
       const attrs = makeHtmlAttributes(attributes.script);
-      return `<script src="${publicPath}${fileName}"${attrs}></script>`;
+      return injectAssets
+        ? code || source
+          ? `<script${attrs}>${code || source}</script>`
+          : ''
+        : `<script src="${publicPath}${fileName}"${attrs}></script>`;
     })
+    .filter((html) => !!html)
     .join('\n');
 
   const links = (files.css || [])
-    .map(({ fileName }) => {
+    .map(({ fileName, code, source }) => {
       const attrs = makeHtmlAttributes(attributes.link);
-      return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`;
+      return injectAssets
+        ? code || source
+          ? `<style${attrs}>${code || source}</style>`
+          : ''
+        : `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`;
     })
+    .filter((html) => !!html)
     .join('\n');
 
   const metas = meta
@@ -85,11 +96,12 @@ const defaults = {
   meta: [{ charset: 'utf-8' }],
   publicPath: '',
   template: defaultTemplate,
-  title: 'Rollup Bundle'
+  title: 'Rollup Bundle',
+  injectAssets: false
 };
 
 export default function html(opts: RollupHtmlOptions = {}): Plugin {
-  const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
+  const { attributes, fileName, meta, publicPath, template, title, injectAssets } = Object.assign(
     {},
     defaults,
     opts
@@ -122,7 +134,8 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
         files,
         meta,
         publicPath,
-        title
+        title,
+        injectAssets
       });
 
       const htmlFile: EmittedAsset = {
@@ -133,6 +146,10 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
       };
 
       this.emitFile(htmlFile);
+
+      if (injectAssets) {
+        (files.$assets || []).forEach(({ fileName }) => delete bundle[fileName]);
+      }
     }
   };
 }

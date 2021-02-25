@@ -36,9 +36,9 @@ module.exports = {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [html()]
+  plugins: [html()],
 };
 ```
 
@@ -120,6 +120,14 @@ Type: `String`<br>
 Default: `'Rollup Bundle'`
 
 Specifies the HTML document title.
+
+### `injectAssets`
+
+Type: `Boolean`<br>
+Default: `false`
+
+By default, CSS and JS files included in result HTML as external resources via `<link href="${fileName}">` and `<script src="${fileName}">`.
+Setting this to `true` will inject assets content inline with `<style>${code}</style>` and `<script>${code}</script>`.
 
 ## Exports
 

@@ -1,4 +1,14 @@
-import { Plugin, OutputChunk, OutputAsset, OutputBundle } from 'rollup';
+import { Plugin, OutputBundle } from 'rollup';
+
+export interface RollupHtmlTemplateOptions {
+  title: string;
+  attributes: Record<string, any>;
+  publicPath: string;
+  meta: Record<string, any>[];
+  bundle: OutputBundle;
+  files: Record<string, any[]>;
+  injectAssets?: boolean;
+}
 
 export interface RollupHtmlOptions {
   title?: string;
@@ -7,15 +17,7 @@ export interface RollupHtmlOptions {
   meta?: Record<string, any>[];
   publicPath?: string;
   template?: (templateOptions: RollupHtmlTemplateOptions) => string;
-}
-
-export interface RollupHtmlTemplateOptions {
-  title: string;
-  attributes: Record<string, any>;
-  publicPath: string;
-  meta: Record<string, any>[];
-  bundle: OutputBundle;
-  files: Record<string, (OutputChunk | OutputAsset)[]>;
+  injectAssets?: boolean;
 }
 
 export function makeHtmlAttributes(attributes: Record<string, string>): string;

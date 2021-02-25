@@ -120,3 +120,17 @@ test.serial('template', async (t) => {
   const code = await getCode(bundle, output, true);
   t.snapshot(code);
 });
+
+test.serial('injectAssets', async (t) => {
+  const bundle = await rollup({
+    input: 'joker.js',
+    plugins: [
+      css({ extract: true }),
+      html({
+        injectAssets: true
+      })
+    ]
+  });
+  const code = await getCode(bundle, output, true);
+  t.snapshot(code);
+});
