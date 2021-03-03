@@ -185,3 +185,17 @@ test('throws an error on failure', async (t) => {
   }
   t.is(thrown, true);
 });
+
+test('can disable default clause', async (t) => {
+  const bundle = await rollup({
+    input: 'fixture-excluded.js',
+    plugins: [
+      dynamicImportVars({
+        defaultClause: false
+      })
+    ]
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+
+  t.snapshot(output[0].code);
+});

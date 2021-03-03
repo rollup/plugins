@@ -61,6 +61,13 @@ Default: `[]`
 
 Files to exclude in this plugin (default none).
 
+#### `defaultClause`
+
+Type: `Boolean`<br>
+Default: `true`
+
+By default, unknown variables throw an error in the `default` clause of the generated `switch`. If you set this option to `false`, any unknown variables will instead fall through the `switch` without error.
+
 #### `warnOnError`
 
 Type: `Boolean`<br>
@@ -134,7 +141,11 @@ function __variableDynamicImportRuntime__(path) {
     case './locales/nl-NL.js':
       return import('./locales/nl-NL.js');
     default:
-      throw new Error('Unknown variable dynamic import: ' + path);
+      return new Promise((resolve, reject) => {
+        queueMicrotask(() => {
+          reject(new Error("Unknown variable dynamic import: " + path))
+        });
+      });
   }
 }
 
