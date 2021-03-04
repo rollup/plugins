@@ -6,7 +6,10 @@
   },
   "description": "Replace strings in files while bundling",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/replace"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/replace#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

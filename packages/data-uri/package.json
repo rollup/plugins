@@ -6,7 +6,10 @@
   },
   "description": "Import modules from Data URIs",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/data-uri"
+  },
   "author": "shellscape",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/data-uri",
   "bugs": "https://github.com/rollup/plugins/issues",
