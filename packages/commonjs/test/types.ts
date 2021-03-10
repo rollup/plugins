@@ -15,6 +15,7 @@ const config: RollupOptions = {
       exclude: ['node_modules/foo/**', 'node_modules/bar/**', /node_modules/],
       extensions: ['.js', '.coffee'],
       ignoreGlobal: false,
+      ignoreDynamicRequires: true,
       requireReturnsDefault: 'auto',
       sourceMap: false,
       transformMixedEsModules: false,

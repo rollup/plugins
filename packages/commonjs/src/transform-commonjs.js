@@ -46,6 +46,7 @@ export default function transformCommonjs(
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
+  ignoreDynamicRequires,
   getIgnoreTryCatchRequireStatementMode,
   sourceMap,
   isDynamicRequireModulesEnabled,
@@ -320,12 +321,14 @@ export default function transformCommonjs(
                   )}`
                 );
               }
-              if (isShorthandProperty(parent)) {
-                magicString.appendRight(node.end, `: ${HELPERS_NAME}.commonjsRequire`);
-              } else {
-                magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
-                  storeName: true
-                });
+              if (!ignoreDynamicRequires) {
+                if (isShorthandProperty(parent)) {
+                  magicString.appendRight(node.end, `: ${HELPERS_NAME}.commonjsRequire`);
+                } else {
+                  magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                    storeName: true
+                  });
+                }
               }
 
               uses.commonjsHelpers = true;
