@@ -43,10 +43,10 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
     },
 
     writeBundle(outputOptions, bundle) {
-      function forkBundle(dir: string, entryFileName: string) {
+      const forkBundle = (dir: string, entryFileName: string) => {
         if (proc) proc.kill();
         proc = fork(path.join(dir, entryFileName), args, forkOptions);
-      }
+      };
 
       const dir = outputOptions.dir || path.dirname(outputOptions.file!);
       const entryFileName = Object.keys(bundle).find((fileName) => {
