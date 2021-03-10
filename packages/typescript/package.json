@@ -61,7 +61,7 @@
     "@types/node": "^10.0.0",
     "buble": "^0.20.0",
     "rollup": "^2.14.0",
-    "typescript": "^4.1.2"
+    "typescript": "^4.2.2"
   },
   "types": "types/index.d.ts"
 }

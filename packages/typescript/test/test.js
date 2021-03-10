@@ -1020,11 +1020,7 @@ test.serial('picks up on newly included typescript files in watch mode', async (
   t.true(usage, 'should contain usage');
 });
 
-// TODO: upgrade TypeScript when there is a release containing the fix for this issue
-// https://github.com/microsoft/TypeScript/pull/41811. Then enable this test
-// More details at https://github.com/rollup/plugins/issues/287. This fails with the message:
-// Unexpected token (Note that you need plugins to import files that are not JavaScript)
-test.serial.skip('works when code is in src directory', async (t) => {
+test.serial('works when code is in src directory', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/src-dir/src/index.ts',
     output: [
