@@ -61,13 +61,6 @@ Default: `[]`
 
 Files to exclude in this plugin (default none).
 
-#### `defaultClause`
-
-Type: `Boolean`<br>
-Default: `true`
-
-By default, unknown variables throw an error in the `default` clause of the generated `switch`. If you set this option to `false`, any unknown variables will instead fall through the `switch` without error.
-
 #### `warnOnError`
 
 Type: `Boolean`<br>

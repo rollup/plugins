@@ -8,7 +8,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import { dynamicImportToGlob, VariableDynamicImportError } from './dynamic-import-to-glob';
 
-function dynamicImportVariables({ include, exclude, warnOnError, defaultClause = true } = {}) {
+function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
   const filter = createFilter(include, exclude);
 
   return {
@@ -54,11 +54,11 @@ function dynamicImportVariables({ include, exclude, warnOnError, defaultClause =
               `function __variableDynamicImportRuntime${dynamicImportIndex}__(path) {
   switch (path) {
 ${paths.map((p) => `    case '${p}': return import('${p}');`).join('\n')}
-${defaultClause ? `    default: return new Promise((resolve, reject) => {
+${`    default: return new Promise((resolve, reject) => {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(() => {
         reject(new Error("Unknown variable dynamic import: " + path))
       });
-    })\n` : ''}   }
+    })\n`}   }
  }\n\n`
             );
             // call the runtime function instead of doing a dynamic import, the import specifier will
