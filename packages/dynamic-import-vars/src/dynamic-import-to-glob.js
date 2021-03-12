@@ -86,10 +86,14 @@ export function dynamicImportToGlob(node, sourceString) {
     );
   }
 
-  if (glob.startsWith('./*.')) {
+  // Disallow ./*.ext
+  const ownDirectoryStarExtension = /^\.\/\*\.[\w]+$/;
+  if (ownDirectoryStarExtension.test(glob)) {
     throw new VariableDynamicImportError(
-      `${`invalid import "${sourceString}". Variable imports cannot import their own directory, ` +
-        'place imports in a separate directory or make the import filename more specific. '}${example}`
+      `${
+        `invalid import "${sourceString}". Variable imports cannot import their own directory, ` +
+        'place imports in a separate directory or make the import filename more specific. '
+      }${example}`
     );
   }
 
