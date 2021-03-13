@@ -10,6 +10,7 @@ import { exists, readFile, realpath } from './fs';
 import resolveImportSpecifiers from './resolveImportSpecifiers';
 import { getMainFields, getPackageName, normalizeInput } from './util';
 import handleDeprecatedOptions from './deprecated-options';
+import { NestedResolveTracker } from './nested-resolve-tracker';
 
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
@@ -40,6 +41,7 @@ export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
 export function nodeResolve(opts = {}) {
   const { warnings } = handleDeprecatedOptions(opts);
+  const nestedResolveTracker = NestedResolveTracker();
 
   const options = { ...defaults, ...opts };
   const { extensions, jail, moduleDirectories } = options;
@@ -54,7 +56,6 @@ export function nodeResolve(opts = {}) {
   const rootDir = options.rootDir || process.cwd();
   let { dedupe } = options;
   let rollupOptions;
-  let inNestedResolve = false;
 
   if (typeof dedupe !== 'function') {
     dedupe = (importee) =>
@@ -271,20 +272,20 @@ export function nodeResolve(opts = {}) {
       }
 
       const resolved = await doResolveId(this, importee, importer, opts);
-      if (resolved && !inNestedResolve) {
-        // if a plugin invoked by `this.resolve` also does `this.resolve`
-        // we need to break the loop
-        inNestedResolve = true;
-        try {
-          const resolvedResolved = await this.resolve(resolved.id, importer, { skipSelf: true });
-          if (resolvedResolved && resolvedResolved.external) {
+      if (resolved) {
+        const resolveContext = { importee: resolved.id, importer };
+        // Would the result from the node resoulution algorithm get marked as external by another plugin (or config)?
+        // If that's the case we want to mark the import as external to keep the original import intact.
+        if (!nestedResolveTracker.inNestedResolve(resolveContext)) {
+          const isExternal = await nestedResolveTracker.track(resolveContext, async () => {
+            const resolvedResolved = await this.resolve(resolved.id, importer, { skipSelf: true });
+            return !!(resolvedResolved && resolvedResolved.external);
+          });
+          if (isExternal) {
             return false;
           }
-        } finally {
-          inNestedResolve = false;
         }
       }
-
       return resolved;
     },
 
