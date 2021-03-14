@@ -220,7 +220,7 @@ importers:
       rollup: ^2.23.0
   packages/eslint:
     dependencies:
-      '@rollup/pluginutils': 4.0.0_rollup@2.32.1
+      '@rollup/pluginutils': 4.1.0_rollup@2.32.1
       eslint: 7.12.0
     devDependencies:
       '@rollup/plugin-node-resolve': 9.0.0_rollup@2.32.1
@@ -238,7 +238,7 @@ importers:
       typescript: ^4.1.2
   packages/graphql:
     dependencies:
-      '@rollup/pluginutils': 4.0.0_rollup@2.32.1
+      '@rollup/pluginutils': 4.1.0_rollup@2.32.1
       graphql-tag: 2.11.0_graphql@14.7.0
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@2.32.1
@@ -458,13 +458,13 @@ importers:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
       resolve: 1.18.1
     devDependencies:
-      '@rollup/plugin-buble': 'link:../buble'
+      '@rollup/plugin-buble': 0.21.3_rollup@2.32.1
       '@rollup/plugin-commonjs': 11.1.0_rollup@2.32.1
-      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.1.2
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.2.2
       '@types/node': 10.17.48
       buble: 0.20.0
       rollup: 2.32.1
-      typescript: 4.1.2
+      typescript: 4.2.2
     specifiers:
       '@rollup/plugin-buble': ^0.21.3
       '@rollup/plugin-commonjs': ^11.1.0
@@ -474,7 +474,7 @@ importers:
       buble: ^0.20.0
       resolve: ^1.17.0
       rollup: ^2.14.0
-      typescript: ^4.1.2
+      typescript: ^4.2.2
   packages/url:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
@@ -504,15 +504,17 @@ importers:
       typescript: ^4.1.2
   packages/wasm:
     devDependencies:
-      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.1.2
       del-cli: 3.0.1
       rollup: 2.32.1
       source-map: 0.7.3
+      typescript: 4.1.2
     specifiers:
       '@rollup/plugin-typescript': ^5.0.2
       del-cli: ^3.0.1
       rollup: ^2.23.0
       source-map: ^0.7.3
+      typescript: ^4.1.2
   packages/yaml:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
@@ -1773,11 +1775,12 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-gPz+utFHLRrd41WMP13Jq5mqqzHL3OXrfj3/MkSyB6UBIcuNt9j60GCbarzMzdf1VHFpOxfQh/ez7wyadLMqkg==
-  /@rollup/plugin-typescript/5.0.2_rollup@2.32.1:
+  /@rollup/plugin-typescript/5.0.2_rollup@2.32.1+typescript@4.1.2:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
       resolve: 1.18.1
       rollup: 2.32.1
+      typescript: 4.1.2
     dev: true
     engines:
       node: '>=8.0.0'
@@ -1787,12 +1790,12 @@ packages:
       typescript: '>=3.4.0'
     resolution:
       integrity: sha512-CkS028Itwjqm1uLbFVfpJgtVtnNvZ+og/m6UlNRR5wOOnNTWPcVQzOu5xGdEX+WWJxdvWIqUq2uR/RBt2ZipWg==
-  /@rollup/plugin-typescript/5.0.2_rollup@2.32.1+typescript@4.1.2:
+  /@rollup/plugin-typescript/5.0.2_rollup@2.32.1+typescript@4.2.2:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
       resolve: 1.18.1
       rollup: 2.32.1
-      typescript: 4.1.2
+      typescript: 4.2.2
     dev: true
     engines:
       node: '>=8.0.0'
@@ -1852,19 +1855,6 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==
-  /@rollup/pluginutils/4.0.0_rollup@2.32.1:
-    dependencies:
-      '@types/estree': 0.0.45
-      estree-walker: 2.0.1
-      picomatch: 2.2.2
-      rollup: 2.32.1
-    dev: false
-    engines:
-      node: '>= 8.0.0'
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0
-    resolution:
-      integrity: sha512-b5QiJRye4JlSg29bKNEECoKbLuPXZkPEHSgEjjP1CJV1CPdDBybfYHfm6kyq8yK51h/Zsyl8OvWUrp0FUBukEQ==
   /@rollup/pluginutils/4.1.0_rollup@2.32.1:
     dependencies:
       estree-walker: 2.0.1
@@ -3095,7 +3085,7 @@ packages:
     resolution:
       integrity: sha512-7ItTKOhOZbznhXAQ2g/slGg1PJV5zDO/WdkTwi7UEOJmkvsE32PWvx6mKtDjiMpjnR2CNf6BAD6sSxIlv7ptng==
   /core-js/2.6.11:
-    deprecated: 'core-js@<3 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.'
+    deprecated: core-js@<3 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.
     dev: true
     requiresBuild: true
     resolution:
@@ -3348,7 +3338,7 @@ packages:
   /debug/4.2.0:
     dependencies:
       ms: 2.1.2
-    deprecated: 'Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)'
+    deprecated: Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)
     engines:
       node: '>=6.0'
     peerDependencies:
@@ -7466,6 +7456,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-thGloWsGH3SOxv1SoY7QojKi0tc+8FnOmiarEGMbd/lar7QOEd3hvlx3Fp5y6FlDUGl9L+pd4n2e+oToGMmhRQ==
+  /typescript/4.2.2:
+    dev: true
+    engines:
+      node: '>=4.2.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-tbb+NVrLfnsJy3M59lsDgrzWIflR4d4TIUjz+heUnHZwdF7YsrMTKoRERiIvI2lvBG95dfpLxB21WZhys1bgaQ==
   /unicode-canonical-property-names-ecmascript/1.0.4:
     engines:
       node: '>=4'

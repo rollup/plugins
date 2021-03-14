@@ -1,5 +1,19 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.3.0
+
+_2021-02-14_
+
+### Features
+
+- feat: add custom filter option (#767)
+- feat: pass rollup context as this context into override config function (#784)
+
+### Updates
+
+- docs: typo in README.md (#800)
+- chore: commit updated readme format (bfda6d8)
+
 ## v5.2.3
 
 _2021-01-29_

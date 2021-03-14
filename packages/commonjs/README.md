@@ -134,6 +134,25 @@ Due to the conversion of `require` to a static `import` - the call is hoisted to
 - `string[]`: Pass an array containing the IDs to left unconverted.
 - `((id: string) => boolean|'remove')`: Pass a function that control individual IDs.
 
+### `ignoreDynamicRequires`
+
+Type: `boolean`
+Default: false
+
+Some `require` calls cannot be resolved statically to be translated to imports, e.g.
+
+```js
+function wrappedRequire(target) {
+  return require(target);
+}
+wrappedRequire('foo');
+wrappedRequire('bar');
+```
+
+When this option is set to `false`, the generated code will either directly throw an error when such a call is encountered or, when `dynamicRequireTargets` is used, when such a call cannot be resolved with a configured dynamic require target.
+
+Setting this option to `true` will instead leave the `require` call in the code or use it as a fallback for `dynamicRequireTargets`.
+
 ### `esmExternals`
 
 Type: `boolean | string[] | ((id: string) => boolean)`

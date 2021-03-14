@@ -65,6 +65,41 @@ Default: `['\b', '\b']`
 
 Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html). See [Word Boundaries](#word-boundaries) below for more information.
 
+### `preventAssignment`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Prevents replacing strings where they are followed by a single equals sign. For example, where the plugin is called as follows:
+
+```js
+replace({
+  values: {
+    'process.env.DEBUG': 'false',
+  },
+});
+```
+
+Observe the following code:
+
+```js
+// Input
+process.env.DEBUG = false;
+if (process.env.DEBUG == true) {
+  //
+}
+// Without `preventAssignment`
+false = false; // this throws an error because false cannot be assigned to
+if (false == true) {
+  //
+}
+// With `preventAssignment`
+process.env.DEBUG = false;
+if (false == true) {
+  //
+}
+```
+
 ### `exclude`
 
 Type: `String` | `Array[...String]`<br>
@@ -78,6 +113,31 @@ Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
+
+### `values`
+
+Type: `{ [key: String]: Replacement }`, where `Replacement` is either a string or a `function` that returns a string.
+Default: `{}`
+
+To avoid mixing replacement strings with the other options, you can specify replacements in the `values` option. For example, the following signature:
+
+```js
+replace({
+  include: ["src/**/*.js"],
+  changed: "replaced"
+});
+```
+
+Can be replaced with:
+
+```js
+replace({
+  include: ["src/**/*.js"],
+  values: {
+    changed: "replaced"
+  }
+});
+```
 
 ## Word Boundaries
 

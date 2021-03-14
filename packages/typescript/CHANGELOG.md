@@ -1,5 +1,20 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.2.0
+
+_2021-02-14_
+
+### Features
+
+- feat: error when no tsconfig and no rootDir (#794)
+- feat: better error when tslib is not installed (#793)
+- feat: warn when compilerOptions.module is not esnext (#788)
+
+### Updates
+
+- test: move declaration tests, use typescript (#791)
+- test: fix TypeScript src-dir test (#789)
+
 ## v8.1.1
 
 _2021-01-29_

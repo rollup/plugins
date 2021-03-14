@@ -1,5 +1,18 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v11.2.0
+
+_2021-02-14_
+
+### Features
+
+- feat: add `ignoreSideEffectsForRoot` option (#694)
+
+### Updates
+
+- chore: mark `url` as an external and throw on warning (#783)
+- docs: clearer "Resolving Built-Ins" doc (#782)
+
 ## v11.1.1
 
 _2021-01-29_

@@ -1,5 +1,7 @@
 /* eslint-disable consistent-return */
 
+const { join } = require('path');
+
 const test = require('ava');
 const { rollup } = require('rollup');
 
@@ -63,4 +65,19 @@ test('can be configured with output plugins', async (t) => {
 
   t.is(code.trim(), 'log("environment", "production");');
   t.truthy(map);
+});
+
+process.chdir(join(__dirname, 'fixtures', 'form', 'assignment'));
+
+test.serial('no explicit setting of preventAssignment', async (t) => {
+  const possibleValues = [undefined, true, false];
+  for await (const value of possibleValues) {
+    const warnings = [];
+    await rollup({
+      input: 'input.js',
+      onwarn: (warning) => warnings.push(warning),
+      plugins: [replace({ preventAssignment: value })]
+    });
+    t.snapshot(warnings);
+  }
 });

@@ -35,7 +35,8 @@ const defaults = {
   // which deploy both ESM .mjs and CommonJS .js files as ESM.
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: [],
-  moduleDirectories: ['node_modules']
+  moduleDirectories: ['node_modules'],
+  ignoreSideEffectsForRoot: false
 };
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
@@ -44,7 +45,7 @@ export function nodeResolve(opts = {}) {
   const nestedResolveTracker = NestedResolveTracker();
 
   const options = { ...defaults, ...opts };
-  const { extensions, jail, moduleDirectories } = options;
+  const { extensions, jail, moduleDirectories, ignoreSideEffectsForRoot } = options;
   const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
   const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
   const packageInfoCache = new Map();
@@ -53,7 +54,7 @@ export function nodeResolve(opts = {}) {
   const useBrowserOverrides = mainFields.indexOf('browser') !== -1;
   const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
-  const rootDir = options.rootDir || process.cwd();
+  const rootDir = resolve(options.rootDir || process.cwd());
   let { dedupe } = options;
   let rollupOptions;
 
@@ -173,7 +174,9 @@ export function nodeResolve(opts = {}) {
       preserveSymlinks,
       useBrowserOverrides,
       baseDir,
-      moduleDirectories
+      moduleDirectories,
+      rootDir,
+      ignoreSideEffectsForRoot
     });
 
     const resolved =

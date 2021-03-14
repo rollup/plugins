@@ -43,7 +43,9 @@ async function resolveId({
   preserveSymlinks,
   useBrowserOverrides,
   baseDir,
-  moduleDirectories
+  moduleDirectories,
+  rootDir,
+  ignoreSideEffectsForRoot
 }) {
   let hasModuleSideEffects = () => null;
   let hasPackageEntry = true;
@@ -58,7 +60,9 @@ async function resolveId({
       pkgPath,
       mainFields,
       preserveSymlinks,
-      useBrowserOverrides
+      useBrowserOverrides,
+      rootDir,
+      ignoreSideEffectsForRoot
     });
 
     ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
@@ -180,7 +184,9 @@ export default async function resolveImportSpecifiers({
   preserveSymlinks,
   useBrowserOverrides,
   baseDir,
-  moduleDirectories
+  moduleDirectories,
+  rootDir,
+  ignoreSideEffectsForRoot
 }) {
   let lastResolveError;
 
@@ -197,7 +203,9 @@ export default async function resolveImportSpecifiers({
       preserveSymlinks,
       useBrowserOverrides,
       baseDir,
-      moduleDirectories
+      moduleDirectories,
+      rootDir,
+      ignoreSideEffectsForRoot
     });
 
     if (result instanceof ResolveError) {

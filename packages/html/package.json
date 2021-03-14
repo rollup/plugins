@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-html",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publishConfig": {
     "access": "public"
   },
@@ -28,10 +28,12 @@
     "prebuild": "del-cli dist",
     "prepublishOnly": "pnpm build && pnpm lint",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
-    "lib",
+    "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
