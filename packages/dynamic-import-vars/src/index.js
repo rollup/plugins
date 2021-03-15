@@ -54,10 +54,10 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
               `function __variableDynamicImportRuntime${dynamicImportIndex}__(path) {
   switch (path) {
 ${paths.map((p) => `    case '${p}': return import('${p}');`).join('\n')}
-${`    default: return new Promise((resolve, reject) => {
-      (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(() => {
-        reject(new Error("Unknown variable dynamic import: " + path))
-      });
+${`    default: return new Promise(function(resolve, reject) {
+      (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
+        reject.bind(null, new Error("Unknown variable dynamic import: " + path))
+      );
     })\n`}   }
  }\n\n`
             );
