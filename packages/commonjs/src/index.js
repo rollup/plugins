@@ -145,7 +145,8 @@ export default function commonjs(options = {}) {
       dynamicRequireModuleSet,
       disableWrap,
       commonDir,
-      ast
+      ast,
+      options.nodeDefaultImport
     );
   }
 

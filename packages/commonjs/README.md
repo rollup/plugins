@@ -174,6 +174,13 @@ If you set `esmExternals` to `true`, this plugins assumes that all external depe
 
 You can also supply an array of ids to be treated as ES modules, or a function that will be passed each external id to determine if it is an ES module.
 
+### `nodeDefaultImport`
+
+Type: `boolean`<br>
+Default: `false`
+
+When `true`, match the Node.js behavior when importing the `default` import from a CommonJS module, making it return the value of `module.exports`.
+
 ### `requireReturnsDefault`
 
 Type: `boolean | "namespace" | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>

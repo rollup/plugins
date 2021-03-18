@@ -20,7 +20,8 @@ export function rewriteExportsAndGetExportsBlock(
   isRestorableCompiledEsm,
   code,
   uses,
-  HELPERS_NAME
+  HELPERS_NAME,
+  nodeDefaultImport
 ) {
   const namedExportDeclarations = [`export { ${moduleName} as __moduleExports };`];
   const moduleExportsPropertyAssignments = [];
@@ -79,7 +80,8 @@ export function rewriteExportsAndGetExportsBlock(
     defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
   } else if (
     (wrapped || deconflictedDefaultExportName) &&
-    (defineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0)
+    (defineCompiledEsmExpressions.length > 0 ||
+      (!nodeDefaultImport && code.indexOf('__esModule') >= 0))
   ) {
     // eslint-disable-next-line no-param-reassign
     uses.commonjsHelpers = true;

@@ -53,7 +53,8 @@ export default function transformCommonjs(
   dynamicRequireModuleSet,
   disableWrap,
   commonDir,
-  astCache
+  astCache,
+  nodeDefaultImport
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -137,7 +138,7 @@ export default function transformCommonjs(
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
             if (programDepth > 3) {
               shouldWrap = true;
-            } else if (exportName === KEY_COMPILED_ESM) {
+            } else if (!nodeDefaultImport && exportName === KEY_COMPILED_ESM) {
               defineCompiledEsmExpressions.push(parent);
             } else if (flattened.keypath === 'module.exports') {
               topLevelModuleExportsAssignments.push(node);
@@ -470,7 +471,8 @@ export default function transformCommonjs(
         isRestorableCompiledEsm,
         code,
         uses,
-        HELPERS_NAME
+        HELPERS_NAME,
+        nodeDefaultImport
       );
 
   const importBlock = rewriteRequireExpressionsAndGetImportBlock(
