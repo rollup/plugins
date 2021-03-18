@@ -1,6 +1,6 @@
 /* eslint-disable global-require, import/no-dynamic-require, no-console */
 
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 
 import * as acorn from 'acorn';
 import test from 'ava';
@@ -69,23 +69,6 @@ readdirSync('./fixtures/form').forEach((dir) => {
       const expected = readFileSync(outputFile, 'utf-8').trim();
       const transformed = transform.call(transformContext, input, id);
       const actual = (transformed ? transformed.code : input).trim().replace(/\0/g, '_');
-
-      if (
-        process.env.OVERWRITE &&
-        actual
-          .split('\n')
-          .map((x) => x.trimEnd())
-          .join('\n') !==
-          expected
-            .split('\n')
-            .map((x) => x.trimEnd())
-            .join('\n')
-      ) {
-        writeFileSync(outputFile, actual);
-        console.log('UPDATED', outputFile);
-        t.true(true);
-        return;
-      }
 
       // trim whitespace from line endings,
       // this will benefit issues like `form/try-catch-remove` where whitespace is left in the line,
