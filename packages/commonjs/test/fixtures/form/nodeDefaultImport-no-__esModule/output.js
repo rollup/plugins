@@ -1,9 +1,9 @@
-const _default = 2;
-const named = 3;
+var _default = 2;
+var named = 3;
 
-const input = {
-  default: _default,
-  named
+var input = {
+	default: _default,
+	named: named
 };
 
 export default input;

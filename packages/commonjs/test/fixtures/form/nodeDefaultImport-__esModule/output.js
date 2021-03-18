@@ -1,11 +1,11 @@
-const __esModule = true;
-const _default = 2;
-const named = 3;
+var __esModule = true;
+var _default = 2;
+var named = 3;
 
-const input = {
-  __esModule,
-  default: _default,
-  named
+var input = {
+	__esModule: __esModule,
+	default: _default,
+	named: named
 };
 
 export default input;
