@@ -375,34 +375,6 @@ test('marks a module as external if the resolved version is external', async (t)
   t.is(/node_modules/.test(code), false);
 });
 
-test('resolves nested resolve calls', async (t) => {
-  let laterPluginResolveCalled = false;
-  const bundle = await rollup({
-    input: 'resolved-external/main.js',
-    onwarn: () => t.fail('No warnings were expected'),
-    plugins: [
-      nodeResolve(),
-      {
-        resolveId() {
-          laterPluginResolveCalled = true;
-        }
-      },
-      {
-        // called from `this.resolve`
-        async resolveId(importee, importer) {
-          laterPluginResolveCalled = false;
-          t.is((await this.resolve(importee, importer, { skipSelf: true })).external, false);
-          // if second plugin was called it means the plugin did not
-          // return what the result would be from resolveId
-          t.is(laterPluginResolveCalled, false);
-        }
-      }
-    ]
-  });
-
-  await getCode(bundle);
-});
-
 [
   'preserveSymlinks',
   'basedir',
