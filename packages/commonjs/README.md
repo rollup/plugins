@@ -174,12 +174,48 @@ If you set `esmExternals` to `true`, this plugins assumes that all external depe
 
 You can also supply an array of ids to be treated as ES modules, or a function that will be passed each external id to determine if it is an ES module.
 
-### `nodeDefaultImport`
+### `defaultIsModuleExports`
 
-Type: `boolean`<br>
-Default: `false`
+Type: `boolean | "auto"`<br>
+Default: `"auto"`
 
-When `true`, match the Node.js behavior when importing the `default` import from a CommonJS module, making it return the value of `module.exports`.
+Controls what is the default export when importing a CommonJS file from an ES module.
+
+- `true`: The value of the default export is `module.exports`. This currently matches the behavior of Node.js when importing a CommonJS file.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  console.log(foo); // { default: 3 }
+  ```
+- `false`: The value of the default export is `exports.default`.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  console.log(foo); // 3
+  ```
+- `"auto"`: The value of the default export is `exports.default` if the CommonJS file has an `exports.__esModule === true` property; otherwise it's `module.exports`. This makes it possible to import
+  the default export of ES modules compiled to CommonJS as if they were not compiled.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  // mod-compiled.cjs
+  exports.__esModule = true;
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  import bar from './mod-compiled.cjs';
+  console.log(foo); // { default: 3 }
+  console.log(bar); // 3
+  ```
 
 ### `requireReturnsDefault`
 

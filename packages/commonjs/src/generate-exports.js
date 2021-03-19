@@ -21,7 +21,7 @@ export function rewriteExportsAndGetExportsBlock(
   code,
   uses,
   HELPERS_NAME,
-  nodeDefaultImport
+  defaultIsModuleExports
 ) {
   const namedExportDeclarations = [`export { ${moduleName} as __moduleExports };`];
   const moduleExportsPropertyAssignments = [];
@@ -76,20 +76,29 @@ export function rewriteExportsAndGetExportsBlock(
 
   // Generate default export
   const defaultExport = [];
-  if (isRestorableCompiledEsm) {
-    defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
-  } else if (
-    (wrapped || deconflictedDefaultExportName) &&
-    (defineCompiledEsmExpressions.length > 0 ||
-      (!nodeDefaultImport && code.indexOf('__esModule') >= 0))
-  ) {
-    // eslint-disable-next-line no-param-reassign
-    uses.commonjsHelpers = true;
-    defaultExport.push(
-      `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
-    );
-  } else {
+  if (defaultIsModuleExports === 'auto') {
+    if (isRestorableCompiledEsm) {
+      defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
+    } else if (
+      (wrapped || deconflictedDefaultExportName) &&
+      (defineCompiledEsmExpressions.length > 0 || code.includes('__esModule'))
+    ) {
+      // eslint-disable-next-line no-param-reassign
+      uses.commonjsHelpers = true;
+      defaultExport.push(
+        `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
+      );
+    } else {
+      defaultExport.push(`export default ${moduleName};`);
+    }
+  } else if (defaultIsModuleExports === true) {
     defaultExport.push(`export default ${moduleName};`);
+  } else if (defaultIsModuleExports === false) {
+    if (deconflictedDefaultExportName) {
+      defaultExport.push(`export default ${deconflictedDefaultExportName};`);
+    } else {
+      defaultExport.push(`export default ${moduleName}.default;`);
+    }
   }
 
   return `\n\n${defaultExport

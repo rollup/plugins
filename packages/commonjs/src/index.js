@@ -59,6 +59,8 @@ export default function commonjs(options = {}) {
       : Array.isArray(esmExternals)
       ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
       : () => esmExternals;
+  const defaultIsModuleExports =
+    typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
 
   const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
     options.dynamicRequireTargets
@@ -146,7 +148,7 @@ export default function commonjs(options = {}) {
       disableWrap,
       commonDir,
       ast,
-      options.nodeDefaultImport
+      defaultIsModuleExports
     );
   }
 

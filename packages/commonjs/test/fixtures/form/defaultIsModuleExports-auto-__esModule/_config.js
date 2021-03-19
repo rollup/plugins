@@ -1,5 +1,5 @@
 module.exports = {
   options: {
-    nodeDefaultImport: true
+    defaultIsModuleExports: 'auto'
   }
 };

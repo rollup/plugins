@@ -54,7 +54,7 @@ export default function transformCommonjs(
   disableWrap,
   commonDir,
   astCache,
-  nodeDefaultImport
+  defaultIsModuleExports
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -138,7 +138,7 @@ export default function transformCommonjs(
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
             if (programDepth > 3) {
               shouldWrap = true;
-            } else if (!nodeDefaultImport && exportName === KEY_COMPILED_ESM) {
+            } else if (exportName === KEY_COMPILED_ESM) {
               defineCompiledEsmExpressions.push(parent);
             } else if (flattened.keypath === 'module.exports') {
               topLevelModuleExportsAssignments.push(node);
@@ -472,7 +472,7 @@ export default function transformCommonjs(
         code,
         uses,
         HELPERS_NAME,
-        nodeDefaultImport
+        defaultIsModuleExports
       );
 
   const importBlock = rewriteRequireExpressionsAndGetImportBlock(
