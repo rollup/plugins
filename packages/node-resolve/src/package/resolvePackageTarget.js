@@ -90,9 +90,13 @@ async function resolvePackageTarget(context, { target, subpath, pattern, interna
     let browserTarget = null;
 
     if (useBrowserOverrides) {
-      for (const [, value] of Object.entries(target)) {
-        if (packageBrowserField[value]) {
-          browserTarget = value;
+      if (Object.keys(target).includes('browser')) {
+        browserTarget = target.browser;
+      } else {
+        for (const [, value] of Object.entries(target)) {
+          if (packageBrowserField[value]) {
+            browserTarget = value;
+          }
         }
       }
     }
