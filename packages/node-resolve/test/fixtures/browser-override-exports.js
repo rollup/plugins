@@ -1,3 +1,3 @@
-const Nanoid = require('nanoid')
+const Nanoid = require('nanoid');
 
-module.exports = Nanoid
+module.exports = Nanoid;

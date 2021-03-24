@@ -208,4 +208,24 @@ test('pkg.browser can override the export map result', async (t) => {
   const { module } = await testBundle(t, bundle);
 
   t.is(module.exports, 'browser');
-})
+});
+
+test('exports.browser takes precedence over export map result, when browser:true', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-exports-browser.js',
+    plugins: [nodeResolve({ browser: true }), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'browser');
+});
+
+test('exports.browser does not take precedence over export map result, when browser:false', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-exports-browser.js',
+    plugins: [nodeResolve(), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'require');
+});
