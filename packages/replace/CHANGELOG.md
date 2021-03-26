@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v2.4.2
+
+_2021-03-26_
+
+### Updates
+
+- docs: document the `values` option (#814)
+
 ## v2.4.1
 
 _2021-02-22_
