@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v11.2.1
+
+_2021-03-26_
+
+### Bugfixes
+
+- fix: fs.exists is incorrectly promisified (#835)
+
 ## v11.2.0
 
 _2021-02-14_
