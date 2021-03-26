@@ -1,5 +1,17 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v18.0.0
+
+_2021-03-26_
+
+### Breaking Changes
+
+- feat!: Add ignore-dynamic-requires option (#819)
+
+### Bugfixes
+
+- fix: `isRestorableCompiledEsm` should also trigger code transform (#816)
+
 ## v17.1.0
 
 _2021-01-29_
