@@ -53,7 +53,8 @@ export default function transformCommonjs(
   dynamicRequireModuleSet,
   disableWrap,
   commonDir,
-  astCache
+  astCache,
+  defaultIsModuleExports
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -470,7 +471,8 @@ export default function transformCommonjs(
         isRestorableCompiledEsm,
         code,
         uses,
-        HELPERS_NAME
+        HELPERS_NAME,
+        defaultIsModuleExports
       );
 
   const importBlock = rewriteRequireExpressionsAndGetImportBlock(
