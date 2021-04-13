@@ -2,6 +2,7 @@
 
 import test from 'ava';
 import { rollup } from 'rollup';
+import virtual from '@rollup/plugin-virtual';
 
 import { getCode } from '../../../util/test';
 
@@ -21,6 +22,18 @@ test('takes an array of files as input', async (t) => {
   const code = await getCode(bundle);
   t.truthy(code.includes('exports.zero = zero;'));
   t.truthy(code.includes('exports.one = one;'));
+});
+
+test('takes an array of file and virtual as input', async (t) => {
+  const bundle = await rollup({
+    input: ['test/fixtures/0.js', 'myvirtual'],
+    plugins: [virtual({
+      myvirtual: "exports.virt = 'str';"
+    }), multiEntry()]
+  });
+  const code = await getCode(bundle);
+  t.truthy(code.includes('exports.zero = zero;'));
+  t.truthy(code.includes("exports.virt = 'str';"));
 });
 
 test('allows an empty array as input', async (t) => {
