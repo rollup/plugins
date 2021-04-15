@@ -87,7 +87,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     renderStart(outputOptions) {
       validateSourceMap(this, parsedOptions.options, outputOptions, parsedOptions.autoSetSourceMap);
-      validatePaths(ts, this, parsedOptions.options, outputOptions);
+      validatePaths(this, parsedOptions.options, outputOptions);
     },
 
     resolveId(importee, importer) {
