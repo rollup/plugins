@@ -1,5 +1,7 @@
 import * as path from 'path';
 
+import fs from 'fs';
+
 import { Plugin, RollupOptions, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
@@ -148,11 +150,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const tsBuildInfoSource = emittedFiles.get(tsBuildInfoPath);
         // https://github.com/rollup/plugins/issues/681
         if (tsBuildInfoSource) {
-          this.emitFile({
-            type: 'asset',
-            fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
-            source: tsBuildInfoSource
-          });
+          fs.writeFileSync(normalizePath(tsBuildInfoPath), tsBuildInfoSource);
         }
       }
     }
