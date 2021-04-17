@@ -150,7 +150,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         if (tsBuildInfoSource) {
           this.emitFile({
             type: 'asset',
-            fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
+            fileName: normalizePath(
+              outputOptions.file || path.relative(outputOptions.dir!, tsBuildInfoPath)
+            ),
             source: tsBuildInfoSource
           });
         }

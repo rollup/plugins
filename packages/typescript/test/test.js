@@ -49,6 +49,26 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
   );
 });
 
+test.serial('ensures file output can be built', async (t) => {
+  // In a rollup.config.js we would pass an array
+  // The rollup method that's exported as a library won't do that so we must make two calls
+  const bundle1 = await rollup({
+    input: 'fixtures/src-dir/src/index.ts',
+    output: {
+      file: 'fixtures/src-dir/index.js'
+    },
+    plugins: [typescript({ tsconfig: 'fixtures/src-dir/tsconfig.json' })]
+  });
+
+  const output1 = await getCode(
+    bundle1,
+    { file: 'fixtures/src-dir/index.js', format: 'cjs' },
+    true
+  );
+
+  t.deepEqual(output1.map((out) => out.fileName).sort(), ['dist/index.d.ts', 'index.js']);
+});
+
 test.serial('ensures declarationDir is located in Rollup output dir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
