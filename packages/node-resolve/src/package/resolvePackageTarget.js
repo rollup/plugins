@@ -10,6 +10,24 @@ function includesInvalidSegments(pathSegments, moduleDirs) {
     .some((t) => ['.', '..', ...moduleDirs].includes(t));
 }
 
+async function resolvePackageTargetBrowserMapped(context, { target, subpath, pattern, internal }) {
+  const resolvedTarget = await resolvePackageTarget(context, {
+    target,
+    subpath,
+    pattern,
+    internal
+  });
+  if (
+    resolvedTarget &&
+    resolvedTarget.startsWith('./') &&
+    context.packageBrowserField &&
+    context.packageBrowserField[resolvedTarget]
+  ) {
+    return context.packageBrowserField[resolvedTarget];
+  }
+  return resolvedTarget;
+}
+
 async function resolvePackageTarget(context, { target, subpath, pattern, internal }) {
   if (typeof target === 'string') {
     if (!pattern && subpath.length > 0 && !target.endsWith('/')) {
@@ -24,11 +42,11 @@ async function resolvePackageTarget(context, { target, subpath, pattern, interna
             target.replace(/\*/g, subpath),
             context.pkgURL.href
           );
-          return result ? pathToFileURL(result.location) : null;
+          return result ? pathToFileURL(result.location).href : null;
         }
 
         const result = await context.resolveId(`${target}${subpath}`, context.pkgURL.href);
-        return result ? pathToFileURL(result.location) : null;
+        return result ? pathToFileURL(result.location).href : null;
       }
       throw new InvalidPackageTargetError(context, `Invalid mapping: "${target}".`);
     }
@@ -111,4 +129,4 @@ async function resolvePackageTarget(context, { target, subpath, pattern, interna
   throw new InvalidPackageTargetError(context, `Invalid exports field.`);
 }
 
-export default resolvePackageTarget;
+export default resolvePackageTargetBrowserMapped;

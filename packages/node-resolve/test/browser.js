@@ -199,3 +199,33 @@ test('pkg.browser with mapping to prevent bundle by specifying a value of false'
 
   t.is(module.exports, 'ok');
 });
+
+test('pkg.browser can override the export map result', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-override-exports.js',
+    plugins: [nodeResolve({ browser: true }), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'browser');
+});
+
+test('pkg.browser can be mapped via exports.browser', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-exports-browser-browser.js',
+    plugins: [nodeResolve({ browser: true }), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'browser');
+});
+
+test('exports.browser does not take precedence over export map result, when browser:false', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-exports-browser.js',
+    plugins: [nodeResolve(), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'require');
+});

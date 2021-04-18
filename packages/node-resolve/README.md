@@ -64,7 +64,7 @@ Setting this option will add extra conditions on top of the default conditions. 
 Type: `Boolean`<br>
 Default: `false`
 
-If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
+If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`. In addition, if `"browser"` is not present in `exportConditions`, it will be appended so that browser conditionals in `"exports"` will also apply.
 
 > This option does not work when a package is using [package entrypoints](https://nodejs.org/api/packages.html#packages_package_entry_points)
 
