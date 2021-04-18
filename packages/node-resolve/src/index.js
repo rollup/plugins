@@ -22,6 +22,7 @@ const deepFreeze = (object) => {
     }
   }
 
+
   return object;
 };
 
