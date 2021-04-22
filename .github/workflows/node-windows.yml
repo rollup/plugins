@@ -1,4 +1,4 @@
-name: Node
+name: Windows
 
 on: [push, pull_request]
 
@@ -11,7 +11,7 @@ jobs:
       matrix:
         node: [ '16', '14', '12' ]
 
-    name: ${{ matrix.node }} (Windows)
+    name: Node v${{ matrix.node }}
     steps:
     - name: Configure git line-breaks
       run: git config --global core.autocrlf false

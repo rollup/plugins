@@ -18,7 +18,7 @@ jobs:
       matrix:
         node: [ '16', '14', '12' ]
 
-    name: Node ${{ matrix.node }}
+    name: Node v${{ matrix.node }}
 
     steps:
       - name: Checkout Commit
