@@ -6,7 +6,10 @@
   },
   "description": "Verify entry point and all imported files with ESLint",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/eslint"
+  },
   "author": "Bogdan Chadkin <trysound@yandex.ru>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/eslint#readme",
   "bugs": "https://github.com/rollup/plugins/issues",

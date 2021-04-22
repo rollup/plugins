@@ -6,7 +6,10 @@
   },
   "description": "Remove debugger statements and functions like assert.equal and console.log from your code",
   "license": "MIT",
-  "repository": "rollup/@rollup/plugin-strip",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/strip"
+  },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/strip#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
