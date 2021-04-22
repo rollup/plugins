@@ -2,11 +2,8 @@
   "name": "@rollup/plugins",
   "private": true,
   "scripts": {
-    "ci:coverage": "node scripts/run-changed.js ci:coverage",
     "ci:coverage:submit": "node scripts/codecov",
-    "ci:lint": "node scripts/run-changed.js ci:lint",
-    "ci:test": "node scripts/run-changed.js ci:test",
-    "lint": "pnpm run lint:docs && npm run lint:json && pnpm run lint:package && node scripts/run-changed.js lint",
+    "lint": "pnpm run lint:docs && npm run lint:json && pnpm run lint:package && pnpm lint",
     "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
     "lint:js": "eslint scripts util",
     "lint:json": "prettier --write tsconfig.*.json codecov.yml pnpm-workspace.yaml",
@@ -14,9 +11,7 @@
     "preinstall": "node scripts/disallow-npm.js",
     "pub": "node scripts/pub.js",
     "publish": "node scripts/publish.js",
-    "security": "pnpm audit --audit-level=moderate",
-    "test": "node scripts/run-changed.js test",
-    "test:ts": "node scripts/run-changed.js test:ts"
+    "security": "pnpm audit --audit-level=moderate"
   },
   "dependencies": {
     "conventional-commits-parser": "^3.1.0",
