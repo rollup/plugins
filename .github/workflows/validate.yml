@@ -51,4 +51,4 @@ jobs:
         run: pnpm lint --recursive
 
       - name: Run Tests
-        run: pnpm ci:test --filter ...[${{ github.sha }}]
+        run: pnpm ci:coverage --filter ...[${{ github.sha }}]
