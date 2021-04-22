@@ -1,1 +1,5 @@
 .eslintrc.js
+**/dist
+**/node_modules
+packages/commonjs/test/fixtures
+packages/typescript/test/fixtures/syntax-error

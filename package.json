@@ -6,7 +6,7 @@
     "lint": "pnpm lint:docs && pnpm --no-bail lint:json && pnpm lint:package && pnpm lint:js",
     "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write **/README.md",
     "lint:js": "eslint --cache packages scripts shared util --ext .js,.ts",
-    "lint:json": "prettier --write **/tsconfig*.json \"test/fixtures/!(garbage)/*.json\" **/*/{yml,yaml}",
+    "lint:json": "prettier --write **/tsconfig*.json **/*.{yml,yaml}",
     "lint:package": "prettier --write **/package.json --plugin=prettier-plugin-package",
     "preinstall": "node scripts/disallow-npm.js",
     "pub": "node scripts/pub.js",
