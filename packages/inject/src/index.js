@@ -25,6 +25,9 @@ const isReference = (node, parent) => {
     // disregard the `bar` in `export { foo as bar }`
     if (parent.type === 'ExportSpecifier' && node !== parent.local) return false;
 
+    // disregard the `bar` in `import { bar as foo }`
+    if (parent.type === 'ImportSpecifier' && node === parent.imported) { return false; }
+
     return true;
   }
 
