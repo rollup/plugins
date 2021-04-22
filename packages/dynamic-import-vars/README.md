@@ -134,10 +134,8 @@ function __variableDynamicImportRuntime__(path) {
     case './locales/nl-NL.js':
       return import('./locales/nl-NL.js');
     default:
-      return new Promise(function(resolve, reject) {
-        queueMicrotask(
-          reject.bind(null, new Error("Unknown variable dynamic import: " + path))
-        );
+      return new Promise(function (resolve, reject) {
+        queueMicrotask(reject.bind(null, new Error('Unknown variable dynamic import: ' + path)));
       });
   }
 }

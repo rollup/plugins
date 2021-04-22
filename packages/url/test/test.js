@@ -25,9 +25,7 @@ const run = async (t, type, opts) => {
   await bundle.write({ format: 'es', file: outputFile });
   const code = readFileSync(outputFile, 'utf-8');
   // Windows fix, glob paths must be in unix format
-  const glob = join(outputDir, `**/*.${type}`)
-    .split(sep)
-    .join(posix.sep);
+  const glob = join(outputDir, `**/*.${type}`).split(sep).join(posix.sep);
 
   t.snapshot(code);
   t.snapshot(await globby(glob));

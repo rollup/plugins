@@ -51,6 +51,12 @@ module.exports = {
   },
   overrides: [
     {
+      "files": ["**/test/**/*.{js,ts}"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
       "files": ["**/*.ts"],
       "rules": {
         "no-undef": "off"
