@@ -1,6 +1,14 @@
 name: Windows
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - synchronize
+  push:
+    branches:
+      - "*"
 
 jobs:
   build:
