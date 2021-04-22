@@ -2,22 +2,14 @@ import { extname } from 'path';
 
 import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
 
-import { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
+import { RollupHtmlFileMap, RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
 
-const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
-  const files = Object.values(bundle).filter(
-    (file) =>
-      file.type === 'chunk' ||
-      (typeof file.type === 'string' ? file.type === 'asset' : file.isAsset)
-  );
-  const result = {} as ReturnType<typeof getFiles>;
-  for (const file of files) {
-    const { fileName } = file;
-    const extension = extname(fileName).substring(1);
-
+const getFilesByExtension = (bundle: OutputBundle): RollupHtmlFileMap => {
+  const result: RollupHtmlFileMap = {};
+  for (const file of Object.values(bundle)) {
+    const extension = extname(file.fileName).substring(1);
     result[extension] = (result[extension] || []).concat(file);
   }
-
   return result;
 };
 
@@ -39,6 +31,7 @@ const defaultTemplate = async ({
   title
 }: RollupHtmlTemplateOptions) => {
   const scripts = (files.js || [])
+    .filter((file: any) => file.isEntry)
     .map(({ fileName }) => {
       const attrs = makeHtmlAttributes(attributes.script);
       return `<script src="${publicPath}${fileName}"${attrs}></script>`;
@@ -115,7 +108,8 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
         });
       }
 
-      const files = getFiles(bundle);
+      const files = getFilesByExtension(bundle);
+
       const source = await template({
         attributes,
         bundle,
