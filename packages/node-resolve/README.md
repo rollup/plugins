@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [nodeResolve()]
+  plugins: [nodeResolve()],
 };
 ```
 
@@ -64,7 +64,7 @@ Setting this option will add extra conditions on top of the default conditions. 
 Type: `Boolean`<br>
 Default: `false`
 
-If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`. In addition, if `"browser"` is not present in `exportConditions`, it will be appended so that browser conditionals in `"exports"` will also apply.
+If `true`, instructs the plugin to use the browser module resolutions in `package.json` and adds `'browser'` to `exportConditions` if it is not present so browser conditionals in `exports` are applied. If `false`, any browser properties in package files will be ignored. Alternatively, a value of `'browser'` can be added to the `mainFields` option, however this option takes precedence over `mainFields`.
 
 > This option does not work when a package is using [package entrypoints](https://nodejs.org/api/packages.html#packages_package_entry_points)
 
@@ -179,9 +179,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule'
+    name: 'MyModule',
   },
-  plugins: [nodeResolve(), commonjs()]
+  plugins: [nodeResolve(), commonjs()],
 };
 ```
 
@@ -216,7 +216,7 @@ The node resolve plugin uses `import` by default, you can opt into using the `re
 ```js
 this.resolve(importee, importer, {
   skipSelf: true,
-  custom: { 'node-resolve': { isRequire: true } }
+  custom: { 'node-resolve': { isRequire: true } },
 });
 ```
 
