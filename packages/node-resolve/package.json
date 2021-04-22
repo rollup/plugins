@@ -54,7 +54,7 @@
     "modules"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "^2.42.0"
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
@@ -71,7 +71,7 @@
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "es5-ext": "^0.10.53",
-    "rollup": "^2.23.0",
+    "rollup": "^2.42.0",
     "source-map": "^0.7.3",
     "string-capitalize": "^1.0.1"
   },
