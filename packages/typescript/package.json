@@ -6,7 +6,10 @@
   },
   "description": "Seamless integration between Rollup and TypeScript.",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/typescript"
+  },
   "author": "Oskar Segersvärd",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/typescript/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
