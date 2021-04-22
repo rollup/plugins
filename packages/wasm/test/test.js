@@ -45,9 +45,7 @@ test('fetching WASM from separate file', async (t) => {
   });
 
   await bundle.write({ format: 'cjs', file: outputFile });
-  const glob = join(outputDir, `**/*.wasm`)
-    .split(sep)
-    .join(posix.sep);
+  const glob = join(outputDir, `**/*.wasm`).split(sep).join(posix.sep);
 
   global.result = null;
   global.t = t;

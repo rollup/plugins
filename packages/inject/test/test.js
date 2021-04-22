@@ -72,5 +72,5 @@ test('transpiles non-JS files but handles failures to parse', (t) => {
 });
 
 test('ignores check isReference is false', (t) => {
-  compare(t, 'is-reference', { bar:'path' });
+  compare(t, 'is-reference', { bar: 'path' });
 });

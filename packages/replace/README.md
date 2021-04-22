@@ -123,8 +123,8 @@ To avoid mixing replacement strings with the other options, you can specify repl
 
 ```js
 replace({
-  include: ["src/**/*.js"],
-  changed: "replaced"
+  include: ['src/**/*.js'],
+  changed: 'replaced',
 });
 ```
 
@@ -132,10 +132,10 @@ Can be replaced with:
 
 ```js
 replace({
-  include: ["src/**/*.js"],
+  include: ['src/**/*.js'],
   values: {
-    changed: "replaced"
-  }
+    changed: 'replaced',
+  },
 });
 ```
 
