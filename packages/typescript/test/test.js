@@ -655,6 +655,26 @@ test.serial('supports incremental rebuild', async (t) => {
   t.true(fs.existsSync('dist/.tsbuildinfo'));
 });
 
+test.serial('supports incremental build for single file output', async (t) => {
+  process.chdir('fixtures/incremental-single');
+  // clean up artefacts from earlier builds
+  forceRmSync('tsconfig.tsbuildinfo');
+  forceRmSync('index.js');
+
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', file: 'main.js' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js']
+  );
+  t.true(fs.existsSync('tsconfig.tsbuildinfo'));
+});
+
 test.serial('supports consecutive incremental rebuilds', async (t) => {
   process.chdir('fixtures/incremental');
   // clean up artefacts from earlier builds
