@@ -10,24 +10,6 @@ function includesInvalidSegments(pathSegments, moduleDirs) {
     .some((t) => ['.', '..', ...moduleDirs].includes(t));
 }
 
-async function resolvePackageTargetBrowserMapped(context, { target, subpath, pattern, internal }) {
-  const resolvedTarget = await resolvePackageTarget(context, {
-    target,
-    subpath,
-    pattern,
-    internal
-  });
-  if (
-    resolvedTarget &&
-    resolvedTarget.startsWith('./') &&
-    context.packageBrowserField &&
-    context.packageBrowserField[resolvedTarget]
-  ) {
-    return context.packageBrowserField[resolvedTarget];
-  }
-  return resolvedTarget;
-}
-
 async function resolvePackageTarget(context, { target, subpath, pattern, internal }) {
   if (typeof target === 'string') {
     if (!pattern && subpath.length > 0 && !target.endsWith('/')) {
@@ -129,4 +111,4 @@ async function resolvePackageTarget(context, { target, subpath, pattern, interna
   throw new InvalidPackageTargetError(context, `Invalid exports field.`);
 }
 
-export default resolvePackageTargetBrowserMapped;
+export default resolvePackageTarget;
