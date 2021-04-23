@@ -613,26 +613,33 @@ test.serial('supports optional chaining', async (t) => {
 });
 
 test.serial('supports incremental build', async (t) => {
+  process.chdir('fixtures/basic');
+  // clean up artefacts from earlier builds
+  forceRmSync('tsconfig.tsbuildinfo');
+
   const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
+    input: 'main.ts',
     plugins: [
       typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
+        tsconfig: 'tsconfig.json',
         incremental: true
       })
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic' }, true);
+  const output = await getCode(bundle, { format: 'esm', dir: './' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', 'tsconfig.tsbuildinfo']
+    ['main.js']
   );
+  t.true(fs.existsSync('tsconfig.tsbuildinfo'));
 });
 
 test.serial('supports incremental rebuild', async (t) => {
   process.chdir('fixtures/incremental');
+  // clean up artefacts from earlier builds
+  forceRmSync('dist/.tsbuildinfo');
 
   const bundle = await rollup({
     input: 'main.ts',
@@ -643,12 +650,15 @@ test.serial('supports incremental rebuild', async (t) => {
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', '.tsbuildinfo']
+    ['main.js']
   );
+  t.true(fs.existsSync('dist/.tsbuildinfo'));
 });
 
 test.serial('supports consecutive incremental rebuilds', async (t) => {
   process.chdir('fixtures/incremental');
+  // clean up artefacts from earlier builds
+  forceRmSync('dist/.tsbuildinfo');
 
   const firstBundle = await rollup({
     input: 'main.ts',
@@ -659,8 +669,9 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
   const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
   t.deepEqual(
     firstRun.map((out) => out.fileName),
-    ['main.js', '.tsbuildinfo']
+    ['main.js']
   );
+  t.true(fs.existsSync('dist/.tsbuildinfo'));
 
   const secondBundle = await rollup({
     input: 'main.ts',
@@ -670,8 +681,9 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
   const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
   t.deepEqual(
     secondRun.map((out) => out.fileName),
-    ['main.js', '.tsbuildinfo']
+    ['main.js']
   );
+  t.true(fs.existsSync('dist/.tsbuildinfo'));
 });
 
 // https://github.com/rollup/plugins/issues/681
@@ -686,6 +698,7 @@ test.serial('supports incremental rebuilds with no change to cache', async (t) =
       throw error;
     }
     files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
+    forceRmSync('dist/.tsbuildinfo');
   };
 
   cleanup();
@@ -699,9 +712,11 @@ test.serial('supports incremental rebuilds with no change to cache', async (t) =
   const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
   t.deepEqual(
     firstRun.map((out) => out.fileName),
-    ['main.js', '.tsbuildinfo']
+    ['main.js']
   );
+  t.true(fs.existsSync('dist/.tsbuildinfo'));
   await firstBundle.write({ dir: 'dist' });
+  const tsBuildInfoStats = fs.statSync('dist/.tsbuildinfo');
 
   const secondBundle = await rollup({
     input: 'main.ts',
@@ -711,9 +726,14 @@ test.serial('supports incremental rebuilds with no change to cache', async (t) =
   const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
   t.deepEqual(
     secondRun.map((out) => out.fileName),
-    // .tsbuildinfo should not be emitted
     ['main.js']
   );
+  t.true(fs.existsSync('dist/.tsbuildinfo'));
+  const tsBuildInfoStats2 = fs.statSync('dist/.tsbuildinfo');
+  // .tsbuildinfo should not be emitted
+  t.is(tsBuildInfoStats2.mtimeMs, tsBuildInfoStats.mtimeMs);
+  t.is(tsBuildInfoStats2.ctimeMs, tsBuildInfoStats.ctimeMs);
+  t.is(tsBuildInfoStats2.birthtimeMs, tsBuildInfoStats.birthtimeMs);
 
   cleanup();
 });
@@ -1056,4 +1076,12 @@ function waitForWatcherEvent(watcher, eventCode) {
       }
     });
   });
+}
+
+function forceRmSync(filePath) {
+  try {
+    fs.unlinkSync(filePath);
+  } catch {
+    // ignore non existant file
+  }
 }
