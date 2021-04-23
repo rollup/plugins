@@ -150,7 +150,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const tsBuildInfoSource = emittedFiles.get(tsBuildInfoPath);
         // https://github.com/rollup/plugins/issues/681
         if (tsBuildInfoSource) {
-          fs.writeFileSync(normalizePath(tsBuildInfoPath), tsBuildInfoSource);
+          const normalizedTsBuildInfoPath = normalizePath(tsBuildInfoPath);
+          fs.mkdirSync(path.dirname(normalizedTsBuildInfoPath), { recursive: true });
+          fs.writeFileSync(normalizedTsBuildInfoPath, tsBuildInfoSource);
         }
       }
     }
