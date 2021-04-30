@@ -213,7 +213,7 @@ test('exports.browser can be mapped via pkg.browser', async (t) => {
 test('browser field does not take precedence over export map result', async (t) => {
   const bundle = await rollup({
     input: 'browser-exports-browser.js',
-    plugins: [nodeResolve({browser: true}), commonjs()]
+    plugins: [nodeResolve({ browser: true }), commonjs()]
   });
   const { module } = await testBundle(t, bundle);
 
