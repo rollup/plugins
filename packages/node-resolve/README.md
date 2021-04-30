@@ -64,7 +64,7 @@ Setting this option will add extra conditions on top of the default conditions. 
 Type: `Boolean`<br>
 Default: `false`
 
-If `true`, instructs the plugin to use the browser module resolutions in `package.json` and adds `'browser'` to `exportConditions` if it is not present so browser conditionals in `exports` are applied. If `false`, any browser properties in package files will be ignored. Alternatively, a value of `'browser'` can be added to the `mainFields` option, however this option takes precedence over `mainFields`.
+If `true`, instructs the plugin to use the browser module resolutions in `package.json` and adds `'browser'` to `exportConditions` if it is not present so browser conditionals in `exports` are applied. If `false`, any browser properties in package files will be ignored. Alternatively, a value of `'browser'` can be added to both the `mainFields` and `exportConditions` options, however this option takes precedence over `mainFields`.
 
 > This option does not work when a package is using [package entrypoints](https://nodejs.org/api/packages.html#packages_package_entry_points)
 
