@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [nodeResolve()],
+  plugins: [nodeResolve()]
 };
 ```
 
@@ -179,9 +179,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule',
+    name: 'MyModule'
   },
-  plugins: [nodeResolve(), commonjs()],
+  plugins: [nodeResolve(), commonjs()]
 };
 ```
 
@@ -216,7 +216,7 @@ The node resolve plugin uses `import` by default, you can opt into using the `re
 ```js
 this.resolve(importee, importer, {
   skipSelf: true,
-  custom: { 'node-resolve': { isRequire: true } },
+  custom: { 'node-resolve': { isRequire: true } }
 });
 ```
 
