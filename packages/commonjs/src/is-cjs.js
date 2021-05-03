@@ -1,6 +1,4 @@
-const isCjsPromises = new Map();
-
-export function getIsCjsPromise(id) {
+export function getIsCjsPromise(isCjsPromises, id) {
   let isCjsPromise = isCjsPromises.get(id);
   if (isCjsPromise) return isCjsPromise.promise;
 
@@ -16,7 +14,7 @@ export function getIsCjsPromise(id) {
   return promise;
 }
 
-export function setIsCjsPromise(id, resolution) {
+export function setIsCjsPromise(isCjsPromises, id, resolution) {
   const isCjsPromise = isCjsPromises.get(id);
   if (isCjsPromise) {
     if (isCjsPromise.resolve) {

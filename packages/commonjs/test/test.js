@@ -759,3 +759,18 @@ if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
     t.is(code, await new Promise((done) => getRollupUpCodeWithCache.on('message', done)));
   });
 }
+
+test('does not affect other instances when called with `requireReturnsDefault: "preferred"`', async (t) => {
+  const input = 'fixtures/function/import-esm-require-returns-default-preferred/main.js';
+  const options = { requireReturnsDefault: 'preferred' };
+
+  const instance1 = commonjs(options);
+  const bundle1 = await rollup({ input, plugins: [instance1] });
+  const code1 = (await bundle1.generate({})).output[0].code;
+
+  const instance2 = commonjs(options);
+  const bundle2 = await rollup({ input, plugins: [instance2] });
+  const code2 = (await bundle2.generate({})).output[0].code;
+
+  t.is(code1, code2);
+});
