@@ -760,7 +760,7 @@ if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
   });
 }
 
-test('does not affect other instances when called with `requireReturnsDefault: "preferred"`', async (t) => {
+test('does not affect subsequently created instances when called with `requireReturnsDefault: "preferred"`', async (t) => {
   const input = 'fixtures/function/import-esm-require-returns-default-preferred/main.js';
   const options = { requireReturnsDefault: 'preferred' };
 
