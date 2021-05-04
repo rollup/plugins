@@ -52,7 +52,7 @@ class ReadOnlyFormData {
   }
 }
 
-export default function () {
+export default function createReadOnlyFormData() {
   const map: FormDataMap = new Map();
 
   return {

@@ -67,6 +67,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
             if (line === 'rs' || line === 'restart' || data.toString().charCodeAt(0) === 11) {
               forkBundle(dir, entryFileName);
             } else if (line === 'cls' || line === 'clear' || data.toString().charCodeAt(0) === 12) {
+              // eslint-disable-next-line no-console
               console.clear();
             }
           });

@@ -45,6 +45,7 @@ test('takes input from the latest options', async (t) => {
       run(),
       {
         options(options) {
+          // eslint-disable-next-line no-param-reassign
           options.input = input;
           return options;
         }

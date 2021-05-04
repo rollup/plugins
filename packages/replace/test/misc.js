@@ -70,6 +70,7 @@ test('can be configured with output plugins', async (t) => {
 process.chdir(join(__dirname, 'fixtures', 'form', 'assignment'));
 
 test.serial('no explicit setting of preventAssignment', async (t) => {
+  // eslint-disable-next-line no-undefined
   const possibleValues = [undefined, true, false];
   for await (const value of possibleValues) {
     const warnings = [];
