@@ -72,6 +72,7 @@ export default function commonjs(options = {}) {
 
   const esModulesWithDefaultExport = new Set();
   const esModulesWithNamedExports = new Set();
+  const isCjsPromises = new Map();
 
   const ignoreRequire =
     typeof options.ignore === 'function'
@@ -208,7 +209,8 @@ export default function commonjs(options = {}) {
           actualId,
           getRequireReturnsDefault(actualId),
           esModulesWithDefaultExport,
-          esModulesWithNamedExports
+          esModulesWithNamedExports,
+          isCjsPromises
         );
       }
 
@@ -244,11 +246,11 @@ export default function commonjs(options = {}) {
       if (commonjs) {
         const isCjs = commonjs.isCommonJS;
         if (isCjs != null) {
-          setIsCjsPromise(id, isCjs);
+          setIsCjsPromise(isCjsPromises, id, isCjs);
           return;
         }
       }
-      setIsCjsPromise(id, null);
+      setIsCjsPromise(isCjsPromises, id, null);
     }
   };
 }

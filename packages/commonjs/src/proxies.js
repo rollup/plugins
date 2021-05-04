@@ -46,10 +46,11 @@ export async function getStaticRequireProxy(
   id,
   requireReturnsDefault,
   esModulesWithDefaultExport,
-  esModulesWithNamedExports
+  esModulesWithNamedExports,
+  isCjsPromises
 ) {
   const name = getName(id);
-  const isCjs = await getIsCjsPromise(id);
+  const isCjs = await getIsCjsPromise(isCjsPromises, id);
   if (isCjs) {
     return `import { __moduleExports } from ${JSON.stringify(id)}; export default __moduleExports;`;
   } else if (isCjs === null) {
