@@ -1,5 +1,17 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v18.1.0
+
+_2021-05-04_
+
+### Bugfixes
+
+- fix: idempotence issue (#871)
+
+### Features
+
+- feat: Add `defaultIsModuleExports` option to match Node.js behavior (#838)
+
 ## v18.0.0
 
 _2021-03-26_
