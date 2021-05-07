@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v19.0.0
+
+_2021-05-07_
+
+### Breaking Changes
+
+- feat!: Add support for circular dependencies (#658)
+
 ## v18.1.0
 
 _2021-05-04_
