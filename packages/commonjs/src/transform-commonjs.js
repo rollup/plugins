@@ -47,13 +47,15 @@ export default function transformCommonjs(
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
+  ignoreDynamicRequires,
   getIgnoreTryCatchRequireStatementMode,
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
   disableWrap,
   commonDir,
-  astCache
+  astCache,
+  defaultIsModuleExports
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -326,12 +328,14 @@ export default function transformCommonjs(
                   )}`
                 );
               }
-              if (isShorthandProperty(parent)) {
-                magicString.appendRight(node.end, `: ${HELPERS_NAME}.commonjsRequire`);
-              } else {
-                magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
-                  storeName: true
-                });
+              if (!ignoreDynamicRequires) {
+                if (isShorthandProperty(parent)) {
+                  magicString.appendRight(node.end, `: ${HELPERS_NAME}.commonjsRequire`);
+                } else {
+                  magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                    storeName: true
+                  });
+                }
               }
               usesDynamicRequire = true;
               return;
@@ -498,7 +502,8 @@ export default function transformCommonjs(
         code,
         HELPERS_NAME,
         exportMode,
-        detectWrappedDefault
+        detectWrappedDefault,
+        defaultIsModuleExports
       );
 
   if (shouldWrap) {

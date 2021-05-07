@@ -6,7 +6,10 @@
   },
   "description": "Seamless integration between Rollup and Babel.",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/babel"
+  },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/babel#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -21,10 +24,6 @@
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run build && pnpm run test:ts",
     "pretest": "pnpm run build",

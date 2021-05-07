@@ -24,11 +24,11 @@ async function resolvePackageTarget(context, { target, subpath, pattern, interna
             target.replace(/\*/g, subpath),
             context.pkgURL.href
           );
-          return result ? pathToFileURL(result.location) : null;
+          return result ? pathToFileURL(result.location).href : null;
         }
 
         const result = await context.resolveId(`${target}${subpath}`, context.pkgURL.href);
-        return result ? pathToFileURL(result.location) : null;
+        return result ? pathToFileURL(result.location).href : null;
       }
       throw new InvalidPackageTargetError(context, `Invalid mapping: "${target}".`);
     }

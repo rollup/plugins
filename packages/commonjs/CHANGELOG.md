@@ -1,5 +1,29 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v18.1.0
+
+_2021-05-04_
+
+### Bugfixes
+
+- fix: idempotence issue (#871)
+
+### Features
+
+- feat: Add `defaultIsModuleExports` option to match Node.js behavior (#838)
+
+## v18.0.0
+
+_2021-03-26_
+
+### Breaking Changes
+
+- feat!: Add ignore-dynamic-requires option (#819)
+
+### Bugfixes
+
+- fix: `isRestorableCompiledEsm` should also trigger code transform (#816)
+
 ## v17.1.0
 
 _2021-01-29_

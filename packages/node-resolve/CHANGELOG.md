@@ -1,5 +1,37 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.0.0
+
+_2021-05-04_
+
+### Breaking Changes
+
+- fix!: mark module as external if resolved module is external (#799)
+
+### Features
+
+- feat: Follow up to #843, refining exports and browser field interaction (#866)
+
+## v12.0.0
+
+_2021-05-04_
+
+### Breaking Changes
+
+- fix!: mark module as external if resolved module is external (#799)
+
+### Features
+
+- feat: Follow up to #843, refining exports and browser field interaction (#866)
+
+## v11.2.1
+
+_2021-03-26_
+
+### Bugfixes
+
+- fix: fs.exists is incorrectly promisified (#835)
+
 ## v11.2.0
 
 _2021-02-14_

@@ -20,6 +20,7 @@ import { mergeTransformers } from './customTransformers';
 type BuilderProgram = EmitAndSemanticDiagnosticsBuilderProgram;
 
 // @see https://github.com/microsoft/TypeScript/blob/master/src/compiler/diagnosticMessages.json
+// eslint-disable-next-line no-shadow
 enum DiagnosticCode {
   FILE_CHANGE_DETECTED = 6032,
   FOUND_1_ERROR_WATCHING_FOR_FILE_CHANGES = 6193,

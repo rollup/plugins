@@ -1,12 +1,15 @@
 {
   "name": "@rollup/plugin-commonjs",
-  "version": "17.1.0",
+  "version": "18.1.0",
   "publishConfig": {
     "access": "public"
   },
   "description": "Convert CommonJS modules to ES2015",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/commonjs"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/commonjs/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -21,13 +24,9 @@
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint && pnpm run test:ts",
+    "prepublishOnly": "pnpm -w run lint && pnpm run test:ts",
     "pretest": "pnpm run build",
     "test": "ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"

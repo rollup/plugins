@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
 import {

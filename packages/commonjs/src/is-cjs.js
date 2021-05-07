@@ -1,6 +1,4 @@
-const commonJSMetaPromises = new Map();
-
-export function getCommonJSMetaPromise(id) {
+export function getCommonJSMetaPromise(commonJSMetaPromises, id) {
   let commonJSMetaPromise = commonJSMetaPromises.get(id);
   if (commonJSMetaPromise) return commonJSMetaPromise.promise;
 
@@ -16,7 +14,7 @@ export function getCommonJSMetaPromise(id) {
   return promise;
 }
 
-export function setCommonJSMetaPromise(id, commonjsMeta) {
+export function setCommonJSMetaPromise(commonJSMetaPromises, id, commonjsMeta) {
   const commonJSMetaPromise = commonJSMetaPromises.get(id);
   if (commonJSMetaPromise) {
     if (commonJSMetaPromise.resolve) {

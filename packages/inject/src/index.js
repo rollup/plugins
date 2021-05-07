@@ -25,6 +25,11 @@ const isReference = (node, parent) => {
     // disregard the `bar` in `export { foo as bar }`
     if (parent.type === 'ExportSpecifier' && node !== parent.local) return false;
 
+    // disregard the `bar` in `import { bar as foo }`
+    if (parent.type === 'ImportSpecifier' && node === parent.imported) {
+      return false;
+    }
+
     return true;
   }
 
@@ -73,12 +78,7 @@ export default function inject(options) {
     });
   }
 
-  const firstpass = new RegExp(
-    `(?:${Array.from(modulesMap.keys())
-      .map(escape)
-      .join('|')})`,
-    'g'
-  );
+  const firstpass = new RegExp(`(?:${Array.from(modulesMap.keys()).map(escape).join('|')})`, 'g');
   const sourceMap = options.sourceMap !== false && options.sourcemap !== false;
 
   return {

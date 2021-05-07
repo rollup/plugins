@@ -1,5 +1,14 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.2.1
+
+_2021-03-26_
+
+### Bugfixes
+
+- fix: bump TypeScript version (#818)
+- fix: update readme and peerDeps version (#830)
+
 ## v8.2.0
 
 _2021-02-14_

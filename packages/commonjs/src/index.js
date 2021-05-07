@@ -45,6 +45,7 @@ export default function commonjs(options = {}) {
   const filter = createFilter(options.include, options.exclude);
   const {
     ignoreGlobal,
+    ignoreDynamicRequires,
     requireReturnsDefault: requireReturnsDefaultOption,
     esmExternals
   } = options;
@@ -59,6 +60,8 @@ export default function commonjs(options = {}) {
       : Array.isArray(esmExternals)
       ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
       : () => esmExternals;
+  const defaultIsModuleExports =
+    typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
 
   const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
     options.dynamicRequireTargets
@@ -70,6 +73,7 @@ export default function commonjs(options = {}) {
 
   const esModulesWithDefaultExport = new Set();
   const esModulesWithNamedExports = new Set();
+  const commonJsMetaPromises = new Map();
 
   const ignoreRequire =
     typeof options.ignore === 'function'
@@ -136,13 +140,15 @@ export default function commonjs(options = {}) {
       isEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
+      ignoreDynamicRequires && !isDynamicRequireModulesEnabled,
       getIgnoreTryCatchRequireStatementMode,
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
       disableWrap,
       commonDir,
-      ast
+      ast,
+      defaultIsModuleExports
     );
   }
 
@@ -162,7 +168,7 @@ export default function commonjs(options = {}) {
 
     load(id) {
       if (id === HELPERS_ID) {
-        return getHelpersModule(isDynamicRequireModulesEnabled);
+        return getHelpersModule(isDynamicRequireModulesEnabled, ignoreDynamicRequires);
       }
 
       if (id.startsWith(HELPERS_ID)) {
@@ -235,7 +241,8 @@ export default function commonjs(options = {}) {
           actualId,
           getRequireReturnsDefault(actualId),
           esModulesWithDefaultExport,
-          esModulesWithNamedExports
+          esModulesWithNamedExports,
+          commonJsMetaPromises
         );
       }
 
@@ -268,10 +275,10 @@ export default function commonjs(options = {}) {
 
     moduleParsed({ id, meta: { commonjs: commonjsMeta } }) {
       if (commonjsMeta && commonjsMeta.isCommonJS != null) {
-        setCommonJSMetaPromise(id, commonjsMeta);
+        setCommonJSMetaPromise(commonJsMetaPromises, id, commonjsMeta);
         return;
       }
-      setCommonJSMetaPromise(id, null);
+      setCommonJSMetaPromise(commonJsMetaPromises, id, null);
     }
   };
 }

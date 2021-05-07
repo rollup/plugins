@@ -46,10 +46,11 @@ export async function getStaticRequireProxy(
   id,
   requireReturnsDefault,
   esModulesWithDefaultExport,
-  esModulesWithNamedExports
+  esModulesWithNamedExports,
+  commonJsMetaPromises
 ) {
   const name = getName(id);
-  const commonjsMeta = await getCommonJSMetaPromise(id);
+  const commonjsMeta = await getCommonJSMetaPromise(commonJsMetaPromises, id);
   if (commonjsMeta && commonjsMeta.isCommonJS) {
     return `export { __moduleExports as default } from ${JSON.stringify(id)};`;
   } else if (commonjsMeta === null) {

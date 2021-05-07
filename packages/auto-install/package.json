@@ -6,7 +6,10 @@
   },
   "description": "Automatically install dependencies that are imported by a bundle",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/auto-install"
+  },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/auto-install/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -18,10 +21,6 @@
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
