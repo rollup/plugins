@@ -1,6 +1,6 @@
-var input = /*#__PURE__*/Object.defineProperty({
+import * as commonjsHelpers from "_commonjsHelpers.js";
+import { __exports as input } from "\u0000fixtures/form/compiled-esm-define-exports-empty/input.js?commonjs-exports"
 
-}, '__esModule', {value: true});
+Object.defineProperty(input, "__esModule", { value: true });
 
-export default input;
-export { input as __moduleExports };
+export { input as __moduleExports, input as default };

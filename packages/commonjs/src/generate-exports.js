@@ -1,108 +1,176 @@
-export function wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDynamicRequirePath) {
-  const args = `module${uses.exports ? ', exports' : ''}`;
-
+export function wrapCode(magicString, uses, moduleName, exportsName) {
+  const args = [];
+  const passedArgs = [];
+  if (uses.module) {
+    args.push('module');
+    passedArgs.push(moduleName);
+  }
+  if (uses.exports) {
+    args.push('exports');
+    passedArgs.push(exportsName);
+  }
   magicString
     .trim()
-    .prepend(`var ${moduleName} = ${HELPERS_NAME}.createCommonjsModule(function (${args}) {\n`)
-    .append(
-      `\n}${virtualDynamicRequirePath ? `, ${JSON.stringify(virtualDynamicRequirePath)}` : ''});`
-    );
+    .prepend(`(function (${args.join(', ')}) {\n`)
+    .append(`\n}(${passedArgs.join(', ')}));`);
 }
 
 export function rewriteExportsAndGetExportsBlock(
   magicString,
   moduleName,
+  exportsName,
   wrapped,
-  topLevelModuleExportsAssignments,
-  topLevelExportsAssignmentsByName,
+  moduleExportsAssignments,
+  firstTopLevelModuleExportsAssignment,
+  exportsAssignmentsByName,
+  topLevelAssignments,
   defineCompiledEsmExpressions,
-  deconflict,
-  isRestorableCompiledEsm,
+  deconflictedExportNames,
   code,
-  uses,
+  HELPERS_NAME,
+  exportMode,
+  detectWrappedDefault,
+  defaultIsModuleExports
+) {
+  const exports = [];
+  const exportDeclarations = [];
+
+  if (exportMode === 'replace') {
+    getExportsForReplacedModuleExports(
+      magicString,
+      exports,
+      exportDeclarations,
+      moduleExportsAssignments,
+      firstTopLevelModuleExportsAssignment,
+      exportsName
+    );
+  } else {
+    exports.push(`${exportsName} as __moduleExports`);
+    if (wrapped) {
+      getExportsWhenWrapping(
+        exportDeclarations,
+        exportsName,
+        detectWrappedDefault,
+        HELPERS_NAME,
+        defaultIsModuleExports
+      );
+    } else {
+      getExports(
+        magicString,
+        exports,
+        exportDeclarations,
+        moduleExportsAssignments,
+        exportsAssignmentsByName,
+        deconflictedExportNames,
+        topLevelAssignments,
+        moduleName,
+        exportsName,
+        defineCompiledEsmExpressions,
+        HELPERS_NAME,
+        defaultIsModuleExports
+      );
+    }
+  }
+  if (exports.length) {
+    exportDeclarations.push(`export { ${exports.join(', ')} };`);
+  }
+
+  return `\n\n${exportDeclarations.join('\n')}`;
+}
+
+function getExportsForReplacedModuleExports(
+  magicString,
+  exports,
+  exportDeclarations,
+  moduleExportsAssignments,
+  firstTopLevelModuleExportsAssignment,
+  exportsName
+) {
+  for (const { left } of moduleExportsAssignments) {
+    magicString.overwrite(left.start, left.end, exportsName);
+  }
+  magicString.prependRight(firstTopLevelModuleExportsAssignment.left.start, 'var ');
+  exports.push(`${exportsName} as __moduleExports`);
+  exportDeclarations.push(`export default ${exportsName};`);
+}
+
+function getExportsWhenWrapping(
+  exportDeclarations,
+  exportsName,
+  detectWrappedDefault,
   HELPERS_NAME,
   defaultIsModuleExports
 ) {
-  const namedExportDeclarations = [`export { ${moduleName} as __moduleExports };`];
-  const moduleExportsPropertyAssignments = [];
+  exportDeclarations.push(
+    `export default ${
+      detectWrappedDefault && defaultIsModuleExports === 'auto'
+        ? `/*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName})`
+        : defaultIsModuleExports === false
+        ? `${exportsName}.default`
+        : exportsName
+    };`
+  );
+}
+
+function getExports(
+  magicString,
+  exports,
+  exportDeclarations,
+  moduleExportsAssignments,
+  exportsAssignmentsByName,
+  deconflictedExportNames,
+  topLevelAssignments,
+  moduleName,
+  exportsName,
+  defineCompiledEsmExpressions,
+  HELPERS_NAME,
+  defaultIsModuleExports
+) {
   let deconflictedDefaultExportName;
+  // Collect and rewrite module.exports assignments
+  for (const { left } of moduleExportsAssignments) {
+    magicString.overwrite(left.start, left.end, `${moduleName}.exports`);
+  }
 
-  if (!wrapped) {
-    let hasModuleExportsAssignment = false;
-    const namedExportProperties = [];
-
-    // Collect and rewrite module.exports assignments
-    for (const { left } of topLevelModuleExportsAssignments) {
-      hasModuleExportsAssignment = true;
-      magicString.overwrite(left.start, left.end, `var ${moduleName}`);
+  // Collect and rewrite named exports
+  for (const [exportName, { nodes }] of exportsAssignmentsByName) {
+    const deconflicted = deconflictedExportNames[exportName];
+    let needsDeclaration = true;
+    for (const node of nodes) {
+      let replacement = `${deconflicted} = ${exportsName}.${exportName}`;
+      if (needsDeclaration && topLevelAssignments.has(node)) {
+        replacement = `var ${replacement}`;
+        needsDeclaration = false;
+      }
+      magicString.overwrite(node.start, node.left.end, replacement);
+    }
+    if (needsDeclaration) {
+      magicString.prepend(`var ${deconflicted};\n`);
     }
 
-    // Collect and rewrite named exports
-    for (const [exportName, node] of topLevelExportsAssignmentsByName) {
-      const deconflicted = deconflict(exportName);
-      magicString.overwrite(node.start, node.left.end, `var ${deconflicted}`);
-
-      if (exportName === 'default') {
-        deconflictedDefaultExportName = deconflicted;
-      } else {
-        namedExportDeclarations.push(
-          exportName === deconflicted
-            ? `export { ${exportName} };`
-            : `export { ${deconflicted} as ${exportName} };`
-        );
-      }
-
-      if (hasModuleExportsAssignment) {
-        moduleExportsPropertyAssignments.push(`${moduleName}.${exportName} = ${deconflicted};`);
-      } else {
-        namedExportProperties.push(`\t${exportName}: ${deconflicted}`);
-      }
-    }
-
-    // Regenerate CommonJS namespace
-    if (!hasModuleExportsAssignment) {
-      const moduleExports = `{\n${namedExportProperties.join(',\n')}\n}`;
-      magicString
-        .trim()
-        .append(
-          `\n\nvar ${moduleName} = ${
-            isRestorableCompiledEsm
-              ? `/*#__PURE__*/Object.defineProperty(${moduleExports}, '__esModule', {value: true})`
-              : moduleExports
-          };`
-        );
+    if (exportName === 'default') {
+      deconflictedDefaultExportName = deconflicted;
+    } else {
+      exports.push(exportName === deconflicted ? exportName : `${deconflicted} as ${exportName}`);
     }
   }
 
-  // Generate default export
-  const defaultExport = [];
-  if (defaultIsModuleExports === 'auto') {
-    if (isRestorableCompiledEsm) {
-      defaultExport.push(`export default ${deconflictedDefaultExportName || moduleName};`);
-    } else if (
-      (wrapped || deconflictedDefaultExportName) &&
-      (defineCompiledEsmExpressions.length > 0 || code.includes('__esModule'))
-    ) {
-      // eslint-disable-next-line no-param-reassign
-      uses.commonjsHelpers = true;
-      defaultExport.push(
-        `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${moduleName});`
-      );
-    } else {
-      defaultExport.push(`export default ${moduleName};`);
-    }
-  } else if (defaultIsModuleExports === true) {
-    defaultExport.push(`export default ${moduleName};`);
-  } else if (defaultIsModuleExports === false) {
-    if (deconflictedDefaultExportName) {
-      defaultExport.push(`export default ${deconflictedDefaultExportName};`);
-    } else {
-      defaultExport.push(`export default ${moduleName}.default;`);
-    }
+  // Collect and rewrite exports.__esModule assignments
+  let isRestorableCompiledEsm = false;
+  for (const expression of defineCompiledEsmExpressions) {
+    isRestorableCompiledEsm = true;
+    const moduleExportsExpression =
+      expression.type === 'CallExpression' ? expression.arguments[0] : expression.left.object;
+    magicString.overwrite(moduleExportsExpression.start, moduleExportsExpression.end, exportsName);
   }
 
-  return `\n\n${defaultExport
-    .concat(namedExportDeclarations)
-    .concat(moduleExportsPropertyAssignments)
-    .join('\n')}`;
+  if (!isRestorableCompiledEsm || defaultIsModuleExports === true) {
+    exportDeclarations.push(`export default ${exportsName};`);
+  } else if (moduleExportsAssignments.length === 0 || defaultIsModuleExports === false) {
+    exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
+  } else {
+    exportDeclarations.push(
+      `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
+    );
+  }
 }

@@ -1,4 +1,4 @@
-Object.defineProperty(exports, '__esModule', { value: true });
+Object.defineProperty(module.exports, '__esModule', { value: true });
 
 if (globalValue) {
   module.exports = 'first';

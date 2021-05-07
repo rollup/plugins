@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
-  plugins: [commonjs()]
+  plugins: [commonjs()],
 };
 ```
 
@@ -66,8 +66,8 @@ commonjs({
     '!node_modules/logform/index.js',
     '!node_modules/logform/format.js',
     '!node_modules/logform/levels.js',
-    '!node_modules/logform/browser.js'
-  ]
+    '!node_modules/logform/browser.js',
+  ],
 });
 ```
 
@@ -250,7 +250,7 @@ This is in line with how other bundlers handle this situation and is also the mo
 
   var dep$1 = /*#__PURE__*/ Object.freeze({
     __proto__: null,
-    default: dep
+    default: dep,
   });
 
   console.log(dep$1.default);
@@ -281,7 +281,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
               enumerable: true,
               get: function () {
                 return n[k];
-              }
+              },
             }
       );
     });
@@ -357,9 +357,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule'
+    name: 'MyModule',
   },
-  plugins: [resolve(), commonjs()]
+  plugins: [resolve(), commonjs()],
 };
 ```
 
@@ -369,7 +369,7 @@ Symlinks are common in monorepos and are also created by the `npm link` command.
 
 ```js
 commonjs({
-  include: /node_modules/
+  include: /node_modules/,
 });
 ```
 
@@ -392,11 +392,11 @@ function cjsDetectionPlugin() {
     moduleParsed({
       id,
       meta: {
-        commonjs: { isCommonJS }
-      }
+        commonjs: { isCommonJS },
+      },
     }) {
       console.log(`File ${id} is CommonJS: ${isCommonJS}`);
-    }
+    },
   };
 }
 ```

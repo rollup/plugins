@@ -1,14 +1,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-import {
-  DYNAMIC_PACKAGES_ID,
-  DYNAMIC_REGISTER_SUFFIX,
-  HELPERS_ID,
-  isWrappedId,
-  unwrapId,
-  wrapId
-} from './helpers';
+import { DYNAMIC_PACKAGES_ID, DYNAMIC_REGISTER_SUFFIX, HELPERS_ID, wrapId } from './helpers';
 import { getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
 
 export function getPackageEntryPoint(dirPath) {
@@ -47,26 +40,16 @@ export function getDynamicPackagesEntryIntro(
 ) {
   let dynamicImports = Array.from(
     dynamicRequireModuleSet,
-    (dynamicId) => `require(${JSON.stringify(wrapModuleRegisterProxy(dynamicId))});`
+    (dynamicId) => `require(${JSON.stringify(wrapId(dynamicId, DYNAMIC_REGISTER_SUFFIX))});`
   ).join('\n');
 
   if (dynamicRequireModuleDirPaths.length) {
-    dynamicImports += `require(${JSON.stringify(wrapModuleRegisterProxy(DYNAMIC_PACKAGES_ID))});`;
+    dynamicImports += `require(${JSON.stringify(
+      wrapId(DYNAMIC_PACKAGES_ID, DYNAMIC_REGISTER_SUFFIX)
+    )});`;
   }
 
   return dynamicImports;
-}
-
-export function wrapModuleRegisterProxy(id) {
-  return wrapId(id, DYNAMIC_REGISTER_SUFFIX);
-}
-
-export function unwrapModuleRegisterProxy(id) {
-  return unwrapId(id, DYNAMIC_REGISTER_SUFFIX);
-}
-
-export function isModuleRegisterProxy(id) {
-  return isWrappedId(id, DYNAMIC_REGISTER_SUFFIX);
 }
 
 export function isDynamicModuleImport(id, dynamicRequireModuleSet) {

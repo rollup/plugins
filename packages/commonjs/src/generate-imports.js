@@ -2,8 +2,14 @@ import { dirname, resolve } from 'path';
 
 import { sync as nodeResolveSync } from 'resolve';
 
-import { isLocallyShadowed } from './ast-utils';
-import { HELPERS_ID, PROXY_SUFFIX, REQUIRE_SUFFIX, wrapId } from './helpers';
+import {
+  EXPORTS_SUFFIX,
+  HELPERS_ID,
+  MODULE_SUFFIX,
+  PROXY_SUFFIX,
+  REQUIRE_SUFFIX,
+  wrapId
+} from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -121,44 +127,46 @@ export function getRequireHandlers() {
     topLevelDeclarations,
     topLevelRequireDeclarators,
     reassignedNames,
-    helpersNameIfUsed,
-    dynamicRegisterSources
+    helpersName,
+    dynamicRegisterSources,
+    moduleName,
+    exportsName,
+    id,
+    exportMode
   ) {
-    const removedDeclarators = getDeclaratorsReplacedByImportsAndSetImportNames(
-      topLevelRequireDeclarators,
-      requiredByNode,
-      reassignedNames
-    );
     setRemainingImportNamesAndRewriteRequires(
       requireExpressionsWithUsedReturnValue,
       requiredByNode,
       magicString
     );
-    removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString);
-    const importBlock = `${(helpersNameIfUsed
-      ? [`import * as ${helpersNameIfUsed} from '${HELPERS_ID}';`]
-      : []
-    )
-      .concat(
-        // dynamic registers first, as the may be required in the other modules
-        [...dynamicRegisterSources].map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
-
-        // now the actual modules so that they are analyzed before creating the proxies;
-        // no need to do this for virtual modules as we never proxy them
-        requiredSources
-          .filter((source) => !source.startsWith('\0'))
-          .map((source) => `import '${wrapId(source, REQUIRE_SUFFIX)}';`),
-
-        // now the proxy modules
-        requiredSources.map((source) => {
-          const { name, nodesUsingRequired } = requiredBySource[source];
-          return `import ${nodesUsingRequired.length ? `${name} from ` : ``}'${
-            source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
-          }';`;
-        })
-      )
-      .join('\n')}`;
-    return importBlock ? `${importBlock}\n\n` : '';
+    const imports = [];
+    imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
+    if (exportMode === 'module') {
+      imports.push(
+        `import { __module as ${moduleName}, exports as ${exportsName} } from ${JSON.stringify(
+          wrapId(id, MODULE_SUFFIX)
+        )}`
+      );
+    } else if (exportMode === 'exports') {
+      imports.push(
+        `import { __exports as ${exportsName} } from ${JSON.stringify(wrapId(id, EXPORTS_SUFFIX))}`
+      );
+    }
+    for (const source of dynamicRegisterSources) {
+      imports.push(`import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`);
+    }
+    for (const source of requiredSources) {
+      if (!source.startsWith('\0')) {
+        imports.push(`import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`);
+      }
+      const { name, nodesUsingRequired } = requiredBySource[source];
+      imports.push(
+        `import ${nodesUsingRequired.length ? `${name} from ` : ''}${JSON.stringify(
+          source.startsWith('\0') ? source : wrapId(source, PROXY_SUFFIX)
+        )};`
+      );
+    }
+    return imports.length ? `${imports.join('\n')}\n\n` : '';
   }
 
   return {
@@ -166,30 +174,6 @@ export function getRequireHandlers() {
     requiredSources,
     rewriteRequireExpressionsAndGetImportBlock
   };
-}
-
-function getDeclaratorsReplacedByImportsAndSetImportNames(
-  topLevelRequireDeclarators,
-  requiredByNode,
-  reassignedNames
-) {
-  const removedDeclarators = new Set();
-  for (const declarator of topLevelRequireDeclarators) {
-    const { required } = requiredByNode.get(declarator.init);
-    if (!required.name) {
-      const potentialName = declarator.id.name;
-      if (
-        !reassignedNames.has(potentialName) &&
-        !required.nodesUsingRequired.some((node) =>
-          isLocallyShadowed(potentialName, requiredByNode.get(node).scope)
-        )
-      ) {
-        required.name = potentialName;
-        removedDeclarators.add(declarator);
-      }
-    }
-  }
-  return removedDeclarators;
 }
 
 function setRemainingImportNamesAndRewriteRequires(
@@ -210,24 +194,5 @@ function setRemainingImportNamesAndRewriteRequires(
       required.name = potentialName;
     }
     magicString.overwrite(requireExpression.start, requireExpression.end, required.name);
-  }
-}
-
-function removeDeclaratorsFromDeclarations(topLevelDeclarations, removedDeclarators, magicString) {
-  for (const declaration of topLevelDeclarations) {
-    let keepDeclaration = false;
-    let [{ start }] = declaration.declarations;
-    for (const declarator of declaration.declarations) {
-      if (removedDeclarators.has(declarator)) {
-        magicString.remove(start, declarator.end);
-      } else if (!keepDeclaration) {
-        magicString.remove(start, declarator.start);
-        keepDeclaration = true;
-      }
-      start = declarator.end;
-    }
-    if (!keepDeclaration) {
-      magicString.remove(declaration.start, declaration.end);
-    }
   }
 }

@@ -1,11 +1,9 @@
-var foo_1 = 'bar';
+import * as commonjsHelpers from "_commonjsHelpers.js";
+import { __exports as input } from "\u0000fixtures/form/compiled-esm-deconflict/input.js?commonjs-exports"
+
+Object.defineProperty(input, '__esModule', { value: true });
+var foo_1 = input.foo = 'bar';
 
 const foo = 'also bar';
 
-var input = /*#__PURE__*/Object.defineProperty({
-	foo: foo_1
-}, '__esModule', {value: true});
-
-export default input;
-export { input as __moduleExports };
-export { foo_1 as foo };
+export { input as __moduleExports, foo_1 as foo, input as default };

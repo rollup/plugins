@@ -1,11 +1,8 @@
-var _default = 2;
-var named = 3;
+import * as commonjsHelpers from "_commonjsHelpers.js";
+import { __exports as input } from "\u0000fixtures/form/defaultIsModuleExports-false-__esModule/input.js?commonjs-exports"
 
-var input = /*#__PURE__*/Object.defineProperty({
-	default: _default,
-	named: named
-}, '__esModule', {value: true});
+input.__esModule = true;
+var _default = input.default = 2;
+var named = input.named = 3;
 
-export default _default;
-export { input as __moduleExports };
-export { named };
+export { input as __moduleExports, named, _default as default };

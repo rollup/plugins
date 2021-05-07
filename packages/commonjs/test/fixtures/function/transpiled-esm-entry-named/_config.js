@@ -9,6 +9,9 @@ module.exports = {
         throw new Error(warning.message);
       }
     },
-    input: [path.join(__dirname, 'main.js'), path.join(__dirname, 'entry.js')]
+    input: [path.join(__dirname, 'main.js'), path.join(__dirname, 'entry.js')],
+    output: {
+      chunkFileNames: 'generated-[name].js'
+    }
   }
 };

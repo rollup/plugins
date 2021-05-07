@@ -8,6 +8,9 @@ const ID_OTHER = path.join(__dirname, 'other.js');
 module.exports = {
   options: {
     input: [ID_MAIN, ID_OTHER],
+    output: {
+      chunkFileNames: '[name].js'
+    },
     plugins: [
       {
         load(id) {

@@ -1,9 +1,7 @@
-var foo = 'foo';
+import * as commonjsHelpers from "_commonjsHelpers.js";
+import { __exports as input } from "\u0000fixtures/form/compiled-esm-minified/input.js?commonjs-exports"
 
-var input = /*#__PURE__*/Object.defineProperty({
-	foo: foo
-}, '__esModule', {value: true});
+Object.defineProperty(input, '__esModule', { value: !0 });
+var foo = input.foo = 'foo';
 
-export default input;
-export { input as __moduleExports };
-export { foo };
+export { input as __moduleExports, foo, input as default };

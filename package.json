@@ -11,7 +11,7 @@
     "preinstall": "node scripts/disallow-npm.js",
     "pub": "node scripts/pub.js",
     "publish": "node scripts/publish.js",
-    "security": "pnpm audit --audit-level=moderate"
+    "security": "pnpm audit --audit-level=high"
   },
   "dependencies": {
     "conventional-commits-parser": "^3.1.0",
