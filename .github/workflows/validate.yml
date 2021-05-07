@@ -48,7 +48,7 @@ jobs:
         run: pnpm build --recursive
 
       - name: Lint Monorepo
-        run: pnpm lint --recursive
+        run: pnpm lint:js
 
       - name: Run Tests
         run: pnpm ci:coverage --filter ...[${{ github.sha }}]
