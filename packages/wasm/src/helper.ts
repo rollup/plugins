@@ -1,6 +1,6 @@
 export const HELPERS_ID = '\0wasmHelpers.js';
 
-export const getHelpersModule = () => `
+export const getHelpersModule = (disableNodeSupport?: boolean) => `
 function _loadWasmModule (sync, filepath, src, imports) {
   function _instantiateOrCompile(source, imports, stream) {
     var instantiateFunc = stream ? WebAssembly.instantiateStreaming : WebAssembly.instantiate;
@@ -14,9 +14,18 @@ function _loadWasmModule (sync, filepath, src, imports) {
   }
 
   var buf = null
-  var isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null
+  var isNode = ${
+    disableNodeSupport
+      ? false
+      : `typeof process !== 'undefined' && process.versions != null && process.versions.node != null`
+  }
 
-  if (filepath && isNode) {
+  ${
+    disableNodeSupport
+      ? `if (filepath) {
+    return _instantiateOrCompile(fetch(filepath), imports, true)
+  }`
+      : `if (filepath && isNode) {
     var fs = require("fs")
     var path = require("path")
 
@@ -31,17 +40,27 @@ function _loadWasmModule (sync, filepath, src, imports) {
     });
   } else if (filepath) {
     return _instantiateOrCompile(fetch(filepath), imports, true)
+  }`
   }
 
-  if (isNode) {
-    buf = Buffer.from(src, 'base64')
-  } else {
-    var raw = globalThis.atob(src)
-    var rawLength = raw.length
-    buf = new Uint8Array(new ArrayBuffer(rawLength))
-    for(var i = 0; i < rawLength; i++) {
-       buf[i] = raw.charCodeAt(i)
-    }
+  ${
+    disableNodeSupport
+      ? `var raw = globalThis.atob(src)
+      var rawLength = raw.length
+      buf = new Uint8Array(new ArrayBuffer(rawLength))
+      for(var i = 0; i < rawLength; i++) {
+         buf[i] = raw.charCodeAt(i)
+      }`
+      : `if (isNode) {
+  buf = Buffer.from(src, 'base64')
+} else {
+  var raw = globalThis.atob(src)
+  var rawLength = raw.length
+  buf = new Uint8Array(new ArrayBuffer(rawLength))
+  for(var i = 0; i < rawLength; i++) {
+     buf[i] = raw.charCodeAt(i)
+  }
+}`
   }
 
   if(sync) {

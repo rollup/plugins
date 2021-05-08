@@ -15,6 +15,11 @@ export interface RollupWasmOptions {
    * A string which will be added in front of filenames when they are not inlined but are copied.
    */
   publicPath?: string;
+  /**
+   * If set to `true`, support for NodeJS will not be included.  This will prevent `require('fs')` and `require('path')` from getting generated
+   * in the generated code and can fix errors with some bundlers like Webpack v5.
+   */
+  disableNodeSupport?: boolean;
 }
 
 /**

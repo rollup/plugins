@@ -27,7 +27,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
     load(id) {
       if (id === HELPERS_ID) {
-        return getHelpersModule();
+        return getHelpersModule(options.disableNodeSupport);
       }
 
       if (!/\.wasm$/.test(id)) {
