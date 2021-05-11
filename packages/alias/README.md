@@ -74,7 +74,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 Type: `Function | Object`<br>
 Default: `null`
 
-Instructs the plugin to use an alternative resolving algorithm, rather than the Rollup's resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#hooks) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
+Instructs the plugin to use an alternative resolving algorithm, rather than the Rollup's resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#resolveid) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
 
 ### `entries`
 
