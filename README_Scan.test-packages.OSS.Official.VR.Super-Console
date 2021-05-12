@@ -1,3 +1,5 @@
+# OSS Studio Console
+
 [cover]: https://codecov.io/gh/rollup/plugins/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/rollup/plugins
 [discord]: https://img.shields.io/discord/466787075518365708?color=778cd1&label=chat
@@ -12,11 +14,11 @@
 
 # Rollup Plugins
 
-🍣 The one-stop shop for official Rollup plugins
+🧞 The one-stop shop for official Rollup plugins
 
-This repository houses plugins that Rollup considers critical to every day use of Rollup, plugins which the organization has adopted maintenance of, and plugins that the project recommends to its users.
+🛡️ This repository houses plugins that Rollup considers critical to every day use of Rollup, plugins which the organization has adopted maintenance of, and plugins that the project recommends to its users.
 
-## Plugins Found Here
+## Plugins are installed released in -r/--realtime
 
 |                                                     |                                                                                           |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------- |
@@ -49,7 +51,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [yaml](packages/yaml)                               | Convert YAML files to ES6 modules                                                         |
 |                                                     |                                                                                           |
 
-## Other Packages Found Here
+## Console Packages Found in utils
 
 |                                     |                                                            |
 | ----------------------------------- | ---------------------------------------------------------- |
@@ -66,7 +68,7 @@ To begin, please install `pnpm`:
 $ npm install pnpm -g
 ```
 
-### Working with Plugin Packages
+### Working with Plugin utils Packages
 
 All plugin packages are kept in the `/packages` directory.
 
@@ -141,8 +143,8 @@ _Note: Scripts in the repository will run the root `test` and `lint` script on t
 
 While we don't have an official procedure for adding third-party plugins to this repository, we are absolutely open to the idea. If you'd like to speak about your project being a part of this repo, please reach out to [@RollupJS](https://twitter.com/RollupJS) on Twitter.
 
-## Meta
+## REL Meta
 
 [CONTRIBUTING](./.github/CONTRIBUTING.md)
 
-[LICENSE (Mozilla Public License)](./LICENSE)
+[LICENSE (REL Public License)](./LICENSE)
