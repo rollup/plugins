@@ -59,6 +59,8 @@ When using `@rollup/plugin-commonjs` v16 or higher, this plugin will use the `['
 
 Setting this option will add extra conditions on top of the default conditions. See https://nodejs.org/api/packages.html#packages_conditional_exports for more information.
 
+In order to get the [resolution behavior of Node.js](https://nodejs.org/api/packages.html#packages_conditional_exports), set this to `['node']`.
+
 ### `browser`
 
 Type: `Boolean`<br>
