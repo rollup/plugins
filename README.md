@@ -18,7 +18,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 
 ## Plugins Found Here
 
-|                                                     |                                                                                           |
+| Name                                                | Description                                                                               |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | [alias](packages/alias)                             | Define and resolve aliases for bundle dependencies                                        |
 | [auto-install](packages/auto-install)               | Automatically install dependencies that are imported by a bundle                          |
@@ -51,7 +51,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 
 ## Other Packages Found Here
 
-|                                     |                                                            |
+| Name                                | Description                                                |
 | ----------------------------------- | ---------------------------------------------------------- |
 | [pluginutils](packages/pluginutils) | A set of utility functions commonly used by Rollup plugins |
 |                                     |                                                            |
