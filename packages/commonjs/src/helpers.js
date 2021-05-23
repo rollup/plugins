@@ -73,8 +73,18 @@ export function commonjsRegister (path, loader) {
 	DYNAMIC_REQUIRE_LOADERS[path] = loader;
 }
 
+export function commonjsRegisterOrShort (path, to) {
+	const resolvedPath = commonjsResolveImpl(path, null, true);
+	if (resolvedPath !== null && DYNAMIC_REQUIRE_CACHE[resolvedPath]) {
+	  DYNAMIC_REQUIRE_CACHE[path] = DYNAMIC_REQUIRE_CACHE[resolvedPath];
+	} else {
+	  DYNAMIC_REQUIRE_SHORTS[path] = to;
+	}
+}
+
 const DYNAMIC_REQUIRE_LOADERS = Object.create(null);
 const DYNAMIC_REQUIRE_CACHE = Object.create(null);
+const DYNAMIC_REQUIRE_SHORTS = Object.create(null);
 const DEFAULT_PARENT_MODULE = {
 	id: '<' + 'rollup>', exports: {}, parent: undefined, filename: null, loaded: false, children: [], paths: []
 };
@@ -179,10 +189,13 @@ export function commonjsResolveImpl (path, originalModuleDir, testCache) {
 			const resolvedPath = relPath + CHECKED_EXTENSIONS[extensionIndex];
 			if (DYNAMIC_REQUIRE_CACHE[resolvedPath]) {
 				return resolvedPath;
-			};
+			}
+			if (DYNAMIC_REQUIRE_SHORTS[resolvedPath]) {
+			  return resolvedPath;
+			}
 			if (DYNAMIC_REQUIRE_LOADERS[resolvedPath]) {
 				return resolvedPath;
-			};
+			}
 		}
 		if (!shouldTryNodeModules) break;
 		const nextDir = normalize(originalModuleDir + '/..');
@@ -201,10 +214,17 @@ export function commonjsResolve (path, originalModuleDir) {
 }
 
 export function commonjsRequire (path, originalModuleDir) {
-	const resolvedPath = commonjsResolveImpl(path, originalModuleDir, true);
+	let resolvedPath = commonjsResolveImpl(path, originalModuleDir, true);
 	if (resolvedPath !== null) {
     let cachedModule = DYNAMIC_REQUIRE_CACHE[resolvedPath];
     if (cachedModule) return cachedModule.exports;
+    let shortTo = DYNAMIC_REQUIRE_SHORTS[resolvedPath];
+    if (shortTo) {
+      cachedModule = DYNAMIC_REQUIRE_CACHE[shortTo];
+      if (cachedModule)
+        return cachedModule.exports;
+      resolvedPath = commonjsResolveImpl(shortTo, null, true);
+    }
     const loader = DYNAMIC_REQUIRE_LOADERS[resolvedPath];
     if (loader) {
       DYNAMIC_REQUIRE_CACHE[resolvedPath] = cachedModule = {
