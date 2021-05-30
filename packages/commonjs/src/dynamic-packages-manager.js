@@ -21,15 +21,13 @@ export function getPackageEntryPoint(dirPath) {
 }
 
 export function getDynamicPackagesModule(dynamicRequireModuleDirPaths, commonDir) {
-  let code = `const commonjsRegister = require('${HELPERS_ID}?commonjsRegister');`;
+  let code = `const commonjsRegisterOrShort = require('${HELPERS_ID}?commonjsRegisterOrShort');`;
   for (const dir of dynamicRequireModuleDirPaths) {
     const entryPoint = getPackageEntryPoint(dir);
 
-    code += `\ncommonjsRegister(${JSON.stringify(
+    code += `\ncommonjsRegisterOrShort(${JSON.stringify(
       getVirtualPathForDynamicRequirePath(dir, commonDir)
-    )}, function (module, exports) {
-  module.exports = require(${JSON.stringify(normalizePathSlashes(join(dir, entryPoint)))});
-});`;
+    )}, ${JSON.stringify(getVirtualPathForDynamicRequirePath(join(dir, entryPoint), commonDir))});`;
   }
   return code;
 }
