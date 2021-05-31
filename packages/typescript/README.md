@@ -79,6 +79,15 @@ Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted.
 
+### `resolveRoot`
+
+Type: `String` | `Boolean`<br>
+Default: `true`
+
+Sets the `resolve` parameter for [createFilter](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter). By default, it will resolve against the `rootDir` set in the TS config file however you can set this to change which files are filtered out by the plugin.
+
+This can fix `Error: Unexpected token (Note that you need plugins to import files that are not JavaScript)` TypeScript error when targeting files outside the current working directory (`process.cwd()`).
+
 ### `tsconfig`
 
 Type: `String` | `Boolean`<br>
