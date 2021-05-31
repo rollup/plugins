@@ -79,7 +79,7 @@ Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted.
 
-### `resolveRoot`
+### `filterRoot`
 
 Type: `String` | `Boolean`<br>
 Default: `true`

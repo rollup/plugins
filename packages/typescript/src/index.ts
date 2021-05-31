@@ -26,7 +26,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     tslib,
     include,
     exclude,
-    resolveRoot,
+    filterRoot,
     typescript: ts
   } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
@@ -35,7 +35,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
   const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude, {
-    resolve: resolveRoot ?? compilerOptions.rootDir
+    resolve: filterRoot ?? compilerOptions.rootDir
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
