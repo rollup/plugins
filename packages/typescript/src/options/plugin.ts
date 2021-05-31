@@ -1,4 +1,3 @@
-import { createFilter } from '@rollup/pluginutils';
 import * as defaultTs from 'typescript';
 
 import { RollupTypescriptOptions, PartialCompilerOptions } from '../../types';
@@ -19,6 +18,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     cacheDir,
     exclude,
     include,
+    resolveRoot,
     transformers,
     tsconfig,
     tslib,
@@ -27,11 +27,11 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     ...compilerOptions
   } = options;
 
-  const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude);
-
   return {
     cacheDir,
-    filter,
+    include,
+    exclude,
+    resolveRoot,
     tsconfig,
     compilerOptions: compilerOptions as PartialCompilerOptions,
     typescript: typescript || defaultTs,
