@@ -52,6 +52,11 @@ export interface RollupTypescriptPluginOptions {
    */
   exclude?: FilterPattern;
   /**
+   * Sets the `resolve` value for the underlying filter function.  If not set will use the `rootDir` property
+   * @see {@link https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter} @rollup/pluginutils `createFilter`
+   */
+  resolveRoot?: string | false;
+  /**
    * When set to false, ignores any options specified in the config file.
    * If set to a string that corresponds to a file path, the specified file
    * will be used as config file.

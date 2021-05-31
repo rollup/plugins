@@ -1,5 +1,7 @@
 import * as path from 'path';
 
+import { createFilter } from '@rollup/pluginutils';
+
 import { Plugin, RollupOptions, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
@@ -19,10 +21,12 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const {
     cacheDir,
     compilerOptions,
-    filter,
     transformers,
     tsconfig,
     tslib,
+    include,
+    exclude,
+    resolveRoot,
     typescript: ts
   } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
@@ -30,6 +34,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const watchProgramHelper = new WatchProgramHelper();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
+  const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude, {
+    resolve: resolveRoot ?? compilerOptions.rootDir
+  });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
   const formatHost = createFormattingHost(ts, parsedOptions.options);
