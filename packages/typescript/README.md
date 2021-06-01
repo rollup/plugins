@@ -82,11 +82,13 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 ### `filterRoot`
 
 Type: `String` | `Boolean`<br>
-Default: `true`
+Default: `rootDir` ?? `tsConfig.compilerOptions.rootDir` ?? `process.cwd()`
 
-Sets the `resolve` parameter for [createFilter](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter). By default, it will resolve against the `rootDir` set in the TS config file however you can set this to change which files are filtered out by the plugin.
+Optionally resolves the include and exclude patterns against a directory other than `process.cwd()`. If a String is specified, then the value will be used as the base directory. Relative paths will be resolved against `process.cwd()` first. If `false`, then the patterns will not be resolved against any directory.
 
-This can fix `Error: Unexpected token (Note that you need plugins to import files that are not JavaScript)` TypeScript error when targeting files outside the current working directory (`process.cwd()`).
+By default, patterns resolve against the rootDir set in your TS config file.
+
+This can fix plugin errors when parsing files outside the current working directory (process.cwd()).
 
 ### `tsconfig`
 
