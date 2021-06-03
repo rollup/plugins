@@ -30,4 +30,6 @@ export function dynamicImportToGlob(node: Node, sourceString: string): null | st
 /**
  * Support variables in dynamic imports in Rollup.
  */
-export default function dynamicImportVariables(): Plugin;
+export default function dynamicImportVariables(
+  options: RollupDynamicImportVariablesOptions
+): Plugin;
