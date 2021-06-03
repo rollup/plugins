@@ -256,7 +256,7 @@ importers:
       rollup: ^2.23.0
       typescript: ^4.1.2
     dependencies:
-      '@rollup/pluginutils': 4.1.0_rollup@2.32.1
+      '@rollup/pluginutils': 4.1.1
       eslint: 7.30.0
     devDependencies:
       '@rollup/plugin-node-resolve': 9.0.0_rollup@2.32.1
@@ -273,7 +273,7 @@ importers:
       graphql-tag: ^2.2.2
       rollup: ^2.23.0
     dependencies:
-      '@rollup/pluginutils': 4.1.0_rollup@2.32.1
+      '@rollup/pluginutils': 4.1.1
       graphql-tag: 2.11.0_graphql@14.7.0
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@2.32.1
@@ -350,7 +350,7 @@ importers:
       del-cli: ^3.0.1
       rollup: ^2.23.0
     dependencies:
-      '@rollup/pluginutils': 4.1.0_rollup@2.32.1
+      '@rollup/pluginutils': 4.1.1
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@2.32.1
       del-cli: 3.0.1
@@ -2295,17 +2295,6 @@ packages:
       picomatch: 2.2.2
       rollup: 2.47.0
 
-  /@rollup/pluginutils/4.1.0_rollup@2.32.1:
-    resolution: {integrity: sha512-TrBhfJkFxA+ER+ew2U2/fHbebhLT/l/2pRk0hfj9KusXUuRXd2v0R58AfaZK9VXDQ4TogOSEmICVrQAA3zFnHQ==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0
-    dependencies:
-      estree-walker: 2.0.1
-      picomatch: 2.3.0
-      rollup: 2.32.1
-    dev: false
-
   /@rollup/pluginutils/4.1.1:
     resolution: {integrity: sha512-clDjivHqWGXi7u+0d2r2sBi4Ie6VLEAzWMIkvJLnDmxoOhBYOTfzGbOQBA32THHm11/LiJbd01tJUpJsbshSWQ==}
     engines: {node: '>= 8.0.0'}
@@ -3419,7 +3408,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       slice-ansi: 3.0.0
-      string-width: 4.2.0
+      string-width: 4.2.2
     dev: true
 
   /cliui/6.0.0:
@@ -3552,7 +3541,7 @@ packages:
       js-string-escape: 1.0.1
       lodash: 4.17.21
       md5-hex: 3.0.1
-      semver: 7.3.2
+      semver: 7.3.5
       well-known-symbols: 2.0.0
     dev: true
 

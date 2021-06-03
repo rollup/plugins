@@ -1,12 +1,6 @@
-import { platform } from 'os';
-
 import { PartialResolvedId, Plugin } from 'rollup';
-import slash from 'slash';
 
 import { Alias, ResolverFunction, RollupAliasOptions } from '../types';
-
-const VOLUME = /^([A-Z]:)/i;
-const IS_WINDOWS = platform() === 'win32';
 
 const noop = () => null;
 
@@ -28,9 +22,6 @@ function matches(pattern: string | RegExp, importee: string) {
 function normalizeId(id: string): string;
 function normalizeId(id: string | undefined): string | undefined;
 function normalizeId(id: string | undefined) {
-  if (typeof id === 'string' && (IS_WINDOWS || VOLUME.test(id))) {
-    return slash(id.replace(VOLUME, ''));
-  }
   return id;
 }
 
