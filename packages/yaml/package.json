@@ -54,6 +54,7 @@
     "rollup": "^2.23.0",
     "source-map-support": "^0.5.19"
   },
+  "types": "./types/index.d.ts",
   "ava": {
     "babel": {
       "compileEnhancements": false
