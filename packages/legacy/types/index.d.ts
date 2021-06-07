@@ -7,4 +7,4 @@ interface RollupLegacyOptions {
 /**
  * A Rollup plugin which adds `export` declarations to legacy non-module scripts.
  */
-export default function legacy(options?: RollupLegacyOptions): Plugin
+export default function legacy(options: RollupLegacyOptions): Plugin
