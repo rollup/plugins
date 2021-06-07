@@ -4,19 +4,19 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "Verify entry point and all imported files with ESLint",
+  "description": "Lint your Rollup bundles with ESLint.",
   "license": "MIT",
   "repository": {
     "url": "rollup/plugins",
     "directory": "packages/eslint"
   },
   "author": "Bogdan Chadkin <trysound@yandex.ru>",
-  "homepage": "https://github.com/rollup/plugins/tree/master/packages/eslint#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/eslint",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">=10.12.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -33,53 +33,39 @@
   },
   "files": [
     "dist",
-    "types",
-    "README.md",
-    "LICENSE"
+    "types"
   ],
   "keywords": [
     "rollup",
     "plugin",
     "rollup-plugin",
     "eslint",
-    "es2015",
-    "es6",
     "lint"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "2.x"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.0.0",
-    "eslint": "^7.12.0"
+    "@rollup/pluginutils": "^4.1.0",
+    "eslint": "^7.14.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^9.0.0",
-    "@rollup/plugin-typescript": "^6.0.0",
-    "@types/eslint": "^7.2.2",
-    "rollup": "^2.23.0",
+    "@rollup/plugin-typescript": "^6.1.0",
+    "@types/eslint": "^7.2.5",
+    "rollup": "^2.34.0",
     "typescript": "^4.1.2"
   },
   "types": "types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
     "files": [
-      "!**/fixtures/**",
-      "!**/helpers/**",
-      "!**/recipes/**",
-      "!**/types.ts"
-    ]
+      "test/*"
+    ],
+    "timeout": "20s"
   },
   "contributors": [
     "Andrew Powell <andrew@shellscape.org>",
-    "Mattias Ekstrand <mattias.ekstrand@gmail.com>"
+    "Mattias Ekstrand <mattias.ekstrand@gmail.com>",
+    "Robin Löffel <hi@robinloeffel.ch>"
   ]
 }
