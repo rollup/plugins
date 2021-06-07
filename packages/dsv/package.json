@@ -34,12 +34,21 @@
     "README.md",
     "LICENSE"
   ],
+  "peerDependencies": {
+    "@types/d3-dsv": "~1.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/d3-dsv": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
     "d3-dsv": "1.2.0",
     "tosource": "^1.0.0"
   },
   "devDependencies": {
+    "@types/d3-dsv": "~1.2.0",
     "del-cli": "^3.0.1",
     "rollup": "^2.23.0"
   },
