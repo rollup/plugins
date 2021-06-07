@@ -4,16 +4,20 @@ import { basename, dirname, extname, sep } from 'path';
 
 import { makeLegalIdentifier } from '@rollup/pluginutils';
 
-export function deconflict(scope, globals, identifier) {
+export function deconflict(scopes, globals, identifier) {
   let i = 1;
   let deconflicted = makeLegalIdentifier(identifier);
+  const hasConflicts = () =>
+    scopes.some((scope) => scope.contains(deconflicted)) || globals.has(deconflicted);
 
-  while (scope.contains(deconflicted) || globals.has(deconflicted)) {
+  while (hasConflicts()) {
     deconflicted = makeLegalIdentifier(`${identifier}_${i}`);
     i += 1;
   }
-  // eslint-disable-next-line no-param-reassign
-  scope.declarations[deconflicted] = true;
+
+  for (const scope of scopes) {
+    scope.declarations[deconflicted] = true;
+  }
 
   return deconflicted;
 }

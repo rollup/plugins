@@ -16,6 +16,7 @@ const config: RollupOptions = {
       include: 'config.js',
       exclude: 'node_modules/**',
       delimiters: ['<@', '@>'],
+      preventAssignment: true,
       VERSION: '1.0.0',
       ENVIRONMENT: JSON.stringify('development'),
       __dirname: (id) => `'${dirname(id)}'`,

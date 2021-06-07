@@ -20,13 +20,13 @@ const mimeTypes = {
 };
 
 const domTemplate = ({ dataUri }) => `
-  const img = new Image();
+  var img = new Image();
   img.src = "${dataUri}";
   export default img;
 `;
 
 const constTemplate = ({ dataUri }) => `
-  const img = "${dataUri}";
+  var img = "${dataUri}";
   export default img;
 `;
 

@@ -1,5 +1,83 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.0.0
+
+_2021-05-04_
+
+### Breaking Changes
+
+- fix!: mark module as external if resolved module is external (#799)
+
+### Features
+
+- feat: Follow up to #843, refining exports and browser field interaction (#866)
+
+## v12.0.0
+
+_2021-05-04_
+
+### Breaking Changes
+
+- fix!: mark module as external if resolved module is external (#799)
+
+### Features
+
+- feat: Follow up to #843, refining exports and browser field interaction (#866)
+
+## v11.2.1
+
+_2021-03-26_
+
+### Bugfixes
+
+- fix: fs.exists is incorrectly promisified (#835)
+
+## v11.2.0
+
+_2021-02-14_
+
+### Features
+
+- feat: add `ignoreSideEffectsForRoot` option (#694)
+
+### Updates
+
+- chore: mark `url` as an external and throw on warning (#783)
+- docs: clearer "Resolving Built-Ins" doc (#782)
+
+## v11.1.1
+
+_2021-01-29_
+
+### Bugfixes
+
+- fix: only log last resolve error (#750)
+
+### Updates
+
+- docs: add clarification on the order of package entrypoints (#768)
+
+## v11.1.0
+
+_2021-01-15_
+
+### Features
+
+- feat: support pkg imports and export array (#693)
+
+## v11.0.1
+
+_2020-12-14_
+
+### Bugfixes
+
+- fix: export map specificity (#675)
+- fix: add missing type import (#668)
+
+### Updates
+
+- docs: corrected word "yse" to "use" (#723)
+
 ## v11.0.0
 
 _2020-11-30_

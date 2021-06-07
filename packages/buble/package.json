@@ -6,7 +6,10 @@
   },
   "description": "Compile ES2015 with buble",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/buble"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/buble/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -21,10 +24,6 @@
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint && pnpm run test",
@@ -59,7 +58,7 @@
     "del-cli": "^3.0.1",
     "rollup": "^2.23.0",
     "source-map": "^0.7.3",
-    "typescript": "^3.9.7"
+    "typescript": "^4.1.2"
   },
   "types": "types/index.d.ts",
   "ava": {

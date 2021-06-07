@@ -1,15 +1,17 @@
 import * as path from 'path';
 
-import { Plugin, SourceDescription } from 'rollup';
+import { Plugin, RollupOptions, SourceDescription } from 'rollup';
+import type { Watch } from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
 import createModuleResolver from './moduleResolution';
-import getPluginOptions from './options/plugin';
+import { getPluginOptions } from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
 import findTypescriptOutput, { getEmittedFile } from './outputFile';
+import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
 
@@ -33,7 +35,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const formatHost = createFormattingHost(ts, parsedOptions.options);
   const resolveModule = createModuleResolver(ts, formatHost);
 
-  let program: import('typescript').Watch<unknown> | null = null;
+  let program: Watch<unknown> | null = null;
 
   function normalizePath(fileName: string) {
     return fileName.split(path.win32.sep).join(path.posix.sep);
@@ -42,10 +44,16 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   return {
     name: 'typescript',
 
-    buildStart() {
+    buildStart(rollupOptions: RollupOptions) {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
+      preflight({ config: parsedOptions, context: this, rollupOptions, tslib });
+
       // Fixes a memory leak https://github.com/rollup/plugins/issues/322
+      if (this.meta.watchMode !== true) {
+        // eslint-disable-next-line
+        program?.close();
+      }
       if (!program) {
         program = createWatchProgram(ts, this, {
           formatHost,
@@ -125,11 +133,15 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
           const code = getEmittedFile(id, emittedFiles, tsCache);
-          if (!code) return;
+          let baseDir = outputOptions.dir;
+          if (!baseDir && tsconfig) {
+            baseDir = tsconfig.substring(0, tsconfig.lastIndexOf('/'));
+          }
+          if (!code || !baseDir) return;
 
           this.emitFile({
             type: 'asset',
-            fileName: normalizePath(path.relative(outputOptions.dir!, id)),
+            fileName: normalizePath(path.relative(baseDir, id)),
             source: code
           });
         });
@@ -137,11 +149,15 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
       if (tsBuildInfoPath) {
-        this.emitFile({
-          type: 'asset',
-          fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
-          source: emittedFiles.get(tsBuildInfoPath)
-        });
+        const tsBuildInfoSource = emittedFiles.get(tsBuildInfoPath);
+        // https://github.com/rollup/plugins/issues/681
+        if (tsBuildInfoSource) {
+          this.emitFile({
+            type: 'asset',
+            fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
+            source: tsBuildInfoSource
+          });
+        }
       }
     }
   };

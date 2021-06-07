@@ -1,5 +1,55 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v19.0.0
+
+_2021-05-07_
+
+### Breaking Changes
+
+- feat!: Add support for circular dependencies (#658)
+
+## v18.1.0
+
+_2021-05-04_
+
+### Bugfixes
+
+- fix: idempotence issue (#871)
+
+### Features
+
+- feat: Add `defaultIsModuleExports` option to match Node.js behavior (#838)
+
+## v18.0.0
+
+_2021-03-26_
+
+### Breaking Changes
+
+- feat!: Add ignore-dynamic-requires option (#819)
+
+### Bugfixes
+
+- fix: `isRestorableCompiledEsm` should also trigger code transform (#816)
+
+## v17.1.0
+
+_2021-01-29_
+
+### Bugfixes
+
+- fix: correctly replace shorthand `require` (#764)
+
+### Features
+
+- feature: load dynamic commonjs modules from es `import` (#766)
+- feature: support cache/resolve access inside dynamic modules (#728)
+- feature: allow keeping `require` calls inside try-catch (#729)
+
+### Updates
+
+- chore: fix lint error (#719)
+
 ## v17.0.0
 
 _2020-11-30_

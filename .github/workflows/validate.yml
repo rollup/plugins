@@ -1,0 +1,54 @@
+name: Validate Monorepo
+
+on:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - synchronize
+  push:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: ["16", "14", "12"]
+
+    name: Node v${{ matrix.node }}
+
+    steps:
+      - name: Checkout Commit
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install pnpm
+        run: npm install pnpm -g
+
+      - name: Sanity Check
+        run: |
+          echo branch `git branch --show-current`;
+          echo node `node --version`;
+          echo yarn `pnpm --version`
+
+      - name: pnpm install
+        run: pnpm install
+
+      - name: Audit Dependencies
+        run: pnpm security
+
+      - name: Build Packages
+        run: pnpm build --recursive
+
+      - name: Lint Monorepo
+        run: pnpm lint:js
+
+      - name: Run Tests
+        run: pnpm ci:coverage --filter ...[${{ github.sha }}]

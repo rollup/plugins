@@ -45,12 +45,11 @@ test('fetching WASM from separate file', async (t) => {
   });
 
   await bundle.write({ format: 'cjs', file: outputFile });
-  const glob = join(outputDir, `**/*.wasm`)
-    .split(sep)
-    .join(posix.sep);
+  const glob = join(outputDir, `**/*.wasm`).split(sep).join(posix.sep);
 
   global.result = null;
   global.t = t;
+  // eslint-disable-next-line global-require, import/no-dynamic-require
   require(outputFile);
 
   await global.result;
@@ -97,6 +96,7 @@ test('imports', async (t) => {
 });
 
 try {
+  // eslint-disable-next-line global-require
   const { Worker } = require('worker_threads');
   test('worker', async (t) => {
     t.plan(2);

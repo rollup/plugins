@@ -2,7 +2,7 @@ import { win32, posix } from 'path';
 
 import { NormalizePath } from '../types';
 
-const normalizePath: NormalizePath = function(filename: string) {
+const normalizePath: NormalizePath = function normalizePath(filename: string) {
   return filename.split(win32.sep).join(posix.sep);
 };
 

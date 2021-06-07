@@ -6,23 +6,13 @@ const test = require('ava');
 const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
-const { getCode, testBundle } = require('../../../util/test');
+const { evaluateBundle, getCode, onwarn } = require('../../../util/test');
 
 const typescript = require('..');
 
 test.beforeEach(() => process.chdir(__dirname));
 
 const outputOptions = { format: 'esm' };
-
-async function evaluateBundle(bundle) {
-  const { module } = await testBundle(null, bundle);
-  return module.exports;
-}
-
-function onwarn(warning) {
-  // eslint-disable-next-line no-console
-  console.warn(warning.toString());
-}
 
 test.serial('runs code through typescript', async (t) => {
   const bundle = await rollup({
@@ -36,164 +26,6 @@ test.serial('runs code through typescript', async (t) => {
   t.false(code.includes('const'), code);
 });
 
-test.serial('supports creating declaration files', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
-        outDir: 'fixtures/basic/dist',
-        declaration: true
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', 'main.d.ts']
-  );
-
-  t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
-});
-
-test.serial('supports creating declaration files in subfolder', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
-        outDir: 'fixtures/basic/dist/types',
-        declaration: true,
-        declarationMap: true
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', 'types/main.d.ts', 'types/main.d.ts.map']
-  );
-
-  const declarationSource = output[1].source;
-  t.true(declarationSource.includes('declare const answer = 42;'), declarationSource);
-  t.true(declarationSource.includes('//# sourceMappingURL=main.d.ts.map'), declarationSource);
-});
-
-test.serial('supports creating declarations with non-default rootDir', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/declaration-root-dir/src/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/declaration-root-dir/tsconfig.json'
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(
-    bundle,
-    { format: 'esm', dir: 'fixtures/declaration-root-dir/lib' },
-    true
-  );
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', 'main.d.ts']
-  );
-});
-
-test.serial('supports creating declaration files for interface only source file', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/export-interface-only/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/export-interface-only/tsconfig.json',
-        declarationDir: 'fixtures/export-interface-only/dist/types',
-        declaration: true,
-        declarationMap: true
-      })
-    ],
-    onwarn
-  });
-
-  const output = await getCode(
-    bundle,
-    { format: 'esm', dir: 'fixtures/export-interface-only/dist' },
-    true
-  );
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    [
-      'main.js',
-      'types/interface.d.ts',
-      'types/interface.d.ts.map',
-      'types/main.d.ts',
-      'types/main.d.ts.map'
-    ]
-  );
-
-  const declarationSource = output[1].source;
-  t.true(declarationSource.includes('export interface ITest'), declarationSource);
-  t.true(declarationSource.includes('//# sourceMappingURL=interface.d.ts.map'), declarationSource);
-});
-
-test.serial('supports creating declaration files in declarationDir', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
-        declarationDir: 'fixtures/basic/dist/types',
-        declaration: true
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', 'types/main.d.ts']
-  );
-
-  t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
-});
-
-async function ensureOutDirWhenCreatingDeclarationFiles(t, compilerOptionName) {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
-        [compilerOptionName]: true
-      })
-    ],
-    onwarn
-  });
-  const caughtError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
-  );
-
-  t.true(
-    caughtError.message.includes(
-      `'outDir' or 'declarationDir' must be specified to generate declaration files`
-    ),
-    `Unexpected error message: ${caughtError.message}`
-  );
-}
-
-test.serial('ensures outDir is set when creating declaration files (declaration)', async (t) => {
-  await ensureOutDirWhenCreatingDeclarationFiles(t, 'declaration');
-});
-
-test.serial('ensures outDir is set when creating declaration files (composite)', async (t) => {
-  await ensureOutDirWhenCreatingDeclarationFiles(t, 'composite');
-});
-
 test.serial('ensures outDir is located in Rollup output dir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -205,16 +37,6 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
     ],
     onwarn
   });
-
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'outDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
 
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
@@ -240,16 +62,6 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     onwarn
   });
 
-  const noDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', file: 'fixtures/basic/other/out.js' }, true)
-  );
-  t.true(
-    noDirError.message.includes(
-      `Rollup 'dir' option must be used when Typescript compiler option 'declarationDir' is specified`
-    ),
-    `Unexpected error message: ${noDirError.message}`
-  );
-
   const wrongDirError = await t.throwsAsync(() =>
     getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
   );
@@ -259,6 +71,39 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
     ),
     `Unexpected error message: ${wrongDirError.message}`
   );
+});
+
+test.serial('ensures multiple outputs can be built', async (t) => {
+  // In a rollup.config.js we would pass an array
+  // The rollup method that's exported as a library won't do that so we must make two calls
+  const bundle1 = await rollup({
+    input: 'fixtures/multiple-files/src/index.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+  });
+
+  const output1 = await getCode(
+    bundle1,
+    { file: 'fixtures/multiple-files/index.js', format: 'cjs' },
+    true
+  );
+
+  const bundle2 = await rollup({
+    input: 'fixtures/multiple-files/src/server.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+  });
+
+  const output2 = await getCode(
+    bundle2,
+    { file: 'fixtures/multiple-files/server.js', format: 'cjs' },
+    true
+  );
+
+  t.deepEqual([...new Set(output1.concat(output2).map((out) => out.fileName))].sort(), [
+    'index.d.ts',
+    'index.js',
+    'server.d.ts',
+    'server.js'
+  ]);
 });
 
 test.serial('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
@@ -408,7 +253,7 @@ test.serial('ignore type errors if noEmitOnError is false', async (t) => {
 
   t.true(code.includes(`console.log('hello world')`));
 
-  t.is(warnings.length, 1);
+  t.is(warnings.length, 2);
 
   t.is(warnings[0].code, 'PLUGIN_WARNING');
   t.is(warnings[0].plugin, 'typescript');
@@ -476,38 +321,6 @@ test.serial('supports overriding the TypeScript version', async (t) => {
   const result = await evaluateBundle(bundle);
 
   t.is(result, 1337);
-});
-
-test.serial('supports overriding tslib with a custom path', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/overriding-tslib/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
-        tslib: 'fixtures/overriding-tslib/tslib.js'
-      })
-    ],
-    onwarn
-  });
-  const code = await evaluateBundle(bundle);
-
-  t.is(code.myParent.baseMethod(), 'base method');
-});
-
-test.serial('supports overriding tslib with a custom path in a promise', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/overriding-tslib/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
-        tslib: Promise.resolve('fixtures/overriding-tslib/tslib.js')
-      })
-    ],
-    onwarn
-  });
-  const code = await evaluateBundle(bundle);
-
-  t.is(code.myParent.baseMethod(), 'base method');
 });
 
 test.serial('should not resolve .d.ts files', async (t) => {
@@ -664,19 +477,6 @@ test.serial('should throw on bad options', async (t) => {
       message: `@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
     }
   ]);
-});
-
-test.serial('creates _tslib.js file when preserveModules is used', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/preserve-modules/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/preserve-modules/tsconfig.json' })],
-    preserveModules: true,
-    onwarn
-  });
-
-  const files = await getCode(bundle, { format: 'es' }, true);
-  t.true(files[0].fileName.includes('main.js'), files[0].fileName);
-  t.true(files[1].fileName.includes('tslib.es6.js'), files[1].fileName);
 });
 
 test.serial('should handle re-exporting types', async (t) => {
@@ -872,6 +672,50 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
     secondRun.map((out) => out.fileName),
     ['main.js', '.tsbuildinfo']
   );
+});
+
+// https://github.com/rollup/plugins/issues/681
+test.serial('supports incremental rebuilds with no change to cache', async (t) => {
+  process.chdir('fixtures/incremental-output-cache');
+  const cleanup = () => {
+    let files;
+    try {
+      files = fs.readdirSync('dist');
+    } catch (error) {
+      if (error.code === 'ENOENT') return;
+      throw error;
+    }
+    files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
+  };
+
+  cleanup();
+
+  const firstBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+
+  const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    firstRun.map((out) => out.fileName),
+    ['main.js', '.tsbuildinfo']
+  );
+  await firstBundle.write({ dir: 'dist' });
+
+  const secondBundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn
+  });
+  const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+  t.deepEqual(
+    secondRun.map((out) => out.fileName),
+    // .tsbuildinfo should not be emitted
+    ['main.js']
+  );
+
+  cleanup();
 });
 
 test.serial.skip('supports project references', async (t) => {
@@ -1085,50 +929,48 @@ test('supports custom transformers', async (t) => {
 });
 
 function fakeTypescript(custom) {
-  return Object.assign(
-    {
-      sys: ts.sys,
-      createModuleResolutionCache: ts.createModuleResolutionCache,
-      ModuleKind: ts.ModuleKind,
+  return {
+    sys: ts.sys,
+    createModuleResolutionCache: ts.createModuleResolutionCache,
+    ModuleKind: ts.ModuleKind,
 
-      transpileModule() {
-        return {
-          outputText: '',
-          diagnostics: [],
-          sourceMapText: JSON.stringify({ mappings: '' })
-        };
-      },
-
-      createWatchCompilerHost() {
-        return {
-          afterProgramCreate() {}
-        };
-      },
-
-      createWatchProgram() {
-        return {};
-      },
-
-      parseJsonConfigFileContent(json, host, basePath, existingOptions) {
-        return {
-          options: {
-            ...json.compilerOptions,
-            ...existingOptions
-          },
-          fileNames: [],
-          errors: []
-        };
-      },
-
-      getOutputFileNames(_, id) {
-        return [id.replace(/\.tsx?/, '.js')];
-      },
-
-      // eslint-disable-next-line no-undefined
-      getTsBuildInfoEmitOutputFilePath: () => undefined
+    transpileModule() {
+      return {
+        outputText: '',
+        diagnostics: [],
+        sourceMapText: JSON.stringify({ mappings: '' })
+      };
     },
-    custom
-  );
+
+    createWatchCompilerHost() {
+      return {
+        afterProgramCreate() {}
+      };
+    },
+
+    createWatchProgram() {
+      return {};
+    },
+
+    parseJsonConfigFileContent(json, host, basePath, existingOptions) {
+      return {
+        options: {
+          ...json.compilerOptions,
+          ...existingOptions
+        },
+        fileNames: [],
+        errors: []
+      };
+    },
+
+    getOutputFileNames(_, id) {
+      return [id.replace(/\.tsx?/, '.js')];
+    },
+
+    // eslint-disable-next-line no-undefined
+    getTsBuildInfoEmitOutputFilePath: () => undefined,
+    ...custom
+  };
 }
 
 test.serial('picks up on newly included typescript files in watch mode', async (t) => {
@@ -1176,6 +1018,30 @@ test.serial('picks up on newly included typescript files in watch mode', async (
   const code = fs.readFileSync(path.join(dirName, 'dist', 'main.js'));
   const usage = code.includes('Is it me');
   t.true(usage, 'should contain usage');
+});
+
+test.serial('works when code is in src directory', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/src-dir/src/index.ts',
+    output: [
+      {
+        dir: 'fixtures/src-dir/dist',
+        format: 'esm'
+      }
+    ],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/src-dir/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/src-dir/dist' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['index.js', 'index.d.ts']
+  );
 });
 
 function waitForWatcherEvent(watcher, eventCode) {

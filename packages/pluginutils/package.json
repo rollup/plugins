@@ -6,7 +6,10 @@
   },
   "description": "A set of utility functions commonly used by Rollup plugins",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/pluginutils"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/pluginutils#readme",
   "bugs": {
@@ -28,15 +31,12 @@
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint && pnpm run build",
     "pretest": "pnpm run build -- --sourcemap",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
     "dist",
@@ -64,7 +64,8 @@
     "@types/node": "^14.0.26",
     "@types/picomatch": "^2.2.1",
     "acorn": "^8.0.4",
-    "rollup": "^2.23.0"
+    "rollup": "^2.23.0",
+    "typescript": "^4.1.2"
   },
   "types": "types/index.d.ts",
   "ava": {

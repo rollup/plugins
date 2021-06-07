@@ -6,9 +6,12 @@ import { dirname, resolve, sep } from 'path';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
+  DYNAMIC_REGISTER_SUFFIX,
+  EXPORTS_SUFFIX,
   EXTERNAL_SUFFIX,
   HELPERS_ID,
   isWrappedId,
+  MODULE_SUFFIX,
   PROXY_SUFFIX,
   REQUIRE_SUFFIX,
   unwrapId,
@@ -46,27 +49,46 @@ export default function getResolveId(extensions) {
     return undefined;
   }
 
-  return function resolveId(importee, importer) {
-    // Proxies are only importing resolved ids, no need to resolve again
+  return function resolveId(importee, rawImporter) {
+    if (isWrappedId(importee, MODULE_SUFFIX) || isWrappedId(importee, EXPORTS_SUFFIX)) {
+      return importee;
+    }
+
+    const importer =
+      rawImporter && isWrappedId(rawImporter, DYNAMIC_REGISTER_SUFFIX)
+        ? unwrapId(rawImporter, DYNAMIC_REGISTER_SUFFIX)
+        : rawImporter;
+
+    // Except for exports, proxies are only importing resolved ids,
+    // no need to resolve again
     if (importer && isWrappedId(importer, PROXY_SUFFIX)) {
       return importee;
     }
 
     const isProxyModule = isWrappedId(importee, PROXY_SUFFIX);
     const isRequiredModule = isWrappedId(importee, REQUIRE_SUFFIX);
+    let isModuleRegistration = false;
+
     if (isProxyModule) {
       importee = unwrapId(importee, PROXY_SUFFIX);
     } else if (isRequiredModule) {
       importee = unwrapId(importee, REQUIRE_SUFFIX);
-    }
-    if (importee.startsWith('\0')) {
-      if (
-        importee.startsWith(HELPERS_ID) ||
-        importee === DYNAMIC_PACKAGES_ID ||
-        importee.startsWith(DYNAMIC_JSON_PREFIX)
-      ) {
-        return importee;
+
+      isModuleRegistration = isWrappedId(importee, DYNAMIC_REGISTER_SUFFIX);
+      if (isModuleRegistration) {
+        importee = unwrapId(importee, DYNAMIC_REGISTER_SUFFIX);
       }
+    }
+
+    if (
+      importee.startsWith(HELPERS_ID) ||
+      importee === DYNAMIC_PACKAGES_ID ||
+      importee.startsWith(DYNAMIC_JSON_PREFIX)
+    ) {
+      return importee;
+    }
+
+    if (importee.startsWith('\0')) {
       return null;
     }
 
@@ -80,6 +102,8 @@ export default function getResolveId(extensions) {
       if (resolved && isProxyModule) {
         resolved.id = wrapId(resolved.id, resolved.external ? EXTERNAL_SUFFIX : PROXY_SUFFIX);
         resolved.external = false;
+      } else if (resolved && isModuleRegistration) {
+        resolved.id = wrapId(resolved.id, DYNAMIC_REGISTER_SUFFIX);
       } else if (!resolved && (isProxyModule || isRequiredModule)) {
         return { id: wrapId(importee, EXTERNAL_SUFFIX), external: false };
       }

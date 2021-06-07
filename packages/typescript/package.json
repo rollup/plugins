@@ -1,12 +1,15 @@
 {
   "name": "@rollup/plugin-typescript",
-  "version": "8.0.0",
+  "version": "8.2.1",
   "publishConfig": {
     "access": "public"
   },
   "description": "Seamless integration between Rollup and TypeScript.",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/typescript"
+  },
   "author": "Oskar Segersvärd",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/typescript/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -21,16 +24,12 @@
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose --serial",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:json && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test --ext .js,.ts",
-    "lint:json": "prettier --write **/tsconfig.json",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
     "dist",
@@ -47,7 +46,7 @@
   "peerDependencies": {
     "rollup": "^2.14.0",
     "tslib": "*",
-    "typescript": ">=3.4.0"
+    "typescript": ">=3.7.0"
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
@@ -57,26 +56,10 @@
     "@rollup/plugin-buble": "^0.21.3",
     "@rollup/plugin-commonjs": "^11.1.0",
     "@rollup/plugin-typescript": "^5.0.2",
+    "@types/node": "^10.0.0",
     "buble": "^0.20.0",
-    "rollup": "^2.14.0"
+    "rollup": "^2.14.0",
+    "typescript": "^4.2.2"
   },
-  "types": "types/index.d.ts",
-  "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "files": [
-      "!**/fixtures/**",
-      "!**/output/**",
-      "!**/helpers/**",
-      "!**/recipes/**",
-      "!**/types.ts"
-    ]
-  }
+  "types": "types/index.d.ts"
 }

@@ -1,4 +1,5 @@
 import { PluginContext } from 'rollup';
+import type { Diagnostic, DiagnosticReporter } from 'typescript';
 
 import { DiagnosticsHost } from './host';
 import diagnosticToWarning from './toWarning';
@@ -13,7 +14,7 @@ export function emitDiagnostic(
   ts: typeof import('typescript'),
   context: PluginContext,
   host: DiagnosticsHost,
-  diagnostic: import('typescript').Diagnostic
+  diagnostic: Diagnostic
 ) {
   if (diagnostic.code === CANNOT_COMPILE_ESM) return;
 
@@ -34,7 +35,7 @@ export function buildDiagnosticReporter(
   ts: typeof import('typescript'),
   context: PluginContext,
   host: DiagnosticsHost
-): import('typescript').DiagnosticReporter {
+): DiagnosticReporter {
   return function reportDiagnostics(diagnostic) {
     emitDiagnostic(ts, context, host, diagnostic);
   };
@@ -47,7 +48,7 @@ export function emitDiagnostics(
   ts: typeof import('typescript'),
   context: PluginContext,
   host: DiagnosticsHost,
-  diagnostics: readonly import('typescript').Diagnostic[] | undefined
+  diagnostics: readonly Diagnostic[] | undefined
 ) {
   if (!diagnostics) return;
   diagnostics.forEach(buildDiagnosticReporter(ts, context, host));

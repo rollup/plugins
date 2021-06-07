@@ -1,12 +1,12 @@
 import { readFileSync } from 'fs';
 
 import { DYNAMIC_JSON_PREFIX, HELPERS_ID } from './helpers';
-import { getIsCjsPromise } from './is-cjs';
+import { getCommonJSMetaPromise } from './is-cjs';
 import { getName, getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
 
 // e.g. id === "commonjsHelpers?commonjsRegister"
 export function getSpecificHelperProxy(id) {
-  return `export {${id.split('?')[1]} as default} from '${HELPERS_ID}';`;
+  return `export {${id.split('?')[1]} as default} from "${HELPERS_ID}";`;
 }
 
 export function getUnknownRequireProxy(id, requireReturnsDefault) {
@@ -46,16 +46,17 @@ export async function getStaticRequireProxy(
   id,
   requireReturnsDefault,
   esModulesWithDefaultExport,
-  esModulesWithNamedExports
+  esModulesWithNamedExports,
+  commonJsMetaPromises
 ) {
   const name = getName(id);
-  const isCjs = await getIsCjsPromise(id);
-  if (isCjs) {
-    return `import { __moduleExports } from ${JSON.stringify(id)}; export default __moduleExports;`;
-  } else if (isCjs === null) {
+  const commonjsMeta = await getCommonJSMetaPromise(commonJsMetaPromises, id);
+  if (commonjsMeta && commonjsMeta.isCommonJS) {
+    return `export { __moduleExports as default } from ${JSON.stringify(id)};`;
+  } else if (commonjsMeta === null) {
     return getUnknownRequireProxy(id, requireReturnsDefault);
   } else if (!requireReturnsDefault) {
-    return `import {getAugmentedNamespace} from "${HELPERS_ID}"; import * as ${name} from ${JSON.stringify(
+    return `import { getAugmentedNamespace } from "${HELPERS_ID}"; import * as ${name} from ${JSON.stringify(
       id
     )}; export default /*@__PURE__*/getAugmentedNamespace(${name});`;
   } else if (
@@ -66,5 +67,5 @@ export async function getStaticRequireProxy(
   ) {
     return `import * as ${name} from ${JSON.stringify(id)}; export default ${name};`;
   }
-  return `export {default} from ${JSON.stringify(id)};`;
+  return `export { default } from ${JSON.stringify(id)};`;
 }

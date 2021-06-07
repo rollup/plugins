@@ -39,7 +39,7 @@ npm install @rollup/plugin-babel --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import babel from '@rollup/plugin-babel';
+import { babel } from '@rollup/plugin-babel';
 
 const config = {
   input: 'src/index.js',
@@ -55,6 +55,23 @@ export default config;
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
+### Using With `@rollup/plugin-commonjs`
+
+When using `@rollup/plugin-babel` with `@rollup/plugin-commonjs` in the same Rollup configuration, it's important to note that `@rollup/plugin-commonjs` _must_ be placed before this plugin in the `plugins` array for the two to work together properly. e.g.
+
+```js
+import { babel } from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+
+const config = {
+  ...
+  plugins: [
+    commonjs(),
+    babel({ babelHelpers: 'bundled' })
+  ],
+};
+```
+
 ## Options
 
 This plugin respects Babel [configuration files](https://babeljs.io/docs/en/configuration) by default and they are generally the best place to put your configuration.
@@ -67,13 +84,28 @@ All options are as per the [Babel documentation](https://babeljs.io/docs/en/opti
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. When relaying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
+A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. When relying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
 
 ### `include`
 
 Type: `String | RegExp | Array[...String|RegExp]`<br>
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
+
+### `filter`
+
+Type: (id: string) => boolean<br>
+
+Custom [filter function](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter) can be used to determine whether or not certain modules should be operated upon.
+
+Usage:
+
+```js
+import { createFilter } from '@rollup/pluginutils';
+const include = 'include/**.js';
+const exclude = 'exclude/**.js';
+const filter = createFilter(include, exclude, {});
+```
 
 ### `extensions`
 

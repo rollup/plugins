@@ -246,6 +246,37 @@ test('resolves dynamic imports', async (t) => {
   t.is(result.default, 42);
 });
 
+test('respects the package.json sideEffects property for files in root package by default', async (t) => {
+  const bundle = await rollup({
+    input: 'root-package-side-effect/index.js',
+    plugins: [
+      nodeResolve({
+        rootDir: 'root-package-side-effect'
+      })
+    ]
+  });
+
+  const code = await getCode(bundle);
+  t.false(code.includes('side effect'));
+  t.snapshot(code);
+});
+
+test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async (t) => {
+  const bundle = await rollup({
+    input: 'root-package-side-effect/index.js',
+    plugins: [
+      nodeResolve({
+        rootDir: 'root-package-side-effect',
+        ignoreSideEffectsForRoot: true
+      })
+    ]
+  });
+
+  const code = await getCode(bundle);
+  t.true(code.includes('side effect'));
+  t.snapshot(code);
+});
+
 test('handles package side-effects', async (t) => {
   const bundle = await rollup({
     input: 'side-effects.js',
@@ -330,6 +361,18 @@ test('can resolve imports with search params and hash', async (t) => {
   const { module } = await testBundle(t, bundle);
 
   t.is(module.exports, 'resolved with search params and hash');
+});
+
+test('marks a module as external if the resolved version is external', async (t) => {
+  const bundle = await rollup({
+    input: 'resolved-external/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    external: [/node_modules/],
+    plugins: [nodeResolve()]
+  });
+
+  const code = await getCode(bundle);
+  t.is(/node_modules/.test(code), false);
 });
 
 [

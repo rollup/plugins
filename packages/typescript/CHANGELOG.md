@@ -1,5 +1,52 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.2.1
+
+_2021-03-26_
+
+### Bugfixes
+
+- fix: bump TypeScript version (#818)
+- fix: update readme and peerDeps version (#830)
+
+## v8.2.0
+
+_2021-02-14_
+
+### Features
+
+- feat: error when no tsconfig and no rootDir (#794)
+- feat: better error when tslib is not installed (#793)
+- feat: warn when compilerOptions.module is not esnext (#788)
+
+### Updates
+
+- test: move declaration tests, use typescript (#791)
+- test: fix TypeScript src-dir test (#789)
+
+## v8.1.1
+
+_2021-01-29_
+
+### Bugfixes
+
+- fix: fix plugin type declarations (#647)
+- fix: only emit tsbuildinfo file when there is something to emit (#771)
+
+## v8.1.0
+
+_2020-12-14_
+
+### Features
+
+- feat: support multiple output targets with declarations (#687)
+
+### Updates
+
+- chore: fix TypeScript warnings (#673)
+- test: code in src sub-directory (#682)
+- chore: use TypeScript 4 (#674)
+
 ## v8.0.0
 
 _2020-11-30_

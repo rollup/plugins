@@ -52,16 +52,16 @@ module.exports = {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs'
+    format: 'cjs',
   },
   plugins: [
     alias({
       entries: [
         { find: 'utils', replacement: '../../../utils' },
-        { find: 'batman-1.0.0', replacement: './joker-1.5.0' }
-      ]
-    })
-  ]
+        { find: 'batman-1.0.0', replacement: './joker-1.5.0' },
+      ],
+    }),
+  ],
 };
 ```
 
@@ -74,7 +74,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 Type: `Function | Object`<br>
 Default: `null`
 
-Instructs the plugin to use an alternative resolving algorithm, rather than the Rollup's resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#hooks) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
+Instructs the plugin to use an alternative resolving algorithm, rather than the Rollup's resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#resolveid) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
 
 ### `entries`
 
@@ -91,8 +91,8 @@ The `Object` format allows specifying aliases as a key, and the corresponding va
 alias({
   entries: {
     utils: '../../../utils',
-    'batman-1.0.0': './joker-1.5.0'
-  }
+    'batman-1.0.0': './joker-1.5.0',
+  },
 });
 ```
 
@@ -103,7 +103,7 @@ The `Array[...Object]` format allows specifying aliases as objects, which can be
 ```js
 entries: [
   { find: 'utils', replacement: '../../../utils' },
-  { find: 'batman-1.0.0', replacement: './joker-1.5.0' }
+  { find: 'batman-1.0.0', replacement: './joker-1.5.0' },
 ];
 ```
 
@@ -143,7 +143,7 @@ import alias from '@rollup/plugin-alias';
 import resolve from '@rollup/plugin-node-resolve';
 
 const customResolver = resolve({
-  extensions: ['.mjs', '.js', '.jsx', '.json', '.sass', '.scss']
+  extensions: ['.mjs', '.js', '.jsx', '.json', '.sass', '.scss'],
 });
 const projectRootDir = path.resolve(__dirname);
 
@@ -154,14 +154,14 @@ export default {
       entries: [
         {
           find: 'src',
-          replacement: path.resolve(projectRootDir, 'src')
+          replacement: path.resolve(projectRootDir, 'src'),
           // OR place `customResolver` here. See explanation below.
-        }
+        },
       ],
-      customResolver
+      customResolver,
     }),
-    resolve()
-  ]
+    resolve(),
+  ],
 };
 ```
 

@@ -17,8 +17,8 @@ function _loadWasmModule (sync, filepath, src, imports) {
   var isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null
 
   if (filepath && isNode) {
-    var fs = eval('require("fs")')
-    var path = eval('require("path")')
+    var fs = require("fs")
+    var path = require("path")
 
     return new Promise((resolve, reject) => {
       fs.readFile(path.resolve(__dirname, filepath), (error, buffer) => {

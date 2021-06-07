@@ -6,7 +6,10 @@
   },
   "description": "Lint your Rollup bundles with ESLint.",
   "license": "MIT",
-  "repository": "https://github.com/rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/eslint"
+  },
   "author": "Bogdan Chadkin <trysound@yandex.ru>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/eslint",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -21,15 +24,12 @@
     "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint && pnpm run test",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
     "dist",
@@ -50,10 +50,10 @@
     "eslint": "^7.14.0"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.1.0",
     "@types/eslint": "^7.2.5",
     "rollup": "^2.34.0",
-    "tslib": "^2.0.3",
     "typescript": "^4.1.2"
   },
   "types": "types/index.d.ts",

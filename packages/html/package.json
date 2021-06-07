@@ -1,33 +1,38 @@
 {
   "name": "@rollup/plugin-html",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "publishConfig": {
     "access": "public"
   },
   "description": "Creates HTML files to serve Rollup bundles",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/html"
+  },
   "author": "Andrew Powell <andrew@shellscape.org>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/html#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "engines": {
     "node": ">= 8.0.0"
   },
   "scripts": {
+    "build": "rollup -c",
     "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run lint",
+    "ci:lint": "pnpm run build && pnpm run lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write *.md",
-    "lint:js": "eslint --fix --cache lib test --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
-    "prepublishOnly": "pnpm run lint",
-    "test": "ava"
+    "prebuild": "del-cli dist",
+    "prepublishOnly": "pnpm build && pnpm lint",
+    "pretest": "pnpm run build",
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
-    "lib",
+    "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -41,9 +46,12 @@
     "rollup": "^1.20.0||^2.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^6.1.0",
     "rollup": "^2.23.0",
-    "rollup-plugin-postcss": "^3.1.3"
+    "rollup-plugin-postcss": "^3.1.3",
+    "typescript": "^4.1.2"
   },
+  "types": "types/index.d.ts",
   "ava": {
     "babel": {
       "compileEnhancements": false

@@ -120,6 +120,39 @@ Default: `[]`
 
 Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function.
 
+### `ignoreTryCatch`
+
+Type: `boolean | 'remove' | string[] | ((id: string) => boolean)`<br>
+Default: `false`
+
+In most cases, where `require` calls are inside a `try-catch` clause, they should be left unconverted as it requires an optional dependency that may or may not be installed beside the rolled up package.
+Due to the conversion of `require` to a static `import` - the call is hoisted to the top of the file, outside of the `try-catch` clause.
+
+- `true`: All `require` calls inside a `try` will be left unconverted.
+- `false`: All `require` calls inside a `try` will be converted as if the `try-catch` clause is not there.
+- `remove`: Remove all `require` calls from inside any `try` block.
+- `string[]`: Pass an array containing the IDs to left unconverted.
+- `((id: string) => boolean|'remove')`: Pass a function that control individual IDs.
+
+### `ignoreDynamicRequires`
+
+Type: `boolean`
+Default: false
+
+Some `require` calls cannot be resolved statically to be translated to imports, e.g.
+
+```js
+function wrappedRequire(target) {
+  return require(target);
+}
+wrappedRequire('foo');
+wrappedRequire('bar');
+```
+
+When this option is set to `false`, the generated code will either directly throw an error when such a call is encountered or, when `dynamicRequireTargets` is used, when such a call cannot be resolved with a configured dynamic require target.
+
+Setting this option to `true` will instead leave the `require` call in the code or use it as a fallback for `dynamicRequireTargets`.
+
 ### `esmExternals`
 
 Type: `boolean | string[] | ((id: string) => boolean)`
@@ -140,6 +173,49 @@ This is likely not desired for ES module dependencies: Here `require` should usu
 If you set `esmExternals` to `true`, this plugins assumes that all external dependencies are ES modules and will adhere to the `requireReturnsDefault` option. If that option is not set, they will be rendered as namespace imports.
 
 You can also supply an array of ids to be treated as ES modules, or a function that will be passed each external id to determine if it is an ES module.
+
+### `defaultIsModuleExports`
+
+Type: `boolean | "auto"`<br>
+Default: `"auto"`
+
+Controls what is the default export when importing a CommonJS file from an ES module.
+
+- `true`: The value of the default export is `module.exports`. This currently matches the behavior of Node.js when importing a CommonJS file.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  console.log(foo); // { default: 3 }
+  ```
+- `false`: The value of the default export is `exports.default`.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  console.log(foo); // 3
+  ```
+- `"auto"`: The value of the default export is `exports.default` if the CommonJS file has an `exports.__esModule === true` property; otherwise it's `module.exports`. This makes it possible to import
+  the default export of ES modules compiled to CommonJS as if they were not compiled.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  // mod-compiled.cjs
+  exports.__esModule = true;
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  import bar from './mod-compiled.cjs';
+  console.log(foo); // { default: 3 }
+  console.log(bar); // 3
+  ```
 
 ### `requireReturnsDefault`
 

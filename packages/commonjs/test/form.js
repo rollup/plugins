@@ -1,6 +1,6 @@
 /* eslint-disable global-require, import/no-dynamic-require, no-console */
 
-import { existsSync, readdirSync, readFileSync } from 'fs';
+import * as fs from 'fs';
 
 import * as acorn from 'acorn';
 import test from 'ava';
@@ -18,7 +18,7 @@ const transformContext = {
     })
 };
 
-readdirSync('./fixtures/form').forEach((dir) => {
+fs.readdirSync('./fixtures/form').forEach((dir) => {
   let config;
 
   try {
@@ -57,20 +57,35 @@ readdirSync('./fixtures/form').forEach((dir) => {
         throw error;
       };
 
-      const input = readFileSync(id, 'utf-8');
+      const input = fs.readFileSync(id, 'utf-8');
 
       let outputFile = `fixtures/form/${dir}/${outputName}`;
-      if (existsSync(`${outputFile}.${process.platform}.js`)) {
+      if (fs.existsSync(`${outputFile}.${process.platform}.js`)) {
         outputFile += `.${process.platform}.js`;
       } else {
         outputFile += '.js';
       }
 
-      const expected = readFileSync(outputFile, 'utf-8').trim();
+      const expected = fs.readFileSync(outputFile, 'utf-8').trim();
       const transformed = transform.call(transformContext, input, id);
       const actual = (transformed ? transformed.code : input).trim().replace(/\0/g, '_');
 
-      t.is(actual, expected);
+      // uncomment to update snapshots
+      // fs.writeFileSync(outputFile, `${actual}\n`);
+
+      // trim whitespace from line endings,
+      // this will benefit issues like `form/try-catch-remove` where whitespace is left in the line,
+      // and testing on windows (\r\n)
+      t.is(
+        actual
+          .split('\n')
+          .map((x) => x.trimEnd())
+          .join('\n'),
+        expected
+          .split('\n')
+          .map((x) => x.trimEnd())
+          .join('\n')
+      );
     }
   });
 });

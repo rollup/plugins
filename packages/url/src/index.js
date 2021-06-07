@@ -34,11 +34,7 @@ export default function url(options = {}) {
       return Promise.all([fsStatPromise(id), fsReadFilePromise(id)]).then(([stats, buffer]) => {
         let data;
         if ((limit && stats.size > limit) || limit === 0) {
-          const hash = crypto
-            .createHash('sha1')
-            .update(buffer)
-            .digest('hex')
-            .substr(0, 16);
+          const hash = crypto.createHash('sha1').update(buffer).digest('hex').substr(0, 16);
           const ext = path.extname(id);
           const name = path.basename(id, ext);
           // Determine the directory name of the file based
@@ -46,10 +42,7 @@ export default function url(options = {}) {
           // or the parent directory
           const relativeDir = options.sourceDir
             ? path.relative(options.sourceDir, path.dirname(id))
-            : path
-                .dirname(id)
-                .split(sep)
-                .pop();
+            : path.dirname(id).split(sep).pop();
 
           // Generate the output file name based on some string
           // replacement parameters

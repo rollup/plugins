@@ -1,7 +1,7 @@
-type FormatDiagnosticsHost = import('typescript').FormatDiagnosticsHost;
+import type { CompilerOptions, FormatDiagnosticsHost } from 'typescript';
 
 export interface DiagnosticsHost extends FormatDiagnosticsHost {
-  getCompilationSettings(): import('typescript').CompilerOptions;
+  getCompilationSettings(): CompilerOptions;
 }
 
 /**
@@ -13,7 +13,7 @@ export interface DiagnosticsHost extends FormatDiagnosticsHost {
  */
 export default function createFormattingHost(
   ts: typeof import('typescript'),
-  compilerOptions: import('typescript').CompilerOptions
+  compilerOptions: CompilerOptions
 ): DiagnosticsHost {
   return {
     /** Returns the compiler options for the project. */

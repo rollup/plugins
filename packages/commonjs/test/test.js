@@ -388,10 +388,10 @@ test('prefers to set name using directory for index files', async (t) => {
   });
 
   const code = await getCodeFromBundle(bundle);
-  t.is(code.indexOf('var index'), -1);
-  t.not(code.indexOf('var invalidVar'), -1);
-  t.not(code.indexOf('var validVar'), -1);
-  t.not(code.indexOf('var nonIndex'), -1);
+  t.is(code.indexOf('var index'), -1, 'does not contain index');
+  t.not(code.indexOf('var invalidVar'), -1, 'contains invalidVar');
+  t.not(code.indexOf('var validVar'), -1, 'contains validVar');
+  t.not(code.indexOf('var nonIndex'), -1, 'contains nonIndex');
 });
 
 test('does not warn even if the ES module does not export "default"', async (t) => {
@@ -533,18 +533,7 @@ test('produces optimized code when importing esm with a known default export', a
       }
     ]
   });
-  const code = await getCodeFromBundle(bundle);
-  t.is(
-    code,
-    `'use strict';
-
-var require$$0 = "default";
-
-var main = require$$0;
-
-module.exports = main;
-`
-  );
+  t.snapshot(await getCodeFromBundle(bundle));
 });
 
 test('produces optimized code when importing esm without a default export', async (t) => {
@@ -568,40 +557,7 @@ test('produces optimized code when importing esm without a default export', asyn
       }
     ]
   });
-  const code = await getCodeFromBundle(bundle);
-  t.is(
-    code,
-    `'use strict';
-
-const value = "value";
-
-var esm = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	value: value
-});
-
-function getAugmentedNamespace(n) {
-	if (n.__esModule) return n;
-	var a = Object.defineProperty({}, '__esModule', {value: true});
-	Object.keys(n).forEach(function (k) {
-		var d = Object.getOwnPropertyDescriptor(n, k);
-		Object.defineProperty(a, k, d.get ? d : {
-			enumerable: true,
-			get: function () {
-				return n[k];
-			}
-		});
-	});
-	return a;
-}
-
-var require$$0 = /*@__PURE__*/getAugmentedNamespace(esm);
-
-var main = require$$0;
-
-module.exports = main;
-`
-  );
+  t.snapshot(await getCodeFromBundle(bundle));
 });
 
 test('handles array destructuring assignment', async (t) => {
@@ -610,31 +566,7 @@ test('handles array destructuring assignment', async (t) => {
     plugins: [commonjs({ sourceMap: true })]
   });
 
-  const code = await getCodeFromBundle(bundle, { exports: 'named' });
-  t.is(
-    code,
-    `'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-/* eslint-disable */
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-var shuffleArray_1 = shuffleArray;
-
-var main = {
-	shuffleArray: shuffleArray_1
-};
-
-exports.default = main;
-exports.shuffleArray = shuffleArray_1;
-`
-  );
+  t.snapshot(await getCodeFromBundle(bundle, { exports: 'named' }));
 });
 
 test('can spread an object into module.exports', async (t) => {
@@ -642,8 +574,7 @@ test('can spread an object into module.exports', async (t) => {
     input: 'fixtures/samples/module-exports-spread/main.js',
     plugins: [commonjs()]
   });
-  const code = await getCodeFromBundle(bundle);
-  t.snapshot(code);
+  t.snapshot(await getCodeFromBundle(bundle));
 });
 
 test('logs a warning when the deprecated namedExports option is used', async (t) => {
@@ -668,8 +599,7 @@ test('imports .cjs file extension by default', async (t) => {
     input: 'fixtures/samples/cjs-extension/main.js',
     plugins: [commonjs()]
   });
-  const code = await getCodeFromBundle(bundle);
-  t.snapshot(code);
+  t.snapshot(await getCodeFromBundle(bundle));
 });
 
 test('registers dynamic requires when entry is from a different loader', async (t) => {
@@ -726,6 +656,17 @@ test('does not wrap commonjsRegister calls in createCommonjsModule', async (t) =
   t.not(/createCommonjsModule\(function/.test(code), true);
 });
 
+test('does not replace shorthand `require` property in object', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/shorthand-require/main.js',
+    plugins: [commonjs()]
+  });
+
+  const code = await getCodeFromBundle(bundle, { exports: 'named' });
+
+  t.is(/require: commonjsRequire/.test(code), true);
+});
+
 // This test uses worker threads to simulate an empty internal cache and needs at least Node 12
 if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
   test('can be cached across instances', async (t) => {
@@ -748,3 +689,18 @@ if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
     t.is(code, await new Promise((done) => getRollupUpCodeWithCache.on('message', done)));
   });
 }
+
+test('does not affect subsequently created instances when called with `requireReturnsDefault: "preferred"`', async (t) => {
+  const input = 'fixtures/function/import-esm-require-returns-default-preferred/main.js';
+  const options = { requireReturnsDefault: 'preferred' };
+
+  const instance1 = commonjs(options);
+  const bundle1 = await rollup({ input, plugins: [instance1] });
+  const code1 = (await bundle1.generate({})).output[0].code;
+
+  const instance2 = commonjs(options);
+  const bundle2 = await rollup({ input, plugins: [instance2] });
+  const code2 = (await bundle2.generate({})).output[0].code;
+
+  t.is(code1, code2);
+});

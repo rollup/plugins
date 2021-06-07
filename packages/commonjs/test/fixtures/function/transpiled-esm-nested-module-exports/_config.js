@@ -1,5 +1,5 @@
 module.exports = {
-  description: 'wraps a module if there is a nested assignment to `module.exports`',
+  description: 'handles nested assignments to `module.exports`',
   context: {
     globalValue: true
   }

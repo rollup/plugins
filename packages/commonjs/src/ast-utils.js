@@ -70,8 +70,6 @@ export function isDefineCompiledEsm(node) {
 }
 
 function getDefinePropertyCallName(node, targetName) {
-  const targetNames = targetName.split('.');
-
   const {
     callee: { object, property }
   } = node;
@@ -79,6 +77,7 @@ function getDefinePropertyCallName(node, targetName) {
   if (!property || property.type !== 'Identifier' || property.name !== 'defineProperty') return;
   if (node.arguments.length !== 3) return;
 
+  const targetNames = targetName.split('.');
   const [target, key, value] = node.arguments;
   if (targetNames.length === 1) {
     if (target.type !== 'Identifier' || target.name !== targetNames[0]) {
@@ -105,13 +104,6 @@ function getDefinePropertyCallName(node, targetName) {
   return { key: key.value, value: valueProperty.value };
 }
 
-export function isLocallyShadowed(name, scope) {
-  while (scope.parent) {
-    if (scope.declarations[name]) {
-      return true;
-    }
-    // eslint-disable-next-line no-param-reassign
-    scope = scope.parent;
-  }
-  return false;
+export function isShorthandProperty(parent) {
+  return parent && parent.type === 'Property' && parent.shorthand;
 }

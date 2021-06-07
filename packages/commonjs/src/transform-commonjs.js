@@ -2,7 +2,7 @@
 
 import { dirname } from 'path';
 
-import { attachScopes, extractAssignedNames, makeLegalIdentifier } from '@rollup/pluginutils';
+import { attachScopes, extractAssignedNames } from '@rollup/pluginutils';
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 
@@ -11,6 +11,7 @@ import {
   isDefineCompiledEsm,
   isFalsy,
   isReference,
+  isShorthandProperty,
   isTruthy,
   KEY_COMPILED_ESM
 } from './ast-utils';
@@ -25,7 +26,13 @@ import {
   isRequireStatement,
   isStaticRequireStatement
 } from './generate-imports';
-import { DYNAMIC_JSON_PREFIX, DYNAMIC_REGISTER_PREFIX } from './helpers';
+import {
+  DYNAMIC_JSON_PREFIX,
+  DYNAMIC_REGISTER_SUFFIX,
+  isWrappedId,
+  unwrapId,
+  wrapId
+} from './helpers';
 import { tryParse } from './parse';
 import { deconflict, getName, getVirtualPathForDynamicRequirePath } from './utils';
 
@@ -40,12 +47,15 @@ export default function transformCommonjs(
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
+  ignoreDynamicRequires,
+  getIgnoreTryCatchRequireStatementMode,
   sourceMap,
   isDynamicRequireModulesEnabled,
   dynamicRequireModuleSet,
   disableWrap,
   commonDir,
-  astCache
+  astCache,
+  defaultIsModuleExports
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -53,23 +63,23 @@ export default function transformCommonjs(
     module: false,
     exports: false,
     global: false,
-    require: false,
-    commonjsHelpers: false
+    require: false
   };
+  let usesDynamicRequire = false;
   const virtualDynamicRequirePath =
     isDynamicRequireModulesEnabled && getVirtualPathForDynamicRequirePath(dirname(id), commonDir);
   let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
+  let currentTryBlockEnd = null;
   let shouldWrap = false;
-  const defineCompiledEsmExpressions = [];
 
   const globals = new Set();
 
   // TODO technically wrong since globals isn't populated yet, but ¯\_(ツ)_/¯
-  const HELPERS_NAME = deconflict(scope, globals, 'commonjsHelpers');
-  const namedExports = {};
+  const HELPERS_NAME = deconflict([scope], globals, 'commonjsHelpers');
   const dynamicRegisterSources = new Set();
+  let hasRemovedRequire = false;
 
   const {
     addRequireStatement,
@@ -84,14 +94,23 @@ export default function transformCommonjs(
   const topLevelDeclarations = [];
   const topLevelRequireDeclarators = new Set();
   const skippedNodes = new Set();
-  const topLevelModuleExportsAssignments = [];
-  const topLevelExportsAssignmentsByName = new Map();
+  const moduleAccessScopes = new Set([scope]);
+  const exportsAccessScopes = new Set([scope]);
+  const moduleExportsAssignments = [];
+  let firstTopLevelModuleExportsAssignment = null;
+  const exportsAssignmentsByName = new Map();
+  const topLevelAssignments = new Set();
+  const topLevelDefineCompiledEsmExpressions = [];
 
   walk(ast, {
     enter(node, parent) {
       if (skippedNodes.has(node)) {
         this.skip();
         return;
+      }
+
+      if (currentTryBlockEnd !== null && node.start > currentTryBlockEnd) {
+        currentTryBlockEnd = null;
       }
 
       programDepth += 1;
@@ -104,6 +123,11 @@ export default function transformCommonjs(
 
       // eslint-disable-next-line default-case
       switch (node.type) {
+        case 'TryStatement':
+          if (currentTryBlockEnd === null) {
+            currentTryBlockEnd = node.block.end;
+          }
+          return;
         case 'AssignmentExpression':
           if (node.left.type === 'MemberExpression') {
             const flattened = getKeypath(node.left);
@@ -116,30 +140,34 @@ export default function transformCommonjs(
             uses[flattened.name] = true;
 
             // we're dealing with `module.exports = ...` or `[module.]exports.foo = ...` –
-            if (programDepth > 3) {
-              shouldWrap = true;
+            if (flattened.keypath === 'module.exports') {
+              moduleExportsAssignments.push(node);
+              if (programDepth > 3) {
+                moduleAccessScopes.add(scope);
+              } else if (!firstTopLevelModuleExportsAssignment) {
+                firstTopLevelModuleExportsAssignment = node;
+              }
             } else if (exportName === KEY_COMPILED_ESM) {
-              defineCompiledEsmExpressions.push(parent);
-            } else if (flattened.keypath === 'module.exports') {
-              topLevelModuleExportsAssignments.push(node);
-            } else if (!topLevelExportsAssignmentsByName.has(exportName)) {
-              topLevelExportsAssignmentsByName.set(exportName, node);
+              if (programDepth > 3) {
+                shouldWrap = true;
+              } else {
+                topLevelDefineCompiledEsmExpressions.push(node);
+              }
             } else {
-              shouldWrap = true;
+              const exportsAssignments = exportsAssignmentsByName.get(exportName) || {
+                nodes: [],
+                scopes: new Set()
+              };
+              exportsAssignments.nodes.push(node);
+              exportsAssignments.scopes.add(scope);
+              exportsAccessScopes.add(scope);
+              exportsAssignmentsByName.set(exportName, exportsAssignments);
+              if (programDepth <= 3) {
+                topLevelAssignments.add(node);
+              }
             }
 
             skippedNodes.add(node.left);
-
-            if (flattened.keypath === 'module.exports' && node.right.type === 'ObjectExpression') {
-              node.right.properties.forEach((prop) => {
-                if (prop.computed || !('key' in prop) || prop.key.type !== 'Identifier') return;
-                const { name } = prop.key;
-                if (name === makeLegalIdentifier(name)) namedExports[name] = true;
-              });
-              return;
-            }
-
-            if (exportsPatternMatch[1]) namedExports[exportsPatternMatch[1]] = true;
           } else {
             for (const name of extractAssignedNames(node.left)) {
               reassignedNames.add(name);
@@ -151,12 +179,37 @@ export default function transformCommonjs(
             if (programDepth === 3 && parent.type === 'ExpressionStatement') {
               // skip special handling for [module.]exports until we know we render this
               skippedNodes.add(node.arguments[0]);
-              defineCompiledEsmExpressions.push(parent);
+              topLevelDefineCompiledEsmExpressions.push(node);
             } else {
               shouldWrap = true;
             }
             return;
           }
+
+          if (
+            node.callee.object &&
+            node.callee.object.name === 'require' &&
+            node.callee.property.name === 'resolve' &&
+            hasDynamicModuleForPath(id, '/', dynamicRequireModuleSet)
+          ) {
+            const requireNode = node.callee.object;
+            magicString.appendLeft(
+              node.end - 1,
+              `,${JSON.stringify(
+                dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
+              )}`
+            );
+            magicString.overwrite(
+              requireNode.start,
+              requireNode.end,
+              `${HELPERS_NAME}.commonjsRequire`,
+              {
+                storeName: true
+              }
+            );
+            return;
+          }
+
           if (!isStaticRequireStatement(node, scope)) return;
           if (!isDynamicRequireModulesEnabled) {
             skippedNodes.add(node.callee);
@@ -165,35 +218,61 @@ export default function transformCommonjs(
             skippedNodes.add(node.callee);
             const usesReturnValue = parent.type !== 'ExpressionStatement';
 
+            let canConvertRequire = true;
+            let shouldRemoveRequireStatement = false;
+
+            if (currentTryBlockEnd !== null) {
+              ({
+                canConvertRequire,
+                shouldRemoveRequireStatement
+              } = getIgnoreTryCatchRequireStatementMode(node.arguments[0].value));
+
+              if (shouldRemoveRequireStatement) {
+                hasRemovedRequire = true;
+              }
+            }
+
             let sourceId = getRequireStringArg(node);
-            const isDynamicRegister = sourceId.startsWith(DYNAMIC_REGISTER_PREFIX);
+            const isDynamicRegister = isWrappedId(sourceId, DYNAMIC_REGISTER_SUFFIX);
             if (isDynamicRegister) {
-              sourceId = sourceId.substr(DYNAMIC_REGISTER_PREFIX.length);
+              sourceId = unwrapId(sourceId, DYNAMIC_REGISTER_SUFFIX);
               if (sourceId.endsWith('.json')) {
                 sourceId = DYNAMIC_JSON_PREFIX + sourceId;
               }
-              dynamicRegisterSources.add(sourceId);
+              dynamicRegisterSources.add(wrapId(sourceId, DYNAMIC_REGISTER_SUFFIX));
             } else {
               if (
                 !sourceId.endsWith('.json') &&
                 hasDynamicModuleForPath(sourceId, id, dynamicRequireModuleSet)
               ) {
-                magicString.overwrite(
-                  node.start,
-                  node.end,
-                  `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
-                    getVirtualPathForDynamicRequirePath(sourceId, commonDir)
-                  )}, ${JSON.stringify(
-                    dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
-                  )})`
-                );
-                uses.commonjsHelpers = true;
+                if (shouldRemoveRequireStatement) {
+                  magicString.overwrite(node.start, node.end, `undefined`);
+                } else if (canConvertRequire) {
+                  magicString.overwrite(
+                    node.start,
+                    node.end,
+                    `${HELPERS_NAME}.commonjsRequire(${JSON.stringify(
+                      getVirtualPathForDynamicRequirePath(sourceId, commonDir)
+                    )}, ${JSON.stringify(
+                      dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
+                    )})`
+                  );
+                  usesDynamicRequire = true;
+                }
                 return;
               }
-              addRequireStatement(sourceId, node, scope, usesReturnValue);
+
+              if (canConvertRequire) {
+                addRequireStatement(sourceId, node, scope, usesReturnValue);
+              }
             }
 
             if (usesReturnValue) {
+              if (shouldRemoveRequireStatement) {
+                magicString.overwrite(node.start, node.end, `undefined`);
+                return;
+              }
+
               if (
                 parent.type === 'VariableDeclarator' &&
                 !scope.parent &&
@@ -205,6 +284,11 @@ export default function transformCommonjs(
               }
             } else {
               // This is a bare import, e.g. `require('foo');`
+
+              if (!canConvertRequire && !shouldRemoveRequireStatement) {
+                return;
+              }
+
               magicString.remove(parent.start, parent.end);
             }
           }
@@ -224,7 +308,17 @@ export default function transformCommonjs(
           if (!(isReference(node, parent) && !scope.contains(name))) return;
           switch (name) {
             case 'require':
-              if (isNodeRequirePropertyAccess(parent)) return;
+              if (isNodeRequirePropertyAccess(parent)) {
+                if (hasDynamicModuleForPath(id, '/', dynamicRequireModuleSet)) {
+                  if (parent.property.name === 'cache') {
+                    magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                      storeName: true
+                    });
+                  }
+                }
+
+                return;
+              }
 
               if (isDynamicRequireModulesEnabled && isRequireStatement(parent, scope)) {
                 magicString.appendLeft(
@@ -234,11 +328,16 @@ export default function transformCommonjs(
                   )}`
                 );
               }
-
-              magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
-                storeName: true
-              });
-              uses.commonjsHelpers = true;
+              if (!ignoreDynamicRequires) {
+                if (isShorthandProperty(parent)) {
+                  magicString.appendRight(node.end, `: ${HELPERS_NAME}.commonjsRequire`);
+                } else {
+                  magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
+                    storeName: true
+                  });
+                }
+              }
+              usesDynamicRequire = true;
               return;
             case 'module':
             case 'exports':
@@ -251,11 +350,12 @@ export default function transformCommonjs(
                 magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                   storeName: true
                 });
-                uses.commonjsHelpers = true;
               }
               return;
             case 'define':
-              magicString.overwrite(node.start, node.end, 'undefined', { storeName: true });
+              magicString.overwrite(node.start, node.end, 'undefined', {
+                storeName: true
+              });
               return;
             default:
               globals.add(name);
@@ -267,7 +367,6 @@ export default function transformCommonjs(
             magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsRequire`, {
               storeName: true
             });
-            uses.commonjsHelpers = true;
             skippedNodes.add(node.object);
             skippedNodes.add(node.property);
           }
@@ -286,7 +385,6 @@ export default function transformCommonjs(
               magicString.overwrite(node.start, node.end, `${HELPERS_NAME}.commonjsGlobal`, {
                 storeName: true
               });
-              uses.commonjsHelpers = true;
             }
           }
           return;
@@ -303,7 +401,9 @@ export default function transformCommonjs(
               flattened.keypath === 'module' ||
               flattened.keypath === 'exports'
             ) {
-              magicString.overwrite(node.start, node.end, `'object'`, { storeName: false });
+              magicString.overwrite(node.start, node.end, `'object'`, {
+                storeName: false
+              });
             }
           }
           return;
@@ -321,23 +421,22 @@ export default function transformCommonjs(
     }
   });
 
-  let isRestorableCompiledEsm = false;
-  if (defineCompiledEsmExpressions.length > 0) {
-    if (!shouldWrap && defineCompiledEsmExpressions.length === 1) {
-      isRestorableCompiledEsm = true;
-      magicString.remove(
-        defineCompiledEsmExpressions[0].start,
-        defineCompiledEsmExpressions[0].end
-      );
-    } else {
-      shouldWrap = true;
-      uses.exports = true;
-    }
+  const nameBase = getName(id);
+  const exportsName = deconflict([...exportsAccessScopes], globals, nameBase);
+  const moduleName = deconflict([...moduleAccessScopes], globals, `${nameBase}Module`);
+  const deconflictedExportNames = Object.create(null);
+  for (const [exportName, { scopes }] of exportsAssignmentsByName) {
+    deconflictedExportNames[exportName] = deconflict([...scopes], globals, exportName);
   }
 
   // We cannot wrap ES/mixed modules
-  shouldWrap = shouldWrap && !disableWrap && !isEsModule;
-  uses.commonjsHelpers = uses.commonjsHelpers || shouldWrap;
+  shouldWrap =
+    !isEsModule &&
+    !disableWrap &&
+    (shouldWrap || (uses.exports && moduleExportsAssignments.length > 0));
+  const detectWrappedDefault =
+    shouldWrap &&
+    (topLevelDefineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0);
 
   if (
     !(
@@ -346,14 +445,14 @@ export default function transformCommonjs(
       uses.module ||
       uses.exports ||
       uses.require ||
-      uses.commonjsHelpers
+      usesDynamicRequire ||
+      hasRemovedRequire ||
+      topLevelDefineCompiledEsmExpressions.length > 0
     ) &&
     (ignoreGlobal || !uses.global)
   ) {
     return { meta: { commonjs: { isCommonJS: false } } };
   }
-
-  const moduleName = deconflict(scope, globals, getName(id));
 
   let leadingComment = '';
   if (code.startsWith('/*')) {
@@ -362,33 +461,53 @@ export default function transformCommonjs(
     magicString.remove(0, commentEnd).trim();
   }
 
-  const exportBlock = isEsModule
-    ? ''
-    : rewriteExportsAndGetExportsBlock(
-        magicString,
-        moduleName,
-        shouldWrap,
-        topLevelModuleExportsAssignments,
-        topLevelExportsAssignmentsByName,
-        defineCompiledEsmExpressions,
-        (name) => deconflict(scope, globals, name),
-        isRestorableCompiledEsm,
-        code,
-        uses,
-        HELPERS_NAME
-      );
+  const exportMode = shouldWrap
+    ? uses.module
+      ? 'module'
+      : 'exports'
+    : firstTopLevelModuleExportsAssignment
+    ? exportsAssignmentsByName.size === 0 && topLevelDefineCompiledEsmExpressions.length === 0
+      ? 'replace'
+      : 'module'
+    : moduleExportsAssignments.length === 0
+    ? 'exports'
+    : 'module';
 
   const importBlock = rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
     topLevelRequireDeclarators,
     reassignedNames,
-    uses.commonjsHelpers && HELPERS_NAME,
-    dynamicRegisterSources
+    HELPERS_NAME,
+    dynamicRegisterSources,
+    moduleName,
+    exportsName,
+    id,
+    exportMode
   );
 
+  const exportBlock = isEsModule
+    ? ''
+    : rewriteExportsAndGetExportsBlock(
+        magicString,
+        moduleName,
+        exportsName,
+        shouldWrap,
+        moduleExportsAssignments,
+        firstTopLevelModuleExportsAssignment,
+        exportsAssignmentsByName,
+        topLevelAssignments,
+        topLevelDefineCompiledEsmExpressions,
+        deconflictedExportNames,
+        code,
+        HELPERS_NAME,
+        exportMode,
+        detectWrappedDefault,
+        defaultIsModuleExports
+      );
+
   if (shouldWrap) {
-    wrapCode(magicString, uses, moduleName, HELPERS_NAME, virtualDynamicRequirePath);
+    wrapCode(magicString, uses, moduleName, exportsName);
   }
 
   magicString
