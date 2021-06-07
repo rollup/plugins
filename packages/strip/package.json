@@ -22,10 +22,12 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc ./test/types.ts ./types/index.d.ts --noEmit"
   },
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "keywords": [
     "rollup",

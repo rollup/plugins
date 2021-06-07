@@ -27,7 +27,8 @@
     "prebuild": "del-cli dist",
     "prepublishOnly": "pnpm run lint && pnpm run build",
     "pretest": "pnpm run build -- --sourcemap",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc ./test/types.ts ./types/index.d.ts --noEmit"
   },
   "files": [
     "dist",

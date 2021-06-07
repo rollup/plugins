@@ -28,10 +28,12 @@
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
     "pretest": "pnpm run build",
-    "test": "ava"
+    "test": "ava",
+    "test:ts": "tsc ./test/types.ts ./types/index.d.ts --noEmit"
   },
   "files": [
     "dist",
+    "tests",
     "README.md",
     "LICENSE"
   ],
