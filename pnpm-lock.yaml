@@ -205,10 +205,10 @@ importers:
       tosource: ^1.0.0
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
+      '@types/d3-dsv': 1.2.1
       d3-dsv: 1.2.0
       tosource: 1.0.0
     devDependencies:
-      '@types/d3-dsv': 1.2.1
       del-cli: 3.0.1
       rollup: 2.32.1
 
@@ -2076,7 +2076,7 @@ packages:
 
   /@types/d3-dsv/1.2.1:
     resolution: {integrity: sha512-LLmJmjiqp/fTNEdij5bIwUJ6P6TVNk5hKM9/uk5RPO2YNgEu9XvKO0dJ7Iqd3psEdmZN1m7gB1bOsjr4HmO2BA==}
-    dev: true
+    dev: false
 
   /@types/eslint-visitor-keys/1.0.0:
     resolution: {integrity: sha512-OCutwjDZ4aFS6PB1UZ988C4YgwlBHJd6wCeQqaLdmadZ/7e+w79+hbMUFC1QXDNCmdyoRfAFdm0RypzwR+Qpag==}
