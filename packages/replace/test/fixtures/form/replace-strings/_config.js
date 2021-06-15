@@ -1,6 +1,7 @@
 module.exports = {
   description: 'replaces strings',
   options: {
-    ANSWER: '42'
+    ANSWER: '42',
+    'typeof window': `"object"`
   }
 };
