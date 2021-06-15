@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import yaml from '..';
+import yaml from '../types';
 
 const config: RollupOptions = {
   input: 'main.js',

@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import legacy from '..';
+import legacy from '../types';
 
 const config: RollupOptions = {
   input: 'main.js',

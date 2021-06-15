@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import image from '..';
+import image from '../types';
 
 const config: RollupOptions = {
   input: 'main.js',

@@ -1,7 +1,7 @@
 import test, { ExecutionContext } from 'ava';
 import { rollup } from 'rollup';
 
-import typescript from '..';
+import typescript from '../types';
 
 import { getCode } from '../../../util/test';
 

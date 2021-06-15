@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import graphql from '..';
+import graphql from '../types';
 
 const config: RollupOptions = {
   input: 'main.js',

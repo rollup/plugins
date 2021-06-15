@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import buble from '..';
+import buble from '../types';
 
 const config: RollupOptions = {
   input: 'main.js',

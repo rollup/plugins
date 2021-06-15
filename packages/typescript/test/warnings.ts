@@ -1,7 +1,7 @@
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import typescript from '..';
+import typescript from '../types';
 
 test.beforeEach(() => process.chdir(__dirname));
 

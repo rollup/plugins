@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import multiEntry from '..';
+import multiEntry from '../types';
 
 const config: RollupOptions = {
   input: 'main.js',

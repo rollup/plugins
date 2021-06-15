@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import dsv from '..';
+import dsv from '../types';
 
 const config: RollupOptions = {
   input: 'main.js',
