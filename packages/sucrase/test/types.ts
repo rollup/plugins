@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import sucrase from '../types';
+import sucrase from '..';
 
 const config: RollupOptions = {
   input: 'main.js',

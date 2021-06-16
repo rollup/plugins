@@ -1,6 +1,6 @@
 import { RollupOptions } from 'rollup';
 
-import dynamicImportVars from '../types';
+import dynamicImportVars from '..';
 
 const config: RollupOptions = {
   input: 'main.js',

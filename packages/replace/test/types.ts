@@ -3,7 +3,7 @@ import { dirname } from 'path';
 
 import { RollupOptions } from 'rollup';
 
-import replace from '../types';
+import replace from '..';
 
 const config: RollupOptions = {
   input: 'main.js',

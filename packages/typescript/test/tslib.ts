@@ -3,7 +3,7 @@ import { platform } from 'os';
 import test from 'ava';
 import { rollup, RollupError } from 'rollup';
 
-import typescript from '../types';
+import typescript from '..';
 
 import { evaluateBundle, getCode, onwarn } from '../../../util/test';
 

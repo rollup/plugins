@@ -1,6 +1,6 @@
 import type { RollupOptions } from 'rollup';
 
-import commonjs from '../types';
+import commonjs from '..';
 
 const config: RollupOptions = {
   input: 'main.js',
