@@ -25,7 +25,7 @@ export default function multiEntry(conf = {}) {
     } else if (Array.isArray(input)) {
       config.include = input;
     } else {
-      const { include = [], exclude = [], entryFileName = DEFAULT_OUTPUT, exports } = input;
+      const { include = [], exclude = [], entryFileName = config?.entryFileName ?? DEFAULT_OUTPUT, exports } = input;
       config.include = include;
       config.exclude = exclude;
       config.entryFileName = entryFileName;
