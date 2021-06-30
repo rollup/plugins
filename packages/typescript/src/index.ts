@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import fs from 'fs';
+import { promises as fs } from 'fs';
 
 import { Plugin, RollupOptions, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
@@ -126,7 +126,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       return output.code != null ? (output as SourceDescription) : null;
     },
 
-    generateBundle(outputOptions) {
+    async generateBundle(outputOptions) {
       parsedOptions.fileNames.forEach((fileName) => {
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
@@ -151,8 +151,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         // https://github.com/rollup/plugins/issues/681
         if (tsBuildInfoSource) {
           const normalizedTsBuildInfoPath = normalizePath(tsBuildInfoPath);
-          fs.mkdirSync(path.dirname(normalizedTsBuildInfoPath), { recursive: true });
-          fs.writeFileSync(normalizedTsBuildInfoPath, tsBuildInfoSource);
+          await fs.mkdir(path.dirname(normalizedTsBuildInfoPath), { recursive: true });
+          await fs.writeFile(normalizedTsBuildInfoPath, tsBuildInfoSource);
         }
       }
     }
