@@ -1,7 +1,5 @@
 import * as path from 'path';
 
-import { promises as fs } from 'fs';
-
 import { Plugin, RollupOptions, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
@@ -12,7 +10,7 @@ import createModuleResolver from './moduleResolution';
 import { getPluginOptions } from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
-import findTypescriptOutput, { getEmittedFile } from './outputFile';
+import findTypescriptOutput, { getEmittedFile, normalizePath, emitFile } from './outputFile';
 import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
@@ -39,10 +37,6 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const resolveModule = createModuleResolver(ts, formatHost);
 
   let program: Watch<unknown> | null = null;
-
-  function normalizePath(fileName: string) {
-    return fileName.split(path.win32.sep).join(path.posix.sep);
-  }
 
   return {
     name: 'typescript',
@@ -151,25 +145,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const tsBuildInfoSource = emittedFiles.get(tsBuildInfoPath);
         // https://github.com/rollup/plugins/issues/681
         if (tsBuildInfoSource) {
-          const fromRollupDirToTs = path.relative(outputOptions.dir!, tsBuildInfoPath);
-          if (fromRollupDirToTs.startsWith('..')) {
-            if (outputToFilesystem === undefined) {
-              this.warn(
-                `@rollup/plugin-typescript: outputToFilesystem option is defaulting to true.`
-              );
-            }
-            if (outputToFilesystem !== false) {
-              const normalizedTsBuildInfoPath = normalizePath(tsBuildInfoPath);
-              await fs.mkdir(path.dirname(normalizedTsBuildInfoPath), { recursive: true });
-              await fs.writeFile(normalizedTsBuildInfoPath, tsBuildInfoSource);
-            }
-          } else {
-            this.emitFile({
-              type: 'asset',
-              fileName: normalizePath(fromRollupDirToTs),
-              source: tsBuildInfoSource
-            });
-          }
+          await emitFile(
+            outputOptions,
+            outputToFilesystem,
+            this,
+            tsBuildInfoPath,
+            tsBuildInfoSource
+          );
         }
       }
     }

@@ -1,4 +1,8 @@
-import { SourceDescription } from 'rollup';
+import * as path from 'path';
+
+import { promises as fs } from 'fs';
+
+import { OutputOptions, PluginContext, SourceDescription } from 'rollup';
 import type { ParsedCommandLine } from 'typescript';
 
 import TSCache from './tscache';
@@ -71,4 +75,34 @@ export default function findTypescriptOutput(
     map: getEmittedFile(mapFile, emittedFiles, tsCache),
     declarations: emittedFileNames.filter((name) => name !== codeFile && name !== mapFile)
   };
+}
+
+export function normalizePath(fileName: string) {
+  return fileName.split(path.win32.sep).join(path.posix.sep);
+}
+
+export async function emitFile(
+  outputOptions: OutputOptions,
+  outputToFilesystem: boolean | undefined,
+  context: PluginContext,
+  filePath: string,
+  fileSource: string
+) {
+  const fromRollupOutputDirToFile = path.relative(outputOptions.dir!, filePath);
+  if (fromRollupOutputDirToFile.startsWith('..')) {
+    if (outputToFilesystem === undefined) {
+      context.warn(`@rollup/plugin-typescript: outputToFilesystem option is defaulting to true.`);
+    }
+    if (outputToFilesystem !== false) {
+      const normalizedFilePath = normalizePath(filePath);
+      await fs.mkdir(path.dirname(normalizedFilePath), { recursive: true });
+      await fs.writeFile(normalizedFilePath, fileSource);
+    }
+  } else {
+    context.emitFile({
+      type: 'asset',
+      fileName: normalizePath(fromRollupOutputDirToFile),
+      source: fileSource
+    });
+  }
 }
