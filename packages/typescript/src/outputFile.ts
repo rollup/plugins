@@ -88,9 +88,12 @@ export async function emitFile(
   filePath: string,
   fileSource: string
 ) {
-  const fromRollupOutputDirToFile = path.relative(outputOptions.dir!, filePath);
+  // TODO: this is confusing, change
+  const fromRollupOutputDirToFile = outputOptions.dir
+    ? path.relative(outputOptions.dir, filePath)
+    : '..';
   if (fromRollupOutputDirToFile.startsWith('..')) {
-    if (outputToFilesystem === undefined) {
+    if (outputToFilesystem == null) {
       context.warn(`@rollup/plugin-typescript: outputToFilesystem option is defaulting to true.`);
     }
     if (outputToFilesystem !== false) {
