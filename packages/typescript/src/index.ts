@@ -25,7 +25,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     transformers,
     tsconfig,
     tslib,
-    typescript: ts
+    typescript: ts,
+    outputToFilesystem
   } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
@@ -152,9 +153,16 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         if (tsBuildInfoSource) {
           const fromRollupDirToTs = path.relative(outputOptions.dir!, tsBuildInfoPath);
           if (fromRollupDirToTs.startsWith('..')) {
-            const normalizedTsBuildInfoPath = normalizePath(tsBuildInfoPath);
-            await fs.mkdir(path.dirname(normalizedTsBuildInfoPath), { recursive: true });
-            await fs.writeFile(normalizedTsBuildInfoPath, tsBuildInfoSource);
+            if (outputToFilesystem === undefined) {
+              this.warn(
+                `@rollup/plugin-typescript: outputToFilesystem option is defaulting to true.`
+              );
+            }
+            if (outputToFilesystem !== false) {
+              const normalizedTsBuildInfoPath = normalizePath(tsBuildInfoPath);
+              await fs.mkdir(path.dirname(normalizedTsBuildInfoPath), { recursive: true });
+              await fs.writeFile(normalizedTsBuildInfoPath, tsBuildInfoSource);
+            }
           } else {
             this.emitFile({
               type: 'asset',
