@@ -615,7 +615,7 @@ test.serial('supports optional chaining', async (t) => {
 test.serial('supports incremental build', async (t) => {
   process.chdir('fixtures/basic');
   // clean up artefacts from earlier builds
-  forceRmSync('tsconfig.tsbuildinfo');
+  await forceRemove('tsconfig.tsbuildinfo');
 
   const bundle = await rollup({
     input: 'main.ts',
@@ -639,7 +639,7 @@ test.serial('supports incremental build', async (t) => {
 test.serial('supports incremental rebuild', async (t) => {
   process.chdir('fixtures/incremental');
   // clean up artefacts from earlier builds
-  forceRmSync('dist/.tsbuildinfo');
+  await forceRemove('dist/.tsbuildinfo');
 
   const bundle = await rollup({
     input: 'main.ts',
@@ -658,8 +658,8 @@ test.serial('supports incremental rebuild', async (t) => {
 test.serial('supports incremental build for single file output', async (t) => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
-  forceRmSync('tsconfig.tsbuildinfo');
-  forceRmSync('index.js');
+  await forceRemove('tsconfig.tsbuildinfo');
+  await forceRemove('index.js');
 
   const bundle = await rollup({
     input: 'main.ts',
@@ -678,7 +678,7 @@ test.serial('supports incremental build for single file output', async (t) => {
 test.serial('supports consecutive incremental rebuilds', async (t) => {
   process.chdir('fixtures/incremental');
   // clean up artefacts from earlier builds
-  forceRmSync('dist/.tsbuildinfo');
+  await forceRemove('dist/.tsbuildinfo');
 
   const firstBundle = await rollup({
     input: 'main.ts',
@@ -709,7 +709,7 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
 // https://github.com/rollup/plugins/issues/681
 test.serial('supports incremental rebuilds with no change to cache', async (t) => {
   process.chdir('fixtures/incremental-output-cache');
-  const cleanup = () => {
+  const cleanup = async () => {
     let files;
     try {
       files = fs.readdirSync('dist');
@@ -718,10 +718,10 @@ test.serial('supports incremental rebuilds with no change to cache', async (t) =
       throw error;
     }
     files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
-    forceRmSync('dist/.tsbuildinfo');
+    await forceRemove('dist/.tsbuildinfo');
   };
 
-  cleanup();
+  await cleanup();
 
   const firstBundle = await rollup({
     input: 'main.ts',
@@ -755,7 +755,7 @@ test.serial('supports incremental rebuilds with no change to cache', async (t) =
   t.is(tsBuildInfoStats2.ctimeMs, tsBuildInfoStats.ctimeMs);
   t.is(tsBuildInfoStats2.birthtimeMs, tsBuildInfoStats.birthtimeMs);
 
-  cleanup();
+  await cleanup();
 });
 
 test.serial.skip('supports project references', async (t) => {
@@ -1098,9 +1098,9 @@ function waitForWatcherEvent(watcher, eventCode) {
   });
 }
 
-function forceRmSync(filePath) {
+async function forceRemove(filePath) {
   try {
-    fs.unlinkSync(filePath);
+    await fs.promises.unlink(filePath);
   } catch {
     // ignore non existant file
   }
