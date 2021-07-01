@@ -88,7 +88,7 @@ export function nodeResolve(opts = {}) {
         return { id: ES6_BROWSER_EMPTY };
       }
       const browserImportee =
-        browser[importee] ||
+        (importee[0] !== '.' && browser[importee]) ||
         browser[resolvedImportee] ||
         browser[`${resolvedImportee}.js`] ||
         browser[`${resolvedImportee}.json`];
