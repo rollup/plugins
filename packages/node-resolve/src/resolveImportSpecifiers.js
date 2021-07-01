@@ -156,10 +156,12 @@ async function resolveId({
     }
   }
 
+  if (!(await exists(location))) {
+    return null;
+  }
+
   if (!preserveSymlinks) {
-    if (await exists(location)) {
-      location = await realpath(location);
-    }
+    location = await realpath(location);
   }
 
   return {
