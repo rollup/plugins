@@ -124,6 +124,25 @@ test('supports JS extensions in TS when referring to TS imports', async (t) => {
   t.is(module.exports, 'It works!');
 });
 
+test('supports JS extensions in TS actually importing JS with export map', async (t) => {
+  const bundle = await rollup({
+    input: 'ts-import-js-extension-for-js-file-export-map/import-js-with-js-extension.ts',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.ts'],
+      }),
+      babel({
+        babelHelpers: 'bundled',
+        plugins: ['@babel/plugin-transform-typescript'],
+        extensions: ['.js', '.ts'],
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
 test('ignores IDs with null character', async (t) => {
   const result = await nodeResolve().resolveId('\0someid', 'test.js');
   t.is(result, null);
