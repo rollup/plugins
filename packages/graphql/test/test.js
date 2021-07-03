@@ -50,3 +50,15 @@ test('should support multi-imports', async (t) => {
   t.is(module.exports.GetHeros.kind, 'Document');
   t.is(module.exports.GetHeros.definitions[0].name.value, 'GetHeros');
 });
+
+test('should parse a simple graphql litteral', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/gql-litteral/index.js',
+    plugins: [graphql()]
+  });
+
+  const { module } = await testBundle(t, bundle);
+
+  t.truthy('doc' in module.exports);
+  t.is(module.exports.doc.kind, 'Document');
+});
