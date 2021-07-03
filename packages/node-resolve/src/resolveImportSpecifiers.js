@@ -7,7 +7,7 @@ import { dirname } from 'path';
 import resolve from 'resolve';
 
 import { getPackageInfo, getPackageName } from './util';
-import { exists, realpath } from './fs';
+import { fileExists, realpath } from './fs';
 import { isDirCached, isFileCached, readCachedFile } from './cache';
 import resolvePackageExports from './package/resolvePackageExports';
 import resolvePackageImports from './package/resolvePackageImports';
@@ -158,7 +158,7 @@ async function resolveId({
   }
 
   if (!preserveSymlinks) {
-    if (await exists(location)) {
+    if (await fileExists(location)) {
       location = await realpath(location);
     }
   }
