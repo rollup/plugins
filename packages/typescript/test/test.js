@@ -631,15 +631,12 @@ test.serial('supports incremental build', async (t) => {
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js']
+    ['main.js', 'tsconfig.tsbuildinfo']
   );
-  t.true(fs.existsSync('tsconfig.tsbuildinfo'));
 });
 
 test.serial('supports incremental rebuild', async (t) => {
   process.chdir('fixtures/incremental');
-  // clean up artefacts from earlier builds
-  await forceRemove('dist/.tsbuildinfo');
 
   const bundle = await rollup({
     input: 'main.ts',
@@ -650,9 +647,8 @@ test.serial('supports incremental rebuild', async (t) => {
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js']
+    ['main.js', '.tsbuildinfo']
   );
-  t.true(fs.existsSync('dist/.tsbuildinfo'));
 });
 
 test.serial('supports incremental build for single file output', async (t) => {
@@ -661,10 +657,13 @@ test.serial('supports incremental build for single file output', async (t) => {
   await forceRemove('tsconfig.tsbuildinfo');
   await forceRemove('index.js');
 
+  const warnings = [];
   const bundle = await rollup({
     input: 'main.ts',
-    plugins: [typescript()],
-    onwarn
+    plugins: [typescript({ outputToFilesystem: true })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
   });
   const output = await getCode(bundle, { format: 'esm', file: 'main.js' }, true);
 
@@ -673,12 +672,59 @@ test.serial('supports incremental build for single file output', async (t) => {
     ['main.js']
   );
   t.true(fs.existsSync('tsconfig.tsbuildinfo'));
+  t.is(warnings.length, 0);
+});
+
+test.serial('does not output to filesystem when outputToFilesystem is false', async (t) => {
+  process.chdir('fixtures/incremental-single');
+  // clean up artefacts from earlier builds
+  await forceRemove('tsconfig.tsbuildinfo');
+  await forceRemove('index.js');
+
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript({ outputToFilesystem: false })],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'esm', file: 'main.js' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js']
+  );
+  t.false(fs.existsSync('tsconfig.tsbuildinfo'));
+});
+
+test.serial('warn about outputToFilesystem default', async (t) => {
+  process.chdir('fixtures/incremental-single');
+  // clean up artefacts from earlier builds
+  await forceRemove('tsconfig.tsbuildinfo');
+  await forceRemove('index.js');
+
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript()],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  const output = await getCode(bundle, { format: 'esm', file: 'main.js' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js']
+  );
+  t.true(fs.existsSync('tsconfig.tsbuildinfo'));
+  t.is(warnings.length, 1);
+  t.true(
+    warnings[0].message.includes(`outputToFilesystem option is defaulting to true`),
+    warnings[0].message
+  );
 });
 
 test.serial('supports consecutive incremental rebuilds', async (t) => {
   process.chdir('fixtures/incremental');
-  // clean up artefacts from earlier builds
-  await forceRemove('dist/.tsbuildinfo');
 
   const firstBundle = await rollup({
     input: 'main.ts',
@@ -689,9 +735,8 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
   const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
   t.deepEqual(
     firstRun.map((out) => out.fileName),
-    ['main.js']
+    ['main.js', '.tsbuildinfo']
   );
-  t.true(fs.existsSync('dist/.tsbuildinfo'));
 
   const secondBundle = await rollup({
     input: 'main.ts',
@@ -701,62 +746,111 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
   const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
   t.deepEqual(
     secondRun.map((out) => out.fileName),
-    ['main.js']
+    ['main.js', '.tsbuildinfo']
   );
-  t.true(fs.existsSync('dist/.tsbuildinfo'));
 });
 
 // https://github.com/rollup/plugins/issues/681
-test.serial('supports incremental rebuilds with no change to cache', async (t) => {
-  process.chdir('fixtures/incremental-output-cache');
-  const cleanup = async () => {
-    let files;
-    try {
-      files = fs.readdirSync('dist');
-    } catch (error) {
-      if (error.code === 'ENOENT') return;
-      throw error;
-    }
-    files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
-    await forceRemove('dist/.tsbuildinfo');
-  };
+test.serial(
+  'supports incremental rebuilds with no change to cache when using rollup emitFile',
+  async (t) => {
+    process.chdir('fixtures/incremental-output-cache');
+    const cleanup = () => {
+      let files;
+      try {
+        files = fs.readdirSync('dist');
+      } catch (error) {
+        if (error.code === 'ENOENT') return;
+        throw error;
+      }
+      files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
+    };
 
-  await cleanup();
+    cleanup();
 
-  const firstBundle = await rollup({
-    input: 'main.ts',
-    plugins: [typescript()],
-    onwarn
-  });
+    const firstBundle = await rollup({
+      input: 'main.ts',
+      plugins: [typescript()],
+      onwarn
+    });
 
-  const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
-  t.deepEqual(
-    firstRun.map((out) => out.fileName),
-    ['main.js']
-  );
-  t.true(fs.existsSync('dist/.tsbuildinfo'));
-  await firstBundle.write({ dir: 'dist' });
-  const tsBuildInfoStats = fs.statSync('dist/.tsbuildinfo');
+    const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+    t.deepEqual(
+      firstRun.map((out) => out.fileName),
+      ['main.js', '.tsbuildinfo']
+    );
+    await firstBundle.write({ dir: 'dist' });
 
-  const secondBundle = await rollup({
-    input: 'main.ts',
-    plugins: [typescript()],
-    onwarn
-  });
-  const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
-  t.deepEqual(
-    secondRun.map((out) => out.fileName),
-    ['main.js']
-  );
-  t.true(fs.existsSync('dist/.tsbuildinfo'));
-  const tsBuildInfoStats2 = fs.statSync('dist/.tsbuildinfo');
-  // .tsbuildinfo should not be emitted
-  t.is(tsBuildInfoStats2.mtimeMs, tsBuildInfoStats.mtimeMs);
-  t.is(tsBuildInfoStats2.ctimeMs, tsBuildInfoStats.ctimeMs);
-  t.is(tsBuildInfoStats2.birthtimeMs, tsBuildInfoStats.birthtimeMs);
+    const secondBundle = await rollup({
+      input: 'main.ts',
+      plugins: [typescript()],
+      onwarn
+    });
+    const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+    t.deepEqual(
+      secondRun.map((out) => out.fileName),
+      // .tsbuildinfo should not be emitted
+      ['main.js']
+    );
 
-  await cleanup();
-});
+    cleanup();
+  }
+);
+
+// https://github.com/rollup/plugins/issues/681
+test.serial(
+  'supports incremental rebuilds with no change to cache when using filesystem calls',
+  async (t) => {
+    process.chdir('fixtures/incremental-output-cache');
+    const cleanup = async () => {
+      let files;
+      try {
+        files = fs.readdirSync('dist');
+      } catch (error) {
+        if (error.code === 'ENOENT') return;
+        throw error;
+      }
+      files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
+      await forceRemove('.tsbuildinfo');
+    };
+
+    await cleanup();
+
+    const firstBundle = await rollup({
+      input: 'main.ts',
+      plugins: [typescript({ tsBuildInfoFile: './.tsbuildinfo' })],
+      onwarn
+    });
+
+    const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+    t.deepEqual(
+      firstRun.map((out) => out.fileName),
+      ['main.js']
+    );
+    t.true(fs.existsSync('.tsbuildinfo'));
+    await firstBundle.write({ dir: 'dist' });
+    const tsBuildInfoStats = fs.statSync('.tsbuildinfo');
+
+    const secondBundle = await rollup({
+      input: 'main.ts',
+      plugins: [typescript({ tsBuildInfoFile: './.tsbuildinfo' })],
+      onwarn
+    });
+    const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+    t.deepEqual(
+      secondRun.map((out) => out.fileName),
+      ['main.js']
+    );
+    t.true(fs.existsSync('.tsbuildinfo'));
+    const tsBuildInfoStats2 = fs.statSync('.tsbuildinfo');
+    // .tsbuildinfo should not be emitted
+    t.is(tsBuildInfoStats2.mtimeMs, tsBuildInfoStats.mtimeMs);
+    t.is(tsBuildInfoStats2.ctimeMs, tsBuildInfoStats.ctimeMs);
+    t.is(tsBuildInfoStats2.birthtimeMs, tsBuildInfoStats.birthtimeMs);
+
+    await cleanup();
+  }
+);
 
 test.serial.skip('supports project references', async (t) => {
   process.chdir('fixtures/project-references');
