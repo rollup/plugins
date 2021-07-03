@@ -15,3 +15,11 @@ export async function exists(filePath) {
     return false;
   }
 }
+export async function fileExists(filePath) {
+  try {
+    const res = await stat(filePath);
+    return res.isFile();
+  } catch {
+    return false;
+  }
+}

@@ -2,6 +2,8 @@ import fs from 'fs';
 import { promisify } from 'util';
 import { fileURLToPath, pathToFileURL } from 'url';
 
+import { dirname } from 'path';
+
 import resolve from 'resolve';
 
 import { getPackageInfo, getPackageName } from './util';
@@ -26,7 +28,7 @@ async function getPackageJson(importer, pkgName, resolveOptions, moduleDirectori
   try {
     const pkgJsonPath = await resolveImportPath(`${pkgName}/package.json`, resolveOptions);
     const pkgJson = JSON.parse(await readFile(pkgJsonPath, 'utf-8'));
-    return { pkgJsonPath, pkgJson };
+    return { pkgJsonPath, pkgJson, pkgPath: dirname(pkgJsonPath) };
   } catch (_) {
     return null;
   }
@@ -114,12 +116,11 @@ async function resolveId({
     const result = await getPackageJson(importer, pkgName, resolveOptions, moduleDirectories);
 
     if (result && result.pkgJson.exports) {
-      const { pkgJson, pkgJsonPath } = result;
+      const { pkgJson, pkgJsonPath, pkgPath } = result;
       try {
         const subpath =
           pkgName === importSpecifier ? '.' : `.${importSpecifier.substring(pkgName.length)}`;
-        const pkgDr = pkgJsonPath.replace('package.json', '');
-        const pkgURL = pathToFileURL(pkgDr);
+        const pkgURL = pathToFileURL(`${pkgPath}/`);
 
         const context = {
           importer,
