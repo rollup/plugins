@@ -15,3 +15,7 @@ export async function exists(filePath) {
     return false;
   }
 }
+
+export async function resolveSymlink(path) {
+  return (await fileExists(path)) ? realpath(path) : path;
+}
