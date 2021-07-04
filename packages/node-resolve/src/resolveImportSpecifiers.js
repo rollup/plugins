@@ -219,7 +219,7 @@ async function resolveWithExportMap({
       } catch (error) {
         if (error instanceof ResolveError) {
           warn(error);
-          return null;
+          return 'resolveError';
         }
         throw error;
       }
@@ -304,6 +304,7 @@ export default async function resolveImportSpecifiers({
     rootDir,
     ignoreSideEffectsForRoot
   });
+  if (exportMapRes === 'resolveError') return null;
   if (exportMapRes) return exportMapRes;
 
   // package has no imports or exports, use classic node resolve
