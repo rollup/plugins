@@ -102,7 +102,6 @@ async function resolveWithExportMap({
   importer,
   importSpecifier,
   exportConditions,
-  warn,
   packageInfoCache,
   extensions,
   mainFields,
@@ -187,41 +186,29 @@ async function resolveWithExportMap({
 
     if (result && result.pkgJson.exports) {
       const { pkgJson, pkgJsonPath } = result;
-      try {
-        const subpath =
-          pkgName === importSpecifier ? '.' : `.${importSpecifier.substring(pkgName.length)}`;
-        const pkgDr = pkgJsonPath.replace('package.json', '');
-        const pkgURL = pathToFileURL(pkgDr);
+      const subpath =
+        pkgName === importSpecifier ? '.' : `.${importSpecifier.substring(pkgName.length)}`;
+      const pkgDr = pkgJsonPath.replace('package.json', '');
+      const pkgURL = pathToFileURL(pkgDr);
 
-        const context = {
-          importer,
-          importSpecifier,
-          moduleDirs: moduleDirectories,
-          pkgURL,
-          pkgJsonPath,
-          conditions: exportConditions
+      const context = {
+        importer,
+        importSpecifier,
+        moduleDirs: moduleDirectories,
+        pkgURL,
+        pkgJsonPath,
+        conditions: exportConditions
+      };
+      const resolvedPackageExport = await resolvePackageExports(context, subpath, pkgJson.exports);
+      const location = fileURLToPath(resolvedPackageExport);
+      if (location) {
+        return {
+          location: preserveSymlinks ? location : await resolveSymlink(location),
+          hasModuleSideEffects,
+          hasPackageEntry,
+          packageBrowserField,
+          packageInfo
         };
-        const resolvedPackageExport = await resolvePackageExports(
-          context,
-          subpath,
-          pkgJson.exports
-        );
-        const location = fileURLToPath(resolvedPackageExport);
-        if (location) {
-          return {
-            location: preserveSymlinks ? location : await resolveSymlink(location),
-            hasModuleSideEffects,
-            hasPackageEntry,
-            packageBrowserField,
-            packageInfo
-          };
-        }
-      } catch (error) {
-        if (error instanceof ResolveError) {
-          warn(error);
-          return 'resolveError';
-        }
-        throw error;
       }
     }
   }
@@ -289,23 +276,29 @@ export default async function resolveImportSpecifiers({
   rootDir,
   ignoreSideEffectsForRoot
 }) {
-  const exportMapRes = await resolveWithExportMap({
-    importer,
-    importSpecifier: importSpecifierList[0],
-    exportConditions,
-    warn,
-    packageInfoCache,
-    extensions,
-    mainFields,
-    preserveSymlinks,
-    useBrowserOverrides,
-    baseDir,
-    moduleDirectories,
-    rootDir,
-    ignoreSideEffectsForRoot
-  });
-  if (exportMapRes === 'resolveError') return null;
-  if (exportMapRes) return exportMapRes;
+  try {
+    const exportMapRes = await resolveWithExportMap({
+      importer,
+      importSpecifier: importSpecifierList[0],
+      exportConditions,
+      packageInfoCache,
+      extensions,
+      mainFields,
+      preserveSymlinks,
+      useBrowserOverrides,
+      baseDir,
+      moduleDirectories,
+      rootDir,
+      ignoreSideEffectsForRoot
+    });
+    if (exportMapRes) return exportMapRes;
+  } catch (error) {
+    if (error instanceof ResolveError) {
+      warn(error);
+      return null;
+    }
+    throw error;
+  }
 
   // package has no imports or exports, use classic node resolve
   return resolveWithClassic({
