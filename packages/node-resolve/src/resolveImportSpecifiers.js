@@ -270,8 +270,10 @@ async function resolveWithClassic({
   return null;
 }
 
-// Resolve module specifiers in order. Promise resolves to the first module that resolves
-// successfully, or the error that resulted from the last attempted module resolution.
+// Resolves to the module if found or `null`.
+// The first import specificer will first be attempted with the exports algorithm.
+// If this is unsuccesful because export maps are not being used, then all of `importSpecifierList`
+// will be tried with the classic resolution algorithm
 export default async function resolveImportSpecifiers({
   importer,
   importSpecifierList,
