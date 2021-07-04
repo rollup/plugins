@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import resolve from 'resolve';
 
 import { getPackageInfo, getPackageName } from './util';
-import { exists, realpath } from './fs';
+import { resolveSymlink } from './fs';
 import { isDirCached, isFileCached, readCachedFile } from './cache';
 import resolvePackageExports from './package/resolvePackageExports';
 import resolvePackageImports from './package/resolvePackageImports';
@@ -32,11 +32,8 @@ async function getPackageJson(importer, pkgName, resolveOptions, moduleDirectori
   }
 }
 
-async function resolveId({
-  importer,
+async function resolveIdClassic({
   importSpecifier,
-  exportConditions,
-  warn,
   packageInfoCache,
   extensions,
   mainFields,
@@ -83,8 +80,39 @@ async function resolveId({
   };
 
   let location;
+  try {
+    location = await resolveImportPath(importSpecifier, resolveOptions);
+  } catch (error) {
+    if (error.code !== 'MODULE_NOT_FOUND') {
+      throw error;
+    }
+    return null;
+  }
 
-  const pkgName = getPackageName(importSpecifier);
+  return {
+    location: preserveSymlinks ? location : await resolveSymlink(location),
+    hasModuleSideEffects,
+    hasPackageEntry,
+    packageBrowserField,
+    packageInfo
+  };
+}
+
+async function resolveWithExportMap({
+  importer,
+  importSpecifier,
+  exportConditions,
+  warn,
+  packageInfoCache,
+  extensions,
+  mainFields,
+  preserveSymlinks,
+  useBrowserOverrides,
+  baseDir,
+  moduleDirectories,
+  rootDir,
+  ignoreSideEffectsForRoot
+}) {
   if (importSpecifier.startsWith('#')) {
     // this is a package internal import, resolve using package imports field
     const resolveResult = await resolvePackageImports({
@@ -92,12 +120,9 @@ async function resolveId({
       importer,
       moduleDirs: moduleDirectories,
       conditions: exportConditions,
-      resolveId(id, parent) {
-        return resolveId({
+      resolveId(id /*, parent*/) {
+        return resolveIdClassic({
           importSpecifier: id,
-          importer: parent,
-          exportConditions,
-          warn,
           packageInfoCache,
           extensions,
           mainFields,
@@ -108,9 +133,56 @@ async function resolveId({
         });
       }
     });
-    location = fileURLToPath(resolveResult);
-  } else if (pkgName) {
+
+    const location = fileURLToPath(resolveResult);
+    return {
+      location: preserveSymlinks ? location : await resolveSymlink(location),
+      hasModuleSideEffects: () => null,
+      hasPackageEntry: true,
+      packageBrowserField: false,
+      // eslint-disable-next-line no-undefined
+      packageInfo: undefined
+    };
+  }
+
+  const pkgName = getPackageName(importSpecifier);
+  if (pkgName) {
     // it's a bare import, find the package.json and resolve using package exports if available
+    let hasModuleSideEffects = () => null;
+    let hasPackageEntry = true;
+    let packageBrowserField = false;
+    let packageInfo;
+
+    const filter = (pkg, pkgPath) => {
+      const info = getPackageInfo({
+        cache: packageInfoCache,
+        extensions,
+        pkg,
+        pkgPath,
+        mainFields,
+        preserveSymlinks,
+        useBrowserOverrides,
+        rootDir,
+        ignoreSideEffectsForRoot
+      });
+
+      ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
+
+      return info.cachedPkg;
+    };
+
+    const resolveOptions = {
+      basedir: baseDir,
+      readFile: readCachedFile,
+      isFile: isFileCached,
+      isDirectory: isDirCached,
+      extensions,
+      includeCoreModules: false,
+      moduleDirectory: moduleDirectories,
+      preserveSymlinks,
+      packageFilter: filter
+    };
+
     const result = await getPackageJson(importer, pkgName, resolveOptions, moduleDirectories);
 
     if (result && result.pkgJson.exports) {
@@ -134,43 +206,68 @@ async function resolveId({
           subpath,
           pkgJson.exports
         );
-        location = fileURLToPath(resolvedPackageExport);
+        const location = fileURLToPath(resolvedPackageExport);
+        if (location) {
+          return {
+            location: preserveSymlinks ? location : await resolveSymlink(location),
+            hasModuleSideEffects,
+            hasPackageEntry,
+            packageBrowserField,
+            packageInfo
+          };
+        }
       } catch (error) {
         if (error instanceof ResolveError) {
-          return error;
+          warn(error);
+          return null;
         }
         throw error;
       }
     }
   }
 
-  if (!location) {
-    // package has no imports or exports, use classic node resolve
-    try {
-      location = await resolveImportPath(importSpecifier, resolveOptions);
-    } catch (error) {
-      if (error.code !== 'MODULE_NOT_FOUND') {
-        throw error;
-      }
-      return null;
+  return null;
+}
+
+async function resolveWithClassic({
+  importer,
+  importSpecifierList,
+  exportConditions,
+  warn,
+  packageInfoCache,
+  extensions,
+  mainFields,
+  preserveSymlinks,
+  useBrowserOverrides,
+  baseDir,
+  moduleDirectories,
+  rootDir,
+  ignoreSideEffectsForRoot
+}) {
+  for (let i = 0; i < importSpecifierList.length; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const result = await resolveIdClassic({
+      importer,
+      importSpecifier: importSpecifierList[i],
+      exportConditions,
+      warn,
+      packageInfoCache,
+      extensions,
+      mainFields,
+      preserveSymlinks,
+      useBrowserOverrides,
+      baseDir,
+      moduleDirectories,
+      rootDir,
+      ignoreSideEffectsForRoot
+    });
+
+    if (result) {
+      return result;
     }
   }
 
-  if (!(await exists(location))) {
-    return null;
-  }
-
-  if (!preserveSymlinks) {
-    location = await realpath(location);
-  }
-
-  return {
-    location,
-    hasModuleSideEffects,
-    hasPackageEntry,
-    packageBrowserField,
-    packageInfo
-  };
+  return null;
 }
 
 // Resolve module specifiers in order. Promise resolves to the first module that resolves
@@ -190,36 +287,37 @@ export default async function resolveImportSpecifiers({
   rootDir,
   ignoreSideEffectsForRoot
 }) {
-  let lastResolveError;
+  const exportMapRes = await resolveWithExportMap({
+    importer,
+    importSpecifier: importSpecifierList[0],
+    exportConditions,
+    warn,
+    packageInfoCache,
+    extensions,
+    mainFields,
+    preserveSymlinks,
+    useBrowserOverrides,
+    baseDir,
+    moduleDirectories,
+    rootDir,
+    ignoreSideEffectsForRoot
+  });
+  if (exportMapRes) return exportMapRes;
 
-  for (let i = 0; i < importSpecifierList.length; i++) {
-    // eslint-disable-next-line no-await-in-loop
-    const result = await resolveId({
-      importer,
-      importSpecifier: importSpecifierList[i],
-      exportConditions,
-      warn,
-      packageInfoCache,
-      extensions,
-      mainFields,
-      preserveSymlinks,
-      useBrowserOverrides,
-      baseDir,
-      moduleDirectories,
-      rootDir,
-      ignoreSideEffectsForRoot
-    });
-
-    if (result instanceof ResolveError) {
-      lastResolveError = result;
-    } else if (result) {
-      return result;
-    }
-  }
-
-  if (lastResolveError) {
-    // only log the last failed resolve error
-    warn(lastResolveError);
-  }
-  return null;
+  // package has no imports or exports, use classic node resolve
+  return resolveWithClassic({
+    importer,
+    importSpecifierList,
+    exportConditions,
+    warn,
+    packageInfoCache,
+    extensions,
+    mainFields,
+    preserveSymlinks,
+    useBrowserOverrides,
+    baseDir,
+    moduleDirectories,
+    rootDir,
+    ignoreSideEffectsForRoot
+  });
 }
