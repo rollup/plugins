@@ -352,7 +352,6 @@ test('can override a star pattern using null', async (t) => {
 
 test('can self-import a package when using exports field', async (t) => {
   const bundle = await rollup({
-    // TODO previously this worked because we'd do this internally
     input: './self-package-import',
     onwarn: () => {
       t.fail('No warnings were expected');
