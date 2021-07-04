@@ -105,6 +105,23 @@ test('supports non-standard extensions', async (t) => {
   await testBundle(t, bundle);
 });
 
+test('does not fallback to standard node resolve algorithm if error with exports one', async (t) => {
+  try {
+    await rollup({
+      input: 'exports-error-no-fallback/main.js',
+      onwarn: () => t.fail('No warnings were expected'),
+      plugins: [
+        nodeResolve({
+          extensions: ['.js']
+        })
+      ]
+    });
+    t.fail('expecting throw');
+  } catch (e) {
+    t.snapshot(e.message);
+  }
+});
+
 test('supports JS extensions in TS when referring to TS imports', async (t) => {
   const bundle = await rollup({
     input: 'ts-import-js-extension/import-ts-with-js-extension.ts',
