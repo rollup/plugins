@@ -19,6 +19,7 @@ function getReplacements(options) {
     return Object.assign({}, options.values);
   }
   const values = Object.assign({}, options);
+  delete values.preventAssignment;
   delete values.delimiters;
   delete values.include;
   delete values.exclude;
