@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.3
+
+_2021-07-15_
+
+### Updates
+
+- docs: fix link to resolveId hook (#881)
+
 ## v3.1.2
 
 _2021-01-29_
