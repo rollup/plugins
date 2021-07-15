@@ -7,7 +7,7 @@
     "lint:docs": "prettier --write .github/**/*.md **/README.md",
     "lint:js": "eslint --cache packages scripts shared util --ext .js,.ts",
     "lint:json": "prettier --write .github/**/*.yml **/tsconfig.json tsconfig.*.json pnpm-workspace.yaml",
-    "lint:package": "prettier --write **/package.json --plugin=prettier-plugin-package",
+    "lint:package": "prettier --write **/package.json",
     "plugin:release": "ts-node ./scripts/release.ts",
     "preinstall": "node scripts/disallow-npm.js",
     "prettier": "prettier --write .",
