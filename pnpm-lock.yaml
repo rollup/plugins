@@ -20,7 +20,7 @@ importers:
       esm: ^3.2.25
       execa: ^5.1.1
       globby: ^11.0.1
-      husky: 7.0.1
+      husky: 4.3.8
       lint-staged: 11.0.1
       nyc: ^15.1.0
       pnpm: 6.10.0
@@ -51,7 +51,7 @@ importers:
       esm: 3.2.25
       execa: 5.1.1
       globby: 11.0.1
-      husky: 7.0.1
+      husky: 4.3.8
       lint-staged: 11.0.1
       nyc: 15.1.0
       pnpm: 6.10.0
@@ -3422,6 +3422,10 @@ packages:
   /commondir/1.0.1:
     resolution: {integrity: sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=}
 
+  /compare-versions/3.6.0:
+    resolution: {integrity: sha512-W6Af2Iw1z4CB7q4uU4hv646dW9GQuBM+YpC0UvUCWSD8w90SJjp+ujJuXaEMtAXBtSqGfMPuFOVn4/+FlaqfBA==}
+    dev: true
+
   /concat-map/0.0.1:
     resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
 
@@ -4449,6 +4453,13 @@ packages:
       path-exists: 4.0.0
     dev: true
 
+  /find-versions/4.0.0:
+    resolution: {integrity: sha512-wgpWy002tA+wgmO27buH/9KzyEOQnKsG/R0yrcjPT9BOFm0zRBVQbZ95nRGXWMywS8YR5knRbpohio0bcJABxQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      semver-regex: 3.1.2
+    dev: true
+
   /flat-cache/2.0.1:
     resolution: {integrity: sha512-LoQe6yDuUMDzQAEH8sgmh4Md6oZnc/7PjtwjNFSzveXqSHt6ka9fPBuso7IGf9Rz4uqnSnWiFH2B/zj24a5ReA==}
     engines: {node: '>=4'}
@@ -4778,10 +4789,22 @@ packages:
     engines: {node: '>=10.17.0'}
     dev: true
 
-  /husky/7.0.1:
-    resolution: {integrity: sha512-gceRaITVZ+cJH9sNHqx5tFwbzlLCVxtVZcusME8JYQ8Edy5mpGDOqD8QBCdMhpyo9a+JXddnujQ4rpY2Ff9SJA==}
-    engines: {node: '>=12'}
+  /husky/4.3.8:
+    resolution: {integrity: sha512-LCqqsB0PzJQ/AlCgfrfzRe3e3+NvmefAdKQhRYpxS4u6clblBoDdzzvHi8fmxKRzvMxPY/1WZWzomPZww0Anow==}
+    engines: {node: '>=10'}
     hasBin: true
+    requiresBuild: true
+    dependencies:
+      chalk: 4.1.1
+      ci-info: 2.0.0
+      compare-versions: 3.6.0
+      cosmiconfig: 7.0.0
+      find-versions: 4.0.0
+      opencollective-postinstall: 2.0.3
+      pkg-dir: 5.0.0
+      please-upgrade-node: 3.2.0
+      slash: 3.0.0
+      which-pm-runs: 1.0.0
     dev: true
 
   /iconv-lite/0.4.24:
@@ -5977,6 +6000,11 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
+  /opencollective-postinstall/2.0.3:
+    resolution: {integrity: sha512-8AV/sCtuzUeTo8gQK5qDZzARrulB3egtLzFgteqB2tcT4Mw7B8Kt7JcDHmltjz6FOAHsvTevk70gZEbhM4ZS9Q==}
+    hasBin: true
+    dev: true
+
   /optionator/0.9.1:
     resolution: {integrity: sha512-74RlY5FCnhq4jRxVUPKDaRwrVNXMqsGsiW6AJw4XK8hmtm10wC0ypZBLw5IIp85NZMr91+qd1RvvENwg7jjRFw==}
     engines: {node: '>= 0.8.0'}
@@ -6266,6 +6294,13 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       find-up: 4.1.0
+    dev: true
+
+  /pkg-dir/5.0.0:
+    resolution: {integrity: sha512-NPE8TDbzl/3YQYY7CSS228s3g2ollTFnc+Qi3tqmqJp9Vg2ovUpixcJEo2HJScN2Ez+kEaal6y70c0ehqJBJeA==}
+    engines: {node: '>=10'}
+    dependencies:
+      find-up: 5.0.0
     dev: true
 
   /please-upgrade-node/3.2.0:
@@ -7101,6 +7136,11 @@ packages:
       semver: 6.3.0
     dev: true
 
+  /semver-regex/3.1.2:
+    resolution: {integrity: sha512-bXWyL6EAKOJa81XG1OZ/Yyuq+oT0b2YLlxx7c+mrdYPaPbnj6WgVULXhinMIeZGufuUBu/eVRqXEhiv4imfwxA==}
+    engines: {node: '>=8'}
+    dev: true
+
   /semver/5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
     hasBin: true
@@ -7895,6 +7935,10 @@ packages:
 
   /which-module/2.0.0:
     resolution: {integrity: sha1-2e8H3Od7mQK4o6j6SzHD4/fm6Ho=}
+    dev: true
+
+  /which-pm-runs/1.0.0:
+    resolution: {integrity: sha1-Zws6+8VS4LVd9rd4DKdGFfI60cs=}
     dev: true
 
   /which/2.0.2:

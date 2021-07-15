@@ -169,7 +169,7 @@ const updateChangelog = (commits: Commit[], cwd: string, shortName: string, vers
 
   for (const { breaking, hash, header, type } of commits) {
     const ref = /\(#\d+\)/.test(header as string) ? '' : ` (${hash?.substring(0, 7)})`;
-    const message = header?.trim().replace(`(${shortName})`, '') + ref;
+    const message = header?.trim().replace(/\(.+\)/, '') + ref;
     if (breaking) {
       notes.breaking.push(message);
     } else if (type === 'fix') {
