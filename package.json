@@ -4,7 +4,7 @@
   "scripts": {
     "ci:coverage:submit": "node scripts/codecov",
     "lint": "pnpm lint:docs && pnpm --no-bail lint:json && pnpm lint:package && pnpm lint:js",
-    "lint:docs": "prettier --write .github/**/*.md **/README.md",
+    "lint:docs": "prettier --write .github/**/*.md **/README.md **/CHANGELOG.md",
     "lint:js": "eslint --cache packages scripts shared util --ext .js,.ts",
     "lint:json": "prettier --write .github/**/*.yml **/tsconfig.json tsconfig.*.json pnpm-workspace.yaml",
     "lint:package": "prettier --write **/package.json",
