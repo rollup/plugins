@@ -63,11 +63,8 @@
     "*.{ts,js}": [
       "eslint --fix"
     ],
-    "*.md": [
-      "prettier --single-quote --write"
-    ],
-    "*package.json": [
-      "prettier --write --plugin=prettier-plugin-package"
+    "*.{ts,js,json,yaml,yml,md}": [
+      "prettier --write"
     ]
   },
   "nyc": {
