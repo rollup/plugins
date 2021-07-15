@@ -4,12 +4,14 @@
   "scripts": {
     "ci:coverage:submit": "node scripts/codecov",
     "lint": "pnpm lint:docs && pnpm --no-bail lint:json && pnpm lint:package && pnpm lint:js",
-    "lint:docs": "prettier --write .github/**/*.md **/README.md",
+    "lint:docs": "prettier --write .github/**/*.md **/README.md **/CHANGELOG.md",
     "lint:js": "eslint --cache packages scripts shared util --ext .js,.ts",
     "lint:json": "prettier --write .github/**/*.yml **/tsconfig.json tsconfig.*.json pnpm-workspace.yaml",
-    "lint:package": "prettier --write **/package.json --plugin=prettier-plugin-package",
+    "lint:package": "prettier --write **/package.json",
     "plugin:release": "ts-node ./scripts/release.ts",
     "preinstall": "node scripts/disallow-npm.js",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "security": "pnpm audit --audit-level=high"
   },
   "devDependencies": {
@@ -61,11 +63,8 @@
     "*.{ts,js}": [
       "eslint --fix"
     ],
-    "*.md": [
-      "prettier --single-quote --write"
-    ],
-    "*package.json": [
-      "prettier --write --plugin=prettier-plugin-package"
+    "*.{ts,js,json,yaml,yml,md}": [
+      "prettier --write"
     ]
   },
   "nyc": {

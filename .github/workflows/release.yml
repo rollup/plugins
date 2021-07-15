@@ -50,6 +50,9 @@ jobs:
       - name: pnpm install
         run: pnpm install
 
+      - name: Prettier
+        run: pnpm run prettier:check
+
       - name: Build Packages
         run: pnpm build --recursive
 

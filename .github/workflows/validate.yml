@@ -42,6 +42,9 @@ jobs:
       - name: pnpm install
         run: pnpm install
 
+      - name: Prettier
+        run: pnpm run prettier:check
+
       # pnpm audit isn't as robust as it needs to be atm
       # - name: Audit Dependencies
       #   run: pnpm security

@@ -126,6 +126,8 @@ const pull = async (main: string) => {
 
   await execa('git', ['checkout', '.npmrc']);
   await execa('git', ['pull', 'origin', main, '--no-edit']);
+  const { stdout } = await execa('git', ['status']);
+  console.log({ stdout });
   await execa('git', ['rebase']);
 };
 
