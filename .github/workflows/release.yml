@@ -20,10 +20,10 @@ jobs:
         with:
           node-version: 14
 
-      - name: Checkout Main
+      - name: Checkout Master
         run: |
-          git branch -f main origin/main
-          git checkout main
+          git branch -f master origin/master
+          git checkout master
 
       - name: Sanity Check
         run: |
