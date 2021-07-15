@@ -81,7 +81,7 @@ Where `<package>` is the name of the NPM package you wish to add for a plugin pa
 #### Publishing:
 
 ```console
-$ pnpm run publish -- <name> [flags]
+$ pnpm publish -- <name> [flags]
 ```
 
 Where `<name>` is the portion of the plugin package name following `@rollup/plugin-`. (e.g. `beep`)
@@ -112,13 +112,13 @@ The following flags are available to modify the publish process:
 To run tests on all packages which have changes:
 
 ```console
-$ pnpm run test
+$ pnpm test
 ```
 
 To run tests on a specific package:
 
 ```console
-$ pnpm run test --filter ./packages/<name>
+$ pnpm test --filter ./packages/<name>
 ```
 
 Linting:
@@ -126,16 +126,16 @@ Linting:
 To lint all packages which have changes:
 
 ```console
-$ pnpm run lint
+$ pnpm lint
 ```
 
 To lint a specific package:
 
 ```console
-$ pnpm run lint --filter ./packages/<name>
+$ pnpm lint --filter ./packages/<name>
 ```
 
-_Note: Scripts in the repository will run the root `test` and `lint` script on those packages which have changes. This is also how the CI pipelines function. To run either on a package outside of that pipeline, use `pnpm run <script> -- @rollup/plugin-<name>`._
+_Note: Scripts in the repository will run the root `test` and `lint` script on those packages which have changes. This is also how the CI pipelines function. To run either on a package outside of that pipeline, use `pnpm <script> -- @rollup/plugin-<name>`._
 
 ## Adding Plugins
 

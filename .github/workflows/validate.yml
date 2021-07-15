@@ -8,7 +8,8 @@ on:
       - synchronize
   push:
     branches:
-      - "*"
+      - '*'
+      - '!master'
 
 jobs:
   build:
@@ -16,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node: ["16", "14", "12"]
+        node: ['16', '14', '12']
 
     name: Node v${{ matrix.node }}
 
@@ -41,8 +42,12 @@ jobs:
       - name: pnpm install
         run: pnpm install
 
-      - name: Audit Dependencies
-        run: pnpm security
+      - name: Prettier
+        run: pnpm run prettier:check
+
+      # pnpm audit isn't as robust as it needs to be atm
+      # - name: Audit Dependencies
+      #   run: pnpm security
 
       - name: Build Packages
         run: pnpm build --recursive

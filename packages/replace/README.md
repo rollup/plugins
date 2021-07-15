@@ -34,15 +34,15 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
       __buildDate__: () => JSON.stringify(new Date()),
-      __buildVersion: 15,
-    }),
-  ],
+      __buildVersion: 15
+    })
+  ]
 };
 ```
 
@@ -75,8 +75,8 @@ Prevents replacing strings where they are followed by a single equals sign. For 
 ```js
 replace({
   values: {
-    'process.env.DEBUG': 'false',
-  },
+    'process.env.DEBUG': 'false'
+  }
 });
 ```
 
@@ -124,7 +124,7 @@ To avoid mixing replacement strings with the other options, you can specify repl
 ```js
 replace({
   include: ['src/**/*.js'],
-  changed: 'replaced',
+  changed: 'replaced'
 });
 ```
 
@@ -134,8 +134,8 @@ Can be replaced with:
 replace({
   include: ['src/**/*.js'],
   values: {
-    changed: 'replaced',
-  },
+    changed: 'replaced'
+  }
 });
 ```
 
