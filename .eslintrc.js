@@ -31,6 +31,18 @@ module.exports = {
         tsx: 'never'
       }
     ],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: [
+          '**/scripts/**/*.ts',
+          '**/*.test.*',
+          '**/test/**/*.js',
+          '**/test/**/*.ts'
+        ],
+        optionalDependencies: false
+      }
+    ],
     'import/prefer-default-export': 'off',
     'import/no-namespace': 'off',
     'import/no-named-export': 'off',
@@ -51,15 +63,15 @@ module.exports = {
   },
   overrides: [
     {
-      "files": ["**/test/**/*.{js,ts}"],
-      "rules": {
-        "no-console": "off"
+      'files': ['**/test/**/*.{js,ts}'],
+      'rules': {
+        'no-console': 'off'
       }
     },
     {
-      "files": ["**/*.ts"],
-      "rules": {
-        "no-undef": "off"
+      'files': ['**/*.ts'],
+      'rules': {
+        'no-undef': 'off'
       }
     }
   ]

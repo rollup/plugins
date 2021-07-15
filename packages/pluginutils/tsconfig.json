@@ -1,8 +1,1 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "module": "commonjs"
-  },
-  "include": ["src/**/*", "test/**/*", "types/**/*"]
-}
+../../shared/tsconfig.json

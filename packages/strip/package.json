@@ -17,11 +17,13 @@
   "module": "dist/index.es.js",
   "scripts": {
     "build": "rollup -c",
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run lint",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose",
-    "pretest": "pnpm run build",
+    "ci:test": "pnpm test -- --verbose",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
     "test": "ava"
   },
   "files": [
