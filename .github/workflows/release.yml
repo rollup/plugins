@@ -46,6 +46,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Build Packages
+        run: pnpm build --recursive
+
       - name: Lint Monorepo
         run: pnpm lint
 
