@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v19.0.1
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix: short-circuit to actual module entry point when using circular ref through a different entry (#888)
+
 ## v19.0.0
 
 _2021-05-07_
