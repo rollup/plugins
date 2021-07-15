@@ -30,6 +30,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: Checkout Master
+        run: git branch -f master origin/master
+
       - name: Install pnpm
         run: npm install pnpm -g
 
@@ -56,4 +59,4 @@ jobs:
         run: pnpm lint:js
 
       - name: Run Tests
-        run: pnpm ci:coverage --filter ...[${{ github.sha }}]
+        run: pnpm ci:coverage --filter "...[origin/master]"
