@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14
+          registry-url: https://registry.npmjs.org/
 
       - name: Checkout Master
         run: |
@@ -30,6 +31,11 @@ jobs:
           echo branch `git branch --show-current`;
           echo node `node -v`;
 
+      - name: Initliaze .npmrc
+        run: >
+          echo -e "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}\n$(cat .npmrc)" > .npmrc
+          && cat -n .npmrc
+
       - name: Install pnpm
         run: |
           npm install pnpm -g;
@@ -39,12 +45,10 @@ jobs:
         run: |
           git config --global user.email "release-workflow@rollup.dev"
           git config --global user.name "Release Workflow"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
 
       - name: pnpm install
         run: pnpm install
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Build Packages
         run: pnpm build --recursive
@@ -58,4 +62,5 @@ jobs:
       - name: Release and Publish Packages
         run: pnpm release --filter [HEAD^]
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

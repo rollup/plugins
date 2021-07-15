@@ -123,6 +123,8 @@ const publish = async (cwd: string) => {
 
 const pull = async (main: string) => {
   log(chalk`{blue Pulling Latest Changes from Remote and Rebasing}`);
+
+  await execa('git', ['checkout', '.npmrc']);
   await execa('git', ['pull', 'origin', main, '--no-edit']);
   await execa('git', ['rebase']);
 };
