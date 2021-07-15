@@ -8,7 +8,7 @@ on:
       - synchronize
   push:
     branches:
-      - "*"
+      - '*'
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node: ["16", "14", "12"]
+        node: ['16', '14', '12']
 
     name: Node v${{ matrix.node }}
 
