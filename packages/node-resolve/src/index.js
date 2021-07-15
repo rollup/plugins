@@ -6,7 +6,7 @@ import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
-import { exists, readFile, realpath } from './fs';
+import { fileExists, readFile, realpath } from './fs';
 import resolveImportSpecifiers from './resolveImportSpecifiers';
 import { getMainFields, getPackageName, normalizeInput } from './util';
 import handleDeprecatedOptions from './deprecated-options';
@@ -207,8 +207,8 @@ export function nodeResolve(opts = {}) {
     }
 
     if (hasPackageEntry && !preserveSymlinks) {
-      const fileExists = await exists(location);
-      if (fileExists) {
+      const exists = await fileExists(location);
+      if (exists) {
         location = await realpath(location);
       }
     }
@@ -228,7 +228,7 @@ export function nodeResolve(opts = {}) {
       }
     }
 
-    if (options.modulesOnly && (await exists(location))) {
+    if (options.modulesOnly && (await fileExists(location))) {
       const code = await readFile(location, 'utf-8');
       if (isModule(code)) {
         return {

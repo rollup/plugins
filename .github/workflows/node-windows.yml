@@ -27,6 +27,9 @@ jobs:
       - name: Checkout Commit
         uses: actions/checkout@v1
 
+      - name: Checkout Master
+        run: git branch -f master origin/master
+
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -39,4 +42,4 @@ jobs:
         run: pnpm install --ignore-scripts
 
       - name: run tests
-        run: pnpm ci:test --filter ...[${{ github.sha }}]
+        run: pnpm ci:test --filter "...[origin/master]"
