@@ -10,6 +10,8 @@
     "lint:package": "prettier --write **/package.json --plugin=prettier-plugin-package",
     "plugin:release": "ts-node ./scripts/release.ts",
     "preinstall": "node scripts/disallow-npm.js",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "security": "pnpm audit --audit-level=high"
   },
   "devDependencies": {
