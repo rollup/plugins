@@ -50,9 +50,6 @@
     "plugin",
     "utils"
   ],
-  "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
-  },
   "dependencies": {
     "estree-walker": "^2.0.1",
     "picomatch": "^2.2.2"
