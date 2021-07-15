@@ -10,7 +10,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import { getCode } from '../../../util/test';
 
-import babelPlugin, { getBabelOutputPlugin, createBabelInputPluginFactory } from '../dist/index';
+import babelPlugin, { getBabelOutputPlugin, createBabelInputPluginFactory } from '../dist';
 
 process.chdir(__dirname);
 
