@@ -11,18 +11,18 @@ module.exports = {
   },
   overrides: [
     {
-      'files': ['**/fixtures/**'],
-      'rules': {
+      files: ['**/fixtures/**'],
+      rules: {
         'no-console': 'off',
         'import/extensions': 'off',
         'import/no-unresolved': 'off'
       }
     },
     {
-      'files': ['**/test/**'],
-      'rules': {
+      files: ['**/test/**'],
+      rules: {
         'import/extensions': 'off'
       }
     }
-  ],
+  ]
 };
