@@ -1,5 +1,23 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v1.2.0
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix
+- fix
+
+### Features
+
+- feat
+
+### Updates
+
+- docs
+- chore: update dependencies (26f9b6c)
+
 ## v1.1.7
 
 _2021-07-15_
