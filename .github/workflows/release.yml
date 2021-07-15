@@ -1,0 +1,58 @@
+name: Release Packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    name: release
+
+    steps:
+      - name: Checkout Commit
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Checkout Main
+        run: |
+          git branch -f main origin/main
+          git checkout main
+
+      - name: Sanity Check
+        run: |
+          echo branch `git branch --show-current`;
+          echo node `node -v`;
+
+      - name: Install pnpm
+        run: |
+          npm install pnpm -g;
+          echo node `pnpm -v`;
+
+      - name: Git Identify
+        run: |
+          git config --global user.email "release-workflow@rollup.dev"
+          git config --global user.name "Release Workflow"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: pnpm install
+        run: pnpm install
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Lint Monorepo
+        run: pnpm lint
+
+      - name: Run Tests
+        run: pnpm test --filter [HEAD^]
+
+      - name: Release and Publish Packages
+        run: pnpm release --filter [HEAD^]
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
