@@ -25,7 +25,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm run test -- --verbose",
     "prebuild": "del-cli dist",
-    "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run build && pnpm run test:ts",
+    "prepublishOnly": "pnpm -w run lint && pnpm run test && pnpm run build && pnpm run test:ts",
     "pretest": "pnpm run build",
     "test": "ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"

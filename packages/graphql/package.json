@@ -24,7 +24,7 @@
     "lint:graphql": "prettier --write \"test/fixtures/**/*.graphql\"",
     "prebuild": "del-cli dist && pnpm lint:graphql",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint && pnpm run test",
+    "prepublishOnly": "pnpm -w run lint && pnpm run test",
     "pretest": "pnpm run build",
     "test": "ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"

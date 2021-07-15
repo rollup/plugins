@@ -33,7 +33,7 @@
     "ci:test": "pnpm run test -- --verbose",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint && pnpm run build",
+    "prepublishOnly": "pnpm -w run lint && pnpm run build",
     "pretest": "pnpm run build -- --sourcemap",
     "test": "ava",
     "test:ts": "tsc --noEmit"

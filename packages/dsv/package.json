@@ -23,7 +23,7 @@
     "ci:test": "pnpm run test -- --verbose",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint",
+    "prepublishOnly": "pnpm -w run lint",
     "pretest": "pnpm run build",
     "test": "ava"
   },

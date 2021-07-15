@@ -23,7 +23,7 @@
     "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
     "prebuild": "del-cli dist",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint && pnpm run test",
+    "prepublishOnly": "pnpm -w run lint && pnpm run test",
     "pretest": "pnpm run build",
     "test": "ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
