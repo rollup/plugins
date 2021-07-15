@@ -45,7 +45,7 @@ jobs:
         run: |
           git config --global user.email "release-workflow@rollup.dev"
           git config --global user.name "Release Workflow"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
 
       - name: pnpm install
         run: pnpm install
