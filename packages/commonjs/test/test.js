@@ -233,6 +233,15 @@ test('converts a CommonJS module with custom file extension', async (t) => {
   t.is((await executeBundle(bundle, t)).exports, 42);
 });
 
+test('import CommonJS module with esm property should get default export ', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/cjs-with-esm-property/main.js',
+    plugins: [commonjs()]
+  });
+  const result = await executeBundle(bundle, t);
+  t.is(result.error, undefined);
+});
+
 test('identifies named exports from object literals', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/named-exports-from-object-literal/main.js',
