@@ -17,7 +17,6 @@ const parserOptions = {
 const reBreaking = new RegExp(`(${parserOptions.noteKeywords.join(')|(')})`);
 const dryRun = process.argv.includes('--dry');
 const noPublish = process.argv.includes('--no-publish');
-const noPush = process.argv.includes('--no-push');
 const noTag = process.argv.includes('--no-tag');
 
 type Commit = parser.Commit<string | number | symbol>;
@@ -119,34 +118,6 @@ const publish = async (cwd: string) => {
   log(chalk`\n{cyan Publishing to NPM}`);
 
   await execa('npm', ['publish', '--no-git-checks'], { cwd, stdio: 'inherit' });
-};
-
-const pull = async (main: string) => {
-  log(chalk`{blue Pulling Latest Changes from Remote and Rebasing}`);
-
-  await execa('git', ['checkout', '.npmrc']);
-  await execa('git', ['pull', 'origin', main, '--no-edit']);
-  const { stdout } = await execa('git', ['status']);
-  console.log({ stdout });
-  await execa('git', ['rebase']);
-};
-
-const push = async () => {
-  if (dryRun || noPush) {
-    log(chalk`{yellow Skipping Git Push}`);
-    return;
-  }
-
-  const { stdout: branches } = await execa('git', ['branch']);
-  const main = branches.includes('main') ? 'main' : 'master';
-
-  await pull(main);
-
-  const params = ['push', 'origin', `HEAD:${main}`];
-
-  log(chalk`{blue Pushing Release and Tags}`);
-  await execa('git', params);
-  await execa('git', [...params, '--tags']);
 };
 
 const tag = async (cwd: string, shortName: string, version: string) => {
@@ -257,7 +228,6 @@ const updatePackage = async (cwd: string, pkg: RepoPackage, version: string) => 
     await commitChanges(cwd, shortName, newVersion);
     await publish(cwd);
     await tag(cwd, shortName, newVersion);
-    await push();
   } catch (e) {
     log(e);
     process.exit(1);

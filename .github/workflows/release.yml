@@ -7,6 +7,9 @@ on:
 
 jobs:
   publish:
+    # let's ignore release commits, otherwise it'll try to run twice
+    if: !startsWith(github.event.head_commit.message , 'chore(release):')
+
     runs-on: ubuntu-latest
 
     name: release
@@ -67,3 +70,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push Release and Cleanup
+        run: |
+          git checkout .npmrc
+          git add . && git commit --amend --no-edit
+          git pull origin master --no-edit
+          git rebase
+          git push origin HEAD:master
+          git push origin HEAD:master -- tags
