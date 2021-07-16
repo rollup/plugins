@@ -1,5 +1,21 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.0.2
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix
+
+## v13.0.1
+
+_2021-07-15_
+
+### Updates
+
+- docs: Document how to get Node.js exports resolution (#884)
+
 ## v13.0.0
 
 _2021-05-04_

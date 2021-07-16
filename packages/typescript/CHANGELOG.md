@@ -1,5 +1,29 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.2.3
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix: restart watch program on each build (#861)
+
+### Updates
+
+- docs: add link for @rollup/plugin-commonjs (#889)
+
+## v8.2.2
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix: restart watch program on each build (#861)
+
+### Updates
+
+- docs: add link for @rollup/plugin-commonjs (#889)
+
 ## v8.2.1
 
 _2021-03-26_

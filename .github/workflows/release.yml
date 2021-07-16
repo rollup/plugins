@@ -1,0 +1,81 @@
+name: Release Packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    # let's ignore release commits, otherwise it'll try to run twice
+    if: !startsWith(github.event.head_commit.message , 'chore(release):')
+
+    runs-on: ubuntu-latest
+
+    name: release
+
+    steps:
+      - name: Checkout Commit
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+
+      - name: Checkout Master
+        run: |
+          git branch -f master origin/master
+          git checkout master
+
+      - name: Sanity Check
+        run: |
+          echo branch `git branch --show-current`;
+          echo node `node -v`;
+
+      - name: Initliaze .npmrc
+        run: >
+          echo -e "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}\n$(cat .npmrc)" > .npmrc
+          && cat -n .npmrc
+
+      - name: Install pnpm
+        run: |
+          npm install pnpm -g;
+          echo node `pnpm -v`;
+
+      - name: Git Identify
+        run: |
+          git config --global user.email "release-workflow@rollup.dev"
+          git config --global user.name "Release Workflow"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: pnpm install
+        run: pnpm install
+
+      - name: Prettier
+        run: pnpm run prettier:check
+
+      - name: Build Packages
+        run: pnpm build --recursive
+
+      - name: Lint Monorepo
+        run: pnpm lint
+
+      - name: Run Tests
+        run: pnpm test --filter [HEAD^]
+
+      - name: Release and Publish Packages
+        run: pnpm release --filter [HEAD^]
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push Release and Cleanup
+        run: |
+          git checkout .npmrc
+          git add . && git commit --amend --no-edit
+          git pull origin master --no-edit
+          git rebase
+          git push origin HEAD:master
+          git push origin HEAD:master -- tags

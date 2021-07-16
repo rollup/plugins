@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-node-resolve",
-  "version": "13.0.0",
+  "version": "13.0.2",
   "publishConfig": {
     "access": "public"
   },
@@ -25,15 +25,16 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
+    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "prebuild": "del-cli dist",
-    "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm -w run lint && pnpm run test && pnpm run test:ts",
-    "pretest": "pnpm run build",
-    "test": "ava",
+    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
+    "test": "ava && pnpm test:ts",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [

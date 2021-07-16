@@ -92,7 +92,7 @@ A function which can optionally mutate parsed YAML. The function should return t
 yaml({
   transform(data, filePath) {
     if (Array.isArray(data) && filePath === './my-file.yml') {
-      return data.filter(character => !character.batman);
+      return data.filter((character) => !character.batman);
     }
   }
 });

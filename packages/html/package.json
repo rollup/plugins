@@ -20,13 +20,14 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose",
+    "ci:test": "pnpm test -- --verbose",
     "prebuild": "del-cli dist",
-    "prepublishOnly": "pnpm build && pnpm lint",
-    "pretest": "pnpm run build",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
     "test": "ava",
     "test:ts": "tsc --noEmit"
   },
@@ -48,7 +49,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^6.1.0",
     "rollup": "^2.23.0",
-    "rollup-plugin-postcss": "^3.1.3",
+    "rollup-plugin-postcss": "^3.1.8",
     "typescript": "^4.1.2"
   },
   "types": "types/index.d.ts",

@@ -32,9 +32,9 @@ export default {
   input: 'src/index.js',
   output: {
     file: 'dist/index.js',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [run()],
+  plugins: [run()]
 };
 ```
 

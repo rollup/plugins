@@ -6,7 +6,7 @@ const css = require('rollup-plugin-postcss');
 
 const { getCode } = require('../../../util/test');
 
-const html = require('../dist/index.js');
+const html = require('../dist');
 
 // const read = (file = 'index.html') => readFileSync(join('output/', file), 'utf-8');
 

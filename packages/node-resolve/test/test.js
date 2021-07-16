@@ -124,6 +124,20 @@ test('supports JS extensions in TS when referring to TS imports', async (t) => {
   t.is(module.exports, 'It works!');
 });
 
+test('handles package.json being a directory earlier in the path', async (t) => {
+  const bundle = await rollup({
+    input: 'package-json-in-path/package.json/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
 test('ignores IDs with null character', async (t) => {
   const result = await nodeResolve().resolveId('\0someid', 'test.js');
   t.is(result, null);

@@ -27,6 +27,8 @@ import batman from 'batman';
 
 If this seems familiar to Webpack users, it should. This is plugin mimics the `resolve.extensions` and `resolve.alias` functionality in Webpack.
 
+This plugin will work for any file type that Rollup natively supports, or those which are [supported by third-party plugins](https://github.com/rollup/awesome#other-file-imports).
+
 ## Requirements
 
 This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
@@ -74,7 +76,7 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 Type: `Function | Object`<br>
 Default: `null`
 
-Instructs the plugin to use an alternative resolving algorithm, rather than the Rollup's resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#hooks) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
+Instructs the plugin to use an alternative resolving algorithm, rather than the Rollup's resolver. Please refer to the [Rollup documentation](https://rollupjs.org/guide/en/#resolveid) for more information about the `resolveId` hook. For a detailed example, see: [Custom Resolvers](#custom-resolvers).
 
 ### `entries`
 
@@ -82,6 +84,8 @@ Type: `Object | Array[...Object]`<br>
 Default: `null`
 
 Specifies an `Object`, or an `Array` of `Object`, which defines aliases used to replace values in `import` or `require` statements. With either format, the order of the entries is important, in that the first defined rules are applied first. This option also supports [Regular Expression Alias](#regular-expression-aliases) matching.
+
+_Note: Entry targets (the object key in the Object Format, or the `find` property value in the Array Format below) should not end with a trailing slash in most cases. If strange behavior is observed, double check the entries being passed in options._
 
 #### `Object` Format
 

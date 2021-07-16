@@ -50,6 +50,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       preflight({ config: parsedOptions, context: this, rollupOptions, tslib });
 
       // Fixes a memory leak https://github.com/rollup/plugins/issues/322
+      if (this.meta.watchMode !== true) {
+        // eslint-disable-next-line
+        program?.close();
+      }
       if (!program) {
         program = createWatchProgram(ts, this, {
           formatHost,

@@ -6,7 +6,7 @@ import { SourceMapConsumer } from 'source-map';
 
 import { getCode } from '../../../util/test';
 
-import { getBabelOutputPlugin, createBabelOutputPluginFactory } from '../dist/index';
+import { getBabelOutputPlugin, createBabelOutputPluginFactory } from '../dist';
 
 process.chdir(__dirname);
 
