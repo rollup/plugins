@@ -107,3 +107,17 @@ function getDefinePropertyCallName(node, targetName) {
 export function isShorthandProperty(parent) {
   return parent && parent.type === 'Property' && parent.shorthand;
 }
+
+export function hasDefineEsmProperty(node) {
+  return node.properties.some((property) => {
+    if (
+      property.type === 'Property' &&
+      property.key.type === 'Identifier' &&
+      property.key.name === '__esModule' &&
+      isTruthy(property.value)
+    ) {
+      return true;
+    }
+    return false;
+  });
+}

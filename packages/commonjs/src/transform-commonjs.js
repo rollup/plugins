@@ -9,6 +9,7 @@ import MagicString from 'magic-string';
 import {
   getKeypath,
   isDefineCompiledEsm,
+  hasDefineEsmProperty,
   isFalsy,
   isReference,
   isShorthandProperty,
@@ -146,6 +147,9 @@ export default function transformCommonjs(
                 moduleAccessScopes.add(scope);
               } else if (!firstTopLevelModuleExportsAssignment) {
                 firstTopLevelModuleExportsAssignment = node;
+              }
+              if (node.right.type === 'ObjectExpression' && hasDefineEsmProperty(node.right)) {
+                shouldWrap = true;
               }
             } else if (exportName === KEY_COMPILED_ESM) {
               if (programDepth > 3) {
