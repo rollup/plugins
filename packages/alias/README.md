@@ -86,6 +86,8 @@ Default: `null`
 
 Specifies an `Object`, or an `Array` of `Object`, which defines aliases used to replace values in `import` or `require` statements. With either format, the order of the entries is important, in that the first defined rules are applied first. This option also supports [Regular Expression Alias](#regular-expression-aliases) matching.
 
+_Note: Entry targets (the object key in the Object Format, or the `find` property value in the Array Format below) should not end with a trailing slash in most cases. If strange behavior is observed, double check the entries being passed in options._
+
 #### `Object` Format
 
 The `Object` format allows specifying aliases as a key, and the corresponding value as the actual `import` value. For example:
