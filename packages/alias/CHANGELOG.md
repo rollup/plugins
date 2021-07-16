@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.4
+
+_2021-07-16_
+
+### Updates
+
+- docs
+
 ## v3.1.3
 
 _2021-07-15_
