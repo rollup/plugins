@@ -1,5 +1,134 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.2.3
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix: restart watch program on each build (#861)
+
+### Updates
+
+- docs: add link for @rollup/plugin-commonjs (#889)
+
+## v8.2.2
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix: restart watch program on each build (#861)
+
+### Updates
+
+- docs: add link for @rollup/plugin-commonjs (#889)
+
+## v8.2.1
+
+_2021-03-26_
+
+### Bugfixes
+
+- fix: bump TypeScript version (#818)
+- fix: update readme and peerDeps version (#830)
+
+## v8.2.0
+
+_2021-02-14_
+
+### Features
+
+- feat: error when no tsconfig and no rootDir (#794)
+- feat: better error when tslib is not installed (#793)
+- feat: warn when compilerOptions.module is not esnext (#788)
+
+### Updates
+
+- test: move declaration tests, use typescript (#791)
+- test: fix TypeScript src-dir test (#789)
+
+## v8.1.1
+
+_2021-01-29_
+
+### Bugfixes
+
+- fix: fix plugin type declarations (#647)
+- fix: only emit tsbuildinfo file when there is something to emit (#771)
+
+## v8.1.0
+
+_2020-12-14_
+
+### Features
+
+- feat: support multiple output targets with declarations (#687)
+
+### Updates
+
+- chore: fix TypeScript warnings (#673)
+- test: code in src sub-directory (#682)
+- chore: use TypeScript 4 (#674)
+
+## v8.0.0
+
+_2020-11-30_
+
+### Breaking Changes
+
+- fix: pick up new files in watch mode (#657)
+
+### Bugfixes
+
+- fix: add missing imports (#633)
+- fix: normalize returned module ids (#653)
+
+### Features
+
+- feat: Implement cached incremental code (#535)
+
+### Updates
+
+- docs: fix minor markdown syntax in transformers-section (#624)
+
+## v7.0.0
+
+_2020-11-30_
+
+### Breaking Changes
+
+- fix: pick up new files in watch mode (#657)
+
+### Bugfixes
+
+- fix: add missing imports (#633)
+- fix: normalize returned module ids (#653)
+
+### Features
+
+- feat: Implement cached incremental code (#535)
+
+### Updates
+
+- docs: fix minor markdown syntax in transformers-section (#624)
+
+## v6.1.0
+
+_2020-10-27_
+
+### Bugfixes
+
+- fix: add composite to validation checks (#618)
+
+### Features
+
+- feat: Add CustomTransformers support (#280)
+
+### Updates
+
+- docs: More informative error messages (#619)
+
 ## v6.0.0
 
 _2020-09-09_

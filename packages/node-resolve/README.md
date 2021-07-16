@@ -42,27 +42,40 @@ export default {
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
+## Package entrypoints
+
+This plugin supports the package entrypoints feature from node js, specified in the `exports` or `imports` field of a package. Check the [official documentation](https://nodejs.org/api/packages.html#packages_package_entry_points) for more information on how this works. This is the default behavior. In the abscence of these fields, the fields in `mainFields` will be the ones to be used.
+
 ## Options
+
+### `exportConditions`
+
+Type: `Array[...String]`<br>
+Default: `[]`
+
+Additional conditions of the package.json exports field to match when resolving modules. By default, this plugin looks for the `['default', 'module', 'import']` conditions when resolving imports.
+
+When using `@rollup/plugin-commonjs` v16 or higher, this plugin will use the `['default', 'module', 'require']` conditions when resolving require statements.
+
+Setting this option will add extra conditions on top of the default conditions. See https://nodejs.org/api/packages.html#packages_conditional_exports for more information.
+
+In order to get the [resolution behavior of Node.js](https://nodejs.org/api/packages.html#packages_conditional_exports), set this to `['node']`.
 
 ### `browser`
 
 Type: `Boolean`<br>
 Default: `false`
 
-If `true`, instructs the plugin to use the `"browser"` property in `package.json` files to specify alternative files to load for bundling. This is useful when bundling for a browser environment. Alternatively, a value of `'browser'` can be added to the `mainFields` option. If `false`, any `"browser"` properties in package files will be ignored. This option takes precedence over `mainFields`.
+If `true`, instructs the plugin to use the browser module resolutions in `package.json` and adds `'browser'` to `exportConditions` if it is not present so browser conditionals in `exports` are applied. If `false`, any browser properties in package files will be ignored. Alternatively, a value of `'browser'` can be added to both the `mainFields` and `exportConditions` options, however this option takes precedence over `mainFields`.
 
-### `customResolveOptions`
+> This option does not work when a package is using [package entrypoints](https://nodejs.org/api/packages.html#packages_package_entry_points)
 
-Type: `Object`<br>
-Default: `null`
+### `moduleDirectories`
 
-An `Object` that specifies additional options that should be passed through to [`resolve`](https://www.npmjs.com/package/resolve).
+Type: `Array[...String]`<br>
+Default: `['node_modules']`
 
-```
-customResolveOptions: {
-  moduleDirectory: 'js_modules'
-}
-```
+One or more directories in which to recursively look for modules.
 
 ### `dedupe`
 
@@ -101,7 +114,7 @@ Specifies the extensions of files that the plugin will operate on.
 Type: `String`<br>
 Default: `'/'`
 
-Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be marked as external.
+Locks the module search within specified path (e.g. chroot). Modules defined outside this path will be ignored by this plugin.
 
 ### `mainFields`
 
@@ -111,14 +124,10 @@ Valid values: `['browser', 'jsnext:main', 'module', 'main']`
 
 Specifies the properties to scan within a `package.json`, used to determine the bundle entry point. The order of property names is significant, as the first-found property is used as the resolved entry point. If the array contains `'browser'`, key/values specified in the `package.json` `browser` property will be used.
 
-### `only`
-
-DEPRECATED: use "resolveOnly" instead
-
 ### `preferBuiltins`
 
 Type: `Boolean`<br>
-Default: `true`
+Default: `true` (with warnings if a builtin module is used over a local version. Set to `true` to disable warning.)
 
 If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
 
@@ -150,13 +159,21 @@ Specifies the root directory from which to resolve modules. Typically used when 
 rootDir: path.join(process.cwd(), '..')
 ```
 
+## `ignoreSideEffectsForRoot`
+
+If you use the `sideEffects` property in the package.json, by default this is respected for files in the root package. Set to `true` to ignore the `sideEffects` configuration for the root package.
+
+## Preserving symlinks
+
+This plugin honours the rollup [`preserveSymlinks`](https://rollupjs.org/guide/en/#preservesymlinks) option.
+
 ## Using with @rollup/plugin-commonjs
 
 Since most packages in your node_modules folder are probably legacy CommonJS rather than JavaScript modules, you may need to use [@rollup/plugin-commonjs](https://github.com/rollup/plugins/tree/master/packages/commonjs):
 
 ```js
 // rollup.config.js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
@@ -166,25 +183,43 @@ export default {
     format: 'iife',
     name: 'MyModule'
   },
-  plugins: [resolve(), commonjs()]
+  plugins: [nodeResolve(), commonjs()]
 };
 ```
 
 ## Resolving Built-Ins (like `fs`)
 
-This plugin won't resolve any builtins (e.g. `fs`). If you need to resolve builtins you can install local modules and set `preferBuiltins` to `false`, or install a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) which provides stubbed versions of these methods.
+By default this plugin will prefer built-ins over local modules, marking them as external.
 
-If you want to silence warnings about builtins, you can add the list of builtins to the `externals` option; like so:
+See [`preferBuiltins`](#preferbuiltins).
+
+To provide stubbed versions of Node built-ins, use a plugin like [rollup-plugin-node-polyfills](https://github.com/ionic-team/rollup-plugin-node-polyfills) and set `preferBuiltins` to `false`. e.g.
 
 ```js
-import resolve from '@rollup/plugin-node-resolve';
-import builtins from 'builtin-modules'
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 export default ({
   input: ...,
-  plugins: [resolve()],
+  plugins: [
+    nodePolyfills(),
+    nodeResolve({ preferBuiltins: false })
+  ],
   external: builtins,
   output: ...
 })
+```
+
+## Resolving require statements
+
+According to [NodeJS module resolution](https://nodejs.org/api/packages.html#packages_package_entry_points) `require` statements should resolve using the `require` condition in the package exports field, while es modules should use the `import` condition.
+
+The node resolve plugin uses `import` by default, you can opt into using the `require` semantics by passing an extra option to the resolve function:
+
+```js
+this.resolve(importee, importer, {
+  skipSelf: true,
+  custom: { 'node-resolve': { isRequire: true } }
+});
 ```
 
 ## Meta

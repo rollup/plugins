@@ -1,11 +1,10 @@
-import 'tape';
-import foo from '_tape?commonjs-proxy';
+import * as commonjsHelpers from "_commonjsHelpers.js";
+import { __exports as input } from "\u0000fixtures/form/constant-template-literal/input.js?commonjs-exports"
+import "\u0000tape?commonjs-require";
+import require$$0 from "\u0000tape?commonjs-proxy";
 
+var foo = require$$0;
 console.log(foo);
-
-var input = {
-
-};
 
 export default input;
 export { input as __moduleExports };

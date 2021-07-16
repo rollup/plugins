@@ -1,12 +1,8 @@
-var foo = 'a';
-var bar = 'b';
+import * as commonjsHelpers from "_commonjsHelpers.js";
+import { __exports as input } from "\u0000fixtures/form/optimised-named-export/input.js?commonjs-exports"
 
-var input = {
-	foo: foo,
-	bar: bar
-};
+var foo = input.foo = 'a';
+var bar = input.bar = 'b';
 
 export default input;
-export { input as __moduleExports };
-export { foo };
-export { bar };
+export { input as __moduleExports, foo, bar };

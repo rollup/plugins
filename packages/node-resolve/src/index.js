@@ -6,18 +6,13 @@ import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
-import { exists, readFile, realpath } from './fs';
-import {
-  getMainFields,
-  getPackageInfo,
-  getPackageName,
-  normalizeInput,
-  resolveImportSpecifiers
-} from './util';
+import { fileExists, readFile, realpath } from './fs';
+import resolveImportSpecifiers from './resolveImportSpecifiers';
+import { getMainFields, getPackageName, normalizeInput } from './util';
+import handleDeprecatedOptions from './deprecated-options';
 
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
-const nullFn = () => null;
 const deepFreeze = (object) => {
   Object.freeze(object);
 
@@ -29,34 +24,37 @@ const deepFreeze = (object) => {
 
   return object;
 };
+
+const baseConditions = ['default', 'module'];
+const baseConditionsEsm = [...baseConditions, 'import'];
+const baseConditionsCjs = [...baseConditions, 'require'];
 const defaults = {
-  customResolveOptions: {},
   dedupe: [],
   // It's important that .mjs is listed before .js so that Rollup will interpret npm modules
   // which deploy both ESM .mjs and CommonJS .js files as ESM.
   extensions: ['.mjs', '.js', '.json', '.node'],
-  resolveOnly: []
+  resolveOnly: [],
+  moduleDirectories: ['node_modules'],
+  ignoreSideEffectsForRoot: false
 };
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
 export function nodeResolve(opts = {}) {
-  const options = Object.assign({}, defaults, opts);
-  const { customResolveOptions, extensions, jail } = options;
-  const warnings = [];
+  const { warnings } = handleDeprecatedOptions(opts);
+
+  const options = { ...defaults, ...opts };
+  const { extensions, jail, moduleDirectories, ignoreSideEffectsForRoot } = options;
+  const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
+  const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
   const packageInfoCache = new Map();
   const idToPackageInfo = new Map();
   const mainFields = getMainFields(options);
   const useBrowserOverrides = mainFields.indexOf('browser') !== -1;
   const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
-  const rootDir = options.rootDir || process.cwd();
+  const rootDir = resolve(options.rootDir || process.cwd());
   let { dedupe } = options;
   let rollupOptions;
-
-  if (options.only) {
-    warnings.push('node-resolve: The `only` options is deprecated, please use `resolveOnly`');
-    options.resolveOnly = options.only;
-  }
 
   if (typeof dedupe !== 'function') {
     dedupe = (importee) =>
@@ -73,6 +71,179 @@ export function nodeResolve(opts = {}) {
 
   const browserMapCache = new Map();
   let preserveSymlinks;
+
+  const doResolveId = async (context, importee, importer, opts) => {
+    // strip query params from import
+    const [importPath, params] = importee.split('?');
+    const importSuffix = `${params ? `?${params}` : ''}`;
+    importee = importPath;
+
+    const baseDir = !importer || dedupe(importee) ? rootDir : dirname(importer);
+
+    // https://github.com/defunctzombie/package-browser-field-spec
+    const browser = browserMapCache.get(importer);
+    if (useBrowserOverrides && browser) {
+      const resolvedImportee = resolve(baseDir, importee);
+      if (browser[importee] === false || browser[resolvedImportee] === false) {
+        return { id: ES6_BROWSER_EMPTY };
+      }
+      const browserImportee =
+        browser[importee] ||
+        browser[resolvedImportee] ||
+        browser[`${resolvedImportee}.js`] ||
+        browser[`${resolvedImportee}.json`];
+      if (browserImportee) {
+        importee = browserImportee;
+      }
+    }
+
+    const parts = importee.split(/[/\\]/);
+    let id = parts.shift();
+    let isRelativeImport = false;
+
+    if (id[0] === '@' && parts.length > 0) {
+      // scoped packages
+      id += `/${parts.shift()}`;
+    } else if (id[0] === '.') {
+      // an import relative to the parent dir of the importer
+      id = resolve(baseDir, importee);
+      isRelativeImport = true;
+    }
+
+    if (
+      !isRelativeImport &&
+      resolveOnly.length &&
+      !resolveOnly.some((pattern) => pattern.test(id))
+    ) {
+      if (normalizeInput(rollupOptions.input).includes(importee)) {
+        return null;
+      }
+      return false;
+    }
+
+    const importSpecifierList = [];
+
+    if (importer === undefined && !importee[0].match(/^\.?\.?\//)) {
+      // For module graph roots (i.e. when importer is undefined), we
+      // need to handle 'path fragments` like `foo/bar` that are commonly
+      // found in rollup config files. If importee doesn't look like a
+      // relative or absolute path, we make it relative and attempt to
+      // resolve it. If we don't find anything, we try resolving it as we
+      // got it.
+      importSpecifierList.push(`./${importee}`);
+    }
+
+    const importeeIsBuiltin = builtins.has(importee);
+
+    if (importeeIsBuiltin) {
+      // The `resolve` library will not resolve packages with the same
+      // name as a node built-in module. If we're resolving something
+      // that's a builtin, and we don't prefer to find built-ins, we
+      // first try to look up a local module with that name. If we don't
+      // find anything, we resolve the builtin which just returns back
+      // the built-in's name.
+      importSpecifierList.push(`${importee}/`);
+    }
+
+    // TypeScript files may import '.js' to refer to either '.ts' or '.tsx'
+    if (importer && importee.endsWith('.js')) {
+      for (const ext of ['.ts', '.tsx']) {
+        if (importer.endsWith(ext) && extensions.includes(ext)) {
+          importSpecifierList.push(importee.replace(/.js$/, ext));
+        }
+      }
+    }
+
+    importSpecifierList.push(importee);
+
+    const warn = (...args) => context.warn(...args);
+    const isRequire =
+      opts && opts.custom && opts.custom['node-resolve'] && opts.custom['node-resolve'].isRequire;
+    const exportConditions = isRequire ? conditionsCjs : conditionsEsm;
+
+    if (useBrowserOverrides && !exportConditions.includes('browser'))
+      exportConditions.push('browser');
+
+    const resolvedWithoutBuiltins = await resolveImportSpecifiers({
+      importer,
+      importSpecifierList,
+      exportConditions,
+      warn,
+      packageInfoCache,
+      extensions,
+      mainFields,
+      preserveSymlinks,
+      useBrowserOverrides,
+      baseDir,
+      moduleDirectories,
+      rootDir,
+      ignoreSideEffectsForRoot
+    });
+
+    const resolved =
+      importeeIsBuiltin && preferBuiltins
+        ? {
+            packageInfo: undefined,
+            hasModuleSideEffects: () => null,
+            hasPackageEntry: true,
+            packageBrowserField: false
+          }
+        : resolvedWithoutBuiltins;
+    if (!resolved) {
+      return null;
+    }
+
+    const { packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = resolved;
+    let { location } = resolved;
+    if (packageBrowserField) {
+      if (Object.prototype.hasOwnProperty.call(packageBrowserField, location)) {
+        if (!packageBrowserField[location]) {
+          browserMapCache.set(location, packageBrowserField);
+          return { id: ES6_BROWSER_EMPTY };
+        }
+        location = packageBrowserField[location];
+      }
+      browserMapCache.set(location, packageBrowserField);
+    }
+
+    if (hasPackageEntry && !preserveSymlinks) {
+      const exists = await fileExists(location);
+      if (exists) {
+        location = await realpath(location);
+      }
+    }
+
+    idToPackageInfo.set(location, packageInfo);
+
+    if (hasPackageEntry) {
+      if (importeeIsBuiltin && preferBuiltins) {
+        if (!isPreferBuiltinsSet && resolvedWithoutBuiltins && resolved !== importee) {
+          context.warn(
+            `preferring built-in module '${importee}' over local alternative at '${resolvedWithoutBuiltins.location}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
+          );
+        }
+        return false;
+      } else if (jail && location.indexOf(normalize(jail.trim(sep))) !== 0) {
+        return null;
+      }
+    }
+
+    if (options.modulesOnly && (await fileExists(location))) {
+      const code = await readFile(location, 'utf-8');
+      if (isModule(code)) {
+        return {
+          id: `${location}${importSuffix}`,
+          moduleSideEffects: hasModuleSideEffects(location)
+        };
+      }
+      return null;
+    }
+    const result = {
+      id: `${location}${importSuffix}`,
+      moduleSideEffects: hasModuleSideEffects(location)
+    };
+    return result;
+  };
 
   return {
     name: 'node-resolve',
@@ -93,187 +264,26 @@ export function nodeResolve(opts = {}) {
       isDirCached.clear();
     },
 
-    async resolveId(importee, importer) {
+    async resolveId(importee, importer, opts) {
       if (importee === ES6_BROWSER_EMPTY) {
         return importee;
       }
       // ignore IDs with null character, these belong to other plugins
       if (/\0/.test(importee)) return null;
 
-      // strip query params from import
-      const [importPath, params] = importee.split('?');
-      const importSuffix = `${params ? `?${params}` : ''}`;
-      importee = importPath;
-
-      const basedir = !importer || dedupe(importee) ? rootDir : dirname(importer);
-
-      // https://github.com/defunctzombie/package-browser-field-spec
-      const browser = browserMapCache.get(importer);
-      if (useBrowserOverrides && browser) {
-        const resolvedImportee = resolve(basedir, importee);
-        if (browser[importee] === false || browser[resolvedImportee] === false) {
-          return ES6_BROWSER_EMPTY;
-        }
-        const browserImportee =
-          browser[importee] ||
-          browser[resolvedImportee] ||
-          browser[`${resolvedImportee}.js`] ||
-          browser[`${resolvedImportee}.json`];
-        if (browserImportee) {
-          importee = browserImportee;
-        }
+      if (/\0/.test(importer)) {
+        importer = undefined;
       }
 
-      const parts = importee.split(/[/\\]/);
-      let id = parts.shift();
-      let isRelativeImport = false;
-
-      if (id[0] === '@' && parts.length > 0) {
-        // scoped packages
-        id += `/${parts.shift()}`;
-      } else if (id[0] === '.') {
-        // an import relative to the parent dir of the importer
-        id = resolve(basedir, importee);
-        isRelativeImport = true;
-      }
-
-      if (
-        !isRelativeImport &&
-        resolveOnly.length &&
-        !resolveOnly.some((pattern) => pattern.test(id))
-      ) {
-        if (normalizeInput(rollupOptions.input).includes(importee)) {
-          return null;
-        }
-        return false;
-      }
-
-      let hasModuleSideEffects = nullFn;
-      let hasPackageEntry = true;
-      let packageBrowserField = false;
-      let packageInfo;
-
-      const filter = (pkg, pkgPath) => {
-        const info = getPackageInfo({
-          cache: packageInfoCache,
-          extensions,
-          pkg,
-          pkgPath,
-          mainFields,
-          preserveSymlinks,
-          useBrowserOverrides
-        });
-
-        ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
-
-        return info.cachedPkg;
-      };
-
-      let resolveOptions = {
-        basedir,
-        packageFilter: filter,
-        readFile: readCachedFile,
-        isFile: isFileCached,
-        isDirectory: isDirCached,
-        extensions
-      };
-
-      if (preserveSymlinks !== undefined) {
-        resolveOptions.preserveSymlinks = preserveSymlinks;
-      }
-
-      const importSpecifierList = [];
-
-      if (importer === undefined && !importee[0].match(/^\.?\.?\//)) {
-        // For module graph roots (i.e. when importer is undefined), we
-        // need to handle 'path fragments` like `foo/bar` that are commonly
-        // found in rollup config files. If importee doesn't look like a
-        // relative or absolute path, we make it relative and attempt to
-        // resolve it. If we don't find anything, we try resolving it as we
-        // got it.
-        importSpecifierList.push(`./${importee}`);
-      }
-
-      const importeeIsBuiltin = builtins.has(importee);
-
-      if (importeeIsBuiltin && (!preferBuiltins || !isPreferBuiltinsSet)) {
-        // The `resolve` library will not resolve packages with the same
-        // name as a node built-in module. If we're resolving something
-        // that's a builtin, and we don't prefer to find built-ins, we
-        // first try to look up a local module with that name. If we don't
-        // find anything, we resolve the builtin which just returns back
-        // the built-in's name.
-        importSpecifierList.push(`${importee}/`);
-      }
-
-      // TypeScript files may import '.js' to refer to either '.ts' or '.tsx'
-      if (importer && importee.endsWith('.js')) {
-        for (const ext of ['.ts', '.tsx']) {
-          if (importer.endsWith(ext) && extensions.includes(ext)) {
-            importSpecifierList.push(importee.replace(/.js$/, ext));
-          }
+      const resolved = await doResolveId(this, importee, importer, opts);
+      if (resolved) {
+        const resolvedResolved = await this.resolve(resolved.id, importer, { skipSelf: true });
+        const isExternal = !!(resolvedResolved && resolvedResolved.external);
+        if (isExternal) {
+          return false;
         }
       }
-
-      importSpecifierList.push(importee);
-      resolveOptions = Object.assign(resolveOptions, customResolveOptions);
-
-      try {
-        let resolved = await resolveImportSpecifiers(importSpecifierList, resolveOptions);
-
-        if (resolved && packageBrowserField) {
-          if (Object.prototype.hasOwnProperty.call(packageBrowserField, resolved)) {
-            if (!packageBrowserField[resolved]) {
-              browserMapCache.set(resolved, packageBrowserField);
-              return ES6_BROWSER_EMPTY;
-            }
-            resolved = packageBrowserField[resolved];
-          }
-          browserMapCache.set(resolved, packageBrowserField);
-        }
-
-        if (hasPackageEntry && !preserveSymlinks && resolved) {
-          const fileExists = await exists(resolved);
-          if (fileExists) {
-            resolved = await realpath(resolved);
-          }
-        }
-
-        idToPackageInfo.set(resolved, packageInfo);
-
-        if (hasPackageEntry) {
-          if (builtins.has(resolved) && preferBuiltins && isPreferBuiltinsSet) {
-            return null;
-          } else if (importeeIsBuiltin && preferBuiltins) {
-            if (!isPreferBuiltinsSet) {
-              this.warn(
-                `preferring built-in module '${importee}' over local alternative at '${resolved}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
-              );
-            }
-            return null;
-          } else if (jail && resolved.indexOf(normalize(jail.trim(sep))) !== 0) {
-            return null;
-          }
-        }
-
-        if (resolved && options.modulesOnly) {
-          const code = await readFile(resolved, 'utf-8');
-          if (isModule(code)) {
-            return {
-              id: `${resolved}${importSuffix}`,
-              moduleSideEffects: hasModuleSideEffects(resolved)
-            };
-          }
-          return null;
-        }
-        const result = {
-          id: `${resolved}${importSuffix}`,
-          moduleSideEffects: hasModuleSideEffects(resolved)
-        };
-        return result;
-      } catch (error) {
-        return null;
-      }
+      return resolved;
     },
 
     load(importee) {

@@ -1,13 +1,16 @@
 import * as nodePath from 'path';
+import * as fs from 'fs';
 
 import test from 'ava';
 import { rollup } from 'rollup';
 import { SourceMapConsumer } from 'source-map';
 import jsonPlugin from '@rollup/plugin-json';
+import nodeResolvePlugin from '@rollup/plugin-node-resolve';
+import { createFilter } from '@rollup/pluginutils';
 
 import { getCode } from '../../../util/test';
 
-import babelPlugin, { getBabelOutputPlugin, createBabelInputPluginFactory } from '..';
+import babelPlugin, { getBabelOutputPlugin, createBabelInputPluginFactory } from '../dist';
 
 process.chdir(__dirname);
 
@@ -99,6 +102,65 @@ console.log("the answer is ".concat(foo()));
   );
 });
 
+test('does not babelify excluded code with custom filter', async (t) => {
+  const filter = createFilter([], '**/foo.js');
+  const code = await generate('fixtures/exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.false(code.includes('${foo()}'));
+  t.true(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+const foo = () => 42;
+
+console.log("the answer is ".concat(foo()));
+`
+  );
+});
+
+test('does babelify included code with custom filter', async (t) => {
+  const filter = createFilter('**/foo.js', [], {
+    resolve: __dirname
+  });
+  const code = await generate('fixtures/exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.true(code.includes('${foo()}'));
+  t.false(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+var foo = function foo() {
+  return 42;
+};
+
+console.log(\`the answer is \${foo()}\`);
+`
+  );
+});
+
+test('can not pass include or exclude when custom filter specified', async (t) => {
+  const filter = createFilter('**/foo.js', [], {
+    resolve: __dirname
+  });
+  let errorWithExclude = '';
+  try {
+    await generate('fixtures/exclusions/main.js', { filter, exclude: [] });
+  } catch (e) {
+    errorWithExclude = e.message;
+  }
+  t.true(!!errorWithExclude);
+
+  let errorWithInclude = '';
+  try {
+    await generate('fixtures/exclusions/main.js', { filter, include: [] });
+  } catch (e) {
+    errorWithInclude = e.message;
+  }
+  t.true(!!errorWithInclude);
+});
+
 test('generates sourcemap by default', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/class/main.js',
@@ -157,12 +219,14 @@ test('allows transform-runtime to be used instead of bundled helpers', async (t)
     code,
     `'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+var _classCallCheck = require('@babel/runtime/helpers/classCallCheck');
 
-var _classCallCheck = _interopDefault(require('@babel/runtime/helpers/classCallCheck'));
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var _classCallCheck__default = /*#__PURE__*/_interopDefaultLegacy(_classCallCheck);
 
 var Foo = function Foo() {
-  _classCallCheck(this, Foo);
+  _classCallCheck__default['default'](this, Foo);
 };
 
 module.exports = Foo;
@@ -287,6 +351,35 @@ test('transpiles only files with whitelisted extensions', async (t) => {
   t.false(code.includes('class Other '), 'should transpile .other');
 });
 
+test('transpiles files when path contains query and hash', async (t) => {
+  const code = await generate(
+    'fixtures/with-query-and-hash/main.js',
+    {},
+    {},
+    {
+      plugins: [
+        babelPlugin({ babelHelpers: 'bundled' }),
+        // node-resolve plugin know how to resolve relative request with query
+        nodeResolvePlugin(),
+        {
+          load(id) {
+            // rollup don't know how to load module with query
+            // we could teach rollup to discard query while loading module
+            const [bareId] = id.split(`?`);
+            return fs.readFileSync(bareId, 'utf-8');
+          }
+        }
+      ]
+    }
+  );
+  t.true(code.includes('function WithQuery()'), 'should transpile when path contains query');
+  t.true(code.includes('function WithHash()'), 'should transpile when path contains hash');
+  t.true(
+    code.includes('function WithQueryAndHash()'),
+    'should transpile when path contains query and hash'
+  );
+});
+
 test('throws when trying to add babel helper unavailable in used @babel/core version', async (t) => {
   await t.throwsAsync(
     () =>
@@ -341,9 +434,17 @@ test('works with minified bundled helpers', async (t) => {
 });
 
 test('supports customizing the loader', async (t) => {
+  const expectedRollupContextKeys = ['getCombinedSourcemap', 'getModuleIds', 'emitFile', 'resolve'];
   const customBabelPlugin = createBabelInputPluginFactory(() => {
     return {
       config(cfg) {
+        t.true(typeof this === 'object', 'override config this context is rollup context');
+        expectedRollupContextKeys.forEach((key) => {
+          t.true(
+            Object.keys(this).includes(key),
+            `override config this context is rollup context with key ${key}`
+          );
+        });
         return {
           ...cfg.options,
           plugins: [
@@ -354,6 +455,13 @@ test('supports customizing the loader', async (t) => {
         };
       },
       result(result) {
+        t.true(typeof this === 'object', 'override result this context is rollup context');
+        expectedRollupContextKeys.forEach((key) => {
+          t.true(
+            Object.keys(this).includes(key),
+            `override result this context is rollup context with key ${key}`
+          );
+        });
         return {
           ...result,
           code: `${result.code}\n// Generated by some custom loader`

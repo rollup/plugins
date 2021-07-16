@@ -1,18 +1,14 @@
+export const isWrappedId = (id, suffix) => id.endsWith(suffix);
+export const wrapId = (id, suffix) => `\0${id}${suffix}`;
+export const unwrapId = (wrappedId, suffix) => wrappedId.slice(1, -suffix.length);
+
 export const PROXY_SUFFIX = '?commonjs-proxy';
-export const getProxyId = (id) => `\0${id}${PROXY_SUFFIX}`;
-export const getIdFromProxyId = (proxyId) => proxyId.slice(1, -PROXY_SUFFIX.length);
-
+export const REQUIRE_SUFFIX = '?commonjs-require';
 export const EXTERNAL_SUFFIX = '?commonjs-external';
-export const getExternalProxyId = (id) => `\0${id}${EXTERNAL_SUFFIX}`;
-export const getIdFromExternalProxyId = (proxyId) => proxyId.slice(1, -EXTERNAL_SUFFIX.length);
+export const EXPORTS_SUFFIX = '?commonjs-exports';
+export const MODULE_SUFFIX = '?commonjs-module';
 
-export const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
-export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
-  if (path.startsWith(commonDir)) return VIRTUAL_PATH_BASE + path.slice(commonDir.length);
-  return path;
-};
-
-export const DYNAMIC_REGISTER_PREFIX = '\0commonjs-dynamic-register:';
+export const DYNAMIC_REGISTER_SUFFIX = '?commonjs-dynamic-register';
 export const DYNAMIC_JSON_PREFIX = '\0commonjs-dynamic-json:';
 export const DYNAMIC_PACKAGES_ID = '\0commonjs-dynamic-packages';
 
@@ -23,26 +19,11 @@ export const HELPERS_ID = '\0commonjsHelpers.js';
 // This will no longer be necessary once Rollup switches to ES6 output, likely
 // in Rollup 3
 
-// The "hasOwnProperty" call in "getDefaultExportFromCjs" is technically not
-// needed, but for consumers that use Rollup's old interop pattern, it will fix
-// rollup/rollup-plugin-commonjs#224
-// We should remove it once Rollup core and this plugin are updated to not use
-// this pattern any more
 const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 export function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-export function createCommonjsModule(fn, basedir, module) {
-	return module = {
-		path: basedir,
-		exports: {},
-		require: function (path, base) {
-			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
-		}
-	}, fn(module, module.exports), module.exports;
 }
 
 export function getDefaultExportFromNamespaceIfPresent (n) {
@@ -69,19 +50,41 @@ export function getAugmentedNamespace(n) {
 }
 `;
 
+const FAILED_REQUIRE_ERROR = `throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');`;
+
 const HELPER_NON_DYNAMIC = `
-export function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+export function commonjsRequire (path) {
+	${FAILED_REQUIRE_ERROR}
 }
 `;
 
-const HELPERS_DYNAMIC = `
+const getDynamicHelpers = (ignoreDynamicRequires) => `
+export function createModule(modulePath) {
+	return {
+		path: modulePath,
+		exports: {},
+		require: function (path, base) {
+			return commonjsRequire(path, base == null ? modulePath : base);
+		}
+	};
+}
+
 export function commonjsRegister (path, loader) {
 	DYNAMIC_REQUIRE_LOADERS[path] = loader;
 }
 
+export function commonjsRegisterOrShort (path, to) {
+	const resolvedPath = commonjsResolveImpl(path, null, true);
+	if (resolvedPath !== null && DYNAMIC_REQUIRE_CACHE[resolvedPath]) {
+	  DYNAMIC_REQUIRE_CACHE[path] = DYNAMIC_REQUIRE_CACHE[resolvedPath];
+	} else {
+	  DYNAMIC_REQUIRE_SHORTS[path] = to;
+	}
+}
+
 const DYNAMIC_REQUIRE_LOADERS = Object.create(null);
 const DYNAMIC_REQUIRE_CACHE = Object.create(null);
+const DYNAMIC_REQUIRE_SHORTS = Object.create(null);
 const DEFAULT_PARENT_MODULE = {
 	id: '<' + 'rollup>', exports: {}, parent: undefined, filename: null, loaded: false, children: [], paths: []
 };
@@ -162,10 +165,13 @@ function dirname (path) {
   return '.';
 }
 
-export function commonjsRequire (path, originalModuleDir) {
+export function commonjsResolveImpl (path, originalModuleDir, testCache) {
 	const shouldTryNodeModules = isPossibleNodeModulesPath(path);
 	path = normalize(path);
 	let relPath;
+	if (path[0] === '/') {
+		originalModuleDir = '/';
+	}
 	while (true) {
 		if (!shouldTryNodeModules) {
 			relPath = originalModuleDir ? normalize(originalModuleDir + '/' + path) : path;
@@ -174,46 +180,85 @@ export function commonjsRequire (path, originalModuleDir) {
 		} else {
 			relPath = normalize(join('node_modules', path));
 		}
+
+		if (relPath.endsWith('/..')) {
+			break; // Travelled too far up, avoid infinite loop
+		}
+
 		for (let extensionIndex = 0; extensionIndex < CHECKED_EXTENSIONS.length; extensionIndex++) {
 			const resolvedPath = relPath + CHECKED_EXTENSIONS[extensionIndex];
-			let cachedModule = DYNAMIC_REQUIRE_CACHE[resolvedPath];
-			if (cachedModule) return cachedModule.exports;
-			const loader = DYNAMIC_REQUIRE_LOADERS[resolvedPath];
-			if (loader) {
-				DYNAMIC_REQUIRE_CACHE[resolvedPath] = cachedModule = {
-					id: resolvedPath,
-					filename: resolvedPath,
-					path: dirname(resolvedPath),
-					exports: {},
-					parent: DEFAULT_PARENT_MODULE,
-					loaded: false,
-					children: [],
-					paths: [],
-					require: function (path, base) {
-					  return commonjsRequire(path, (base === undefined || base === null) ? cachedModule.path : base);
-					}
-				};
-				try {
-					loader.call(commonjsGlobal, cachedModule, cachedModule.exports);
-				} catch (error) {
-					delete DYNAMIC_REQUIRE_CACHE[resolvedPath];
-					throw error;
-				}
-				cachedModule.loaded = true;
-				return cachedModule.exports;
-			};
+			if (DYNAMIC_REQUIRE_CACHE[resolvedPath]) {
+				return resolvedPath;
+			}
+			if (DYNAMIC_REQUIRE_SHORTS[resolvedPath]) {
+			  return resolvedPath;
+			}
+			if (DYNAMIC_REQUIRE_LOADERS[resolvedPath]) {
+				return resolvedPath;
+			}
 		}
 		if (!shouldTryNodeModules) break;
 		const nextDir = normalize(originalModuleDir + '/..');
 		if (nextDir === originalModuleDir) break;
 		originalModuleDir = nextDir;
 	}
-	return require(path);
+	return null;
+}
+
+export function commonjsResolve (path, originalModuleDir) {
+	const resolvedPath = commonjsResolveImpl(path, originalModuleDir);
+	if (resolvedPath !== null) {
+		return resolvedPath;
+	}
+	return require.resolve(path);
+}
+
+export function commonjsRequire (path, originalModuleDir) {
+	let resolvedPath = commonjsResolveImpl(path, originalModuleDir, true);
+	if (resolvedPath !== null) {
+    let cachedModule = DYNAMIC_REQUIRE_CACHE[resolvedPath];
+    if (cachedModule) return cachedModule.exports;
+    let shortTo = DYNAMIC_REQUIRE_SHORTS[resolvedPath];
+    if (shortTo) {
+      cachedModule = DYNAMIC_REQUIRE_CACHE[shortTo];
+      if (cachedModule)
+        return cachedModule.exports;
+      resolvedPath = commonjsResolveImpl(shortTo, null, true);
+    }
+    const loader = DYNAMIC_REQUIRE_LOADERS[resolvedPath];
+    if (loader) {
+      DYNAMIC_REQUIRE_CACHE[resolvedPath] = cachedModule = {
+        id: resolvedPath,
+        filename: resolvedPath,
+        path: dirname(resolvedPath),
+        exports: {},
+        parent: DEFAULT_PARENT_MODULE,
+        loaded: false,
+        children: [],
+        paths: [],
+        require: function (path, base) {
+          return commonjsRequire(path, (base === undefined || base === null) ? cachedModule.path : base);
+        }
+      };
+      try {
+        loader.call(commonjsGlobal, cachedModule, cachedModule.exports);
+      } catch (error) {
+        delete DYNAMIC_REQUIRE_CACHE[resolvedPath];
+        throw error;
+      }
+      cachedModule.loaded = true;
+      return cachedModule.exports;
+    };
+	}
+	${ignoreDynamicRequires ? 'return require(path);' : FAILED_REQUIRE_ERROR}
 }
 
 commonjsRequire.cache = DYNAMIC_REQUIRE_CACHE;
+commonjsRequire.resolve = commonjsResolve;
 `;
 
-export function getHelpersModule(isDynamicRequireModulesEnabled) {
-  return `${HELPERS}${isDynamicRequireModulesEnabled ? HELPERS_DYNAMIC : HELPER_NON_DYNAMIC}`;
+export function getHelpersModule(isDynamicRequireModulesEnabled, ignoreDynamicRequires) {
+  return `${HELPERS}${
+    isDynamicRequireModulesEnabled ? getDynamicHelpers(ignoreDynamicRequires) : HELPER_NON_DYNAMIC
+  }`;
 }

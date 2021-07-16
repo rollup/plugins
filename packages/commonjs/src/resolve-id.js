@@ -6,11 +6,16 @@ import { dirname, resolve, sep } from 'path';
 import {
   DYNAMIC_JSON_PREFIX,
   DYNAMIC_PACKAGES_ID,
-  getExternalProxyId,
-  getIdFromProxyId,
-  getProxyId,
+  DYNAMIC_REGISTER_SUFFIX,
+  EXPORTS_SUFFIX,
+  EXTERNAL_SUFFIX,
   HELPERS_ID,
-  PROXY_SUFFIX
+  isWrappedId,
+  MODULE_SUFFIX,
+  PROXY_SUFFIX,
+  REQUIRE_SUFFIX,
+  unwrapId,
+  wrapId
 } from './helpers';
 
 function getCandidatesForExtension(resolved, extension) {
@@ -44,43 +49,65 @@ export default function getResolveId(extensions) {
     return undefined;
   }
 
-  function resolveId(importee, importer) {
-    const isProxyModule = importee.endsWith(PROXY_SUFFIX);
+  return function resolveId(importee, rawImporter) {
+    if (isWrappedId(importee, MODULE_SUFFIX) || isWrappedId(importee, EXPORTS_SUFFIX)) {
+      return importee;
+    }
+
+    const importer =
+      rawImporter && isWrappedId(rawImporter, DYNAMIC_REGISTER_SUFFIX)
+        ? unwrapId(rawImporter, DYNAMIC_REGISTER_SUFFIX)
+        : rawImporter;
+
+    // Except for exports, proxies are only importing resolved ids,
+    // no need to resolve again
+    if (importer && isWrappedId(importer, PROXY_SUFFIX)) {
+      return importee;
+    }
+
+    const isProxyModule = isWrappedId(importee, PROXY_SUFFIX);
+    const isRequiredModule = isWrappedId(importee, REQUIRE_SUFFIX);
+    let isModuleRegistration = false;
+
     if (isProxyModule) {
-      importee = getIdFromProxyId(importee);
+      importee = unwrapId(importee, PROXY_SUFFIX);
+    } else if (isRequiredModule) {
+      importee = unwrapId(importee, REQUIRE_SUFFIX);
+
+      isModuleRegistration = isWrappedId(importee, DYNAMIC_REGISTER_SUFFIX);
+      if (isModuleRegistration) {
+        importee = unwrapId(importee, DYNAMIC_REGISTER_SUFFIX);
+      }
     }
+
+    if (
+      importee.startsWith(HELPERS_ID) ||
+      importee === DYNAMIC_PACKAGES_ID ||
+      importee.startsWith(DYNAMIC_JSON_PREFIX)
+    ) {
+      return importee;
+    }
+
     if (importee.startsWith('\0')) {
-      if (
-        importee.startsWith(HELPERS_ID) ||
-        importee === DYNAMIC_PACKAGES_ID ||
-        importee.startsWith(DYNAMIC_JSON_PREFIX)
-      ) {
-        return importee;
-      }
-      if (!isProxyModule) {
-        return null;
-      }
+      return null;
     }
 
-    if (importer && importer.endsWith(PROXY_SUFFIX)) {
-      importer = getIdFromProxyId(importer);
-    }
-
-    return this.resolve(importee, importer, { skipSelf: true }).then((resolved) => {
+    return this.resolve(importee, importer, {
+      skipSelf: true,
+      custom: { 'node-resolve': { isRequire: isProxyModule || isRequiredModule } }
+    }).then((resolved) => {
       if (!resolved) {
         resolved = resolveExtensions(importee, importer);
       }
-      if (isProxyModule) {
-        if (!resolved) {
-          return { id: getExternalProxyId(importee), external: false };
-        }
-        resolved.id = (resolved.external ? getExternalProxyId : getProxyId)(resolved.id);
+      if (resolved && isProxyModule) {
+        resolved.id = wrapId(resolved.id, resolved.external ? EXTERNAL_SUFFIX : PROXY_SUFFIX);
         resolved.external = false;
-        return resolved;
+      } else if (resolved && isModuleRegistration) {
+        resolved.id = wrapId(resolved.id, DYNAMIC_REGISTER_SUFFIX);
+      } else if (!resolved && (isProxyModule || isRequiredModule)) {
+        return { id: wrapId(importee, EXTERNAL_SUFFIX), external: false };
       }
       return resolved;
     });
-  }
-
-  return resolveId;
+  };
 }

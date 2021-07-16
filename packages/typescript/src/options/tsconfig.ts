@@ -2,6 +2,16 @@ import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 
 import { PluginContext } from 'rollup';
+import type {
+  Diagnostic,
+  ExtendedConfigCacheEntry,
+  MapLike,
+  ParsedCommandLine,
+  ProjectReference,
+  TypeAcquisition,
+  WatchDirectoryFlags,
+  WatchOptions
+} from 'typescript';
 
 import { RollupTypescriptOptions } from '../../types';
 import diagnosticToWarning from '../diagnostics/toWarning';
@@ -14,6 +24,19 @@ import {
   PartialCompilerOptions
 } from './interfaces';
 import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
+
+export interface TypeScriptConfig {
+  autoSetSourceMap: boolean;
+  options: CompilerOptions;
+  typeAcquisition?: TypeAcquisition | undefined;
+  fileNames: string[];
+  projectReferences?: readonly ProjectReference[] | undefined;
+  watchOptions?: WatchOptions | undefined;
+  raw?: any;
+  errors: Diagnostic[];
+  wildcardDirectories?: MapLike<WatchDirectoryFlags> | undefined;
+  compileOnSave?: boolean | undefined;
+}
 
 /**
  * Finds the path to the tsconfig file relative to the current working directory.
@@ -71,9 +94,7 @@ function containsEnumOptions(
   return enums.some((prop) => prop in compilerOptions && typeof compilerOptions[prop] === 'number');
 }
 
-const configCache = new Map() as import('typescript').Map<
-  import('typescript').ExtendedConfigCacheEntry
->;
+const configCache = new Map() as import('typescript').Map<ExtendedConfigCacheEntry>;
 
 /**
  * Parse the Typescript config to use with the plugin.
@@ -90,11 +111,11 @@ export function parseTypescriptConfig(
   ts: typeof import('typescript'),
   tsconfig: RollupTypescriptOptions['tsconfig'],
   compilerOptions: PartialCompilerOptions
-) {
+): TypeScriptConfig {
   /* eslint-disable no-undefined */
   const cwd = process.cwd();
   makePathsAbsolute(compilerOptions, cwd);
-  let parsedConfig: import('typescript').ParsedCommandLine;
+  let parsedConfig: ParsedCommandLine;
 
   // Resolve path to file. If file is not found, pass undefined path to `parseJsonConfigFileContent`.
   // eslint-disable-next-line no-undefined
@@ -156,7 +177,7 @@ export function parseTypescriptConfig(
 export function emitParsedOptionsErrors(
   ts: typeof import('typescript'),
   context: PluginContext,
-  parsedOptions: import('typescript').ParsedCommandLine
+  parsedOptions: ParsedCommandLine
 ) {
   if (parsedOptions.errors.length > 0) {
     parsedOptions.errors.forEach((error) => context.warn(diagnosticToWarning(ts, null, error)));

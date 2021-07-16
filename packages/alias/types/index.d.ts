@@ -1,16 +1,16 @@
 import { Plugin, PluginHooks } from 'rollup';
 
-export interface Alias {
-  find: string | RegExp;
-  replacement: string;
-  customResolver?: ResolverFunction | ResolverObject | null;
-}
-
 export type ResolverFunction = PluginHooks['resolveId'];
 
 export interface ResolverObject {
   buildStart?: PluginHooks['buildStart'];
   resolveId: ResolverFunction;
+}
+
+export interface Alias {
+  find: string | RegExp;
+  replacement: string;
+  customResolver?: ResolverFunction | ResolverObject | null;
 }
 
 export interface RollupAliasOptions {

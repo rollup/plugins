@@ -34,9 +34,9 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
-  plugins: [commonjs()],
+  plugins: [commonjs()]
 };
 ```
 
@@ -66,8 +66,8 @@ commonjs({
     '!node_modules/logform/index.js',
     '!node_modules/logform/format.js',
     '!node_modules/logform/levels.js',
-    '!node_modules/logform/browser.js',
-  ],
+    '!node_modules/logform/browser.js'
+  ]
 });
 ```
 
@@ -120,6 +120,39 @@ Default: `[]`
 
 Sometimes you have to leave require statements unconverted. Pass an array containing the IDs or an `id => boolean` function.
 
+### `ignoreTryCatch`
+
+Type: `boolean | 'remove' | string[] | ((id: string) => boolean)`<br>
+Default: `false`
+
+In most cases, where `require` calls are inside a `try-catch` clause, they should be left unconverted as it requires an optional dependency that may or may not be installed beside the rolled up package.
+Due to the conversion of `require` to a static `import` - the call is hoisted to the top of the file, outside of the `try-catch` clause.
+
+- `true`: All `require` calls inside a `try` will be left unconverted.
+- `false`: All `require` calls inside a `try` will be converted as if the `try-catch` clause is not there.
+- `remove`: Remove all `require` calls from inside any `try` block.
+- `string[]`: Pass an array containing the IDs to left unconverted.
+- `((id: string) => boolean|'remove')`: Pass a function that control individual IDs.
+
+### `ignoreDynamicRequires`
+
+Type: `boolean`
+Default: false
+
+Some `require` calls cannot be resolved statically to be translated to imports, e.g.
+
+```js
+function wrappedRequire(target) {
+  return require(target);
+}
+wrappedRequire('foo');
+wrappedRequire('bar');
+```
+
+When this option is set to `false`, the generated code will either directly throw an error when such a call is encountered or, when `dynamicRequireTargets` is used, when such a call cannot be resolved with a configured dynamic require target.
+
+Setting this option to `true` will instead leave the `require` call in the code or use it as a fallback for `dynamicRequireTargets`.
+
 ### `esmExternals`
 
 Type: `boolean | string[] | ((id: string) => boolean)`
@@ -141,9 +174,52 @@ If you set `esmExternals` to `true`, this plugins assumes that all external depe
 
 You can also supply an array of ids to be treated as ES modules, or a function that will be passed each external id to determine if it is an ES module.
 
+### `defaultIsModuleExports`
+
+Type: `boolean | "auto"`<br>
+Default: `"auto"`
+
+Controls what is the default export when importing a CommonJS file from an ES module.
+
+- `true`: The value of the default export is `module.exports`. This currently matches the behavior of Node.js when importing a CommonJS file.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  console.log(foo); // { default: 3 }
+  ```
+- `false`: The value of the default export is `exports.default`.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  console.log(foo); // 3
+  ```
+- `"auto"`: The value of the default export is `exports.default` if the CommonJS file has an `exports.__esModule === true` property; otherwise it's `module.exports`. This makes it possible to import
+  the default export of ES modules compiled to CommonJS as if they were not compiled.
+  ```js
+  // mod.cjs
+  exports.default = 3;
+  ```
+  ```js
+  // mod-compiled.cjs
+  exports.__esModule = true;
+  exports.default = 3;
+  ```
+  ```js
+  import foo from './mod.cjs';
+  import bar from './mod-compiled.cjs';
+  console.log(foo); // { default: 3 }
+  console.log(bar); // 3
+  ```
+
 ### `requireReturnsDefault`
 
-Type: `boolean | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>
+Type: `boolean | "namespace" | "auto" | "preferred" | ((id: string) => boolean | "auto" | "preferred")`<br>
 Default: `false`
 
 Controls what is returned when requiring an ES module from a CommonJS file. When using the `esmExternals` option, this will also apply to external modules. By default, this plugin will render those imports as namespace imports, i.e.
@@ -174,7 +250,7 @@ This is in line with how other bundlers handle this situation and is also the mo
 
   var dep$1 = /*#__PURE__*/ Object.freeze({
     __proto__: null,
-    default: dep,
+    default: dep
   });
 
   console.log(dep$1.default);
@@ -205,7 +281,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
               enumerable: true,
               get: function () {
                 return n[k];
-              },
+              }
             }
       );
     });
@@ -233,9 +309,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
   import * as dep$1 from 'dep';
 
   function getDefaultExportFromNamespaceIfNotNamed(n) {
-    return n &&
-      Object.prototype.hasOwnProperty.call(n, 'default') &&
-      Object.keys(n).length === 1
+    return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1
       ? n['default']
       : n;
   }
@@ -252,9 +326,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
   import * as dep$1 from 'dep';
 
   function getDefaultExportFromNamespaceIfPresent(n) {
-    return n && Object.prototype.hasOwnProperty.call(n, 'default')
-      ? n['default']
-      : n;
+    return n && Object.prototype.hasOwnProperty.call(n, 'default') ? n['default'] : n;
   }
 
   var dep = getDefaultExportFromNamespaceIfPresent(dep$1);
@@ -287,9 +359,9 @@ export default {
   output: {
     file: 'bundle.js',
     format: 'iife',
-    name: 'MyModule',
+    name: 'MyModule'
   },
-  plugins: [resolve(), commonjs()],
+  plugins: [resolve(), commonjs()]
 };
 ```
 
@@ -299,7 +371,7 @@ Symlinks are common in monorepos and are also created by the `npm link` command.
 
 ```js
 commonjs({
-  include: /node_modules/,
+  include: /node_modules/
 });
 ```
 
@@ -322,11 +394,11 @@ function cjsDetectionPlugin() {
     moduleParsed({
       id,
       meta: {
-        commonjs: { isCommonJS },
-      },
+        commonjs: { isCommonJS }
+      }
     }) {
       console.log(`File ${id} is CommonJS: ${isCommonJS}`);
-    },
+    }
   };
 }
 ```

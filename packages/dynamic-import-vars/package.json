@@ -1,12 +1,15 @@
 {
   "name": "@rollup/plugin-dynamic-import-vars",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "publishConfig": {
     "access": "public"
   },
   "description": "Resolving dynamic imports that contain variables.",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/dynamic-import-vars"
+  },
   "author": "LarsDenBakker",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -17,17 +20,14 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test --ext .js",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "ci:test": "pnpm test -- --verbose",
     "prebuild": "del-cli dist",
-    "prepublishOnly": "pnpm run lint && pnpm run build",
-    "pretest": "pnpm run build -- --sourcemap",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build -- --sourcemap",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
     "test": "ava"
   },
   "files": [

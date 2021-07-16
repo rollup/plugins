@@ -2,7 +2,7 @@ import { createFilter } from '@rollup/pluginutils';
 import * as defaultTs from 'typescript';
 
 import { RollupTypescriptOptions, PartialCompilerOptions } from '../../types';
-import getTsLibPath from '../tslib';
+import { getTsLibPath } from '../tslib';
 
 /**
  * Separate the Rollup plugin options from the Typescript compiler options,
@@ -14,20 +14,22 @@ import getTsLibPath from '../tslib';
  * - `typescript`: Instance of Typescript library (possibly custom).
  * - `tslib`: ESM code from the tslib helper library (possibly custom).
  */
-export default function getPluginOptions(options: RollupTypescriptOptions) {
+export const getPluginOptions = (options: RollupTypescriptOptions) => {
   const {
-    include,
+    cacheDir,
     exclude,
-    tsconfig,
-    typescript,
-    tslib,
+    include,
     transformers,
+    tsconfig,
+    tslib,
+    typescript,
     ...compilerOptions
   } = options;
 
   const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude);
 
   return {
+    cacheDir,
     filter,
     tsconfig,
     compilerOptions: compilerOptions as PartialCompilerOptions,
@@ -35,4 +37,4 @@ export default function getPluginOptions(options: RollupTypescriptOptions) {
     tslib: tslib || getTsLibPath(),
     transformers
   };
-}
+};

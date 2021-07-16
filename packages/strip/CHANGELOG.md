@@ -1,5 +1,13 @@
 # @rollup/plugin-strip ChangeLog
 
+## v2.0.1
+
+_2021-05-07_
+
+### Updates
+
+- chore: update dependencies (7ff3d0c)
+
 ## v2.0.0
 
 _2020-07-12_

@@ -45,6 +45,7 @@ test('takes input from the latest options', async (t) => {
       run(),
       {
         options(options) {
+          // eslint-disable-next-line no-param-reassign
           options.input = input;
           return options;
         }
@@ -108,6 +109,15 @@ test('detects changes - forks a new child process and kills older process', asyn
   await bundle.write(outputOptions);
   t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
   t.is(mockChildProcess().kill.callCount, 1);
+});
+
+test('allow the allowRestart option', async (t) => {
+  const bundle = await rollup({
+    input,
+    plugins: [run({ allowRestarts: true })]
+  });
+  await bundle.write(outputOptions);
+  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
 });
 
 test.after(async () => {

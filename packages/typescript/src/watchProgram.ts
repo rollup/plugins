@@ -1,6 +1,15 @@
 import { PluginContext } from 'rollup';
 import { DiagnosticCategory } from 'typescript';
 
+import type {
+  Diagnostic,
+  EmitAndSemanticDiagnosticsBuilderProgram,
+  ParsedCommandLine,
+  WatchCompilerHostOfFilesAndCompilerOptions,
+  WatchStatusReporter,
+  WriteFileCallback
+} from 'typescript';
+
 import { CustomTransformerFactories } from '../types';
 
 import { buildDiagnosticReporter } from './diagnostics/emit';
@@ -8,9 +17,10 @@ import { DiagnosticsHost } from './diagnostics/host';
 import { Resolver } from './moduleResolution';
 import { mergeTransformers } from './customTransformers';
 
-type BuilderProgram = import('typescript').EmitAndSemanticDiagnosticsBuilderProgram;
+type BuilderProgram = EmitAndSemanticDiagnosticsBuilderProgram;
 
 // @see https://github.com/microsoft/TypeScript/blob/master/src/compiler/diagnosticMessages.json
+// eslint-disable-next-line no-shadow
 enum DiagnosticCode {
   FILE_CHANGE_DETECTED = 6032,
   FOUND_1_ERROR_WATCHING_FOR_FILE_CHANGES = 6193,
@@ -21,18 +31,18 @@ interface CreateProgramOptions {
   /** Formatting host used to get some system functions and emit type errors. */
   formatHost: DiagnosticsHost;
   /** Parsed Typescript compiler options. */
-  parsedOptions: import('typescript').ParsedCommandLine;
+  parsedOptions: ParsedCommandLine;
   /** Callback to save compiled files in memory. */
-  writeFile: import('typescript').WriteFileCallback;
+  writeFile: WriteFileCallback;
   /** Callback for the Typescript status reporter. */
-  status: import('typescript').WatchStatusReporter;
+  status: WatchStatusReporter;
   /** Function to resolve a module location */
   resolveModule: Resolver;
   /** Custom TypeScript transformers */
   transformers?: CustomTransformerFactories;
 }
 
-type DeferredResolve = ((value?: boolean) => void) | (() => void);
+type DeferredResolve = ((value: boolean | PromiseLike<boolean>) => void) | (() => void);
 
 interface Deferred {
   promise: Promise<boolean | void>;
@@ -68,7 +78,7 @@ export class WatchProgramHelper {
     this._finishDeferred = createDeferred();
   }
 
-  handleStatus(diagnostic: import('typescript').Diagnostic) {
+  handleStatus(diagnostic: Diagnostic) {
     // Fullfil deferred promises by Typescript diagnostic message codes.
     if (diagnostic.category === DiagnosticCategory.Message) {
       switch (diagnostic.code) {
@@ -95,7 +105,7 @@ export class WatchProgramHelper {
 
   resolveFinish() {
     if (this._finishDeferred) {
-      this._finishDeferred.resolve();
+      this._finishDeferred.resolve(false);
       this._finishDeferred = null;
     }
   }
@@ -132,7 +142,7 @@ function createWatchHost(
     resolveModule,
     transformers
   }: CreateProgramOptions
-): import('typescript').WatchCompilerHostOfFilesAndCompilerOptions<BuilderProgram> {
+): WatchCompilerHostOfFilesAndCompilerOptions<BuilderProgram> {
   const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
 
   const baseHost = ts.createWatchCompilerHost(

@@ -37,17 +37,28 @@ function mapToFunctions(object) {
 
 export default function replace(options = {}) {
   const filter = createFilter(options.include, options.exclude);
-  const { delimiters } = options;
+  const { delimiters, preventAssignment } = options;
   const functionValues = mapToFunctions(getReplacements(options));
-  const keys = Object.keys(functionValues)
-    .sort(longest)
-    .map(escape);
+  const keys = Object.keys(functionValues).sort(longest).map(escape);
+  const lookahead = preventAssignment ? '(?!\\s*=[^=])' : '';
   const pattern = delimiters
-    ? new RegExp(`${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}`, 'g')
-    : new RegExp(`\\b(${keys.join('|')})\\b`, 'g');
+    ? new RegExp(
+        `${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}${lookahead}`,
+        'g'
+      )
+    : new RegExp(`\\b(${keys.join('|')})\\b${lookahead}`, 'g');
 
   return {
     name: 'replace',
+
+    buildStart() {
+      if (![true, false].includes(preventAssignment)) {
+        this.warn({
+          message:
+            "@rollup/plugin-replace: 'preventAssignment' currently defaults to false. It is recommended to set this option to `true`, as the next major version will default this option to `true`."
+        });
+      }
+    },
 
     renderChunk(code, chunk) {
       const id = chunk.fileName;

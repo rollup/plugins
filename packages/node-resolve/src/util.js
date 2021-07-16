@@ -1,13 +1,8 @@
 import { dirname, extname, resolve } from 'path';
-import { promisify } from 'util';
 
 import { createFilter } from '@rollup/pluginutils';
 
-import resolveModule from 'resolve';
-
 import { realpathSync } from './fs';
-
-const resolveId = promisify(resolveModule);
 
 // returns the imported package name for bare module imports
 export function getPackageName(id) {
@@ -45,7 +40,16 @@ export function getMainFields(options) {
 }
 
 export function getPackageInfo(options) {
-  const { cache, extensions, pkg, mainFields, preserveSymlinks, useBrowserOverrides } = options;
+  const {
+    cache,
+    extensions,
+    pkg,
+    mainFields,
+    preserveSymlinks,
+    useBrowserOverrides,
+    rootDir,
+    ignoreSideEffectsForRoot
+  } = options;
   let { pkgPath } = options;
 
   if (cache.has(pkgPath)) {
@@ -61,7 +65,7 @@ export function getPackageInfo(options) {
 
   const packageInfo = {
     // copy as we are about to munge the `main` field of `pkg`.
-    packageJson: Object.assign({}, pkg),
+    packageJson: { ...pkg },
 
     // path to package.json file
     packageJsonPath: pkgPath,
@@ -135,13 +139,15 @@ export function getPackageInfo(options) {
     packageInfo.browserMappedMain = false;
   }
 
-  const packageSideEffects = pkg.sideEffects;
-  if (typeof packageSideEffects === 'boolean') {
-    internalPackageInfo.hasModuleSideEffects = () => packageSideEffects;
-  } else if (Array.isArray(packageSideEffects)) {
-    internalPackageInfo.hasModuleSideEffects = createFilter(packageSideEffects, null, {
-      resolve: pkgRoot
-    });
+  if (!ignoreSideEffectsForRoot || rootDir !== pkgRoot) {
+    const packageSideEffects = pkg.sideEffects;
+    if (typeof packageSideEffects === 'boolean') {
+      internalPackageInfo.hasModuleSideEffects = () => packageSideEffects;
+    } else if (Array.isArray(packageSideEffects)) {
+      internalPackageInfo.hasModuleSideEffects = createFilter(packageSideEffects, null, {
+        resolve: pkgRoot
+      });
+    }
   }
 
   cache.set(pkgPath, internalPackageInfo);
@@ -157,37 +163,4 @@ export function normalizeInput(input) {
 
   // otherwise it's a string
   return [input];
-}
-
-// Resolve module specifiers in order. Promise resolves to the first module that resolves
-// successfully, or the error that resulted from the last attempted module resolution.
-export function resolveImportSpecifiers(importSpecifierList, resolveOptions) {
-  let promise = Promise.resolve();
-
-  for (let i = 0; i < importSpecifierList.length; i++) {
-    promise = promise.then((value) => {
-      // if we've already resolved to something, just return it.
-      if (value) {
-        return value;
-      }
-
-      return resolveId(importSpecifierList[i], resolveOptions).then((result) => {
-        if (!resolveOptions.preserveSymlinks) {
-          result = realpathSync(result);
-        }
-        return result;
-      });
-    });
-
-    if (i < importSpecifierList.length - 1) {
-      // swallow MODULE_NOT_FOUND errors from all but the last resolution
-      promise = promise.catch((error) => {
-        if (error.code !== 'MODULE_NOT_FOUND') {
-          throw error;
-        }
-      });
-    }
-  }
-
-  return promise;
 }

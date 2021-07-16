@@ -1,5 +1,33 @@
 # @rollup/pluginutils ChangeLog
 
+## v4.1.1
+
+_2021-07-16_
+
+### Bugfixes
+
+- fix
+
+### Updates
+
+- chore
+
+## v4.1.0
+
+_2020-10-27_
+
+### Bugfixes
+
+- fix: attach scope object to for-loop (#616)
+
+### Features
+
+- feat: normalizePath (#550)
+
+### Updates
+
+- refactor: improve readability of attachScopes test (#551)
+
 ## v4.0.0
 
 _2020-08-13_

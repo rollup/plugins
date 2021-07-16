@@ -1,5 +1,5 @@
 {
-  rules: {
+  "rules": {
     "no-console": "off"
   }
 }

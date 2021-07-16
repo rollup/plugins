@@ -1,5 +1,129 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.0.2
+
+_2021-07-15_
+
+### Bugfixes
+
+- fix
+
+## v13.0.1
+
+_2021-07-15_
+
+### Updates
+
+- docs: Document how to get Node.js exports resolution (#884)
+
+## v13.0.0
+
+_2021-05-04_
+
+### Breaking Changes
+
+- fix!: mark module as external if resolved module is external (#799)
+
+### Features
+
+- feat: Follow up to #843, refining exports and browser field interaction (#866)
+
+## v12.0.0
+
+_2021-05-04_
+
+### Breaking Changes
+
+- fix!: mark module as external if resolved module is external (#799)
+
+### Features
+
+- feat: Follow up to #843, refining exports and browser field interaction (#866)
+
+## v11.2.1
+
+_2021-03-26_
+
+### Bugfixes
+
+- fix: fs.exists is incorrectly promisified (#835)
+
+## v11.2.0
+
+_2021-02-14_
+
+### Features
+
+- feat: add `ignoreSideEffectsForRoot` option (#694)
+
+### Updates
+
+- chore: mark `url` as an external and throw on warning (#783)
+- docs: clearer "Resolving Built-Ins" doc (#782)
+
+## v11.1.1
+
+_2021-01-29_
+
+### Bugfixes
+
+- fix: only log last resolve error (#750)
+
+### Updates
+
+- docs: add clarification on the order of package entrypoints (#768)
+
+## v11.1.0
+
+_2021-01-15_
+
+### Features
+
+- feat: support pkg imports and export array (#693)
+
+## v11.0.1
+
+_2020-12-14_
+
+### Bugfixes
+
+- fix: export map specificity (#675)
+- fix: add missing type import (#668)
+
+### Updates
+
+- docs: corrected word "yse" to "use" (#723)
+
+## v11.0.0
+
+_2020-11-30_
+
+### Breaking Changes
+
+- refactor!: simplify builtins and remove `customResolveOptions` (#656)
+- feat!: Mark built-ins as external (#627)
+- feat!: support package entry points (#540)
+
+### Bugfixes
+
+- fix: refactor handling builtins, do not log warning if no local version (#637)
+
+### Updates
+
+- docs: fix import statements in examples in README.md (#646)
+
+## v10.0.0
+
+_2020-10-27_
+
+### Breaking Changes
+
+- fix!: resolve hash in path (#588)
+
+### Bugfixes
+
+- fix: do not ignore exceptions (#564)
+
 ## v9.0.0
 
 _2020-08-13_

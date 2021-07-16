@@ -6,7 +6,10 @@
   },
   "description": "A Rollup plugin which beeps on errors and warnings",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/beep"
+  },
   "author": "shellscape",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/beep",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -15,14 +18,10 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run lint",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "ava --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache lib test types --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
     "test": "ava"
   },
   "files": [

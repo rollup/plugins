@@ -9,21 +9,18 @@ module.exports = {
     input: [ID_MAIN, ID_OTHER],
     plugins: [
       {
-        moduleParsed({
-          id,
-          meta: {
-            commonjs: { isCommonJS }
-          }
-        }) {
-          if (id === ID_MAIN) {
-            if (isCommonJS !== false) {
+        moduleParsed({ id, meta: { commonjs } }) {
+          if (id === ID_OTHER) {
+            if (commonjs.isCommonJS !== true) {
               throw new Error(
-                `Main file wrongly detected: isCommonJS === ${JSON.stringify(isCommonJS)}`
+                `File "${id}" wrongly detected: isCommonJS === ${JSON.stringify(
+                  commonjs.isCommonJS
+                )}`
               );
             }
-          } else if (isCommonJS !== true) {
+          } else if (commonjs && commonjs.isCommonJS !== false) {
             throw new Error(
-              `Other file wrongly detected: isCommonJS === ${JSON.stringify(isCommonJS)}`
+              `File "${id}" wrongly detected: isCommonJS === ${JSON.stringify(commonjs.isCommonJS)}`
             );
           }
         }

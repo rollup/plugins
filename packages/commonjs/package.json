@@ -1,12 +1,15 @@
 {
   "name": "@rollup/plugin-commonjs",
-  "version": "15.1.0",
+  "version": "19.0.1",
   "publishConfig": {
     "access": "public"
   },
   "description": "Convert CommonJS modules to ES2015",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/commonjs"
+  },
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/commonjs/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -17,18 +20,15 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose && pnpm run test:ts",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "prebuild": "del-cli dist",
-    "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint && pnpm run test:ts",
-    "pretest": "pnpm run build",
+    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
     "test": "ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
@@ -47,7 +47,7 @@
     "require"
   ],
   "peerDependencies": {
-    "rollup": "^2.30.0"
+    "rollup": "^2.38.3"
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
@@ -63,7 +63,7 @@
     "@rollup/plugin-node-resolve": "^8.4.0",
     "locate-character": "^2.0.5",
     "require-relative": "^0.8.7",
-    "rollup": "^2.30.0",
+    "rollup": "^2.39.0",
     "shx": "^0.3.2",
     "source-map": "^0.7.3",
     "source-map-support": "^0.5.19",

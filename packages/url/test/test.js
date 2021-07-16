@@ -25,9 +25,7 @@ const run = async (t, type, opts) => {
   await bundle.write({ format: 'es', file: outputFile });
   const code = readFileSync(outputFile, 'utf-8');
   // Windows fix, glob paths must be in unix format
-  const glob = join(outputDir, `**/*.${type}`)
-    .split(sep)
-    .join(posix.sep);
+  const glob = join(outputDir, `**/*.${type}`).split(sep).join(posix.sep);
 
   t.snapshot(code);
   t.snapshot(await globby(glob));
@@ -35,8 +33,24 @@ const run = async (t, type, opts) => {
 
 test.beforeEach(() => del(outputDir));
 
-test.serial('inline binary files', async (t) => {
+test.serial('inline png files', async (t) => {
   await run(t, 'png', { limit: 10 * 1024 });
+});
+
+test.serial('inline jpg files', async (t) => {
+  await run(t, 'jpg', { limit: 10 * 1024 });
+});
+
+test.serial('inline jpeg files', async (t) => {
+  await run(t, 'jpeg', { limit: 10 * 1024 });
+});
+
+test.serial('inline gif files', async (t) => {
+  await run(t, 'gif', { limit: 10 * 1024 });
+});
+
+test.serial('inline webp files', async (t) => {
+  await run(t, 'webp', { limit: 10 * 1024 });
 });
 
 test.serial('inline text files', async (t) => {

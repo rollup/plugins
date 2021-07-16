@@ -1,47 +1,28 @@
 module.exports = {
   extends: ['rollup', 'plugin:import/typescript'],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
     project: ['./tsconfig.eslint.json', './packages/*/tsconfig.json'],
     tsconfigRootDir: __dirname
   },
-  plugins: ['@typescript-eslint'],
   rules: {
-    '@typescript-eslint/consistent-type-assertions': 'error',
-    '@typescript-eslint/consistent-type-definitions': 'error',
-    '@typescript-eslint/member-ordering': 'error',
-    '@typescript-eslint/no-inferrable-types': 'error',
-    '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        vars: 'local',
-        args: 'after-used',
-        ignoreRestSiblings: true
+    // disabling sort keys for now so we can get the rest of the linting shored up
+    'sort-keys': 'off',
+    'typescript-sort-keys/interface': 'off'
+  },
+  overrides: [
+    {
+      files: ['**/fixtures/**'],
+      rules: {
+        'no-console': 'off',
+        'import/extensions': 'off',
+        'import/no-unresolved': 'off'
       }
-    ],
-    'import/extensions': [
-      'error',
-      'always',
-      {
-        js: 'never',
-        jsx: 'never',
-        ts: 'never',
-        tsx: 'never'
+    },
+    {
+      files: ['**/test/**'],
+      rules: {
+        'import/extensions': 'off'
       }
-    ],
-    'import/no-namespace': 'off',
-    'import/no-named-export': 'off',
-    'no-unused-vars': 'off',
-    'prettier/prettier': [
-      'error',
-      {
-        arrowParens: 'always',
-        printWidth: 100,
-        singleQuote: true,
-        trailingComma: 'none',
-        plugins: ['prettier-plugin-package']
-      }
-    ]
-  }
+    }
+  ]
 };

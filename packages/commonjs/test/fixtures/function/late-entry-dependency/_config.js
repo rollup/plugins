@@ -1,5 +1,6 @@
-const path = require('path');
 const fs = require('fs');
+
+const path = require('path');
 
 const ID_MAIN = path.join(__dirname, 'main.js');
 const ID_OTHER = path.join(__dirname, 'other.js');
@@ -7,6 +8,9 @@ const ID_OTHER = path.join(__dirname, 'other.js');
 module.exports = {
   options: {
     input: [ID_MAIN, ID_OTHER],
+    output: {
+      chunkFileNames: '[name].js'
+    },
     plugins: [
       {
         load(id) {

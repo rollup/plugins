@@ -72,6 +72,23 @@ export default {
 };
 ```
 
+### `allowRestarts`
+
+Type: `Boolean`<br>
+Default: `false`
+
+If `true`, instructs the plugin to listen to `stdin` for the sequences listed below followed by enter (carriage return).
+
+#### `stdin` Input Actions
+
+When this option is enabled, `stdin` will listen for the following input and perform the associated action:
+
+- `restart` → Kills the currently running bundle and starts it again. _Note: This does not create a new bundle, the bundle is run again "as-is". This can be used to test configuration changes or other changes that are made without modifying your source_
+  Also allowed: `rs`, `CTRL+K`
+
+- `clear` → Clears the screen of all text
+  Also allowed: `cls`, `CTRL+L`
+
 ## Practical Example
 
 The feature is usually intended for development use, you may prefer to only include it when Rollup is being run in watch mode:

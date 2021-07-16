@@ -9,7 +9,7 @@ const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
 
-test('warns when importing builtins', async (t) => {
+test('handles importing builtins', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'builtins.js',
@@ -24,8 +24,7 @@ test('warns when importing builtins', async (t) => {
 
   const { module } = await testBundle(t, bundle);
 
-  t.is(warnings.length, 1);
-  t.snapshot(warnings);
+  t.is(warnings.length, 0);
   // eslint-disable-next-line global-require
   t.is(module.exports, require('path').sep);
 });
@@ -66,8 +65,7 @@ test('true allows preferring a builtin to a local module of the same name', asyn
 
   const imports = await getImports(bundle);
 
-  t.is(warnings.length, 1);
-  t.snapshot(warnings);
+  t.is(warnings.length, 0);
   t.deepEqual(imports, ['events']);
 });
 
@@ -88,4 +86,20 @@ test('false allows resolving a local module with the same name as a builtin modu
   t.is(warnings.length, 1);
   t.snapshot(warnings);
   t.deepEqual(imports, []);
+});
+
+test('does not warn when using a builtin module when there is no local version, no explicit configuration', async (t) => {
+  let warning = null;
+  await rollup({
+    input: 'prefer-builtin-no-local.js',
+    onwarn({ message }) {
+      // eslint-disable-next-line no-bitwise
+      if (~message.indexOf('preferring')) {
+        warning = message;
+      }
+    },
+    plugins: [nodeResolve()]
+  });
+
+  t.is(warning, null);
 });

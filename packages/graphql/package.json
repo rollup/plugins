@@ -1,0 +1,72 @@
+{
+  "name": "@rollup/plugin-graphql",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Convert .gql/.graphql files to ES6 modules",
+  "license": "MIT",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/graphql"
+  },
+  "author": "rollup",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/graphql#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm build && pnpm lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
+    "lint:graphql": "prettier --write \"test/fixtures/**/*.graphql\"",
+    "prebuild": "del-cli dist && pnpm lint:graphql",
+    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
+    "test": "ava",
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
+  },
+  "files": [
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "graphql",
+    "apollo",
+    "import",
+    "modules"
+  ],
+  "peerDependencies": {
+    "graphql": ">=0.9.0",
+    "rollup": "^1.20.0 || ^2.0.0"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^4.0.0",
+    "graphql-tag": "^2.2.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-buble": "^0.21.3",
+    "graphql": "^14.1.1",
+    "rollup": "^2.23.0"
+  },
+  "types": "types/index.d.ts",
+  "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/recipes/**",
+      "!**/types.ts"
+    ]
+  }
+}

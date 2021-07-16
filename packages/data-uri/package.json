@@ -6,7 +6,10 @@
   },
   "description": "Import modules from Data URIs",
   "license": "MIT",
-  "repository": "rollup/plugins",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/data-uri"
+  },
   "author": "shellscape",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/data-uri",
   "bugs": "https://github.com/rollup/plugins/issues",
@@ -17,18 +20,16 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "ci:coverage": "nyc pnpm run test && nyc report --reporter=text-lcov > coverage.lcov",
-    "ci:lint": "pnpm run build && pnpm run lint",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm run test -- --verbose",
-    "lint": "pnpm run lint:js && pnpm run lint:docs && pnpm run lint:package",
-    "lint:docs": "prettier --single-quote --arrow-parens avoid --trailing-comma none --write README.md",
-    "lint:js": "eslint --fix --cache src test types --ext .js,.ts",
-    "lint:package": "prettier --write package.json --plugin=prettier-plugin-package",
+    "ci:test": "pnpm test -- --verbose",
     "prebuild": "del-cli dist",
-    "prepublishOnly": "pnpm run lint && pnpm run build",
-    "pretest": "pnpm run build -- --sourcemap",
-    "test": "ava"
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build -- --sourcemap",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
+    "test": "ava",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
     "dist",
@@ -51,7 +52,8 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^5.0.2",
     "@rollup/pluginutils": "^3.0.1",
-    "rollup": "^2.23.0"
+    "rollup": "^2.23.0",
+    "typescript": "^4.1.2"
   },
   "types": "types/index.d.ts",
   "ava": {

@@ -1,12 +1,13 @@
+import type { ModuleResolutionHost, ResolvedModuleFull } from 'typescript';
+
 import { DiagnosticsHost } from './diagnostics/host';
 
-type ModuleResolutionHost = import('typescript').ModuleResolutionHost;
 type ModuleResolverHost = Partial<ModuleResolutionHost> & DiagnosticsHost;
 
 export type Resolver = (
   moduleName: string,
   containingFile: string
-) => import('typescript').ResolvedModuleFull | undefined;
+) => ResolvedModuleFull | undefined;
 
 /**
  * Create a helper for resolving modules using Typescript.

@@ -124,6 +124,20 @@ test('supports JS extensions in TS when referring to TS imports', async (t) => {
   t.is(module.exports, 'It works!');
 });
 
+test('handles package.json being a directory earlier in the path', async (t) => {
+  const bundle = await rollup({
+    input: 'package-json-in-path/package.json/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
 test('ignores IDs with null character', async (t) => {
   const result = await nodeResolve().resolveId('\0someid', 'test.js');
   t.is(result, null);
@@ -164,10 +178,25 @@ test('throws error if local id is not resolved', async (t) => {
   }
 });
 
-test('allows custom options', async (t) => {
+test('allows custom moduleDirectories', async (t) => {
   const bundle = await rollup({
-    input: 'custom-resolve-options/main.js',
+    input: 'custom-module-dir/main.js',
     onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        moduleDirectories: ['js_modules']
+      })
+    ]
+  });
+
+  t.is(bundle.cache.modules[0].id, resolve('custom-module-dir/js_modules/foo.js'));
+});
+
+test('allows custom moduleDirectories with legacy customResolveOptions.moduleDirectory', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'custom-module-dir/main.js',
+    onwarn: (warning) => warnings.push(warning),
     plugins: [
       nodeResolve({
         customResolveOptions: {
@@ -177,7 +206,9 @@ test('allows custom options', async (t) => {
     ]
   });
 
-  t.is(bundle.cache.modules[0].id, resolve('custom-resolve-options/js_modules/foo.js'));
+  t.is(bundle.cache.modules[0].id, resolve('custom-module-dir/js_modules/foo.js'));
+  t.is(warnings.length, 1);
+  t.snapshot(warnings);
 });
 
 test('ignores deep-import non-modules', async (t) => {
@@ -227,6 +258,37 @@ test('resolves dynamic imports', async (t) => {
   const { module } = await testBundle(t, bundle);
   const result = await module.exports;
   t.is(result.default, 42);
+});
+
+test('respects the package.json sideEffects property for files in root package by default', async (t) => {
+  const bundle = await rollup({
+    input: 'root-package-side-effect/index.js',
+    plugins: [
+      nodeResolve({
+        rootDir: 'root-package-side-effect'
+      })
+    ]
+  });
+
+  const code = await getCode(bundle);
+  t.false(code.includes('side effect'));
+  t.snapshot(code);
+});
+
+test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async (t) => {
+  const bundle = await rollup({
+    input: 'root-package-side-effect/index.js',
+    plugins: [
+      nodeResolve({
+        rootDir: 'root-package-side-effect',
+        ignoreSideEffectsForRoot: true
+      })
+    ]
+  });
+
+  const code = await getCode(bundle);
+  t.true(code.includes('side effect'));
+  t.snapshot(code);
 });
 
 test('handles package side-effects', async (t) => {
@@ -313,4 +375,46 @@ test('can resolve imports with search params and hash', async (t) => {
   const { module } = await testBundle(t, bundle);
 
   t.is(module.exports, 'resolved with search params and hash');
+});
+
+test('marks a module as external if the resolved version is external', async (t) => {
+  const bundle = await rollup({
+    input: 'resolved-external/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    external: [/node_modules/],
+    plugins: [nodeResolve()]
+  });
+
+  const code = await getCode(bundle);
+  t.is(/node_modules/.test(code), false);
+});
+
+[
+  'preserveSymlinks',
+  'basedir',
+  'package',
+  'extensions',
+  'includeCoreModules',
+  'readFile',
+  'isFile',
+  'isDirectory',
+  'realpath',
+  'packageFilter',
+  'pathFilter',
+  'paths',
+  'packageIterator'
+].forEach((resolveOption) => {
+  test(`throws error for removed customResolveOptions.${resolveOption} option`, (t) => {
+    try {
+      nodeResolve({
+        customResolveOptions: {
+          [resolveOption]: 'something'
+        }
+      });
+    } catch (e) {
+      t.snapshot(e);
+      return;
+    }
+    t.fail('expecting error');
+  });
 });

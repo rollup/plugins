@@ -1,5 +1,21 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v5.1.2
+
+_2020-12-14_
+
+### Bugfixes
+
+- fix: Remove `eval` calls and enable dummy sourcemap (#685)
+
+## v5.1.1
+
+_2020-10-27_
+
+### Updates
+
+- refact: use helper module instead of banner (#607)
+
 ## v5.1.0
 
 _2020-09-09_

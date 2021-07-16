@@ -17,6 +17,15 @@ test('template literal with variable filename', (t) => {
   t.is(glob, './foo/*.js');
 });
 
+test('template literal with dot-prefixed suffix', (t) => {
+  const ast = CustomParser.parse('import(`./${bar}.entry.js`);', {
+    sourceType: 'module'
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  t.is(glob, './*.entry.js');
+});
+
 test('template literal with variable directory', (t) => {
   const ast = CustomParser.parse('import(`./foo/${bar}/x.js`);', {
     sourceType: 'module'
