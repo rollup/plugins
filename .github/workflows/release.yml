@@ -79,4 +79,4 @@ jobs:
           git pull origin master --no-edit
           git rebase
           git push origin HEAD:master
-          git push origin HEAD:master -- tags
+          git push origin HEAD:master --tags
