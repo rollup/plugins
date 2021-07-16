@@ -1,6 +1,6 @@
 import { platform } from 'os';
 
-import { PartialResolvedId, Plugin } from 'rollup';
+import type { PartialResolvedId, Plugin } from 'rollup';
 import slash from 'slash';
 
 import { Alias, ResolverFunction, RollupAliasOptions } from '../types';
