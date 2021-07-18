@@ -148,8 +148,14 @@ export default function transformCommonjs(
               } else if (!firstTopLevelModuleExportsAssignment) {
                 firstTopLevelModuleExportsAssignment = node;
               }
-              if (node.right.type === 'ObjectExpression' && hasDefineEsmProperty(node.right)) {
-                shouldWrap = true;
+              if (node.right.type === 'ObjectExpression') {
+                if (defaultIsModuleExports === 'auto') {
+                  if (hasDefineEsmProperty(node.right)) {
+                    shouldWrap = true;
+                  }
+                } else if (defaultIsModuleExports === false) {
+                  shouldWrap = true;
+                }
               }
             } else if (exportName === KEY_COMPILED_ESM) {
               if (programDepth > 3) {
