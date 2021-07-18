@@ -3,4 +3,6 @@
 .github/PULL_REQUEST_TEMPLATE.md
 packages/json/test/fixtures/garbage/*
 packages/yaml/test/fixtures/**/*
-**/dist
+**/dist/
+**/fixtures/
+pnpm-lock.yaml

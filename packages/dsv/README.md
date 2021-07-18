@@ -82,7 +82,7 @@ This option could be used for converting numeric `string` values into `Number` v
 ```js
 dsv({
   processRow: (row, id) => {
-    Object.keys(row).forEach(key => {
+    Object.keys(row).forEach((key) => {
       var value = row[key];
       row[key] = isNaN(+value) ? value : +value;
     });

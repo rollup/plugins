@@ -327,7 +327,7 @@ It's main purpose is to allow other tools for configuration of transpilation wit
 ```js
 import { createBabelInputPluginFactory } from '@rollup/plugin-babel';
 
-export default createBabelInputPluginFactory(babelCore => {
+export default createBabelInputPluginFactory((babelCore) => {
   function myPlugin() {
     return {
       visitor: {}
