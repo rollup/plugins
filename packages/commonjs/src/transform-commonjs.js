@@ -148,8 +148,11 @@ export default function transformCommonjs(
               } else if (!firstTopLevelModuleExportsAssignment) {
                 firstTopLevelModuleExportsAssignment = node;
               }
-              if (node.right.type === 'ObjectExpression') {
-                if (defaultIsModuleExports === 'auto') {
+
+              if (defaultIsModuleExports === false) {
+                shouldWrap = true;
+              } else if (defaultIsModuleExports === 'auto') {
+                if (node.right.type === 'ObjectExpression') {
                   if (hasDefineEsmProperty(node.right)) {
                     shouldWrap = true;
                   }
