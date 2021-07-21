@@ -1,10 +1,12 @@
+import { Options } from '../types';
+
 const fs = require('fs');
 const path = require('path');
 
 const { transform } = require('sucrase');
 const { createFilter } = require('@rollup/pluginutils');
 
-module.exports = function sucrase(opts = {}) {
+module.exports = function sucrase(opts: Options = {}) {
   const filter = createFilter(opts.include, opts.exclude);
 
   return {
@@ -28,7 +30,7 @@ module.exports = function sucrase(opts = {}) {
       }
     },
 
-    transform(code, id) {
+    transform(code: any, id: any) {
       if (!filter(id)) return null;
 
       const result = transform(code, {
