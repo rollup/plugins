@@ -55,6 +55,7 @@
     "@rollup/plugin-alias": "^3.1.1",
     "rollup": "^2.23.0"
   },
+  "types": "dist/index.d.ts",
   "ava": {
     "babel": {
       "compileEnhancements": false
@@ -66,5 +67,12 @@
       "!**/recipes/**",
       "!**/types.ts"
     ]
-  }
+  },
+  "contributors": [
+    {
+      "name": "Vinayak Kulkarni",
+      "email": "inbox.vinayak@gmail.com",
+      "url": "https://vinayakkulkarni.dev"
+    }
+  ]
 }
