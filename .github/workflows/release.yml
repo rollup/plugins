@@ -8,7 +8,9 @@ on:
 jobs:
   publish:
     # let's ignore release commits, otherwise it'll try to run twice
-    if: !startsWith(github.event.head_commit.message , 'chore(release):')
+    if: |
+      !startsWith(github.event.head_commit.message , 'chore(release):') &&
+      !startsWith(github.event.head_commit.message , 'chore(repo):')
 
     runs-on: ubuntu-latest
 
@@ -53,9 +55,6 @@ jobs:
       - name: pnpm install
         run: pnpm install
 
-      - name: Prettier
-        run: pnpm run prettier:check
-
       - name: Build Packages
         run: pnpm build --recursive
 
@@ -73,9 +72,10 @@ jobs:
 
       - name: Push Release and Cleanup
         run: |
+          pnpm lint:docs
           git checkout .npmrc
           git add . && git commit --amend --no-edit
           git pull origin master --no-edit
           git rebase
           git push origin HEAD:master
-          git push origin HEAD:master -- tags
+          git push origin HEAD:master --tags
