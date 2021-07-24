@@ -153,7 +153,7 @@ test('supports JS extensions in TS actually importing JS with export map', async
         babelHelpers: 'bundled',
         plugins: ['@babel/plugin-transform-typescript'],
         extensions: ['.js', '.ts']
-        })
+      })
     ]
   });
   const { module } = await testBundle(t, bundle);
