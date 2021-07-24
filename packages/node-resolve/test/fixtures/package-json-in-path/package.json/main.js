@@ -1,3 +1,2 @@
-import { main } from "dependency/dist/something.js";
-
-export default main();
+import { test } from 'dep';
+export default test

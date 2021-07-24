@@ -64,8 +64,8 @@ export class InvalidConfigurationError extends ResolveError {
 }
 
 export class InvalidModuleSpecifierError extends ResolveError {
-  constructor(context, internal) {
-    super(createErrorMsg(context, internal));
+  constructor(context, internal, reason) {
+    super(createErrorMsg(context, reason, internal));
   }
 }
 
