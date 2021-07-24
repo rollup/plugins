@@ -153,6 +153,20 @@ test('supports JS extensions in TS actually importing JS with export map', async
         babelHelpers: 'bundled',
         plugins: ['@babel/plugin-transform-typescript'],
         extensions: ['.js', '.ts']
+        })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
+test('handles package.json being a directory earlier in the path', async (t) => {
+  const bundle = await rollup({
+    input: 'package-json-in-path/package.json/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js']
       })
     ]
   });

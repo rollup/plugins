@@ -8,7 +8,8 @@ on:
       - synchronize
   push:
     branches:
-      - "*"
+      - '*'
+      - '!master'
 
 jobs:
   build:
@@ -16,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node: ["16", "14", "12"]
+        node: ['16', '14', '12']
 
     name: Node v${{ matrix.node }}
 
@@ -28,6 +29,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
+
+      - name: Checkout Master
+        run: git branch -f master origin/master
 
       - name: Install pnpm
         run: npm install pnpm -g
@@ -41,8 +45,12 @@ jobs:
       - name: pnpm install
         run: pnpm install
 
-      - name: Audit Dependencies
-        run: pnpm security
+      - name: Prettier
+        run: pnpm run prettier:check
+
+      # pnpm audit isn't as robust as it needs to be atm
+      # - name: Audit Dependencies
+      #   run: pnpm security
 
       - name: Build Packages
         run: pnpm build --recursive
@@ -51,4 +59,4 @@ jobs:
         run: pnpm lint:js
 
       - name: Run Tests
-        run: pnpm ci:coverage --filter ...[${{ github.sha }}]
+        run: pnpm ci:coverage --filter "...[origin/master]"

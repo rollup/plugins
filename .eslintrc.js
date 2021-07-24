@@ -1,65 +1,27 @@
 module.exports = {
   extends: ['rollup', 'plugin:import/typescript'],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
     project: ['./tsconfig.eslint.json', './packages/*/tsconfig.json'],
     tsconfigRootDir: __dirname
   },
-  plugins: ['@typescript-eslint'],
   rules: {
-    '@typescript-eslint/consistent-type-assertions': 'error',
-    '@typescript-eslint/consistent-type-definitions': 'error',
-    '@typescript-eslint/member-ordering': 'error',
-    '@typescript-eslint/no-inferrable-types': 'error',
-    '@typescript-eslint/no-redeclare': 'error',
-    '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        vars: 'local',
-        args: 'after-used',
-        ignoreRestSiblings: true
-      }
-    ],
-    'import/extensions': [
-      'error',
-      'always',
-      {
-        js: 'never',
-        jsx: 'never',
-        ts: 'never',
-        tsx: 'never'
-      }
-    ],
-    'import/prefer-default-export': 'off',
-    'import/no-namespace': 'off',
-    'import/no-named-export': 'off',
-    'no-redeclare': 'off',
-    'no-unused-vars': 'off',
-    'prefer-object-spread': 'off',
-    'spaced-comment': 'off',
-    'prettier/prettier': [
-      'error',
-      {
-        arrowParens: 'always',
-        printWidth: 100,
-        singleQuote: true,
-        trailingComma: 'none',
-        plugins: ['prettier-plugin-package']
-      }
-    ]
+    // disabling sort keys for now so we can get the rest of the linting shored up
+    'sort-keys': 'off',
+    'typescript-sort-keys/interface': 'off'
   },
   overrides: [
     {
-      "files": ["**/test/**/*.{js,ts}"],
-      "rules": {
-        "no-console": "off"
+      files: ['**/fixtures/**'],
+      rules: {
+        'no-console': 'off',
+        'import/extensions': 'off',
+        'import/no-unresolved': 'off'
       }
     },
     {
-      "files": ["**/*.ts"],
-      "rules": {
-        "no-undef": "off"
+      files: ['**/test/**'],
+      rules: {
+        'import/extensions': 'off'
       }
     }
   ]

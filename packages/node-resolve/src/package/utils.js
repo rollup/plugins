@@ -1,9 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import path from 'path';
 import fs from 'fs';
-import { promisify } from 'util';
 
-const fileExists = promisify(fs.exists);
+import { fileExists } from '../fs';
 
 function isModuleDir(current, moduleDirs) {
   return moduleDirs.some((dir) => current.endsWith(dir));

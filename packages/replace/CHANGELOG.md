@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v3.0.0
+
+_2021-07-16_
+
+### Breaking Changes
+
+- fix
+
 ## v2.4.2
 
 _2021-03-26_

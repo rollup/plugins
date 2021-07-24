@@ -1,6 +1,7 @@
+import Animal from '.';
+
 import { makeRandomName } from '../core/utilities';
 
-import Animal from '.';
 
 export interface Dog extends Animal {
   name: string;
