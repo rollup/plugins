@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.0.3
+
+_2021-07-24_
+
+### Bugfixes
+
+- fix
+
 ## v13.0.2
 
 _2021-07-15_
