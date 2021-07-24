@@ -121,7 +121,7 @@ async function resolveWithExportMap({
       importer,
       moduleDirs: moduleDirectories,
       conditions: exportConditions,
-      resolveId(id /*, parent*/) {
+      resolveId(id /* , parent*/) {
         return resolveIdClassic({
           importSpecifier: id,
           packageInfoCache,
