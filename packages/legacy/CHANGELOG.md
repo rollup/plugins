@@ -1,5 +1,13 @@
 # @rollup/plugin-legacy ChangeLog
 
+## v2.2.0
+
+_2021-07-26_
+
+### Features
+
+- feat: add typings (#898)
+
 ## v2.1.0
 
 _2021-01-29_
