@@ -52,7 +52,7 @@ const commitChanges = async (cwd: string, shortName: string, version: string) =>
   await execa('git', params);
 };
 
-const getCommits = async (shortName: string, stripScope: string[]) => {
+const getCommits = async (shortName: string) => {
   log(chalk`{blue Gathering Commits}`);
 
   let params = ['tag', '--list', `${shortName}-v*`, '--sort', '-v:refname'];
@@ -62,8 +62,7 @@ const getCommits = async (shortName: string, stripScope: string[]) => {
   log(chalk`{blue Last Release Tag}: ${latestTag || '<none>'}`);
 
   params = ['--no-pager', 'log', `${latestTag}..HEAD`, '--format=%B%n-hash-%n%H🐒💨🙊'];
-  const scope = stripScope.reduce((prev, strip) => prev.replace(strip, ''), shortName);
-  const rePlugin = new RegExp(`^[\\w\\!]+\\(([\\w,]+)?${scope}([\\w,]+)?\\)`, 'i');
+  const rePlugin = new RegExp(`^[\\w\\!]+\\(([\\w,]+)?${shortName}([\\w,]+)?\\)`, 'i');
   let { stdout } = await execa('git', params);
 
   if (!stdout) {
@@ -144,7 +143,7 @@ const updateChangelog = (commits: Commit[], cwd: string, shortName: string, vers
 
   for (const { breaking, hash, header, type } of commits) {
     const ref = /\(#\d+\)/.test(header as string) ? '' : ` (${hash?.substring(0, 7)})`;
-    const message = header?.trim().replace(/\(.+\)/, '') + ref;
+    const message = header?.trim().replace(/\(.+\)!?:/, '') + ref;
     if (breaking) {
       notes.breaking.push(message);
     } else if (type === 'fix') {
@@ -194,7 +193,6 @@ const updatePackage = async (cwd: string, pkg: RepoPackage, version: string) => 
   try {
     const argv = yargs(process.argv.slice(2));
     const packagePath = argv.packagePath || 'packages';
-    const stripScope = argv.stripScope?.split(',') || [];
     const packageName = argv.pkg;
     const shortName = packageName.replace(/^@.+\//, '').replace('plugin-', '');
     const cwd = join(process.cwd(), `/${packagePath}/`, shortName);
@@ -211,7 +209,7 @@ const updatePackage = async (cwd: string, pkg: RepoPackage, version: string) => 
 
     log(chalk`{cyan Releasing \`${packageName}\`} from {grey packages/${shortName}}\n`);
 
-    const commits = await getCommits(shortName, stripScope);
+    const commits = await getCommits(shortName);
 
     if (!commits.length) {
       log(chalk`\n{red No Commits Found}. Did you mean to publish ${packageName}?`);
