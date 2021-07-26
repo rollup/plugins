@@ -6,35 +6,16 @@ _2021-07-15_
 
 ### Bugfixes
 
-- fix
-- fix
-
-### Features
-
-- feat
-
-### Updates
-
-- docs
-- chore: update dependencies (26f9b6c)
+- fix: allow ./${var}.suffix.js (#834)
+- fix: Give default promise rejection timing parity with cases (#825)
 
 ## v1.2.0
 
 _2021-07-15_
 
-### Bugfixes
+### Notes
 
-- fix
-- fix
-
-### Features
-
-- feat
-
-### Updates
-
-- docs
-- chore: update dependencies (26f9b6c)
+This release is identical to v1.3.0. Duplicate versions were created as the result of erroneous Workflows.
 
 ## v1.1.7
 

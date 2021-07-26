@@ -6,7 +6,7 @@ _2021-07-16_
 
 ### Updates
 
-- docs
+- docs: add helpful notes (#612)
 
 ## v3.1.3
 

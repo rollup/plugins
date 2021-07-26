@@ -6,7 +6,7 @@ _2021-07-16_
 
 ### Breaking Changes
 
-- fix
+- fix!: issues with nested objects replacements (#903)
 
 ## v2.4.2
 

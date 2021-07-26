@@ -6,11 +6,7 @@ _2021-07-16_
 
 ### Bugfixes
 
-- fix
-
-### Updates
-
-- chore
+- fix: remove extraneous peer dependency requirement (#845)
 
 ## v4.1.0
 

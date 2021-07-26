@@ -6,7 +6,7 @@ _2021-07-24_
 
 ### Bugfixes
 
-- fix
+- fix: Fix bug where JS import was converted to a TS import, resulting in an error when using export maps (#921)
 
 ## v13.0.3
 
@@ -14,7 +14,7 @@ _2021-07-24_
 
 ### Bugfixes
 
-- fix
+- fix: handle browser-mapped paths correctly in nested contexts (#920)
 
 ## v13.0.2
 
@@ -22,7 +22,7 @@ _2021-07-15_
 
 ### Bugfixes
 
-- fix
+- fix: handle "package.json" being in path (#927)
 
 ## v13.0.1
 

@@ -173,7 +173,8 @@ const updateChangelog = (commits: Commit[], cwd: string, shortName: string, vers
   }
 
   log(chalk`{blue Updating} CHANGELOG.md`);
-  const content = [title, newLog, oldNotes].filter(Boolean).join('\n\n');
+  let content = [title, newLog, oldNotes].filter(Boolean).join('\n\n');
+  if (!content.endsWith('\n')) content += '\n';
   writeFileSync(logPath, content, 'utf-8');
 };
 
