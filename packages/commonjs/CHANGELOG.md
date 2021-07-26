@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v19.0.2
+
+_2021-07-26_
+
+### Bugfixes
+
+- fix convert module.exports with `__esModule` property(#939) (#942)
+
 ## v19.0.1
 
 _2021-07-15_
