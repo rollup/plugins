@@ -33,6 +33,7 @@
   },
   "files": [
     "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
@@ -54,6 +55,7 @@
     "globby": "^11.0.1",
     "rollup": "^2.23.0"
   },
+  "types": "./types/index.d.ts",
   "ava": {
     "babel": {
       "compileEnhancements": false

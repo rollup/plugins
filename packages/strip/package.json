@@ -27,7 +27,8 @@
     "test": "ava"
   },
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "keywords": [
     "rollup",
@@ -47,6 +48,7 @@
     "acorn": "^7.3.1",
     "rollup": "^2.23.0"
   },
+  "types": "./types/index.d.ts",
   "ava": {
     "babel": {
       "compileEnhancements": false
