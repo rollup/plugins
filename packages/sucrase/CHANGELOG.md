@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v4.0.0
+
+_2021-07-26_
+
+### Breaking Changes
+
+- chore: upgrade sucrase dependency (#938)
+
 ## v3.1.1
 
 _2021-07-26_
