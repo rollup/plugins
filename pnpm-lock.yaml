@@ -482,15 +482,15 @@ importers:
 
   packages/sucrase:
     specifiers:
-      '@rollup/plugin-alias': ^3.1.1
-      '@rollup/pluginutils': ^3.1.0
+      '@rollup/plugin-alias': ^3.1.2
+      '@rollup/pluginutils': ^4.1.0
       rollup: ^2.23.0
-      sucrase: ^3.15.0
+      sucrase: ^3.20.0
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.32.1
-      sucrase: 3.16.0
+      '@rollup/pluginutils': 4.1.0_rollup@2.32.1
+      sucrase: 3.20.0
     devDependencies:
-      '@rollup/plugin-alias': 3.1.1_rollup@2.32.1
+      '@rollup/plugin-alias': 3.1.4_rollup@2.32.1
       rollup: 2.32.1
 
   packages/typescript:
@@ -1298,7 +1298,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.14.6
-      '@babel/helper-plugin-utils': 7.14.5
+      '@babel/helper-plugin-utils': 7.10.4
     dev: true
 
   /@babel/plugin-syntax-export-namespace-from/7.8.3_@babel+core@7.12.3:
@@ -1343,7 +1343,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.14.6
-      '@babel/helper-plugin-utils': 7.14.5
+      '@babel/helper-plugin-utils': 7.10.4
     dev: true
 
   /@babel/plugin-syntax-numeric-separator/7.10.4_@babel+core@7.12.3:
@@ -1388,7 +1388,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.14.6
-      '@babel/helper-plugin-utils': 7.14.5
+      '@babel/helper-plugin-utils': 7.10.4
     dev: true
 
   /@babel/plugin-syntax-top-level-await/7.12.1_@babel+core@7.12.3:
@@ -2056,8 +2056,8 @@ packages:
       fastq: 1.11.1
     dev: true
 
-  /@rollup/plugin-alias/3.1.1_rollup@2.32.1:
-    resolution: {integrity: sha512-hNcQY4bpBUIvxekd26DBPgF7BT4mKVNDF5tBG4Zi+3IgwLxGYRY0itHs9D0oLVwXM5pvJDWJlBQro+au8WaUWw==}
+  /@rollup/plugin-alias/3.1.4_rollup@2.32.1:
+    resolution: {integrity: sha512-9YN5h0bWlYFV0zpXwwAWGPUWh/A+kkoCqwrMb43LnuGfhnQqOjsGR+5uh4LGpAZbBBj8qR1Hno6CZadZs7hyCQ==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0
@@ -7958,8 +7958,8 @@ packages:
       postcss-selector-parser: 3.1.2
     dev: true
 
-  /sucrase/3.16.0:
-    resolution: {integrity: sha512-ovVuswxV5TayCPXfTk8bgBgk6uNRvsinIkEpq0J6zS1xXCx5N/LLGcbsKdRhqn/ToZylMX6+yXaR1LSn1I42Pg==}
+  /sucrase/3.20.0:
+    resolution: {integrity: sha512-Rsp+BX7DRuCleJvBAHN7gQ3ddk7U0rJev19XlIBF6dAq9vX4Tr5mHk4E7+ig/I7BM3DLYotCmm20lfBElT2XtQ==}
     engines: {node: '>=8'}
     hasBin: true
     dependencies:
