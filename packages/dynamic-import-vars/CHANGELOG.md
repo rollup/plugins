@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v1.4.0
+
+_2021-07-26_
+
+### Features
+
+- feat: add typings (#898)
+
 ## v1.3.0
 
 _2021-07-15_
