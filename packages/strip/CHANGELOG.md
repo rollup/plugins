@@ -1,5 +1,13 @@
 # @rollup/plugin-strip ChangeLog
 
+## v2.1.0
+
+_2021-07-26_
+
+### Features
+
+- feat: add typings (#898)
+
 ## v2.0.1
 
 _2021-05-07_
