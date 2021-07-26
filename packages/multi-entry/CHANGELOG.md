@@ -1,5 +1,13 @@
 # @rollup/plugin-multi-entry ChangeLog
 
+## v4.1.0
+
+_2021-07-26_
+
+### Features
+
+- feat: add typings (#898)
+
 ## v4.0.0
 
 _2020-08-13_
