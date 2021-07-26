@@ -34,15 +34,15 @@ export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'cjs',
+    format: 'cjs'
   },
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
       __buildDate__: () => JSON.stringify(new Date()),
-      __buildVersion: 15,
-    }),
-  ],
+      __buildVersion: 15
+    })
+  ]
 };
 ```
 
@@ -61,9 +61,14 @@ In addition to the properties and values specified for replacement, users may al
 ### `delimiters`
 
 Type: `Array[...String, String]`<br>
-Default: `['\b', '\b']`
+Default: `['\b', '\b(?!\.)']`
 
-Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html). See [Word Boundaries](#word-boundaries) below for more information.
+Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html) and also prevent replacements of instances with nested access. See [Word Boundaries](#word-boundaries) below for more information.
+For example, if you pass `typeof window` in `values` to-be-replaced, then you could expect the following scenarios:
+
+- `typeof window` **will** be replaced
+- `typeof window.document` **will not** be replaced due to `(?!\.)` boundary
+- `typeof windowSmth` **will not** be replaced due to a `\b` boundary
 
 ### `preventAssignment`
 
@@ -75,8 +80,8 @@ Prevents replacing strings where they are followed by a single equals sign. For 
 ```js
 replace({
   values: {
-    'process.env.DEBUG': 'false',
-  },
+    'process.env.DEBUG': 'false'
+  }
 });
 ```
 
@@ -124,7 +129,7 @@ To avoid mixing replacement strings with the other options, you can specify repl
 ```js
 replace({
   include: ['src/**/*.js'],
-  changed: 'replaced',
+  changed: 'replaced'
 });
 ```
 
@@ -134,8 +139,8 @@ Can be replaced with:
 replace({
   include: ['src/**/*.js'],
   values: {
-    changed: 'replaced',
-  },
+    changed: 'replaced'
+  }
 });
 ```
 

@@ -146,7 +146,7 @@ test('allows use of object browser field, resolving nested directories', async (
   t.is(module.exports.test, 43);
 });
 
-test('respects local browser field', async (t) => {
+test('respects local browser field for external dependencies', async (t) => {
   const bundle = await rollup({
     input: 'browser-local.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -159,6 +159,39 @@ test('respects local browser field', async (t) => {
   const { module } = await testBundle(t, bundle);
 
   t.is(module.exports, 'component-type');
+});
+
+test('respects local browser field for internal dependencies', async (t) => {
+  const bundle = await rollup({
+    input: 'browser-local-relative.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        mainFields: ['browser', 'main']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports, 'component-type');
+});
+
+test('does not apply local browser field for matching imports in nested paths', async (t) => {
+  try {
+    await rollup({
+      input: 'nested/browser-local-relative.js',
+      onwarn: () => t.fail('No warnings were expected'),
+      plugins: [
+        nodeResolve({
+          mainFields: ['browser', 'main']
+        })
+      ]
+    });
+  } catch (e) {
+    t.is(e.code, 'UNRESOLVED_IMPORT');
+    return;
+  }
+  t.fail('expecting error');
 });
 
 test('allows use of object browser field, resolving to nested node_modules', async (t) => {

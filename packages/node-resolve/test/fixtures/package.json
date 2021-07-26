@@ -8,6 +8,7 @@
   "scripts": {},
   "keywords": [],
   "browser": {
+    "./dummy-relative": "component-type",
     "dummy-module": "component-type"
   }
 }

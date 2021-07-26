@@ -143,6 +143,7 @@ test.serial('warns for invalid module types', async (t) => {
     rollup({
       input: 'fixtures/basic/main.ts',
       plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'ES5' })],
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onwarn({ toString, ...warning }) {
         warnings.push(warning);
       }
@@ -459,6 +460,7 @@ test.serial('should throw on bad options', async (t) => {
       rollup({
         input: 'does-not-matter.ts',
         plugins: [typescript({ foo: 'bar' })],
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onwarn({ toString, ...warning }) {
           // Can't match toString function, so omit it
           warnings.push(warning);

@@ -8,7 +8,8 @@ on:
       - synchronize
   push:
     branches:
-      - "*"
+      - '*'
+      - '!master'
 
 jobs:
   build:
@@ -16,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node: ["16", "14", "12"]
+        node: ['16', '14', '12']
 
     name: Node v${{ matrix.node }}
     steps:
@@ -25,6 +26,9 @@ jobs:
 
       - name: Checkout Commit
         uses: actions/checkout@v1
+
+      - name: Checkout Master
+        run: git branch -f master origin/master
 
       - name: Setup Node
         uses: actions/setup-node@v1
@@ -38,4 +42,4 @@ jobs:
         run: pnpm install --ignore-scripts
 
       - name: run tests
-        run: pnpm run ci:test --filter ...[${{ github.sha }}]
+        run: pnpm ci:test --filter "...[origin/master]"

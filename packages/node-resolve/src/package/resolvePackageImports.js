@@ -33,7 +33,7 @@ async function resolvePackageImports({
   }
 
   if (importSpecifier === '#' || importSpecifier.startsWith('#/')) {
-    throw new InvalidModuleSpecifierError(context, 'Invalid import specifier.');
+    throw new InvalidModuleSpecifierError(context, true, 'Invalid import specifier.');
   }
 
   return resolvePackageImportsExports(context, {

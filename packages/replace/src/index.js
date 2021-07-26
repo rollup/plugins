@@ -46,7 +46,7 @@ export default function replace(options = {}) {
         `${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}${lookahead}`,
         'g'
       )
-    : new RegExp(`\\b(${keys.join('|')})\\b${lookahead}`, 'g');
+    : new RegExp(`\\b(${keys.join('|')})\\b(?!\\.)${lookahead}`, 'g');
 
   return {
     name: 'replace',

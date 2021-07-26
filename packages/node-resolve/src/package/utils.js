@@ -1,9 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import path from 'path';
 import fs from 'fs';
-import { promisify } from 'util';
 
-const fileExists = promisify(fs.exists);
+import { fileExists } from '../fs';
 
 function isModuleDir(current, moduleDirs) {
   return moduleDirs.some((dir) => current.endsWith(dir));
@@ -65,8 +64,8 @@ export class InvalidConfigurationError extends ResolveError {
 }
 
 export class InvalidModuleSpecifierError extends ResolveError {
-  constructor(context, internal) {
-    super(createErrorMsg(context, internal));
+  constructor(context, internal, reason) {
+    super(createErrorMsg(context, reason, internal));
   }
 }
 

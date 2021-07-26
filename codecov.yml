@@ -5,6 +5,6 @@ coverage:
   round: down
   range: 70...100
   status:
-    project: "no"
-    patch: "yes"
-comment: "off"
+    project: 'no'
+    patch: 'yes'
+comment: 'off'

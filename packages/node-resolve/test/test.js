@@ -105,6 +105,23 @@ test('supports non-standard extensions', async (t) => {
   await testBundle(t, bundle);
 });
 
+test('does not fallback to standard node resolve algorithm if error with exports one', async (t) => {
+  try {
+    await rollup({
+      input: 'exports-error-no-fallback/main.js',
+      onwarn: () => t.fail('No warnings were expected'),
+      plugins: [
+        nodeResolve({
+          extensions: ['.js']
+        })
+      ]
+    });
+    t.fail('expecting throw');
+  } catch {
+    t.pass();
+  }
+});
+
 test('supports JS extensions in TS when referring to TS imports', async (t) => {
   const bundle = await rollup({
     input: 'ts-import-js-extension/import-ts-with-js-extension.ts',
@@ -117,6 +134,39 @@ test('supports JS extensions in TS when referring to TS imports', async (t) => {
         babelHelpers: 'bundled',
         plugins: ['@babel/plugin-transform-typescript'],
         extensions: ['.js', '.ts']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
+test('supports JS extensions in TS actually importing JS with export map', async (t) => {
+  const bundle = await rollup({
+    input: 'ts-import-js-extension-for-js-file-export-map/import-js-with-js-extension.ts',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.ts']
+      }),
+      babel({
+        babelHelpers: 'bundled',
+        plugins: ['@babel/plugin-transform-typescript'],
+        extensions: ['.js', '.ts']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
+test('handles package.json being a directory earlier in the path', async (t) => {
+  const bundle = await rollup({
+    input: 'package-json-in-path/package.json/main.js',
+    onwarn: () => t.fail('No warnings were expected'),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js']
       })
     ]
   });

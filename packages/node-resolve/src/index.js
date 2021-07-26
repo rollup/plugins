@@ -6,7 +6,7 @@ import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
-import { exists, readFile, realpath } from './fs';
+import { fileExists, readFile, realpath } from './fs';
 import resolveImportSpecifiers from './resolveImportSpecifiers';
 import { getMainFields, getPackageName, normalizeInput } from './util';
 import handleDeprecatedOptions from './deprecated-options';
@@ -88,7 +88,7 @@ export function nodeResolve(opts = {}) {
         return { id: ES6_BROWSER_EMPTY };
       }
       const browserImportee =
-        browser[importee] ||
+        (importee[0] !== '.' && browser[importee]) ||
         browser[resolvedImportee] ||
         browser[`${resolvedImportee}.js`] ||
         browser[`${resolvedImportee}.json`];
@@ -121,28 +121,15 @@ export function nodeResolve(opts = {}) {
       return false;
     }
 
-    const importSpecifierList = [];
+    const importSpecifierList = [importee];
 
     if (importer === undefined && !importee[0].match(/^\.?\.?\//)) {
       // For module graph roots (i.e. when importer is undefined), we
       // need to handle 'path fragments` like `foo/bar` that are commonly
       // found in rollup config files. If importee doesn't look like a
       // relative or absolute path, we make it relative and attempt to
-      // resolve it. If we don't find anything, we try resolving it as we
-      // got it.
+      // resolve it.
       importSpecifierList.push(`./${importee}`);
-    }
-
-    const importeeIsBuiltin = builtins.has(importee);
-
-    if (importeeIsBuiltin) {
-      // The `resolve` library will not resolve packages with the same
-      // name as a node built-in module. If we're resolving something
-      // that's a builtin, and we don't prefer to find built-ins, we
-      // first try to look up a local module with that name. If we don't
-      // find anything, we resolve the builtin which just returns back
-      // the built-in's name.
-      importSpecifierList.push(`${importee}/`);
     }
 
     // TypeScript files may import '.js' to refer to either '.ts' or '.tsx'
@@ -153,8 +140,6 @@ export function nodeResolve(opts = {}) {
         }
       }
     }
-
-    importSpecifierList.push(importee);
 
     const warn = (...args) => context.warn(...args);
     const isRequire =
@@ -180,6 +165,7 @@ export function nodeResolve(opts = {}) {
       ignoreSideEffectsForRoot
     });
 
+    const importeeIsBuiltin = builtins.has(importee);
     const resolved =
       importeeIsBuiltin && preferBuiltins
         ? {
@@ -207,8 +193,8 @@ export function nodeResolve(opts = {}) {
     }
 
     if (hasPackageEntry && !preserveSymlinks) {
-      const fileExists = await exists(location);
-      if (fileExists) {
+      const exists = await fileExists(location);
+      if (exists) {
         location = await realpath(location);
       }
     }
@@ -228,7 +214,7 @@ export function nodeResolve(opts = {}) {
       }
     }
 
-    if (options.modulesOnly && (await exists(location))) {
+    if (options.modulesOnly && (await fileExists(location))) {
       const code = await readFile(location, 'utf-8');
       if (isModule(code)) {
         return {
