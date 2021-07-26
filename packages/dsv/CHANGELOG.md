@@ -1,5 +1,13 @@
 # @rollup/plugin-dsv ChangeLog
 
+## v2.0.2
+
+_2021-07-26_
+
+### Updates
+
+- chore update dependencies (0b25eab)
+
 ## v2.0.1
 
 _2020-02-01_
