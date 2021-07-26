@@ -62,7 +62,7 @@ const getCommits = async (shortName: string) => {
   log(chalk`{blue Last Release Tag}: ${latestTag || '<none>'}`);
 
   params = ['--no-pager', 'log', `${latestTag}..HEAD`, '--format=%B%n-hash-%n%H🐒💨🙊'];
-  const rePlugin = new RegExp(`^[\\w\\!]+\\(([\\w,]+)?${shortName}([\\w,]+)?\\)`, 'i');
+  const rePlugin = new RegExp(`^[\\w\\!]+\\(([\\w,-]+)?${shortName}([\\w,-]+)?\\)`, 'i');
   let { stdout } = await execa('git', params);
 
   if (!stdout) {
@@ -80,6 +80,8 @@ const getCommits = async (shortName: string) => {
     .map((commit) => {
       const node = parser.sync(commit);
       const body = (node.body || node.footer) as string;
+
+      if (!node.type) node.type = parser.sync(node.header?.replace(/\(.+\)!?:/, ':') || '').type;
 
       ((node as unknown) as BreakingCommit).breaking =
         reBreaking.test(body) || /!:/.test(node.header as string);
@@ -141,9 +143,11 @@ const updateChangelog = (commits: Commit[], cwd: string, shortName: string, vers
   const oldNotes = logFile.startsWith(title) ? logFile.slice(title.length).trim() : logFile;
   const notes: Notes = { breaking: [], features: [], fixes: [], updates: [] };
 
-  for (const { breaking, hash, header, type } of commits) {
+  for (const commit of commits) {
+    const { breaking, hash, header, type } = commit;
     const ref = /\(#\d+\)/.test(header as string) ? '' : ` (${hash?.substring(0, 7)})`;
     const message = header?.trim().replace(/\(.+\)!?:/, ':') + ref;
+
     if (breaking) {
       notes.breaking.push(message);
     } else if (type === 'fix') {
@@ -213,7 +217,7 @@ const updatePackage = async (cwd: string, pkg: RepoPackage, version: string) => 
 
     if (!commits.length) {
       log(chalk`\n{red No Commits Found}. Did you mean to publish ${packageName}?`);
-      return;
+      process.exit(1);
     }
 
     log(chalk`{blue Found} {bold ${commits.length}} Commits\n`);
