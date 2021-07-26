@@ -482,16 +482,16 @@ importers:
 
   packages/sucrase:
     specifiers:
-      '@rollup/plugin-alias': ^3.1.2
-      '@rollup/pluginutils': ^4.1.0
-      rollup: ^2.23.0
+      '@rollup/plugin-alias': ^3.1.4
+      '@rollup/pluginutils': ^4.1.1
+      rollup: ^2.54.0
       sucrase: ^3.20.0
     dependencies:
-      '@rollup/pluginutils': 4.1.0_rollup@2.32.1
+      '@rollup/pluginutils': 4.1.1
       sucrase: 3.20.0
     devDependencies:
-      '@rollup/plugin-alias': 3.1.4_rollup@2.32.1
-      rollup: 2.32.1
+      '@rollup/plugin-alias': 3.1.4_rollup@2.54.0
+      rollup: 2.54.0
 
   packages/typescript:
     specifiers:
@@ -2056,13 +2056,13 @@ packages:
       fastq: 1.11.1
     dev: true
 
-  /@rollup/plugin-alias/3.1.4_rollup@2.32.1:
+  /@rollup/plugin-alias/3.1.4_rollup@2.54.0:
     resolution: {integrity: sha512-9YN5h0bWlYFV0zpXwwAWGPUWh/A+kkoCqwrMb43LnuGfhnQqOjsGR+5uh4LGpAZbBBj8qR1Hno6CZadZs7hyCQ==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0
     dependencies:
-      rollup: 2.32.1
+      rollup: 2.54.0
       slash: 3.0.0
     dev: true
 
@@ -2338,6 +2338,14 @@ packages:
       estree-walker: 2.0.1
       picomatch: 2.2.2
       rollup: 2.32.1
+    dev: false
+
+  /@rollup/pluginutils/4.1.1:
+    resolution: {integrity: sha512-clDjivHqWGXi7u+0d2r2sBi4Ie6VLEAzWMIkvJLnDmxoOhBYOTfzGbOQBA32THHm11/LiJbd01tJUpJsbshSWQ==}
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      estree-walker: 2.0.1
+      picomatch: 2.3.0
     dev: false
 
   /@sindresorhus/is/0.14.0:
@@ -6665,7 +6673,6 @@ packages:
   /picomatch/2.3.0:
     resolution: {integrity: sha512-lY1Q/PiJGC2zOv/z391WOTD+Z02bCgsFfvxoXXf6h7kv9o+WmsmzYqrAwY63sNgOxE4xEdq0WyUnXfKeBrSvYw==}
     engines: {node: '>=8.6'}
-    dev: true
 
   /pify/3.0.0:
     resolution: {integrity: sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=}
@@ -7523,6 +7530,14 @@ packages:
 
   /rollup/2.47.0:
     resolution: {integrity: sha512-rqBjgq9hQfW0vRmz+0S062ORRNJXvwRpzxhFXORvar/maZqY6za3rgQ/p1Glg+j1hnc1GtYyQCPiAei95uTElg==}
+    engines: {node: '>=10.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /rollup/2.54.0:
+    resolution: {integrity: sha512-RHzvstAVwm9A751NxWIbGPFXs3zL4qe/eYg+N7WwGtIXVLy1cK64MiU37+hXeFm1jqipK6DGgMi6Z2hhPuCC3A==}
     engines: {node: '>=10.0.0'}
     hasBin: true
     optionalDependencies:
