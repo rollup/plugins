@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.2.4
+
+_2021-07-29_
+
+### Updates
+
+- docs: declaration file output to same directory. fixes #934 (702c855)
+
 ## v8.2.3
 
 _2021-07-15_
