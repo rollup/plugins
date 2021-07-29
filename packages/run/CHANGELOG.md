@@ -1,5 +1,18 @@
 # @rollup/plugin-run ChangeLog
 
+## v2.1.0
+
+_2021-07-29_
+
+### Features
+
+- feat: add `allowRestarts` option (#820)
+
+### Updates
+
+- chore: upgrade TypeScript (#714)
+- chore: update dependencies (4428bff)
+
 ## v2.0.2
 
 _2020-04-12_
