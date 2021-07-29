@@ -279,6 +279,54 @@ export default {
 
 Previous versions of this plugin used Typescript's `transpileModule` API, which is faster but does not perform typechecking and does not support cross-file features like `const enum`s and emit-less types. If you want this behaviour, you can use [@rollup/plugin-sucrase](https://github.com/rollup/plugins/tree/master/packages/sucrase) instead.
 
+### Declaration Output With `output.file`
+
+When instructing Rollup to output a specific file name via the `output.file` Rollup configuration, and TypeScript to output declaration files, users may encounter a situation where the declarations are nested improperly. And additionally when attempting to fix the improper nesting via use of `outDir` or `declarationDir` result in further TypeScript errors.
+
+Consider the following `rollup.config.js` file:
+
+```js
+import typescript from '@rollup/plugin-typescript';
+
+export default {
+  input: 'src/index.ts',
+  output: {
+    file: 'dist/index.mjs'
+  },
+  plugins: [typescript({ tsconfig: './tsconfig.json' })]
+};
+```
+
+And accompanying `tsconfig.json` file:
+
+```json
+{
+  "include": ["*"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true
+  }
+}
+```
+
+This setup will produce `dist/index.mjs` and `dist/dist/index.d.ts`. To correctly place the declaration file, add an `exclude` setting in `tsconfig` and modify the `declarationDir` setting in `compilerOptions` to resemble:
+
+```json
+{
+  "include": ["*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "."
+  }
+}
+```
+
+This will result in the correct output of `dist/index.mjs` and `dist/index.d.ts`.
+
+_For reference, please see the workaround this section is based on [here](https://github.com/microsoft/bistring/commit/7e57116c812ae2c01f383c234f3b447f733b5d0c)_
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
