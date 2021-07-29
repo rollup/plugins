@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.5
+
+_2021-07-29_
+
+### Bugfixes
+
+- fix: paths for aliases across multiple Windows drives (#896)
+
 ## v3.1.4
 
 _2021-07-16_
