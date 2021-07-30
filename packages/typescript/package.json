@@ -29,7 +29,7 @@
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
-    "test": "ava test/test.js",
+    "test": "ava",
     "test:ts": "tsc --noEmit"
   },
   "files": [
