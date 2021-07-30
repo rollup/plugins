@@ -10,7 +10,7 @@ import createModuleResolver from './moduleResolution';
 import { getPluginOptions } from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
-import findTypescriptOutput, { getEmittedFile } from './outputFile';
+import findTypescriptOutput, { getEmittedFile, normalizePath, emitFile } from './outputFile';
 import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
@@ -23,7 +23,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     transformers,
     tsconfig,
     tslib,
-    typescript: ts
+    typescript: ts,
+    outputToFilesystem
   } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
@@ -36,10 +37,6 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const resolveModule = createModuleResolver(ts, formatHost);
 
   let program: Watch<unknown> | null = null;
-
-  function normalizePath(fileName: string) {
-    return fileName.split(path.win32.sep).join(path.posix.sep);
-  }
 
   return {
     name: 'typescript',
@@ -89,7 +86,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     renderStart(outputOptions) {
       validateSourceMap(this, parsedOptions.options, outputOptions, parsedOptions.autoSetSourceMap);
-      validatePaths(ts, this, parsedOptions.options, outputOptions);
+      validatePaths(this, parsedOptions.options, outputOptions);
     },
 
     resolveId(importee, importer) {
@@ -128,7 +125,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       return output.code != null ? (output as SourceDescription) : null;
     },
 
-    generateBundle(outputOptions) {
+    async generateBundle(outputOptions) {
       parsedOptions.fileNames.forEach((fileName) => {
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
@@ -152,11 +149,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const tsBuildInfoSource = emittedFiles.get(tsBuildInfoPath);
         // https://github.com/rollup/plugins/issues/681
         if (tsBuildInfoSource) {
-          this.emitFile({
-            type: 'asset',
-            fileName: normalizePath(path.relative(outputOptions.dir!, tsBuildInfoPath)),
-            source: tsBuildInfoSource
-          });
+          await emitFile(
+            outputOptions,
+            outputToFilesystem,
+            this,
+            tsBuildInfoPath,
+            tsBuildInfoSource
+          );
         }
       }
     }

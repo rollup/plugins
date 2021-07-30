@@ -69,6 +69,11 @@ export interface RollupTypescriptPluginOptions {
    * TypeScript custom transformers
    */
   transformers?: CustomTransformerFactories;
+  /**
+   * When set to false, force non-cached files to always be emitted in the output directory.output
+   * If not set, will default to true with a warning.
+   */
+  outputToFilesystem?: boolean;
 }
 
 export interface FlexibleCompilerOptions extends CompilerOptions {

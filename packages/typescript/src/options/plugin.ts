@@ -23,6 +23,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     tsconfig,
     tslib,
     typescript,
+    outputToFilesystem,
     ...compilerOptions
   } = options;
 
@@ -35,6 +36,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     compilerOptions: compilerOptions as PartialCompilerOptions,
     typescript: typescript || defaultTs,
     tslib: tslib || getTsLibPath(),
-    transformers
+    transformers,
+    outputToFilesystem
   };
 };

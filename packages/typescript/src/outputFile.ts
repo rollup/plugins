@@ -1,4 +1,8 @@
-import { SourceDescription } from 'rollup';
+import * as path from 'path';
+
+import { promises as fs } from 'fs';
+
+import { OutputOptions, PluginContext, SourceDescription } from 'rollup';
 import type { ParsedCommandLine } from 'typescript';
 
 import TSCache from './tscache';
@@ -71,4 +75,40 @@ export default function findTypescriptOutput(
     map: getEmittedFile(mapFile, emittedFiles, tsCache),
     declarations: emittedFileNames.filter((name) => name !== codeFile && name !== mapFile)
   };
+}
+
+export function normalizePath(fileName: string) {
+  return fileName.split(path.win32.sep).join(path.posix.sep);
+}
+
+export async function emitFile(
+  { dir }: OutputOptions,
+  outputToFilesystem: boolean | undefined,
+  context: PluginContext,
+  filePath: string,
+  fileSource: string
+) {
+  const normalizedFilePath = normalizePath(filePath);
+  // const normalizedPath = normalizePath(filePath);
+  // Note: `dir` can be a value like `dist` in which case, `path.relative` could result in a value
+  // of something like `'../.tsbuildinfo'. Our else-case below needs to mimic `path.relative`
+  // returning a dot-notated relative path, so the first if-then branch is entered into
+  const relativePath = dir ? path.relative(dir, normalizedFilePath) : '..';
+
+  // legal paths do not start with . nor .. : https://github.com/rollup/rollup/issues/3507#issuecomment-616495912
+  if (relativePath.startsWith('..')) {
+    if (outputToFilesystem == null) {
+      context.warn(`@rollup/plugin-typescript: outputToFilesystem option is defaulting to true.`);
+    }
+    if (outputToFilesystem !== false) {
+      await fs.mkdir(path.dirname(normalizedFilePath), { recursive: true });
+      await fs.writeFile(normalizedFilePath, fileSource);
+    }
+  } else {
+    context.emitFile({
+      type: 'asset',
+      fileName: relativePath,
+      source: fileSource
+    });
+  }
 }
