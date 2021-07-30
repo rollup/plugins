@@ -10,6 +10,8 @@ const { evaluateBundle, getCode, onwarn } = require('../../../util/test');
 
 const typescript = require('..');
 
+const { fakeTypescript, forceRemove, waitForWatcherEvent } = require('./helpers');
+
 test.beforeEach(() => process.chdir(__dirname));
 
 const outputOptions = { format: 'esm' };
@@ -1064,51 +1066,6 @@ test('supports custom transformers', async (t) => {
   );
 });
 
-function fakeTypescript(custom) {
-  return {
-    sys: ts.sys,
-    createModuleResolutionCache: ts.createModuleResolutionCache,
-    ModuleKind: ts.ModuleKind,
-
-    transpileModule() {
-      return {
-        outputText: '',
-        diagnostics: [],
-        sourceMapText: JSON.stringify({ mappings: '' })
-      };
-    },
-
-    createWatchCompilerHost() {
-      return {
-        afterProgramCreate() {}
-      };
-    },
-
-    createWatchProgram() {
-      return {};
-    },
-
-    parseJsonConfigFileContent(json, host, basePath, existingOptions) {
-      return {
-        options: {
-          ...json.compilerOptions,
-          ...existingOptions
-        },
-        fileNames: [],
-        errors: []
-      };
-    },
-
-    getOutputFileNames(_, id) {
-      return [id.replace(/\.tsx?/, '.js')];
-    },
-
-    // eslint-disable-next-line no-undefined
-    getTsBuildInfoEmitOutputFilePath: () => undefined,
-    ...custom
-  };
-}
-
 test.serial('picks up on newly included typescript files in watch mode', async (t) => {
   const dirName = path.join('fixtures', 'watch');
 
@@ -1179,25 +1136,3 @@ test.serial('works when code is in src directory', async (t) => {
     ['index.js', 'index.d.ts']
   );
 });
-
-function waitForWatcherEvent(watcher, eventCode) {
-  return new Promise((resolve, reject) => {
-    watcher.on('event', function handleEvent(event) {
-      if (event.code === eventCode) {
-        watcher.off('event', handleEvent);
-        resolve(event);
-      } else if (event.code === 'ERROR') {
-        watcher.off('event', handleEvent);
-        reject(event);
-      }
-    });
-  });
-}
-
-async function forceRemove(filePath) {
-  try {
-    await fs.promises.unlink(filePath);
-  } catch {
-    // ignore non existant file
-  }
-}

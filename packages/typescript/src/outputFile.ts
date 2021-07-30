@@ -82,29 +82,32 @@ export function normalizePath(fileName: string) {
 }
 
 export async function emitFile(
-  outputOptions: OutputOptions,
+  { dir }: OutputOptions,
   outputToFilesystem: boolean | undefined,
   context: PluginContext,
   filePath: string,
   fileSource: string
 ) {
-  // TODO: this is confusing, change
-  const fromRollupOutputDirToFile = outputOptions.dir
-    ? path.relative(outputOptions.dir, filePath)
-    : '..';
-  if (fromRollupOutputDirToFile.startsWith('..')) {
+  const normalizedFilePath = normalizePath(filePath);
+  // const normalizedPath = normalizePath(filePath);
+  // Note: `dir` can be a value like `dist` in which case, `path.relative` could result in a value
+  // of something like `'../.tsbuildinfo'. Our else-case below needs to mimic `path.relative`
+  // returning a dot-notated relative path, so the first if-then branch is entered into
+  const relativePath = dir ? path.relative(dir, normalizedFilePath) : '..';
+
+  // legal paths do not start with . nor .. : https://github.com/rollup/rollup/issues/3507#issuecomment-616495912
+  if (relativePath.startsWith('..')) {
     if (outputToFilesystem == null) {
       context.warn(`@rollup/plugin-typescript: outputToFilesystem option is defaulting to true.`);
     }
     if (outputToFilesystem !== false) {
-      const normalizedFilePath = normalizePath(filePath);
       await fs.mkdir(path.dirname(normalizedFilePath), { recursive: true });
       await fs.writeFile(normalizedFilePath, fileSource);
     }
   } else {
     context.emitFile({
       type: 'asset',
-      fileName: normalizePath(fromRollupOutputDirToFile),
+      fileName: relativePath,
       source: fileSource
     });
   }
