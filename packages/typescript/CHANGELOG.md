@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.2.5
+
+_2021-07-30_
+
+### Bugfixes
+
+- fix: incremental typescript cache (#963)
+
 ## v8.2.4
 
 _2021-07-29_
