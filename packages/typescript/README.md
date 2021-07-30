@@ -79,6 +79,17 @@ Default: `null`
 
 A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted.
 
+### `filterRoot`
+
+Type: `String` | `Boolean`<br>
+Default: `rootDir` ?? `tsConfig.compilerOptions.rootDir` ?? `process.cwd()`
+
+Optionally resolves the include and exclude patterns against a directory other than `process.cwd()`. If a String is specified, then the value will be used as the base directory. Relative paths will be resolved against `process.cwd()` first. If `false`, then the patterns will not be resolved against any directory.
+
+By default, patterns resolve against the rootDir set in your TS config file.
+
+This can fix plugin errors when parsing files outside the current working directory (process.cwd()).
+
 ### `tsconfig`
 
 Type: `String` | `Boolean`<br>
