@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v20.0.0
+
+_2021-07-30_
+
+### Breaking Changes
+
+- fix: Correctly infer module name for any separator (#924)
+
 ## v19.0.2
 
 _2021-07-26_
