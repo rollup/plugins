@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import { basename, dirname, extname, sep } from 'path';
+import { basename, dirname, extname } from 'path';
 
 import { makeLegalIdentifier } from '@rollup/pluginutils';
 
@@ -27,8 +27,7 @@ export function getName(id) {
   if (name !== 'index') {
     return name;
   }
-  const segments = dirname(id).split(sep);
-  return makeLegalIdentifier(segments[segments.length - 1]);
+  return makeLegalIdentifier(basename(dirname(id)));
 }
 
 export function normalizePathSlashes(path) {

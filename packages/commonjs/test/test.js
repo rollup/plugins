@@ -1,5 +1,6 @@
 /* eslint-disable line-comment-position, no-new-func, no-undefined */
 import * as path from 'path';
+import os from 'os';
 
 import resolve from '@rollup/plugin-node-resolve';
 
@@ -728,3 +729,31 @@ test('does not affect subsequently created instances when called with `requireRe
 
   t.is(code1, code2);
 });
+
+// This test works only on Windows, which treats both forward and backward
+// slashes as path separators
+if (os.platform() === 'win32') {
+  test('supports both forward and backward slash as path separator in directory-based modules', async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/samples/module-path-separator/main.js',
+      plugins: [
+        // Ad-hoc plugin that reverses the path separator of foo/index.js
+        {
+          name: 'test-path-separator-reverser',
+          async resolveId(source, importer) {
+            if (source.endsWith('foo')) {
+              const fullPath = path.resolve(path.dirname(importer), source, 'index.js');
+              // Ensure that the module ID uses a non-default path separator
+              return fullPath.replace(/[\\/]/g, (sep) => (sep === '/' ? '\\' : '/'));
+            }
+            return null;
+          }
+        },
+        commonjs()
+      ]
+    });
+
+    const code = await getCodeFromBundle(bundle);
+    t.regex(code, /\bfoo = {}/);
+  });
+}
