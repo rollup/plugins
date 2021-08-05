@@ -42,6 +42,7 @@
     "rollup": "^2.23.0",
     "strip-ansi": "^6.0.0"
   },
+  "types": "types/index.d.ts",
   "ava": {
     "babel": {
       "compileEnhancements": false
