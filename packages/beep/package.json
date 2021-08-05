@@ -26,6 +26,7 @@
   },
   "files": [
     "lib/",
+    "types/",
     "README.md",
     "LICENSE"
   ],
