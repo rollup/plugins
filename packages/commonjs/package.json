@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
+    "acorn-loose": "^8.1.0",
     "commondir": "^1.0.1",
     "estree-walker": "^2.0.1",
     "glob": "^7.1.6",
