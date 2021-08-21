@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^4.0.0",
-    "eslint": "^7.12.0"
+    "eslint": "^7.32.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^9.0.0",
