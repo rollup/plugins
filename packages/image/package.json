@@ -33,7 +33,7 @@
   },
   "files": [
     "dist",
-    "tests",
+    "types",
     "README.md",
     "LICENSE"
   ],
