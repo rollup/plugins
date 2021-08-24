@@ -164,6 +164,7 @@ importers:
       '@rollup/plugin-json': ^4.1.0
       '@rollup/plugin-node-resolve': ^8.4.0
       '@rollup/pluginutils': ^3.1.0
+      acorn-loose: ^8.1.0
       commondir: ^1.0.1
       estree-walker: ^2.0.1
       glob: ^7.1.6
@@ -179,6 +180,7 @@ importers:
       typescript: ^3.9.7
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.39.0
+      acorn-loose: 8.1.0
       commondir: 1.0.1
       estree-walker: 2.0.1
       glob: 7.1.6
@@ -2815,6 +2817,13 @@ packages:
     dependencies:
       acorn: 7.4.1
 
+  /acorn-loose/8.1.0:
+    resolution: {integrity: sha512-+X1zk54qiOWwIRywGBhfz8sLHFJ/adQRuVqn25m4HuD7/+GTXM1c0b3LH0bWerQ0H97lTk2GyuScGbSiQK9M1g==}
+    engines: {node: '>=0.4.0'}
+    dependencies:
+      acorn: 8.4.1
+    dev: false
+
   /acorn-walk/8.0.2:
     resolution: {integrity: sha512-+bpA9MJsHdZ4bgfDcpk0ozQyhhVct7rzOmO0s1IIr0AGGgKBljss8n2zp11rRP2wid5VGeh04CgeKzgat5/25A==}
     engines: {node: '>=0.4.0'}
@@ -2841,6 +2850,12 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
     dev: true
+
+  /acorn/8.4.1:
+    resolution: {integrity: sha512-asabaBSkEKosYKMITunzX177CXxQ4Q8BSSzMTKD+FefUhipQC70gfW5SiUDhYQ3vk8G+81HqQk7Fv9OXwwn9KA==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
+    dev: false
 
   /aggregate-error/3.1.0:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
