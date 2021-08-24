@@ -1,5 +1,13 @@
 # @rollup/plugin-image ChangeLog
 
+## v2.1.1
+
+_2021-08-24_
+
+### Bugfixes
+
+- fix: include types, not tests, in package.json files (#982)
+
 ## v2.1.0
 
 _2021-07-26_
