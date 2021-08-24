@@ -25,4 +25,4 @@ export function makeHtmlAttributes(attributes: Record<string, string>): string;
  * @param options - Plugin options.
  * @returns Plugin instance.
  */
-export default function html(options: RollupHtmlOptions): Plugin;
+export default function html(options?: RollupHtmlOptions): Plugin;
