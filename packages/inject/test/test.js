@@ -34,6 +34,14 @@ test('uses the modules property', (t) => {
   });
 });
 
+test('escapes apostrophes in module name', (t) => {
+  compare(t, 'basic', { $: "d'oh" });
+});
+
+test('escapes backslashes in module name', (t) => {
+  compare(t, 'basic', { $: 'slash\\back' });
+});
+
 test('inserts a named import statement', (t) => {
   compare(t, 'named', { Promise: ['es6-promise', 'Promise'] });
 });
