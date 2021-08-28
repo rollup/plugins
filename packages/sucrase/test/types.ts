@@ -17,6 +17,7 @@ const config: RollupOptions = {
       jsxFragmentPragma: 'React.fragment',
       jsxPragma: 'React',
       production: true,
+      disableESTransforms: true,
       transforms: ['jsx']
     })
   ]
