@@ -46,6 +46,7 @@ export default function commonjs(options = {}) {
   const {
     ignoreGlobal,
     ignoreDynamicRequires,
+    nodeModulesLookupDepth,
     requireReturnsDefault: requireReturnsDefaultOption,
     esmExternals
   } = options;
@@ -168,7 +169,11 @@ export default function commonjs(options = {}) {
 
     load(id) {
       if (id === HELPERS_ID) {
-        return getHelpersModule(isDynamicRequireModulesEnabled, ignoreDynamicRequires);
+        return getHelpersModule(
+          isDynamicRequireModulesEnabled,
+          ignoreDynamicRequires,
+          typeof nodeModulesLookupDepth === 'number' ? nodeModulesLookupDepth : 15
+        );
       }
 
       if (id.startsWith(HELPERS_ID)) {

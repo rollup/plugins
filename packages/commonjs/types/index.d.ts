@@ -175,6 +175,12 @@ interface RollupCommonJSOptions {
    * replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
    */
   dynamicRequireTargets?: string | ReadonlyArray<string>;
+
+  /**
+   * Max depth for `node_modules` lookup algorithm in the virtual `require` realm.
+   * This is here for safety, in case of a dynamic require to something that does not exist.
+   */
+  nodeModulesLookupDepth?: number;
 }
 
 /**

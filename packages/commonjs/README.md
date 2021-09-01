@@ -345,6 +345,14 @@ For these situations, you can change Rollup's behaviour either globally or per m
 
 To change this for individual modules, you can supply a function for `requireReturnsDefault` instead. This function will then be called once for each required ES module or external dependency with the corresponding id and allows you to return different values for different modules.
 
+### nodeModulesLookupDepth
+
+Type: `number`<br>
+Default: `15`
+
+Max depth for `node_modules` lookup algorithm in the virtual `require` realm.
+This is here for safety, in case of a dynamic require to something that does not exist.
+
 ## Using with @rollup/plugin-node-resolve
 
 Since most CommonJS packages you are importing are probably dependencies in `node_modules`, you may need to use [@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve):

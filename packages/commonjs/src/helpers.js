@@ -58,7 +58,7 @@ export function commonjsRequire (path) {
 }
 `;
 
-const getDynamicHelpers = (ignoreDynamicRequires) => `
+const getDynamicHelpers = (ignoreDynamicRequires, nodeModulesLookupDepth) => `
 export function createModule(modulePath) {
 	return {
 		path: modulePath,
@@ -172,17 +172,14 @@ export function commonjsResolveImpl (path, originalModuleDir, testCache) {
 	if (path[0] === '/') {
 		originalModuleDir = '/';
 	}
-	while (true) {
+	let depth = 0;
+	while (depth++ < ${nodeModulesLookupDepth}) {
 		if (!shouldTryNodeModules) {
 			relPath = originalModuleDir ? normalize(originalModuleDir + '/' + path) : path;
 		} else if (originalModuleDir) {
 			relPath = normalize(originalModuleDir + '/node_modules/' + path);
 		} else {
 			relPath = normalize(join('node_modules', path));
-		}
-
-		if (relPath.endsWith('/..')) {
-			break; // Travelled too far up, avoid infinite loop
 		}
 
 		for (let extensionIndex = 0; extensionIndex < CHECKED_EXTENSIONS.length; extensionIndex++) {
@@ -257,8 +254,14 @@ commonjsRequire.cache = DYNAMIC_REQUIRE_CACHE;
 commonjsRequire.resolve = commonjsResolve;
 `;
 
-export function getHelpersModule(isDynamicRequireModulesEnabled, ignoreDynamicRequires) {
+export function getHelpersModule(
+  isDynamicRequireModulesEnabled,
+  ignoreDynamicRequires,
+  nodeModulesLookupDepth
+) {
   return `${HELPERS}${
-    isDynamicRequireModulesEnabled ? getDynamicHelpers(ignoreDynamicRequires) : HELPER_NON_DYNAMIC
+    isDynamicRequireModulesEnabled
+      ? getDynamicHelpers(ignoreDynamicRequires, nodeModulesLookupDepth)
+      : HELPER_NON_DYNAMIC
   }`;
 }
