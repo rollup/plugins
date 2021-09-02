@@ -66,6 +66,11 @@ interface RollupYamlOptions {
    * @default true
    */
   namedExports?: boolean;
+  /**
+   * If `.json` files should be parsed with this plugin as well, since YAML is a superset of JSON
+   * @default false
+   */
+  includeJSON?: boolean;
 }
 
 /**
