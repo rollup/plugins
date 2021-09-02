@@ -45,6 +45,27 @@ interface RollupYamlOptions {
    * @default 'single'
    */
   documentMode?: 'single' | 'multi';
+  /**
+   * For tree-shaking, properties will be declared as variables, using
+   * either `var` or `const`.
+   * @default false
+   */
+  preferConst?: boolean;
+  /**
+   * Specify indentation for the generated default export
+   * @default '\t'
+   */
+  indent?: string;
+  /**
+   * Ignores indent and generates the smallest code
+   * @default false
+   */
+  compact?: boolean;
+  /**
+   * Generate a named export for every property of the JSON object
+   * @default true
+   */
+  namedExports?: boolean;
 }
 
 /**

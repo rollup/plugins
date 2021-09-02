@@ -510,7 +510,7 @@ importers:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
       resolve: 1.18.1
     devDependencies:
-      '@rollup/plugin-buble': link:../buble
+      '@rollup/plugin-buble': 0.21.3_rollup@2.32.1
       '@rollup/plugin-commonjs': 11.1.0_rollup@2.32.1
       '@rollup/plugin-typescript': 5.0.2_rollup@2.32.1+typescript@4.2.4
       '@types/node': 10.17.48
@@ -564,16 +564,14 @@ importers:
   packages/yaml:
     specifiers:
       '@rollup/plugin-node-resolve': ^8.4.0
-      '@rollup/pluginutils': ^3.1.0
+      '@rollup/pluginutils': ^4.1.1
       del-cli: ^3.0.1
       js-yaml: ^3.14.0
       rollup: ^2.23.0
       source-map-support: ^0.5.19
-      tosource: ^1.0.0
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.32.1
+      '@rollup/pluginutils': 4.1.1
       js-yaml: 3.14.0
-      tosource: 1.0.0
     devDependencies:
       '@rollup/plugin-node-resolve': 8.4.0_rollup@2.32.1
       del-cli: 3.0.1
@@ -3361,7 +3359,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.5.0
     optionalDependencies:
-      fsevents: 2.3.1
+      fsevents: 2.3.2
     dev: true
 
   /chunkd/2.0.1:
@@ -4670,13 +4668,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     deprecated: '"Please update to latest v2.3 or v2.2"'
-    dev: true
-    optional: true
-
-  /fsevents/2.3.1:
-    resolution: {integrity: sha512-YR47Eg4hChJGAB1O3yEAOkGO+rlzutoICGqGo9EZ4lKWokzZRSyIW1QmTzqjtw8MJdj9srP869CuWw/hyzSiBw==}
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
     dev: true
     optional: true
 
