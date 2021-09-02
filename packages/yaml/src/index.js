@@ -5,7 +5,8 @@ const defaults = {
   documentMode: 'single',
   safe: true,
   transform: null,
-  indent: '\t'
+  indent: '\t',
+  includeJSON: false
 };
 const ext = /\.ya?ml$/;
 
@@ -29,7 +30,9 @@ export default function yaml(opts = {}) {
     name: 'yaml',
 
     transform(content, id) {
-      if (!ext.test(id) || !filter(id)) return null;
+      if (options.includeJSON && !(ext.test(id) || id.endsWith('.json'))) return null;
+      if (!options.includeJSON && !ext.test(id)) return null;
+      if (!filter(id)) return null;
 
       let data = loadMethod(content);
 
