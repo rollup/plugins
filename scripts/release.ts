@@ -83,7 +83,7 @@ const getCommits = async (shortName: string) => {
 
       if (!node.type) node.type = parser.sync(node.header?.replace(/\(.+\)!?:/, ':') || '').type;
 
-      ((node as unknown) as BreakingCommit).breaking =
+      (node as unknown as BreakingCommit).breaking =
         reBreaking.test(body) || /!:/.test(node.header as string);
 
       return node;
