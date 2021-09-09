@@ -235,7 +235,7 @@ importers:
       estree-walker: ^2.0.1
       globby: ^11.0.1
       magic-string: ^0.25.7
-      prettier: ^2.0.5
+      prettier: ^2.4.0
       rollup: ^2.23.0
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.32.1
@@ -245,7 +245,7 @@ importers:
     devDependencies:
       acorn: 7.4.1
       acorn-dynamic-import: 4.0.0_acorn@7.4.1
-      prettier: 2.2.1
+      prettier: 2.4.0
       rollup: 2.32.1
 
   packages/eslint:
