@@ -7,6 +7,7 @@ import del from 'del';
 
 import { getCode } from '../../../util/test';
 
+// eslint-disable-next-line import/no-named-as-default
 import wasm from '../';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
