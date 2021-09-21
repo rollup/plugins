@@ -2,14 +2,7 @@ import { dirname, resolve } from 'path';
 
 import { sync as nodeResolveSync } from 'resolve';
 
-import {
-  EXPORTS_SUFFIX,
-  HELPERS_ID,
-  MODULE_SUFFIX,
-  PROXY_SUFFIX,
-  REQUIRE_SUFFIX,
-  wrapId
-} from './helpers';
+import { EXPORTS_SUFFIX, HELPERS_ID, MODULE_SUFFIX, PROXY_SUFFIX, wrapId } from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -153,12 +146,9 @@ export function getRequireHandlers() {
       );
     }
     for (const source of dynamicRegisterSources) {
-      imports.push(`import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`);
+      imports.push(`import ${JSON.stringify(source)};`);
     }
     for (const source of requiredSources) {
-      if (!source.startsWith('\0')) {
-        imports.push(`import ${JSON.stringify(wrapId(source, REQUIRE_SUFFIX))};`);
-      }
       const { name, nodesUsingRequired } = requiredBySource[source];
       imports.push(
         `import ${nodesUsingRequired.length ? `${name} from ` : ''}${JSON.stringify(

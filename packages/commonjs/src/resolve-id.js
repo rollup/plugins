@@ -13,7 +13,6 @@ import {
   isWrappedId,
   MODULE_SUFFIX,
   PROXY_SUFFIX,
-  REQUIRE_SUFFIX,
   unwrapId,
   wrapId
 } from './helpers';
@@ -66,14 +65,11 @@ export default function getResolveId(extensions) {
     }
 
     const isProxyModule = isWrappedId(importee, PROXY_SUFFIX);
-    const isRequiredModule = isWrappedId(importee, REQUIRE_SUFFIX);
     let isModuleRegistration = false;
 
     if (isProxyModule) {
       importee = unwrapId(importee, PROXY_SUFFIX);
-    } else if (isRequiredModule) {
-      importee = unwrapId(importee, REQUIRE_SUFFIX);
-
+    } else {
       isModuleRegistration = isWrappedId(importee, DYNAMIC_REGISTER_SUFFIX);
       if (isModuleRegistration) {
         importee = unwrapId(importee, DYNAMIC_REGISTER_SUFFIX);
@@ -98,20 +94,29 @@ export default function getResolveId(extensions) {
       Object.assign({}, resolveOptions, {
         skipSelf: true,
         custom: Object.assign({}, resolveOptions.custom, {
-          'node-resolve': { isRequire: isProxyModule || isRequiredModule }
+          'node-resolve': { isRequire: isProxyModule || isModuleRegistration }
         })
       })
     ).then((resolved) => {
       if (!resolved) {
         resolved = resolveExtensions(importee, importer);
       }
-      if (resolved && isProxyModule) {
-        resolved.id = wrapId(resolved.id, resolved.external ? EXTERNAL_SUFFIX : PROXY_SUFFIX);
-        resolved.external = false;
-      } else if (resolved && isModuleRegistration) {
-        resolved.id = wrapId(resolved.id, DYNAMIC_REGISTER_SUFFIX);
-      } else if (!resolved && (isProxyModule || isRequiredModule)) {
-        return { id: wrapId(importee, EXTERNAL_SUFFIX), external: false };
+      if (isProxyModule) {
+        if (!resolved || resolved.external) {
+          return {
+            id: wrapId(resolved ? resolved.id : importee, EXTERNAL_SUFFIX),
+            external: false
+          };
+        }
+        // This will make sure meta properties in "resolved" are correctly attached to the module
+        this.load(resolved);
+        return {
+          id: wrapId(resolved.id, PROXY_SUFFIX),
+          external: false
+        };
+      }
+      if (resolved && isModuleRegistration) {
+        return { id: wrapId(resolved.id, DYNAMIC_REGISTER_SUFFIX), external: false };
       }
       return resolved;
     });

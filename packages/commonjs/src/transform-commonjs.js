@@ -82,11 +82,8 @@ export default function transformCommonjs(
   const dynamicRegisterSources = new Set();
   let hasRemovedRequire = false;
 
-  const {
-    addRequireStatement,
-    requiredSources,
-    rewriteRequireExpressionsAndGetImportBlock
-  } = getRequireHandlers();
+  const { addRequireStatement, requiredSources, rewriteRequireExpressionsAndGetImportBlock } =
+    getRequireHandlers();
 
   // See which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
@@ -235,10 +232,8 @@ export default function transformCommonjs(
             let shouldRemoveRequireStatement = false;
 
             if (currentTryBlockEnd !== null) {
-              ({
-                canConvertRequire,
-                shouldRemoveRequireStatement
-              } = getIgnoreTryCatchRequireStatementMode(node.arguments[0].value));
+              ({ canConvertRequire, shouldRemoveRequireStatement } =
+                getIgnoreTryCatchRequireStatementMode(node.arguments[0].value));
 
               if (shouldRemoveRequireStatement) {
                 hasRemovedRequire = true;

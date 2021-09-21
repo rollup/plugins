@@ -1,7 +1,6 @@
 import { readFileSync } from 'fs';
 
 import { DYNAMIC_JSON_PREFIX, HELPERS_ID } from './helpers';
-import { getCommonJSMetaPromise } from './is-cjs';
 import { getName, getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
 
 // e.g. id === "commonjsHelpers?commonjsRegister"
@@ -16,11 +15,11 @@ export function getUnknownRequireProxy(id, requireReturnsDefault) {
   const name = getName(id);
   const exported =
     requireReturnsDefault === 'auto'
-      ? `import {getDefaultExportFromNamespaceIfNotNamed} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(${name});`
+      ? `import { getDefaultExportFromNamespaceIfNotNamed } from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(${name});`
       : requireReturnsDefault === 'preferred'
-      ? `import {getDefaultExportFromNamespaceIfPresent} from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfPresent(${name});`
+      ? `import { getDefaultExportFromNamespaceIfPresent } from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfPresent(${name});`
       : !requireReturnsDefault
-      ? `import {getAugmentedNamespace} from "${HELPERS_ID}"; export default /*@__PURE__*/getAugmentedNamespace(${name});`
+      ? `import { getAugmentedNamespace } from "${HELPERS_ID}"; export default /*@__PURE__*/getAugmentedNamespace(${name});`
       : `export default ${name};`;
   return `import * as ${name} from ${JSON.stringify(id)}; ${exported}`;
 }
@@ -47,13 +46,15 @@ export async function getStaticRequireProxy(
   requireReturnsDefault,
   esModulesWithDefaultExport,
   esModulesWithNamedExports,
-  commonJsMetaPromises
+  loadModule
 ) {
   const name = getName(id);
-  const commonjsMeta = await getCommonJSMetaPromise(commonJsMetaPromises, id);
+  const {
+    meta: { commonjs: commonjsMeta }
+  } = await loadModule({ id });
   if (commonjsMeta && commonjsMeta.isCommonJS) {
     return `export { __moduleExports as default } from ${JSON.stringify(id)};`;
-  } else if (commonjsMeta === null) {
+  } else if (!commonjsMeta) {
     return getUnknownRequireProxy(id, requireReturnsDefault);
   } else if (!requireReturnsDefault) {
     return `import { getAugmentedNamespace } from "${HELPERS_ID}"; import * as ${name} from ${JSON.stringify(
