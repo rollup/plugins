@@ -1,6 +1,5 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 import { __exports as input } from "\u0000fixtures/form/multiple-var-declarations-b/input.js?commonjs-exports"
-import "\u0000./a?commonjs-require";
 import require$$0 from "\u0000./a?commonjs-proxy";
 
 var a = require$$0
