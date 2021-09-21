@@ -47,7 +47,7 @@
     "require"
   ],
   "peerDependencies": {
-    "rollup": "^2.38.3"
+    "rollup": "^2.61.1"
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",

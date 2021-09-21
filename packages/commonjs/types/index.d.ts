@@ -65,6 +65,24 @@ interface RollupCommonJSOptions {
    */
   transformMixedEsModules?: boolean;
   /**
+   * By default, this plugin will try to hoist all `require` statements as
+   * imports to the top of each file. While this works well for many code bases
+   * and allows for very efficient ESM output, it does not perfectly capture
+   * CommonJS semantics. This is especially problematic when there are circular
+   * `require` calls between CommonJS modules as those often rely on the lazy
+   * execution of nested `require` calls.
+   *
+   * Setting this option to `true` will wrap all CommonJS files in functions
+   * which are executed when they are required for the first time, preserving
+   * NodeJS semantics. Note that this can have a small impact on the size and
+   * performance of the generated code.
+   *
+   * You can also provide a minimatch pattern, or array of patterns, to only
+   * specify a subset of files which should be wrapped in functions for proper
+   * `require` semantics.
+   */
+  strictRequireSemantic?: boolean | FilterPattern;
+  /**
    * Sometimes you have to leave require statements unconverted. Pass an array
    * containing the IDs or a `id => boolean` function.
    * @default []

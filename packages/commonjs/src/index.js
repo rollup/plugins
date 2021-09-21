@@ -26,7 +26,6 @@ import {
   PROXY_SUFFIX,
   unwrapId
 } from './helpers';
-import { setCommonJSMetaPromise } from './is-cjs';
 import { hasCjsKeywords } from './parse';
 import {
   getDynamicJsonProxy,
@@ -43,6 +42,12 @@ import { getName, getVirtualPathForDynamicRequirePath, normalizePathSlashes } fr
 export default function commonjs(options = {}) {
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
+  const strictRequireSemanticFilter =
+    options.strictRequireSemantic === true
+      ? () => true
+      : !options.strictRequireSemantic
+      ? () => false
+      : createFilter(options.strictRequireSemantic);
   const {
     ignoreGlobal,
     ignoreDynamicRequires,
@@ -73,7 +78,6 @@ export default function commonjs(options = {}) {
 
   const esModulesWithDefaultExport = new Set();
   const esModulesWithNamedExports = new Set();
-  const commonJsMetaPromises = new Map();
 
   const ignoreRequire =
     typeof options.ignore === 'function'
@@ -244,7 +248,7 @@ export default function commonjs(options = {}) {
           getRequireReturnsDefault(actualId),
           esModulesWithDefaultExport,
           esModulesWithNamedExports,
-          commonJsMetaPromises
+          this.load
         );
       }
 
@@ -273,14 +277,6 @@ export default function commonjs(options = {}) {
       } catch (err) {
         return this.error(err, err.loc);
       }
-    },
-
-    moduleParsed({ id, meta: { commonjs: commonjsMeta } }) {
-      if (commonjsMeta && commonjsMeta.isCommonJS != null) {
-        setCommonJSMetaPromise(commonJsMetaPromises, id, commonjsMeta);
-        return;
-      }
-      setCommonJSMetaPromise(commonJsMetaPromises, id, null);
     }
   };
 }

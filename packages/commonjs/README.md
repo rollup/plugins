@@ -113,6 +113,17 @@ Default: `false`
 
 Instructs the plugin whether to enable mixed module transformations. This is useful in scenarios with modules that contain a mix of ES `import` statements and CommonJS `require` expressions. Set to `true` if `require` calls should be transformed to imports in mixed modules, or `false` if the `require` expressions should survive the transformation. The latter can be important if the code contains environment detection, or you are coding for an environment with special treatment for `require` calls such as [ElectronJS](https://www.electronjs.org/). See also the "ignore" option.
 
+### `strictRequireSemantic`
+
+Type: `boolean | string | string[]`<br>
+Default: `false`
+
+By default, this plugin will try to hoist all `require` statements as imports to the top of each file. While this works well for many code bases and allows for very efficient ESM output, it does not perfectly capture CommonJS semantics. This is especially problematic when there are circular `require` calls between CommonJS modules as those often rely on the lazy execution of nested `require` calls.
+
+Setting this option to `true` will wrap all CommonJS files in functions which are executed when they are required for the first time, preserving NodeJS semantics. Note that this can have a small impact on the size and performance of the generated code.
+
+You can also provide a [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, to only specify a subset of files which should be wrapped in functions for proper `require` semantics.
+
 ### `ignore`
 
 Type: `string[] | ((id: string) => boolean)`<br>
