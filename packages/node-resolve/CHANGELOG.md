@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.0.5
+
+_2021-09-21_
+
+### Updates
+
+- docs: fix readme heading depth (#999)
+
 ## v13.0.4
 
 _2021-07-24_
