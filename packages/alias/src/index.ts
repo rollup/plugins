@@ -57,7 +57,8 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
   if (entries.length === 0) {
     return {
-      name: 'alias'
+      name: 'alias',
+      resolveId: () => null
     };
   }
 
