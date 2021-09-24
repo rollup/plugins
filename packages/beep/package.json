@@ -17,15 +17,19 @@
   "engines": {
     "node": ">= 8.0.0"
   },
+  
   "scripts": {
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "ava --verbose",
-    "test": "ava"
+    "prerelease": "pnpm build",
+    "test": "ava",
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
     "lib/",
+    "types/",
     "README.md",
     "LICENSE"
   ],
