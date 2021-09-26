@@ -2,7 +2,17 @@ import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
 import { Options as SucraseOptions } from 'sucrase/dist/Options';
 
-interface RollupSucraseOptions extends Omit<SucraseOptions, 'filePath' | 'sourceMapOptions'> {
+interface RollupSucraseOptions
+  extends Pick<
+    SucraseOptions,
+    | 'transforms'
+    | 'jsxPragma'
+    | 'jsxFragmentPragma'
+    | 'enableLegacyTypeScriptModuleInterop'
+    | 'enableLegacyBabel5ModuleInterop'
+    | 'production'
+    | 'disableESTransforms'
+  > {
   /**
    * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin
    * should operate on.
