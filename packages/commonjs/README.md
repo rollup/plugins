@@ -123,7 +123,7 @@ Sometimes you have to leave require statements unconverted. Pass an array contai
 ### `ignoreTryCatch`
 
 Type: `boolean | 'remove' | string[] | ((id: string) => boolean)`<br>
-Default: `false`
+Default: `true`
 
 In most cases, where `require` calls are inside a `try-catch` clause, they should be left unconverted as it requires an optional dependency that may or may not be installed beside the rolled up package.
 Due to the conversion of `require` to a static `import` - the call is hoisted to the top of the file, outside of the `try-catch` clause.

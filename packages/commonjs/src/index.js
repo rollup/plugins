@@ -88,7 +88,9 @@ export default function commonjs(options = {}) {
         ? options.ignoreTryCatch(id)
         : Array.isArray(options.ignoreTryCatch)
         ? options.ignoreTryCatch.includes(id)
-        : options.ignoreTryCatch || false;
+        : typeof options.ignoreTryCatch !== 'undefined'
+        ? options.ignoreTryCatch
+        : true;
 
     return {
       canConvertRequire: mode !== 'remove' && mode !== true,
