@@ -38,6 +38,7 @@ module.exports = function sucrase(opts = {}) {
         enableLegacyTypeScriptModuleInterop: opts.enableLegacyTypeScriptModuleInterop,
         enableLegacyBabel5ModuleInterop: opts.enableLegacyBabel5ModuleInterop,
         production: opts.production,
+        disableESTransforms: opts.disableESTransforms,
         filePath: id,
         sourceMapOptions: {
           compiledFilename: id
