@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v4.0.1
+
+_2021-10-01_
+
+### Bugfixes
+
+- fix: Pass `disableESTransforms` option and make types match options we support (#984)
+
 ## v4.0.0
 
 _2021-07-26_
