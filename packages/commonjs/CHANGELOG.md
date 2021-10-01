@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v21.0.0
+
+_2021-10-01_
+
+### Breaking Changes
+
+- fix: use safe default value for ignoreTryCatch (#1005)
+
 ## v20.0.0
 
 _2021-07-30_
