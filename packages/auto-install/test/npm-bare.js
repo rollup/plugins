@@ -25,7 +25,7 @@ test('npm, bare', async (t) => {
     plugins: [autoInstall(), nodeResolve()]
   });
   t.snapshot(readFileSync('package.json', 'utf-8'));
-  t.snapshot(readFileSync('package-lock.json', 'utf-8'));
+  t.truthy(readFileSync('package-lock.json', 'utf-8').includes('"node-noop"'));
 });
 
 test.after(async () => {

@@ -45,7 +45,7 @@ test('npm', async (t) => {
     },
     plugins: [autoInstall({ pkgFile, manager }), nodeResolve()]
   });
-  t.snapshot(readFileSync('package-lock.json', 'utf-8'));
+  t.snapshot(readFileSync('package.json', 'utf-8'));
 });
 
 test.after(async () => {
