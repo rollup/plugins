@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 const acorn = require('acorn');
 const test = require('ava');
@@ -38,9 +39,14 @@ test('escapes apostrophes in module name', (t) => {
   compare(t, 'basic', { $: "d'oh" });
 });
 
-test('escapes backslashes in module name', (t) => {
-  compare(t, 'basic', { $: 'slash\\back' });
-});
+if (os.platform() === 'win32') {
+  // backslash is path separator on Windows,
+  // so it cannot appear within filename
+} else {
+  test('escapes backslashes in module name', (t) => {
+    compare(t, 'basic', { $: 'slash\\back' });
+  });
+}
 
 test('inserts a named import statement', (t) => {
   compare(t, 'named', { Promise: ['es6-promise', 'Promise'] });
