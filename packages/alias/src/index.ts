@@ -83,7 +83,7 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
         // enforce void return value
       });
     },
-    resolveId(importee, importer) {
+    resolveId(importee, importer, resolveOptions) {
       const importeeId = normalizeId(importee);
       const importerId = normalizeId(importer);
 
@@ -99,10 +99,14 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
       const customResolver = getCustomResolver(matchedEntry, options);
       if (customResolver) {
-        return customResolver.call(this, updatedId, importerId, {});
+        return customResolver.call(this, updatedId, importerId, resolveOptions);
       }
 
-      return this.resolve(updatedId, importer, { skipSelf: true }).then((resolved) => {
+      return this.resolve(
+        updatedId,
+        importer,
+        Object.assign({ skipSelf: true }, resolveOptions)
+      ).then((resolved) => {
         let finalResult: PartialResolvedId | null = resolved;
         if (!finalResult) {
           finalResult = { id: updatedId };
