@@ -72,7 +72,7 @@ export function nodeResolve(opts = {}) {
   const browserMapCache = new Map();
   let preserveSymlinks;
 
-  const doResolveId = async (context, importee, importer, opts) => {
+  const doResolveId = async (context, importee, importer, custom) => {
     // strip query params from import
     const [importPath, params] = importee.split('?');
     const importSuffix = `${params ? `?${params}` : ''}`;
@@ -142,8 +142,7 @@ export function nodeResolve(opts = {}) {
     }
 
     const warn = (...args) => context.warn(...args);
-    const isRequire =
-      opts && opts.custom && opts.custom['node-resolve'] && opts.custom['node-resolve'].isRequire;
+    const isRequire = custom && custom['node-resolve'] && custom['node-resolve'].isRequire;
     const exportConditions = isRequire ? conditionsCjs : conditionsEsm;
 
     if (useBrowserOverrides && !exportConditions.includes('browser'))
@@ -250,7 +249,7 @@ export function nodeResolve(opts = {}) {
       isDirCached.clear();
     },
 
-    async resolveId(importee, importer, opts) {
+    async resolveId(importee, importer, resolveOptions) {
       if (importee === ES6_BROWSER_EMPTY) {
         return importee;
       }
@@ -261,9 +260,13 @@ export function nodeResolve(opts = {}) {
         importer = undefined;
       }
 
-      const resolved = await doResolveId(this, importee, importer, opts);
+      const resolved = await doResolveId(this, importee, importer, resolveOptions.custom);
       if (resolved) {
-        const resolvedResolved = await this.resolve(resolved.id, importer, { skipSelf: true });
+        const resolvedResolved = await this.resolve(
+          resolved.id,
+          importer,
+          Object.assign({ skipSelf: true }, resolveOptions)
+        );
         const isExternal = !!(resolvedResolved && resolvedResolved.external);
         if (isExternal) {
           return false;
