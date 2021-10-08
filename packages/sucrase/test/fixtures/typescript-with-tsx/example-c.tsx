@@ -1,1 +1,1 @@
-export {default} from './example-b.js'
+export { default } from './example-b.js'
