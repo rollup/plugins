@@ -754,6 +754,6 @@ if (os.platform() === 'win32') {
     });
 
     const code = await getCodeFromBundle(bundle);
-    t.regex(code, /\bfoo = {}/);
+    t.regex(code, /var foo(\$\d+)? = {}/);
   });
 }
