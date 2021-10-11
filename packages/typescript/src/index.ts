@@ -28,7 +28,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     transformers,
     tsconfig,
     tslib,
-    typescript: ts,
+    typescript: ts
   } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
