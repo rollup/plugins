@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.3.0
+
+_2021-10-15_
+
+### Features
+
+- feat: add resolve options (#1015)
+
 ## v8.2.5
 
 _2021-07-30_
