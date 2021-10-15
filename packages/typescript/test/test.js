@@ -936,7 +936,7 @@ test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
   });
 
   const files = await getCode(bundle, { format: 'esm' }, true);
-  //Compiles with no errors
+  // Compiles with no errors
   t.is(files.length, 1);
 });
 
@@ -948,7 +948,7 @@ test.serial('does it fail for filtering with incorrect rootDir in nested project
       plugins: [typescript({ tsconfig: 'tsconfig.json' })]
     })
   );
-  //Will throw parse error because it includes a typescript file outside CWD
+  // Will throw parse error because it includes a typescript file outside CWD
   t.is(error.code, 'PARSE_ERROR');
 });
 
