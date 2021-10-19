@@ -133,10 +133,12 @@ export default function inject(options) {
             name === keypath ? name : makeLegalIdentifier(`$inject_${keypath}`);
 
           if (!newImports.has(hash)) {
+            // escape apostrophes and backslashes for use in single-quoted string literal
+            const modName = mod[0].replace(/[''\\]/g, '\\$&');
             if (mod[1] === '*') {
-              newImports.set(hash, `import * as ${importLocalName} from '${mod[0]}';`);
+              newImports.set(hash, `import * as ${importLocalName} from '${modName}';`);
             } else {
-              newImports.set(hash, `import { ${mod[1]} as ${importLocalName} } from '${mod[0]}';`);
+              newImports.set(hash, `import { ${mod[1]} as ${importLocalName} } from '${modName}';`);
             }
           }
 
