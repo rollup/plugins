@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.6
+
+_2021-10-19_
+
+### Updates
+
+- refactor: avoid resolving customResolver every time handling resolveId (#1000)
+
 ## v3.1.5
 
 _2021-07-29_
