@@ -1,4 +1,4 @@
-const { readFileSync } = require('fs');
+const { readFileSync, writeFileSync } = require('fs');
 const { join } = require('path');
 
 const test = require('ava');
@@ -8,13 +8,13 @@ const { rollup } = require('rollup');
 
 const autoInstall = require('..');
 
-const cwd = join(__dirname, 'fixtures/npm-bare');
+const cwd = join(__dirname, 'fixtures/pnpm');
 const file = join(cwd, 'output/bundle.js');
 const input = join(cwd, '../input.js');
 
 process.chdir(cwd);
 
-test('npm, bare', async (t) => {
+test('pnpm', async (t) => {
   t.timeout(50000);
   await rollup({
     input,
@@ -24,10 +24,13 @@ test('npm, bare', async (t) => {
     },
     plugins: [autoInstall(), nodeResolve()]
   });
-  t.snapshot(readFileSync('package.json', 'utf-8'));
-  t.truthy(readFileSync('package-lock.json', 'utf-8').includes('"node-noop"'));
+
+  const json = JSON.parse(readFileSync('package.json', 'utf-8'));
+  // snapshots for this are a nightmare cross-platform
+  t.truthy('node-noop' in json.dependencies);
 });
 
 test.after(async () => {
-  await del(['node_modules', 'package.json', 'package-lock.json']);
+  await del(['node_modules', 'package.json']);
+  writeFileSync('pnpm-lock.yaml', '');
 });

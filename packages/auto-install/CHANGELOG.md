@@ -1,5 +1,18 @@
 # @rollup/plugin-auto-install ChangeLog
 
+## v2.2.0
+
+_2021-10-19_
+
+### Features
+
+- feat: support pnpm (#1012)
+
+### Updates
+
+- chore: upgrade TypeScript (#709)
+- chore: update dependencies (adb97d0)
+
 ## v2.1.0
 
 _2020-04-12_

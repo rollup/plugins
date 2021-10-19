@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-alias",
-  "version": "3.1.5",
+  "version": "3.1.8",
   "publishConfig": {
     "access": "public"
   },
@@ -54,7 +54,7 @@
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@rollup/plugin-typescript": "^5.0.2",
     "del-cli": "^3.0.1",
-    "rollup": "^2.23.0",
+    "rollup": "^2.58.0",
     "typescript": "^4.1.2"
   },
   "types": "types/index.d.ts",

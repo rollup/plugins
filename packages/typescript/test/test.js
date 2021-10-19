@@ -928,6 +928,40 @@ test.serial('normalizes resolved ids to avoid duplicate output on windows', asyn
   t.true(files[1].code.includes("import { one } from './one.js';"), files[1].code);
 });
 
+test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
+  process.chdir('fixtures/root-dir/packages/test-1');
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript({ tsconfig: 'tsconfig.json' })]
+  });
+
+  const files = await getCode(bundle, { format: 'esm' }, true);
+  // Compiles with no errors
+  t.is(files.length, 1);
+});
+
+test.serial('does it fail for filtering with incorrect rootDir in nested projects', async (t) => {
+  process.chdir('fixtures/root-dir/packages/test-2');
+  const error = await t.throwsAsync(
+    rollup({
+      input: 'main.ts',
+      plugins: [typescript({ tsconfig: 'tsconfig.json' })]
+    })
+  );
+  // Will throw parse error because it includes a typescript file outside CWD
+  t.is(error.code, 'PARSE_ERROR');
+});
+
+test.serial('does manually setting filterRoot resolve nested projects', async (t) => {
+  process.chdir('fixtures/root-dir/packages/test-2');
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript({ tsconfig: 'tsconfig.json', filterRoot: '../../' })]
+  });
+  const files = await getCode(bundle, { format: 'esm' }, true);
+  t.is(files.length, 1);
+});
+
 test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
   const warnings = [];
   const bundle = await rollup({

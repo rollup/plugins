@@ -15,15 +15,16 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
     // intentionally undocumented options. used for tests
     commands: {
       npm: 'npm install',
+      pnpm: 'pnpm install',
       yarn: 'yarn add'
     },
-    manager: fs.existsSync('yarn.lock') ? 'yarn' : 'npm',
+    manager: fs.existsSync('yarn.lock') ? 'yarn' : fs.existsSync('pnpm-lock.yaml') ? 'pnpm' : 'npm',
     pkgFile: path.resolve(opts.pkgFile || 'package.json')
   };
 
   const options = Object.assign({}, defaults, opts);
   const { manager, pkgFile } = options;
-  const validManagers = ['npm', 'yarn'];
+  const validManagers = ['npm', 'yarn', 'pnpm'];
 
   if (!validManagers.includes(manager)) {
     throw new RangeError(

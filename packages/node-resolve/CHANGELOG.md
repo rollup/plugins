@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.0.6
+
+_2021-10-19_
+
+### Bugfixes
+
+- fix: pass on isEntry flag (#1016)
+
 ## v13.0.5
 
 _2021-09-21_

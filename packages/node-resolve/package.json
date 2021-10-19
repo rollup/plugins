@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-node-resolve",
-  "version": "13.0.5",
+  "version": "13.0.6",
   "publishConfig": {
     "access": "public"
   },
@@ -68,7 +68,7 @@
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "es5-ext": "^0.10.53",
-    "rollup": "^2.42.0",
+    "rollup": "^2.58.0",
     "source-map": "^0.7.3",
     "string-capitalize": "^1.0.1"
   },

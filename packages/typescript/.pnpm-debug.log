@@ -1,0 +1,23 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1,
+    "workspacePrefix": "/Users/jani/projects/plugins"
+  },
+  "1 error pnpm": {
+    "code": "ELIFECYCLE",
+    "errno": "ENOENT",
+    "syscall": "spawn",
+    "file": "sh",
+    "pkgid": "@rollup/plugin-typescript@8.2.5",
+    "stage": "prebuild",
+    "script": "del-cli dist",
+    "pkgname": "@rollup/plugin-typescript",
+    "err": {
+      "name": "pnpm",
+      "message": "@rollup/plugin-typescript@8.2.5 prebuild: `del-cli dist`\nspawn ENOENT",
+      "code": "ELIFECYCLE",
+      "stack": "pnpm: @rollup/plugin-typescript@8.2.5 prebuild: `del-cli dist`\nspawn ENOENT\n    at ChildProcess.<anonymous> (/Users/jani/.config/yarn/global/node_modules/pnpm/dist/pnpm.cjs:93136:22)\n    at ChildProcess.emit (node:events:394:28)\n    at maybeClose (node:internal/child_process:1064:16)\n    at Process.ChildProcess._handle.onexit (node:internal/child_process:301:5)"
+    }
+  },
+  "2 warn pnpm:global": " Local package.json exists, but node_modules missing, did you mean to install?"
+}
