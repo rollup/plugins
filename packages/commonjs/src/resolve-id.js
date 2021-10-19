@@ -49,7 +49,7 @@ export default function getResolveId(extensions) {
     return undefined;
   }
 
-  return function resolveId(importee, rawImporter) {
+  return function resolveId(importee, rawImporter, resolveOptions) {
     if (isWrappedId(importee, MODULE_SUFFIX) || isWrappedId(importee, EXPORTS_SUFFIX)) {
       return importee;
     }
@@ -92,10 +92,16 @@ export default function getResolveId(extensions) {
       return null;
     }
 
-    return this.resolve(importee, importer, {
-      skipSelf: true,
-      custom: { 'node-resolve': { isRequire: isProxyModule || isRequiredModule } }
-    }).then((resolved) => {
+    return this.resolve(
+      importee,
+      importer,
+      Object.assign({}, resolveOptions, {
+        skipSelf: true,
+        custom: Object.assign({}, resolveOptions.custom, {
+          'node-resolve': { isRequire: isProxyModule || isRequiredModule }
+        })
+      })
+    ).then((resolved) => {
       if (!resolved) {
         resolved = resolveExtensions(importee, importer);
       }
