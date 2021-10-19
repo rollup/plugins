@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v1.4.1
+
+_2021-10-19_
+
+### Bugfixes
+
+- fix: ignore data uris (#1021)
+
 ## v1.4.0
 
 _2021-07-26_
