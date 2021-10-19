@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v21.0.1
+
+_2021-10-19_
+
+### Bugfixes
+
+- fix: pass on isEntry and custom resolve options (#1018)
+
 ## v21.0.0
 
 _2021-10-01_
