@@ -1,5 +1,18 @@
 # @rollup/plugin-inject ChangeLog
 
+## v4.0.3
+
+_2021-10-19_
+
+### Bugfixes
+
+- fix: escape metacharacters in module name string (#897)
+- fix: isReference check bug (#804)
+
+### Updates
+
+- chore: update dependencies (c1a0b07)
+
 ## v4.0.2
 
 _2020-05-11_
