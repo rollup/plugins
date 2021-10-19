@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.7
+
+_2021-10-19_
+
+### Bugfixes
+
+- fix: revert #1000 for hooks bug (#1022)
+
 ## v3.1.6
 
 _2021-10-19_
