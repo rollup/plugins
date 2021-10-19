@@ -63,7 +63,7 @@ function expressionToGlob(node) {
 
 export function dynamicImportToGlob(node, sourceString) {
   let glob = expressionToGlob(node);
-  if (!glob.includes('*')) {
+  if (!glob.includes('*') || glob.startsWith('data:')) {
     return null;
   }
   glob = glob.replace(/\*\*/g, '*');
