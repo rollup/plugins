@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v3.1.8
+
+_2021-10-19_
+
+### Bugfixes
+
+- fix: pass on isEntry flag and custom options (#1017)
+
 ## v3.1.7
 
 _2021-10-19_
