@@ -13,6 +13,12 @@ export interface Alias {
   customResolver?: ResolverFunction | ResolverObject | null;
 }
 
+export interface ResolvedAlias {
+  find: string | RegExp;
+  replacement: string;
+  resolverFunction: ResolverFunction | null;
+}
+
 export interface RollupAliasOptions {
   /**
    * Instructs the plugin to use an alternative resolving algorithm,
