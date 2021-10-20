@@ -15,13 +15,19 @@ module.exports = function sucrase(opts = {}) {
       if (importer && /^[./]/.test(importee)) {
         const resolved = path.resolve(importer ? path.dirname(importer) : process.cwd(), importee);
         // resolve in the same order that TypeScript resolves modules
-        let possibleFileName = importee.endsWith('.js') ? resolved.slice(0, -3) : resolved;
-        const resolvedFilename = [
-          `${possibleFileName}.ts`,
-          `${possibleFileName}.tsx`,
+        const resolvedFilenames = [
+          `${resolved}.ts`,
+          `${resolved}.tsx`,
           `${resolved}/index.ts`,
           `${resolved}/index.tsx`
-        ].find((filename) => fs.existsSync(filename));
+        ]
+        if(importee.endsWith('.js')) {
+          resolvedFilenames.push(
+            `${resolved.slice(0, -3)}.ts`,
+            `${resolved.slice(0, -3)}.tsx`,
+          )
+        }
+        const resolvedFilename = resolvedFilenames.find((filename) => fs.existsSync(filename));
 
         if (resolvedFilename) {
           return resolvedFilename;
