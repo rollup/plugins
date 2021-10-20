@@ -75,7 +75,7 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
         )
       );
     },
-    resolveId(importee, importer) {
+    resolveId(importee, importer, resolveOptions) {
       if (!importer) {
         return null;
       }
@@ -88,12 +88,14 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
       const updatedId = importee.replace(matchedEntry.find, matchedEntry.replacement);
 
       if (matchedEntry.resolverFunction) {
-        return matchedEntry.resolverFunction.call(this, updatedId, importer, {});
+        return matchedEntry.resolverFunction.call(this, updatedId, importer, resolveOptions);
       }
 
-      return this.resolve(updatedId, importer, { skipSelf: true }).then(
-        (resolved) => resolved || { id: updatedId }
-      );
+      return this.resolve(
+        updatedId,
+        importer,
+        Object.assign({ skipSelf: true }, resolveOptions)
+      ).then((resolved) => resolved || { id: updatedId });
     }
   };
 }

@@ -32,8 +32,10 @@ function resolveWithRollup(plugins, tests) {
               // The buildStart hook is the first to have access to this.resolve
               // We map the tests to an array of resulting ids
               Promise.all(
-                tests.map(({ source, importer }) =>
-                  this.resolve(source, importer).then((result) => (result ? result.id : null))
+                tests.map(({ source, importer, options }) =>
+                  this.resolve(source, importer, options).then((result) =>
+                    result ? result.id : null
+                  )
                 )
               )
             );
@@ -437,6 +439,98 @@ test('Alias + rollup-plugin-node-resolve', (t) =>
           )
         );
     }));
+
+test('Forwards isEntry and custom options to a custom resolver', (t) => {
+  const resolverCalls = [];
+  return resolveAliasWithRollup(
+    {
+      entries: {
+        entry: 'entry-point',
+        nonEntry: 'non-entry-point'
+      },
+      customResolver: (...args) => {
+        resolverCalls.push(args);
+        return args[0];
+      }
+    },
+    [
+      { source: 'entry', importer: '/src/importer.js', options: { isEntry: true } },
+      {
+        source: 'nonEntry',
+        importer: '/src/importer.js',
+        options: { isEntry: false, custom: { test: 42 } }
+      }
+    ]
+  ).then((result) => {
+    t.deepEqual(resolverCalls, [
+      [
+        'entry-point',
+        '/src/importer.js',
+        {
+          custom: void 0,
+          isEntry: true
+        }
+      ],
+      [
+        'non-entry-point',
+        '/src/importer.js',
+        {
+          custom: { test: 42 },
+          isEntry: false
+        }
+      ]
+    ]);
+    t.deepEqual(result, ['entry-point', 'non-entry-point']);
+  });
+});
+
+test('Forwards isEntry and custom options to other plugins', (t) => {
+  const resolverCalls = [];
+  return resolveWithRollup(
+    [
+      alias({
+        entries: {
+          entry: 'entry-point',
+          nonEntry: 'non-entry-point'
+        }
+      }),
+      {
+        name: 'test',
+        resolveId(...args) {
+          resolverCalls.push(args);
+        }
+      }
+    ],
+    [
+      { source: 'entry', importer: '/src/importer.js', options: { isEntry: true } },
+      {
+        source: 'nonEntry',
+        importer: '/src/importer.js',
+        options: { isEntry: false, custom: { test: 42 } }
+      }
+    ]
+  ).then((result) => {
+    t.deepEqual(resolverCalls, [
+      [
+        'entry-point',
+        '/src/importer.js',
+        {
+          custom: void 0,
+          isEntry: true
+        }
+      ],
+      [
+        'non-entry-point',
+        '/src/importer.js',
+        {
+          custom: { test: 42 },
+          isEntry: false
+        }
+      ]
+    ]);
+    t.deepEqual(result, ['entry-point', 'non-entry-point']);
+  });
+});
 
 test('CustomResolver plugin-like object with buildStart', (t) => {
   const count = {
