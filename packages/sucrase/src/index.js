@@ -22,7 +22,8 @@ module.exports = function sucrase(opts = {}) {
           `${resolved}/index.tsx`
         ]
         if(importee.endsWith('.js')) {
-          resolvedFilenames.push(
+          resolvedFilenames.splice(
+            2, 0,
             `${resolved.slice(0, -3)}.ts`,
             `${resolved.slice(0, -3)}.tsx`,
           )
