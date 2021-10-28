@@ -7,5 +7,4 @@ var bar = 2;
 var foo_1 = input.foo = 'a';
 var bar_1 = input.bar = 'b';
 
-export default input;
-export { input as __moduleExports, foo_1 as foo, bar_1 as bar };
+export { input as __moduleExports, foo_1 as foo, bar_1 as bar, input as default };

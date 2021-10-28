@@ -1,5 +1,5 @@
 if (typeof module.require === 'function' && module.require) {
-  module.exports = 1;
+  module.exports = 'require detected';
 } else {
-  module.exports = 2;
+  module.exports = 'could not detect require';
 }

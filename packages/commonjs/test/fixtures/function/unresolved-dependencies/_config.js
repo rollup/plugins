@@ -11,9 +11,12 @@ module.exports = {
     plugins: [
       {
         buildEnd() {
-          assert.strictEqual(warnings.length, 1);
-          assert.strictEqual(warnings[0].code, 'UNRESOLVED_IMPORT');
-          assert.strictEqual(warnings[0].source, 'path');
+          assert.deepStrictEqual(
+            warnings.map(({ code, source }) => {
+              return { code, source };
+            }),
+            [{ code: 'UNRESOLVED_IMPORT', source: 'path' }]
+          );
         }
       }
     ]

@@ -1,11 +1,25 @@
-import { statSync } from 'fs';
-
+import { existsSync, readFileSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
 import glob from 'glob';
 
 import { normalizePathSlashes } from './utils';
-import { getPackageEntryPoint } from './dynamic-packages-manager';
+
+function getPackageEntryPoint(dirPath) {
+  let entryPoint = 'index.js';
+
+  try {
+    if (existsSync(join(dirPath, 'package.json'))) {
+      entryPoint =
+        JSON.parse(readFileSync(join(dirPath, 'package.json'), { encoding: 'utf8' })).main ||
+        entryPoint;
+    }
+  } catch (ignored) {
+    // ignored
+  }
+
+  return entryPoint;
+}
 
 function isDirectory(path) {
   try {
@@ -16,7 +30,7 @@ function isDirectory(path) {
   return false;
 }
 
-export default function getDynamicRequirePaths(patterns) {
+export default function getDynamicRequireModuleSet(patterns) {
   const dynamicRequireModuleSet = new Set();
   for (const pattern of !patterns || Array.isArray(patterns) ? patterns || [] : [patterns]) {
     const isNegated = pattern.startsWith('!');
@@ -28,8 +42,5 @@ export default function getDynamicRequirePaths(patterns) {
       }
     }
   }
-  const dynamicRequireModuleDirPaths = Array.from(dynamicRequireModuleSet.values()).filter((path) =>
-    isDirectory(path)
-  );
-  return { dynamicRequireModuleSet, dynamicRequireModuleDirPaths };
+  return dynamicRequireModuleSet;
 }

@@ -1,1 +1,1 @@
-console.log('main');
+t.is('main', 'main');
