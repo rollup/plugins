@@ -1,4 +1,4 @@
-import { dirname, extname } from 'path';
+import { extname } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 import getCommonDir from 'commondir';
@@ -6,17 +6,12 @@ import getCommonDir from 'commondir';
 import { peerDependencies } from '../package.json';
 
 import analyzeTopLevelStatements from './analyze-top-level-statements';
+import { getDynamicRequireModules } from './dynamic-modules';
 
+import getDynamicRequireModuleSet from './dynamic-require-paths';
 import {
-  getDynamicPackagesEntryIntro,
-  getDynamicPackagesModule,
-  isDynamicModuleImport
-} from './dynamic-packages-manager';
-import getDynamicRequirePaths from './dynamic-require-paths';
-import {
-  DYNAMIC_JSON_PREFIX,
-  DYNAMIC_PACKAGES_ID,
-  DYNAMIC_REGISTER_SUFFIX,
+  DYNAMIC_MODULES_ID,
+  ES_IMPORT_SUFFIX,
   EXPORTS_SUFFIX,
   EXTERNAL_SUFFIX,
   getHelpersModule,
@@ -24,20 +19,15 @@ import {
   isWrappedId,
   MODULE_SUFFIX,
   PROXY_SUFFIX,
-  unwrapId
+  unwrapId,
+  wrapId
 } from './helpers';
 import { hasCjsKeywords } from './parse';
-import {
-  getDynamicJsonProxy,
-  getDynamicRequireProxy,
-  getSpecificHelperProxy,
-  getStaticRequireProxy,
-  getUnknownRequireProxy
-} from './proxies';
-import getResolveId from './resolve-id';
+import { getStaticRequireProxy, getUnknownRequireProxy } from './proxies';
+import getResolveId, { resolveExtensions } from './resolve-id';
 import validateRollupVersion from './rollup-version';
 import transformCommonjs from './transform-commonjs';
-import { getName, getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
+import { capitalize, getName, normalizePathSlashes } from './utils';
 
 export default function commonjs(options = {}) {
   const extensions = options.extensions || ['.js'];
@@ -67,10 +57,9 @@ export default function commonjs(options = {}) {
       : () => esmExternals;
   const defaultIsModuleExports =
     typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
+  const knownCjsModuleTypes = Object.create(null);
 
-  const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
-    options.dynamicRequireTargets
-  );
+  const dynamicRequireModuleSet = getDynamicRequireModuleSet(options.dynamicRequireTargets);
   const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
   const commonDir = isDynamicRequireModulesEnabled
     ? getCommonDir(null, Array.from(dynamicRequireModuleSet).concat(process.cwd()))
@@ -107,12 +96,6 @@ export default function commonjs(options = {}) {
   const sourceMap = options.sourceMap !== false;
 
   function transformAndCheckExports(code, id) {
-    if (isDynamicRequireModulesEnabled && this.getModuleInfo(id).isEntry) {
-      // eslint-disable-next-line no-param-reassign
-      code =
-        getDynamicPackagesEntryIntro(dynamicRequireModuleDirPaths, dynamicRequireModuleSet) + code;
-    }
-
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
       this.parse,
       code,
@@ -132,13 +115,17 @@ export default function commonjs(options = {}) {
       return { meta: { commonjs: { isCommonJS: false } } };
     }
 
-    // avoid wrapping as this is a commonjsRegister call
-    const disableWrap = isWrappedId(id, DYNAMIC_REGISTER_SUFFIX);
-    if (disableWrap) {
-      // eslint-disable-next-line no-param-reassign
-      id = unwrapId(id, DYNAMIC_REGISTER_SUFFIX);
-    }
+    // TODO Lukas
+    // * test import from ESM -> additional proxy
+    // * test entry point
+    // * test interaction with dynamic require targets
+    // * test circular dependency: We must not use this.load without circularity check -> error in Rollup?
+    // When we write the imports, we already know that we are commonjs or mixed so we can rely on usesRequireWrapper and write that into a table
+    const usesRequireWrapper =
+      !isEsModule &&
+      (dynamicRequireModuleSet.has(normalizePathSlashes(id)) || strictRequireSemanticFilter(id));
 
+    // TODO Lukas extract helpers
     return transformCommonjs(
       this.parse,
       code,
@@ -151,10 +138,58 @@ export default function commonjs(options = {}) {
       sourceMap,
       isDynamicRequireModulesEnabled,
       dynamicRequireModuleSet,
-      disableWrap,
       commonDir,
       ast,
-      defaultIsModuleExports
+      defaultIsModuleExports,
+      usesRequireWrapper,
+      // TODO Lukas extract
+      (isParentCommonJS, sources) => {
+        knownCjsModuleTypes[id] = isParentCommonJS;
+        return Promise.all(
+          sources.map(async (source) => {
+            // Never analyze or proxy internal modules
+            if (source.startsWith('\0')) {
+              return { source, id: source, isCommonJS: false };
+            }
+            const resolved =
+              (await this.resolve(source, id, {
+                skipSelf: true,
+                custom: {
+                  'node-resolve': { isRequire: true }
+                }
+              })) || resolveExtensions(source, id, extensions);
+            if (!resolved) {
+              return { source, id: wrapId(source, EXTERNAL_SUFFIX), isCommonJS: false };
+            }
+            if (resolved.external) {
+              return { source, id: wrapId(resolved.id, EXTERNAL_SUFFIX), isCommonJS: false };
+            }
+            if (resolved.id in knownCjsModuleTypes) {
+              return {
+                source,
+                id:
+                  knownCjsModuleTypes[resolved.id] === true
+                    ? wrapId(resolved.id, PROXY_SUFFIX)
+                    : resolved.id,
+                isCommonJS: knownCjsModuleTypes[resolved.id]
+              };
+            }
+            const {
+              meta: { commonjs: commonjsMeta }
+            } = await this.load(resolved);
+            const isCommonJS = commonjsMeta && commonjsMeta.isCommonJS;
+            return {
+              source,
+              id:
+                // TODO Lukas extract constant
+                isCommonJS === 'withRequireFunction'
+                  ? resolved.id
+                  : wrapId(resolved.id, PROXY_SUFFIX),
+              isCommonJS
+            };
+          })
+        );
+      }
     );
   }
 
@@ -174,40 +209,20 @@ export default function commonjs(options = {}) {
 
     load(id) {
       if (id === HELPERS_ID) {
-        return getHelpersModule(isDynamicRequireModulesEnabled, ignoreDynamicRequires);
-      }
-
-      if (id.startsWith(HELPERS_ID)) {
-        return getSpecificHelperProxy(id);
+        return getHelpersModule();
       }
 
       if (isWrappedId(id, MODULE_SUFFIX)) {
-        const actualId = unwrapId(id, MODULE_SUFFIX);
-        let name = getName(actualId);
-        let code;
-        if (isDynamicRequireModulesEnabled) {
-          if (['modulePath', 'commonjsRequire', 'createModule'].includes(name)) {
-            name = `${name}_`;
-          }
-          code =
-            `import {commonjsRequire, createModule} from "${HELPERS_ID}";\n` +
-            `var ${name} = createModule(${JSON.stringify(
-              getVirtualPathForDynamicRequirePath(dirname(actualId), commonDir)
-            )});\n` +
-            `export {${name} as __module}`;
-        } else {
-          code = `var ${name} = {exports: {}}; export {${name} as __module}`;
-        }
+        const name = getName(unwrapId(id, MODULE_SUFFIX));
         return {
-          code,
+          code: `var ${name} = {exports: {}}; export {${name} as __module}`,
           syntheticNamedExports: '__module',
           meta: { commonjs: { isCommonJS: false } }
         };
       }
 
       if (isWrappedId(id, EXPORTS_SUFFIX)) {
-        const actualId = unwrapId(id, EXPORTS_SUFFIX);
-        const name = getName(actualId);
+        const name = getName(unwrapId(id, EXPORTS_SUFFIX));
         return {
           code: `var ${name} = {}; export {${name} as __exports}`,
           meta: { commonjs: { isCommonJS: false } }
@@ -222,23 +237,40 @@ export default function commonjs(options = {}) {
         );
       }
 
-      if (id === DYNAMIC_PACKAGES_ID) {
-        return getDynamicPackagesModule(dynamicRequireModuleDirPaths, commonDir);
+      // TODO Lukas extract
+      if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
+        const actualId = unwrapId(id, ES_IMPORT_SUFFIX);
+        const name = getName(actualId);
+        const exportsName = `${name}Exports`;
+        const requireModule = `require${capitalize(name)}`;
+        // TODO Lukas the ES wrapper might also just forward the exports object
+        let code =
+          `import { getDefaultExportFromCjs } from "${HELPERS_ID}";\n` +
+          `import { __require as ${requireModule} } from ${JSON.stringify(actualId)};\n` +
+          `var ${exportsName} = ${requireModule}();\n` +
+          `export { ${exportsName} as __moduleExports };`;
+        if (defaultIsModuleExports) {
+          code += `\nexport { ${exportsName} as default };`;
+        } else {
+          code += `export default /*@__PURE__*/getDefaultExportFromCjs(${exportsName});`;
+        }
+        return {
+          code,
+          syntheticNamedExports: '__moduleExports',
+          meta: { commonjs: { isCommonJS: false } }
+        };
       }
 
-      if (id.startsWith(DYNAMIC_JSON_PREFIX)) {
-        return getDynamicJsonProxy(id, commonDir);
-      }
-
-      if (isDynamicModuleImport(id, dynamicRequireModuleSet)) {
-        return `export default require(${JSON.stringify(normalizePathSlashes(id))});`;
-      }
-
-      if (isWrappedId(id, DYNAMIC_REGISTER_SUFFIX)) {
-        return getDynamicRequireProxy(
-          normalizePathSlashes(unwrapId(id, DYNAMIC_REGISTER_SUFFIX)),
-          commonDir
-        );
+      if (id === DYNAMIC_MODULES_ID) {
+        return {
+          code: getDynamicRequireModules(
+            isDynamicRequireModulesEnabled,
+            dynamicRequireModuleSet,
+            commonDir,
+            ignoreDynamicRequires
+          ),
+          meta: { commonjs: { isCommonJS: false } }
+        };
       }
 
       if (isWrappedId(id, PROXY_SUFFIX)) {
@@ -255,25 +287,14 @@ export default function commonjs(options = {}) {
       return null;
     },
 
-    transform(code, rawId) {
-      let id = rawId;
-
-      if (isWrappedId(id, DYNAMIC_REGISTER_SUFFIX)) {
-        id = unwrapId(id, DYNAMIC_REGISTER_SUFFIX);
-      }
-
+    transform(code, id) {
       const extName = extname(id);
-      if (
-        extName !== '.cjs' &&
-        id !== DYNAMIC_PACKAGES_ID &&
-        !id.startsWith(DYNAMIC_JSON_PREFIX) &&
-        (!filter(id) || !extensions.includes(extName))
-      ) {
+      if (extName !== '.cjs' && (!filter(id) || !extensions.includes(extName))) {
         return null;
       }
 
       try {
-        return transformAndCheckExports.call(this, code, rawId);
+        return transformAndCheckExports.call(this, code, id);
       } catch (err) {
         return this.error(err, err.loc);
       }

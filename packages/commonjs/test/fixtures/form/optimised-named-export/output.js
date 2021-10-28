@@ -4,5 +4,4 @@ import { __exports as input } from "\u0000fixtures/form/optimised-named-export/i
 var foo = input.foo = 'a';
 var bar = input.bar = 'b';
 
-export default input;
-export { input as __moduleExports, foo, bar };
+export { input as __moduleExports, foo, bar, input as default };

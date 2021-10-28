@@ -1,3 +1,3 @@
 const { test } = require('./export.cjs');
 
-console.log(test);
+t.is(test, 42);

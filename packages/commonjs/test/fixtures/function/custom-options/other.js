@@ -1,1 +1,1 @@
-console.log('other');
+throw new Error('Other should not be executed');
