@@ -30,12 +30,43 @@ export function rewriteExportsAndGetExportsBlock(
   HELPERS_NAME,
   exportMode,
   detectWrappedDefault,
-  defaultIsModuleExports
+  defaultIsModuleExports,
+  usesRequireWrapper,
+  requireName
 ) {
   const exports = [];
   const exportDeclarations = [];
 
-  if (exportMode === 'replace') {
+  if (usesRequireWrapper) {
+    // TODO Lukas Extract
+    if (exportMode === 'replace') {
+      for (const { left } of moduleExportsAssignments) {
+        magicString.overwrite(left.start, left.end, exportsName);
+      }
+    } else {
+      // Collect and rewrite module.exports assignments
+      for (const { left } of moduleExportsAssignments) {
+        magicString.overwrite(left.start, left.end, `${moduleName}.exports`);
+      }
+      // Collect and rewrite named exports
+      for (const [exportName, { nodes }] of exportsAssignmentsByName) {
+        for (const node of nodes) {
+          magicString.overwrite(node.start, node.left.end, `${exportsName}.${exportName}`);
+        }
+      }
+      // Collect and rewrite exports.__esModule assignments
+      for (const expression of defineCompiledEsmExpressions) {
+        const moduleExportsExpression =
+          expression.type === 'CallExpression' ? expression.arguments[0] : expression.left.object;
+        magicString.overwrite(
+          moduleExportsExpression.start,
+          moduleExportsExpression.end,
+          exportsName
+        );
+      }
+    }
+    exports.push(`${requireName} as __require`);
+  } else if (exportMode === 'replace') {
     getExportsForReplacedModuleExports(
       magicString,
       exports,
@@ -165,7 +196,8 @@ function getExports(
   }
 
   if (!isRestorableCompiledEsm || defaultIsModuleExports === true) {
-    exportDeclarations.push(`export default ${exportsName};`);
+    // TODO Lukas handle ESM importing CommonJS
+    exports.push(`${exportsName} as default`);
   } else if (moduleExportsAssignments.length === 0 || defaultIsModuleExports === false) {
     exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
   } else {

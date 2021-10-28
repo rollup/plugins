@@ -1,7 +1,7 @@
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
 module.exports = {
-  description: 'resolves circular references through indirect access (../ to module\'s root)',
+  description: "resolves circular references through indirect access (../ to module's root)",
   options: {
     plugins: [nodeResolve()]
   },

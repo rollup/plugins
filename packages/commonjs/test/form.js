@@ -1,6 +1,7 @@
 /* eslint-disable global-require, import/no-dynamic-require, no-console */
 
 import * as fs from 'fs';
+import * as path from 'path';
 
 import * as acorn from 'acorn';
 import test from 'ava';
@@ -15,7 +16,12 @@ const transformContext = {
       ecmaVersion: 9,
       sourceType: 'module',
       ...options
-    })
+    }),
+  resolve: (source, importer) =>
+    Promise.resolve({
+      id: `${path.resolve(path.dirname(importer), source)}${path.extname(source) ? '' : '.js'}`
+    }),
+  load: ({ id }) => Promise.resolve({ id, meta: {} })
 };
 
 fs.readdirSync('./fixtures/form').forEach((dir) => {
@@ -37,55 +43,58 @@ fs.readdirSync('./fixtures/form').forEach((dir) => {
     inputEntries.push(['output', `fixtures/form/${dir}/input.js`]);
   }
 
-  (config.solo ? test.only : test)(dir, async (t) => {
-    for (const [outputName, id] of inputEntries) {
-      const { transform } = commonjs(config.options);
+  (config.solo ? test.only : test)(dir, (t) =>
+    Promise.all(
+      inputEntries.map(async ([outputName, id]) => {
+        const { transform } = commonjs(config.options);
 
-      transformContext.getModuleInfo = (moduleId) => {
-        return {
-          isEntry: config.entry && moduleId === id,
-          importers:
-            config.importers && config.importers[outputName]
-              ? config.importers[outputName].map((x) => `fixtures/form/${dir}/${x}`)
-              : []
+        transformContext.getModuleInfo = (moduleId) => {
+          return {
+            isEntry: config.entry && moduleId === id,
+            importers:
+              config.importers && config.importers[outputName]
+                ? config.importers[outputName].map((x) => `fixtures/form/${dir}/${x}`)
+                : []
+          };
         };
-      };
-      transformContext.error = (base, props) => {
-        let error = base;
-        if (!(base instanceof Error)) error = Object.assign(new Error(base.message), base);
-        if (props) Object.assign(error, props);
-        throw error;
-      };
+        transformContext.error = (base, props) => {
+          let error = base;
+          if (!(base instanceof Error)) error = Object.assign(new Error(base.message), base);
+          if (props) Object.assign(error, props);
+          throw error;
+        };
 
-      const input = fs.readFileSync(id, 'utf-8');
+        const input = fs.readFileSync(id, 'utf-8');
 
-      let outputFile = `fixtures/form/${dir}/${outputName}`;
-      if (fs.existsSync(`${outputFile}.${process.platform}.js`)) {
-        outputFile += `.${process.platform}.js`;
-      } else {
-        outputFile += '.js';
-      }
+        let outputFile = `fixtures/form/${dir}/${outputName}`;
+        if (fs.existsSync(`${outputFile}.${process.platform}.js`)) {
+          outputFile += `.${process.platform}.js`;
+        } else {
+          outputFile += '.js';
+        }
 
-      const expected = fs.readFileSync(outputFile, 'utf-8').trim();
-      const transformed = transform.call(transformContext, input, id);
-      const actual = (transformed ? transformed.code : input).trim().replace(/\0/g, '_');
+        const expected = fs.readFileSync(outputFile, 'utf-8').trim();
+        // eslint-disable-next-line no-await-in-loop
+        const transformed = await transform.call(transformContext, input, id);
+        const actual = (transformed ? transformed.code : input).trim().replace(/\0/g, '_');
 
-      // uncomment to update snapshots
-      // fs.writeFileSync(outputFile, `${actual}\n`);
+        // uncomment to update snapshots
+        // fs.writeFileSync(outputFile, `${actual}\n`);
 
-      // trim whitespace from line endings,
-      // this will benefit issues like `form/try-catch-remove` where whitespace is left in the line,
-      // and testing on windows (\r\n)
-      t.is(
-        actual
-          .split('\n')
-          .map((x) => x.trimEnd())
-          .join('\n'),
-        expected
-          .split('\n')
-          .map((x) => x.trimEnd())
-          .join('\n')
-      );
-    }
-  });
+        // trim whitespace from line endings,
+        // this will benefit issues like `form/try-catch-remove` where whitespace is left in the line,
+        // and testing on windows (\r\n)
+        t.is(
+          actual
+            .split('\n')
+            .map((x) => x.trimEnd())
+            .join('\n'),
+          expected
+            .split('\n')
+            .map((x) => x.trimEnd())
+            .join('\n')
+        );
+      })
+    )
+  );
 });

@@ -41,3 +41,7 @@ export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
     ? VIRTUAL_PATH_BASE + normalizedPath.slice(commonDir.length)
     : normalizedPath;
 };
+
+export function capitalize(name) {
+  return name[0].toUpperCase() + name.slice(1);
+}

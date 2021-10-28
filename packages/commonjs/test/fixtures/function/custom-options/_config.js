@@ -22,10 +22,10 @@ module.exports = {
               'other.js',
               'main.js',
               // This is the important one
-              { custom: { test: 42, 'node-resolve': { isRequire: false } }, isEntry: true }
+              { custom: { test: 42 }, isEntry: true }
             ],
             ['main.js', void 0, { custom: {}, isEntry: true }],
-            ['main.js', void 0, { custom: { 'node-resolve': { isRequire: false } }, isEntry: true }]
+            ['main.js', void 0, { custom: {}, isEntry: true }]
           ]);
         },
         resolveId(source, importer, options) {
