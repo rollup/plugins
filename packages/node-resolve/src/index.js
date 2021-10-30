@@ -260,7 +260,12 @@ export function nodeResolve(opts = {}) {
         importer = undefined;
       }
 
-      const resolved = await doResolveId(this, importee, importer, resolveOptions.custom);
+      const resolved = await doResolveId(
+        this,
+        importee,
+        importer,
+        resolveOptions && resolveOptions.custom
+      );
       if (resolved) {
         const resolvedResolved = await this.resolve(
           resolved.id,
