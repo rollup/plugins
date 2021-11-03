@@ -15,7 +15,7 @@ export interface TypescriptSourceDescription extends Partial<SourceDescription> 
  * Checks if the given OutputFile represents some code
  */
 function isCodeOutputFile(name: string): boolean {
-  return !isMapOutputFile(name) && !name.endsWith('.d.ts');
+  return !isMapOutputFile(name) && !/\.d\.[cm]?ts$/.test(name);
 }
 
 /**

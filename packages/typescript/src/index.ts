@@ -109,7 +109,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const resolved = resolveModule(importee, containingFile);
 
       if (resolved) {
-        if (resolved.extension === '.d.ts') return null;
+        if (/\.d\.[cm]?ts$/.test(resolved.extension)) return null;
         return path.normalize(resolved.resolvedFileName);
       }
 
