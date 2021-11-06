@@ -27,6 +27,7 @@ import {
   isRequireStatement,
   isStaticRequireStatement
 } from './generate-imports';
+import { IS_WRAPPED_COMMONJS } from './helpers';
 import { tryParse } from './parse';
 import { capitalize, deconflict, getName, getVirtualPathForDynamicRequirePath } from './utils';
 
@@ -195,7 +196,7 @@ export default async function transformCommonjs(
             node.callee.property.name === 'resolve' &&
             hasDynamicModuleForPath(id, '/', dynamicRequireModuleSet)
           ) {
-            // TODO Lukas reimplement
+            // TODO Lukas reimplement?
             uses.require = true;
             const requireNode = node.callee.object;
             magicString.appendLeft(
@@ -219,7 +220,6 @@ export default async function transformCommonjs(
           skippedNodes.add(node.callee);
           uses.require = true;
 
-          // TODO Lukas can the remaining logic be moved to generate-imports?
           if (!isIgnoredRequireStatement(node, ignoreRequire)) {
             const usesReturnValue = parent.type !== 'ExpressionStatement';
 
@@ -315,10 +315,6 @@ export default async function transformCommonjs(
                 }
               }
               return;
-            // TODO Lukas instead of wrapping, we rewrite everything
-            // module.exports -> exportsVar, except if it is an assignment, then it is moduleVar.exports
-            // module -> moduleVar
-            // only exceptions: Direct assignments to module or exports. Would work with new logic, though.
             case 'module':
             case 'exports':
               shouldWrap = true;
@@ -464,6 +460,7 @@ export default async function transformCommonjs(
     exportMode,
     resolveRequireSourcesAndGetMeta,
     usesRequireWrapper,
+    isEsModule,
     uses.require
   );
   const exportBlock = isEsModule
@@ -521,9 +518,8 @@ function ${requireName} () {
     map: sourceMap ? magicString.generateMap() : null,
     syntheticNamedExports: isEsModule || usesRequireWrapper ? false : '__moduleExports',
     meta: {
-      // TODO Lukas extract constant
       commonjs: {
-        isCommonJS: !isEsModule && (usesRequireWrapper ? 'withRequireFunction' : true),
+        isCommonJS: !isEsModule && (usesRequireWrapper ? IS_WRAPPED_COMMONJS : true),
         isMixedModule: isEsModule
       }
     }

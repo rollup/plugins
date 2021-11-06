@@ -1,5 +1,5 @@
 import { HELPERS_ID } from './helpers';
-import { getName } from './utils';
+import { capitalize, getName } from './utils';
 
 export function getUnknownRequireProxy(id, requireReturnsDefault) {
   if (requireReturnsDefault === true || id.endsWith('.json')) {
@@ -45,4 +45,25 @@ export async function getStaticRequireProxy(
     return `import * as ${name} from ${JSON.stringify(id)}; export default ${name};`;
   }
   return `export { default } from ${JSON.stringify(id)};`;
+}
+
+export function getEsImportProxy(id, defaultIsModuleExports) {
+  const name = getName(id);
+  const exportsName = `${name}Exports`;
+  const requireModule = `require${capitalize(name)}`;
+  let code =
+    `import { getDefaultExportFromCjs } from "${HELPERS_ID}";\n` +
+    `import { __require as ${requireModule} } from ${JSON.stringify(id)};\n` +
+    `var ${exportsName} = ${requireModule}();\n` +
+    `export { ${exportsName} as __moduleExports };`;
+  if (defaultIsModuleExports) {
+    code += `\nexport { ${exportsName} as default };`;
+  } else {
+    code += `export default /*@__PURE__*/getDefaultExportFromCjs(${exportsName});`;
+  }
+  return {
+    code,
+    syntheticNamedExports: '__moduleExports',
+    meta: { commonjs: { isCommonJS: false } }
+  };
 }

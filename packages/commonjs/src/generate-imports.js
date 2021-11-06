@@ -2,7 +2,14 @@ import { dirname, resolve } from 'path';
 
 import { sync as nodeResolveSync } from 'resolve';
 
-import { DYNAMIC_MODULES_ID, EXPORTS_SUFFIX, HELPERS_ID, MODULE_SUFFIX, wrapId } from './helpers';
+import {
+  DYNAMIC_MODULES_ID,
+  EXPORTS_SUFFIX,
+  HELPERS_ID,
+  IS_WRAPPED_COMMONJS,
+  MODULE_SUFFIX,
+  wrapId
+} from './helpers';
 import { normalizePathSlashes } from './utils';
 
 export function isRequireStatement(node, scope) {
@@ -106,6 +113,7 @@ export function getRequireHandlers() {
     exportMode,
     resolveRequireSourcesAndGetMeta,
     usesRequireWrapper,
+    isEsModule,
     usesRequire
   ) {
     const imports = [];
@@ -127,40 +135,12 @@ export function getRequireHandlers() {
       );
     }
     const requiresBySource = collectSources(requireExpressions);
-    // TODO Lukas consider extracting stuff
-    const result = await resolveRequireSourcesAndGetMeta(
-      usesRequireWrapper ? 'withRequireFunction' : true,
+    const requireTargets = await resolveRequireSourcesAndGetMeta(
+      id,
+      usesRequireWrapper ? IS_WRAPPED_COMMONJS : !isEsModule,
       Object.keys(requiresBySource)
     );
-    let uid = 0;
-    for (const { source, id: resolveId, isCommonJS } of result) {
-      const requires = requiresBySource[source];
-      let usesRequired = false;
-      let name;
-      const hasNameConflict = ({ scope }) => scope.contains(name);
-      do {
-        name = `require$$${uid}`;
-        uid += 1;
-      } while (requires.some(hasNameConflict));
-
-      // TODO Lukas extract constant
-      if (isCommonJS === 'withRequireFunction') {
-        for (const { node } of requires) {
-          magicString.overwrite(node.start, node.end, `${name}()`);
-        }
-        imports.push(`import { __require as ${name} } from ${JSON.stringify(resolveId)};`);
-      } else {
-        for (const { node, usesReturnValue, toBeRemoved } of requires) {
-          if (usesReturnValue) {
-            usesRequired = true;
-            magicString.overwrite(node.start, node.end, name);
-          } else {
-            magicString.remove(toBeRemoved.start, toBeRemoved.end);
-          }
-        }
-        imports.push(`import ${usesRequired ? `${name} from ` : ''}${JSON.stringify(resolveId)};`);
-      }
-    }
+    processRequireExpressions(imports, requireTargets, requiresBySource, magicString);
     return imports.length ? `${imports.join('\n')}\n\n` : '';
   }
 
@@ -180,4 +160,42 @@ function collectSources(requireExpressions) {
     requires.push({ node, scope, usesReturnValue, toBeRemoved });
   }
   return requiresBySource;
+}
+
+function processRequireExpressions(imports, requireTargets, requiresBySource, magicString) {
+  const generateRequireName = getGenerateRequireName();
+  for (const { source, id: resolveId, isCommonJS } of requireTargets) {
+    const requires = requiresBySource[source];
+    const name = generateRequireName(requires);
+    if (isCommonJS === IS_WRAPPED_COMMONJS) {
+      for (const { node } of requires) {
+        magicString.overwrite(node.start, node.end, `${name}()`);
+      }
+      imports.push(`import { __require as ${name} } from ${JSON.stringify(resolveId)};`);
+    } else {
+      let usesRequired = false;
+      for (const { node, usesReturnValue, toBeRemoved } of requires) {
+        if (usesReturnValue) {
+          usesRequired = true;
+          magicString.overwrite(node.start, node.end, name);
+        } else {
+          magicString.remove(toBeRemoved.start, toBeRemoved.end);
+        }
+      }
+      imports.push(`import ${usesRequired ? `${name} from ` : ''}${JSON.stringify(resolveId)};`);
+    }
+  }
+}
+
+function getGenerateRequireName() {
+  let uid = 0;
+  return (requires) => {
+    let name;
+    const hasNameConflict = ({ scope }) => scope.contains(name);
+    do {
+      name = `require$$${uid}`;
+      uid += 1;
+    } while (requires.some(hasNameConflict));
+    return name;
+  };
 }
