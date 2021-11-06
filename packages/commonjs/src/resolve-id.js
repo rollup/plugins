@@ -9,6 +9,7 @@ import {
   EXPORTS_SUFFIX,
   EXTERNAL_SUFFIX,
   HELPERS_ID,
+  IS_WRAPPED_COMMONJS,
   isWrappedId,
   MODULE_SUFFIX,
   PROXY_SUFFIX,
@@ -96,7 +97,7 @@ export default function getResolveId(extensions) {
       const {
         meta: { commonjs: commonjsMeta }
       } = await this.load(resolved);
-      if (commonjsMeta && commonjsMeta.isCommonJS === 'withRequireFunction') {
+      if (commonjsMeta && commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS) {
         return wrapId(resolved.id, ES_IMPORT_SUFFIX);
       }
     }

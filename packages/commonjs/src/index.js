@@ -19,17 +19,23 @@ import {
   isWrappedId,
   MODULE_SUFFIX,
   PROXY_SUFFIX,
-  unwrapId,
-  wrapId
+  unwrapId
 } from './helpers';
 import { hasCjsKeywords } from './parse';
-import { getStaticRequireProxy, getUnknownRequireProxy } from './proxies';
-import getResolveId, { resolveExtensions } from './resolve-id';
+import { getEsImportProxy, getStaticRequireProxy, getUnknownRequireProxy } from './proxies';
+import getResolveId from './resolve-id';
+import { getResolveRequireSourcesAndGetMeta } from './resolve-require-sources';
 import validateRollupVersion from './rollup-version';
 import transformCommonjs from './transform-commonjs';
-import { capitalize, getName, normalizePathSlashes } from './utils';
+import { getName, normalizePathSlashes } from './utils';
 
 export default function commonjs(options = {}) {
+  const {
+    ignoreGlobal,
+    ignoreDynamicRequires,
+    requireReturnsDefault: requireReturnsDefaultOption,
+    esmExternals
+  } = options;
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
   const strictRequireSemanticFilter =
@@ -38,16 +44,12 @@ export default function commonjs(options = {}) {
       : !options.strictRequireSemantic
       ? () => false
       : createFilter(options.strictRequireSemantic);
-  const {
-    ignoreGlobal,
-    ignoreDynamicRequires,
-    requireReturnsDefault: requireReturnsDefaultOption,
-    esmExternals
-  } = options;
+
   const getRequireReturnsDefault =
     typeof requireReturnsDefaultOption === 'function'
       ? requireReturnsDefaultOption
       : () => requireReturnsDefaultOption;
+
   let esmExternalIds;
   const isEsmExternal =
     typeof esmExternals === 'function'
@@ -55,10 +57,11 @@ export default function commonjs(options = {}) {
       : Array.isArray(esmExternals)
       ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
       : () => esmExternals;
+
   const defaultIsModuleExports =
     typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
-  const knownCjsModuleTypes = Object.create(null);
 
+  const resolveRequireSourcesAndGetMeta = getResolveRequireSourcesAndGetMeta(extensions);
   const dynamicRequireModuleSet = getDynamicRequireModuleSet(options.dynamicRequireTargets);
   const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
   const commonDir = isDynamicRequireModulesEnabled
@@ -115,17 +118,10 @@ export default function commonjs(options = {}) {
       return { meta: { commonjs: { isCommonJS: false } } };
     }
 
-    // TODO Lukas
-    // * test import from ESM -> additional proxy
-    // * test entry point
-    // * test interaction with dynamic require targets
-    // * test circular dependency: We must not use this.load without circularity check -> error in Rollup?
-    // When we write the imports, we already know that we are commonjs or mixed so we can rely on usesRequireWrapper and write that into a table
     const usesRequireWrapper =
       !isEsModule &&
       (dynamicRequireModuleSet.has(normalizePathSlashes(id)) || strictRequireSemanticFilter(id));
 
-    // TODO Lukas extract helpers
     return transformCommonjs(
       this.parse,
       code,
@@ -142,54 +138,7 @@ export default function commonjs(options = {}) {
       ast,
       defaultIsModuleExports,
       usesRequireWrapper,
-      // TODO Lukas extract
-      (isParentCommonJS, sources) => {
-        knownCjsModuleTypes[id] = isParentCommonJS;
-        return Promise.all(
-          sources.map(async (source) => {
-            // Never analyze or proxy internal modules
-            if (source.startsWith('\0')) {
-              return { source, id: source, isCommonJS: false };
-            }
-            const resolved =
-              (await this.resolve(source, id, {
-                skipSelf: true,
-                custom: {
-                  'node-resolve': { isRequire: true }
-                }
-              })) || resolveExtensions(source, id, extensions);
-            if (!resolved) {
-              return { source, id: wrapId(source, EXTERNAL_SUFFIX), isCommonJS: false };
-            }
-            if (resolved.external) {
-              return { source, id: wrapId(resolved.id, EXTERNAL_SUFFIX), isCommonJS: false };
-            }
-            if (resolved.id in knownCjsModuleTypes) {
-              return {
-                source,
-                id:
-                  knownCjsModuleTypes[resolved.id] === true
-                    ? wrapId(resolved.id, PROXY_SUFFIX)
-                    : resolved.id,
-                isCommonJS: knownCjsModuleTypes[resolved.id]
-              };
-            }
-            const {
-              meta: { commonjs: commonjsMeta }
-            } = await this.load(resolved);
-            const isCommonJS = commonjsMeta && commonjsMeta.isCommonJS;
-            return {
-              source,
-              id:
-                // TODO Lukas extract constant
-                isCommonJS === 'withRequireFunction'
-                  ? resolved.id
-                  : wrapId(resolved.id, PROXY_SUFFIX),
-              isCommonJS
-            };
-          })
-        );
-      }
+      resolveRequireSourcesAndGetMeta(this)
     );
   }
 
@@ -237,40 +186,17 @@ export default function commonjs(options = {}) {
         );
       }
 
-      // TODO Lukas extract
       if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
-        const actualId = unwrapId(id, ES_IMPORT_SUFFIX);
-        const name = getName(actualId);
-        const exportsName = `${name}Exports`;
-        const requireModule = `require${capitalize(name)}`;
-        // TODO Lukas the ES wrapper might also just forward the exports object
-        let code =
-          `import { getDefaultExportFromCjs } from "${HELPERS_ID}";\n` +
-          `import { __require as ${requireModule} } from ${JSON.stringify(actualId)};\n` +
-          `var ${exportsName} = ${requireModule}();\n` +
-          `export { ${exportsName} as __moduleExports };`;
-        if (defaultIsModuleExports) {
-          code += `\nexport { ${exportsName} as default };`;
-        } else {
-          code += `export default /*@__PURE__*/getDefaultExportFromCjs(${exportsName});`;
-        }
-        return {
-          code,
-          syntheticNamedExports: '__moduleExports',
-          meta: { commonjs: { isCommonJS: false } }
-        };
+        return getEsImportProxy(unwrapId(id, ES_IMPORT_SUFFIX), defaultIsModuleExports);
       }
 
       if (id === DYNAMIC_MODULES_ID) {
-        return {
-          code: getDynamicRequireModules(
-            isDynamicRequireModulesEnabled,
-            dynamicRequireModuleSet,
-            commonDir,
-            ignoreDynamicRequires
-          ),
-          meta: { commonjs: { isCommonJS: false } }
-        };
+        return getDynamicRequireModules(
+          isDynamicRequireModulesEnabled,
+          dynamicRequireModuleSet,
+          commonDir,
+          ignoreDynamicRequires
+        );
       }
 
       if (isWrappedId(id, PROXY_SUFFIX)) {
