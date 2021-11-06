@@ -11,6 +11,8 @@ export const ES_IMPORT_SUFFIX = '?es-import';
 export const DYNAMIC_MODULES_ID = '\0commonjs-dynamic-modules';
 export const HELPERS_ID = '\0commonjsHelpers.js';
 
+export const IS_WRAPPED_COMMONJS = 'withRequireFunction';
+
 // `x['default']` is used instead of `x.default` for backward compatibility with ES3 browsers.
 // Minifiers like uglify will usually transpile it back if compatibility with ES3 is not enabled.
 // This could be improved by inspecting Rollup's "generatedCode" option

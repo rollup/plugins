@@ -1,3 +1,3 @@
-import fn from './lib'
+import fn from './lib';
 
-fn()
+fn();
