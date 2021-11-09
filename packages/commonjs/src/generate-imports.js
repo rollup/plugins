@@ -112,7 +112,7 @@ export function getRequireHandlers() {
     id,
     exportMode,
     resolveRequireSourcesAndGetMeta,
-    usesRequireWrapper,
+    needsRequireWrapper,
     isEsModule,
     usesRequire
   ) {
@@ -135,13 +135,16 @@ export function getRequireHandlers() {
       );
     }
     const requiresBySource = collectSources(requireExpressions);
-    const requireTargets = await resolveRequireSourcesAndGetMeta(
+    const { requireTargets, usesRequireWrapper } = await resolveRequireSourcesAndGetMeta(
       id,
-      usesRequireWrapper ? IS_WRAPPED_COMMONJS : !isEsModule,
+      needsRequireWrapper ? IS_WRAPPED_COMMONJS : !isEsModule,
       Object.keys(requiresBySource)
     );
     processRequireExpressions(imports, requireTargets, requiresBySource, magicString);
-    return imports.length ? `${imports.join('\n')}\n\n` : '';
+    return {
+      importBlock: imports.length ? `${imports.join('\n')}\n\n` : '',
+      usesRequireWrapper
+    };
   }
 
   return {
