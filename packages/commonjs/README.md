@@ -44,13 +44,30 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
+### `strictRequires`
+
+Type: `"auto" | boolean | "debug" | string[]`<br>
+Default: `"auto"`
+
+By default, this plugin will try to hoist `require` statements as imports to the top of each file. While this works well for many code bases and allows for very efficient ESM output, it does not perfectly capture CommonJS semantics as the order of side effects like log statements may change. But it is especially problematic when there are circular `require` calls between CommonJS modules as those often rely on the lazy execution of nested `require` calls.
+
+Setting this option to `true` will wrap all CommonJS files in functions which are executed when they are required for the first time, preserving NodeJS semantics. Note that this can have an impact on the size and performance of the generated code.
+
+The default value of `"auto"` will only wrap CommonJS files when they are part of a CommonJS dependency cycle, e.g. an index file that is required by many of its dependencies. All other CommonJS files are hoisted. This is the recommended setting for most code bases.
+
+`false` will entirely prevent wrapping and hoist all files. This may still work depending on the nature of cyclic dependencies but will often cause problems.
+
+You can also provide a [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, to only specify a subset of files which should be wrapped in functions for proper `require` semantics.
+
+`"debug"` works like `"auto"` but after bundling, it will display a warning containing a list of ids that have been wrapped which can be used as minimatch pattern for fine-tuning.
+
 ### `dynamicRequireTargets`
 
 Type: `string | string[]`<br>
 Default: `[]`
 
 Some modules contain dynamic `require` calls, or require modules that contain circular dependencies, which are not handled well by static imports.
-Including those modules as `dynamicRequireTargets` will simulate a CommonJS (NodeJS-like) environment for them with support for dynamic and circular dependencies.
+Including those modules as `dynamicRequireTargets` will simulate a CommonJS (NodeJS-like) environment for them with support for dynamic dependencies. It also enables `strictRequires` for those modules, see above.
 
 _Note: In extreme cases, this feature may result in some paths being rendered as absolute in the final bundle. The plugin tries to avoid exposing paths from the local machine, but if you are `dynamicRequirePaths` with paths that are far away from your project's folder, that may require replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`._
 
@@ -112,17 +129,6 @@ Type: `boolean`<br>
 Default: `false`
 
 Instructs the plugin whether to enable mixed module transformations. This is useful in scenarios with modules that contain a mix of ES `import` statements and CommonJS `require` expressions. Set to `true` if `require` calls should be transformed to imports in mixed modules, or `false` if the `require` expressions should survive the transformation. The latter can be important if the code contains environment detection, or you are coding for an environment with special treatment for `require` calls such as [ElectronJS](https://www.electronjs.org/). See also the "ignore" option.
-
-### `strictRequireSemantic`
-
-Type: `boolean | string | string[]`<br>
-Default: `false`
-
-By default, this plugin will try to hoist all `require` statements as imports to the top of each file. While this works well for many code bases and allows for very efficient ESM output, it does not perfectly capture CommonJS semantics. This is especially problematic when there are circular `require` calls between CommonJS modules as those often rely on the lazy execution of nested `require` calls.
-
-Setting this option to `true` will wrap all CommonJS files in functions which are executed when they are required for the first time, preserving NodeJS semantics. Note that this can have a small impact on the size and performance of the generated code.
-
-You can also provide a [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, to only specify a subset of files which should be wrapped in functions for proper `require` semantics.
 
 ### `ignore`
 
