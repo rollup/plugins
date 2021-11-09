@@ -7,10 +7,10 @@ interface RollupCommonJSOptions {
   /**
    * A minimatch pattern, or array of patterns, which specifies the files in
    * the build the plugin should operate on. By default, all files with
-   * extension `".cjs"` or those in `extensions` are included, but you can narrow
-   * this list by only including specific files. These files will be analyzed
-   * and transpiled if either the analysis does not find ES module specific
-   * statements or `transformMixedEsModules` is `true`.
+   * extension `".cjs"` or those in `extensions` are included, but you can
+   * narrow this list by only including specific files. These files will be
+   * analyzed and transpiled if either the analysis does not find ES module
+   * specific statements or `transformMixedEsModules` is `true`.
    * @default undefined
    */
   include?: FilterPattern;
@@ -65,23 +65,38 @@ interface RollupCommonJSOptions {
    */
   transformMixedEsModules?: boolean;
   /**
-   * By default, this plugin will try to hoist all `require` statements as
-   * imports to the top of each file. While this works well for many code bases
-   * and allows for very efficient ESM output, it does not perfectly capture
-   * CommonJS semantics. This is especially problematic when there are circular
-   * `require` calls between CommonJS modules as those often rely on the lazy
-   * execution of nested `require` calls.
+   * By default, this plugin will try to hoist `require` statements as imports
+   * to the top of each file. While this works well for many code bases and
+   * allows for very efficient ESM output, it does not perfectly capture
+   * CommonJS semantics as the order of side effects like log statements may
+   * change. But it is especially problematic when there are circular `require`
+   * calls between CommonJS modules as those often rely on the lazy execution of
+   * nested `require` calls.
    *
    * Setting this option to `true` will wrap all CommonJS files in functions
    * which are executed when they are required for the first time, preserving
-   * NodeJS semantics. Note that this can have a small impact on the size and
+   * NodeJS semantics. Note that this can have an impact on the size and
    * performance of the generated code.
+   *
+   * The default value of `"auto"` will only wrap CommonJS files when they are
+   * part of a CommonJS dependency cycle, e.g. an index file that is required by
+   * many of its dependencies. All other CommonJS files are hoisted. This is the
+   * recommended setting for most code bases.
+   *
+   * `false` will entirely prevent wrapping and hoist all files. This may still
+   * work depending on the nature of cyclic dependencies but will often cause
+   * problems.
    *
    * You can also provide a minimatch pattern, or array of patterns, to only
    * specify a subset of files which should be wrapped in functions for proper
    * `require` semantics.
+   *
+   * `"debug"` works like `"auto"` but after bundling, it will display a warning
+   * containing a list of ids that have been wrapped which can be used as
+   * minimatch pattern for fine-tuning.
+   * @default "auto"
    */
-  strictRequireSemantic?: boolean | FilterPattern;
+  strictRequires?: boolean | FilterPattern;
   /**
    * Sometimes you have to leave require statements unconverted. Pass an array
    * containing the IDs or a `id => boolean` function.
@@ -92,14 +107,16 @@ interface RollupCommonJSOptions {
    * In most cases, where `require` calls are inside a `try-catch` clause,
    * they should be left unconverted as it requires an optional dependency
    * that may or may not be installed beside the rolled up package.
-   * Due to the conversion of `require` to a static `import` - the call is hoisted
-   * to the top of the file, outside of the `try-catch` clause.
+   * Due to the conversion of `require` to a static `import` - the call is
+   * hoisted to the top of the file, outside of the `try-catch` clause.
    *
    * - `true`: All `require` calls inside a `try` will be left unconverted.
-   * - `false`: All `require` calls inside a `try` will be converted as if the `try-catch` clause is not there.
+   * - `false`: All `require` calls inside a `try` will be converted as if the
+   *   `try-catch` clause is not there.
    * - `remove`: Remove all `require` calls from inside any `try` block.
    * - `string[]`: Pass an array containing the IDs to left unconverted.
-   * - `((id: string) => boolean|'remove')`: Pass a function that control individual IDs.
+   * - `((id: string) => boolean|'remove')`: Pass a function that control
+   *   individual IDs.
    *
    * @default false
    */
@@ -183,8 +200,8 @@ interface RollupCommonJSOptions {
    * Some modules contain dynamic `require` calls, or require modules that
    * contain circular dependencies, which are not handled well by static
    * imports. Including those modules as `dynamicRequireTargets` will simulate a
-   * CommonJS (NodeJS-like)  environment for them with support for dynamic and
-   * circular dependencies.
+   * CommonJS (NodeJS-like)  environment for them with support for dynamic
+   * dependencies. It also enables `strictRequires` for those modules.
    *
    * Note: In extreme cases, this feature may result in some paths being
    * rendered as absolute in the final bundle. The plugin tries to avoid

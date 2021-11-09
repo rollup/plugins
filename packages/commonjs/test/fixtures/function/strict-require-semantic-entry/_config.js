@@ -12,7 +12,7 @@ module.exports = {
     }
   },
   pluginOptions: {
-    strictRequireSemantic: ['fixtures/function/strict-require-semantic-entry/main.js']
+    strictRequires: ['fixtures/function/strict-require-semantic-entry/main.js']
   },
   exports(exports) {
     assert.deepStrictEqual(exports, { foo: 'foo' });

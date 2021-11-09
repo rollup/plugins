@@ -1,4 +1,4 @@
-import { extname } from 'path';
+import { extname, relative } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 import getCommonDir from 'commondir';
@@ -27,7 +27,7 @@ import getResolveId from './resolve-id';
 import { getResolveRequireSourcesAndGetMeta } from './resolve-require-sources';
 import validateRollupVersion from './rollup-version';
 import transformCommonjs from './transform-commonjs';
-import { getName, normalizePathSlashes } from './utils';
+import { getName, getStrictRequiresFilter, normalizePathSlashes } from './utils';
 
 export default function commonjs(options = {}) {
   const {
@@ -38,12 +38,7 @@ export default function commonjs(options = {}) {
   } = options;
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
-  const strictRequireSemanticFilter =
-    options.strictRequireSemantic === true
-      ? () => true
-      : !options.strictRequireSemantic
-      ? () => false
-      : createFilter(options.strictRequireSemantic);
+  const { strictRequiresFilter, detectCycles } = getStrictRequiresFilter(options);
 
   const getRequireReturnsDefault =
     typeof requireReturnsDefaultOption === 'function'
@@ -61,7 +56,10 @@ export default function commonjs(options = {}) {
   const defaultIsModuleExports =
     typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
 
-  const resolveRequireSourcesAndGetMeta = getResolveRequireSourcesAndGetMeta(extensions);
+  const { resolveRequireSourcesAndGetMeta, getWrappedIds } = getResolveRequireSourcesAndGetMeta(
+    extensions,
+    detectCycles
+  );
   const dynamicRequireModuleSet = getDynamicRequireModuleSet(options.dynamicRequireTargets);
   const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
   const commonDir = isDynamicRequireModulesEnabled
@@ -118,9 +116,9 @@ export default function commonjs(options = {}) {
       return { meta: { commonjs: { isCommonJS: false } } };
     }
 
-    const usesRequireWrapper =
+    const needsRequireWrapper =
       !isEsModule &&
-      (dynamicRequireModuleSet.has(normalizePathSlashes(id)) || strictRequireSemanticFilter(id));
+      (dynamicRequireModuleSet.has(normalizePathSlashes(id)) || strictRequiresFilter(id));
 
     return transformCommonjs(
       this.parse,
@@ -137,7 +135,7 @@ export default function commonjs(options = {}) {
       commonDir,
       ast,
       defaultIsModuleExports,
-      usesRequireWrapper,
+      needsRequireWrapper,
       resolveRequireSourcesAndGetMeta(this)
     );
   }
@@ -151,6 +149,28 @@ export default function commonjs(options = {}) {
         this.warn(
           'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
         );
+      }
+    },
+
+    buildEnd() {
+      if (options.strictRequires === 'debug') {
+        const wrappedIds = getWrappedIds();
+        if (wrappedIds.length) {
+          this.warn({
+            code: 'WRAPPED_IDS',
+            ids: wrappedIds,
+            message: `The commonjs plugin automatically wrapped the following files:\n[\n${wrappedIds
+              .map((id) => `\t${JSON.stringify(relative(process.cwd(), id))}`)
+              .join(',\n')}\n]`
+          });
+        } else {
+          // TODO Lukas test
+          this.warn({
+            code: 'WRAPPED_IDS',
+            ids: wrappedIds,
+            message: 'The commonjs plugin did not wrap any files.'
+          });
+        }
       }
     },
 

@@ -50,7 +50,7 @@ export default async function transformCommonjs(
   commonDir,
   astCache,
   defaultIsModuleExports,
-  usesRequireWrapper,
+  needsRequireWrapper,
   resolveRequireSourcesAndGetMeta
 ) {
   const ast = astCache || tryParse(parse, code, id);
@@ -227,9 +227,10 @@ export default async function transformCommonjs(
             let shouldRemoveRequireStatement = false;
 
             if (currentTryBlockEnd !== null) {
-              ({ canConvertRequire, shouldRemoveRequireStatement } =
-                getIgnoreTryCatchRequireStatementMode(node.arguments[0].value));
-
+              const ignoreTryCatchRequire = getIgnoreTryCatchRequireStatementMode(
+                node.arguments[0].value
+              );
+              ({ canConvertRequire, shouldRemoveRequireStatement } = ignoreTryCatchRequire);
               if (shouldRemoveRequireStatement) {
                 hasRemovedRequire = true;
               }
@@ -447,7 +448,7 @@ export default async function transformCommonjs(
     ? 'exports'
     : 'module';
 
-  const importBlock = await rewriteRequireExpressionsAndGetImportBlock(
+  const { importBlock, usesRequireWrapper } = await rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
     topLevelRequireDeclarators,
@@ -459,7 +460,7 @@ export default async function transformCommonjs(
     id,
     exportMode,
     resolveRequireSourcesAndGetMeta,
-    usesRequireWrapper,
+    needsRequireWrapper,
     isEsModule,
     uses.require
   );
@@ -490,17 +491,15 @@ export default async function transformCommonjs(
   }
 
   if (usesRequireWrapper) {
-    magicString
-      .trim()
-      .indent('\t')
-      .prepend(
-        `var ${isRequiredName};
+    magicString.trim().indent('\t');
+    magicString.prepend(
+      `var ${isRequiredName};
 
 function ${requireName} () {
 \tif (${isRequiredName}) return ${exportsName};
 \t${isRequiredName} = 1;
 `
-      ).append(`
+    ).append(`
 \treturn ${exportsName};
 }`);
     if (exportMode === 'replace') {
