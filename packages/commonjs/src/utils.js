@@ -2,7 +2,7 @@
 
 import { basename, dirname, extname } from 'path';
 
-import { makeLegalIdentifier } from '@rollup/pluginutils';
+import { createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
 
 export function deconflict(scopes, globals, identifier) {
   let i = 1;
@@ -34,6 +34,7 @@ export function normalizePathSlashes(path) {
   return path.replace(/\\/g, '/');
 }
 
+// TODO Lukas get rid of this?
 const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
 export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
   const normalizedPath = normalizePathSlashes(path);
@@ -44,4 +45,27 @@ export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
 
 export function capitalize(name) {
   return name[0].toUpperCase() + name.slice(1);
+}
+
+export function getStrictRequiresFilter({ strictRequires }) {
+  switch (strictRequires) {
+    case true:
+      return { strictRequiresFilter: () => true, detectCycles: false };
+    // eslint-disable-next-line no-undefined
+    case undefined:
+    case 'auto':
+    case 'debug':
+    case null:
+      return { strictRequiresFilter: () => false, detectCycles: true };
+    case false:
+      return { strictRequiresFilter: () => false, detectCycles: false };
+    default:
+      if (typeof strictRequires === 'string' || Array.isArray(strictRequires)) {
+        return {
+          strictRequiresFilter: createFilter(strictRequires),
+          detectCycles: false
+        };
+      }
+      throw new Error('Unexpected value for "strictRequires" option.');
+  }
 }
