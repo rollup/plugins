@@ -27,7 +27,11 @@ export default function diagnosticToWarning(
       line: line + 1,
       file: diagnostic.file.fileName
     };
-
+    
+    warning.message += `
+        In ${warning.loc.file}:${warning.loc.line}:${warning.loc.column}
+    `;
+    
     if (host) {
       // Extract a code frame from Typescript
       const formatted = ts.formatDiagnosticsWithColorAndContext([diagnostic], host);
