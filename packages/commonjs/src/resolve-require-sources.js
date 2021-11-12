@@ -3,6 +3,7 @@ import { resolveExtensions } from './resolve-id';
 
 export function getResolveRequireSourcesAndGetMeta(extensions, detectCycles) {
   const knownCjsModuleTypes = Object.create(null);
+  const requiredIds = Object.create(null);
   const dependentModules = Object.create(null);
   const getDependentModules = (id) =>
     dependentModules[id] || (dependentModules[id] = Object.create(null));
@@ -12,6 +13,7 @@ export function getResolveRequireSourcesAndGetMeta(extensions, detectCycles) {
       Object.keys(knownCjsModuleTypes).filter(
         (id) => knownCjsModuleTypes[id] === IS_WRAPPED_COMMONJS
       ),
+    isRequiredId: (id) => requiredIds[id],
     resolveRequireSourcesAndGetMeta: (rollupContext) => async (id, isParentCommonJS, sources) => {
       knownCjsModuleTypes[id] = isParentCommonJS;
       const requireTargets = await Promise.all(
@@ -34,6 +36,7 @@ export function getResolveRequireSourcesAndGetMeta(extensions, detectCycles) {
           if (resolved.external) {
             return { id: wrapId(childId, EXTERNAL_SUFFIX), allowProxy: false };
           }
+          requiredIds[childId] = true;
           const parentDependentModules = getDependentModules(id);
           const childDependentModules = getDependentModules(childId);
           childDependentModules[id] = true;
