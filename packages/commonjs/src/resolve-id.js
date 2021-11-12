@@ -13,7 +13,9 @@ import {
   isWrappedId,
   MODULE_SUFFIX,
   PROXY_SUFFIX,
-  wrapId
+  unwrapId,
+  wrapId,
+  WRAPPED_SUFFIX
 } from './helpers';
 
 function getCandidatesForExtension(resolved, extension) {
@@ -48,58 +50,65 @@ export function resolveExtensions(importee, importer, extensions) {
 
 export default function getResolveId(extensions) {
   return async function resolveId(importee, importer, resolveOptions) {
+    if (isWrappedId(importee, WRAPPED_SUFFIX)) {
+      return unwrapId(importee, WRAPPED_SUFFIX);
+    }
+
     if (
       isWrappedId(importee, MODULE_SUFFIX) ||
       isWrappedId(importee, EXPORTS_SUFFIX) ||
       isWrappedId(importee, PROXY_SUFFIX) ||
       isWrappedId(importee, ES_IMPORT_SUFFIX) ||
-      isWrappedId(importee, EXTERNAL_SUFFIX)
+      isWrappedId(importee, EXTERNAL_SUFFIX) ||
+      importee.startsWith(HELPERS_ID) ||
+      importee === DYNAMIC_MODULES_ID
     ) {
       return importee;
     }
 
-    // Except for exports, proxies are only importing resolved ids,
-    // no need to resolve again
-    if (
-      importer &&
-      (importer === DYNAMIC_MODULES_ID ||
+    if (importer) {
+      if (
+        importer === DYNAMIC_MODULES_ID ||
+        // Except for exports, proxies are only importing resolved ids, no need to resolve again
         isWrappedId(importer, PROXY_SUFFIX) ||
-        isWrappedId(importer, ES_IMPORT_SUFFIX))
-    ) {
-      return importee;
-    }
-
-    if (importee.startsWith(HELPERS_ID) || importee === DYNAMIC_MODULES_ID) {
-      return importee;
+        isWrappedId(importer, ES_IMPORT_SUFFIX)
+      ) {
+        return importee;
+      }
+      if (isWrappedId(importer, EXTERNAL_SUFFIX)) {
+        // We need to return null for unresolved imports so that the proper warning is shown
+        if (!(await this.resolve(importee, importer, { skipSelf: true }))) {
+          return null;
+        }
+        // For other external imports, we need to make sure they are handled as external
+        return { id: importee, external: true };
+      }
     }
 
     if (importee.startsWith('\0')) {
       return null;
     }
 
+    // If this is an entry point or ESM import, we need to figure out if the importee is wrapped and
+    // if that is the case, we need to add a proxy.
+    const customOptions = resolveOptions.custom;
+
+    // If this is a require, we do not need a proxy
+    if (customOptions && customOptions['node-resolve'] && customOptions['node-resolve'].isRequire) {
+      return null;
+    }
+
     const resolved =
       (await this.resolve(importee, importer, Object.assign({ skipSelf: true }, resolveOptions))) ||
       resolveExtensions(importee, importer, extensions);
-    let isCommonJsImporter = false;
-    if (importer) {
-      const moduleInfo = this.getModuleInfo(importer);
-      if (moduleInfo) {
-        const importerCommonJsMeta = moduleInfo.meta.commonjs;
-        if (
-          importerCommonJsMeta &&
-          (importerCommonJsMeta.isCommonJS || importerCommonJsMeta.isMixedModule)
-        ) {
-          isCommonJsImporter = true;
-        }
-      }
+    if (!resolved || resolved.external) {
+      return resolved;
     }
-    if (resolved && !isCommonJsImporter) {
-      const {
-        meta: { commonjs: commonjsMeta }
-      } = await this.load(resolved);
-      if (commonjsMeta && commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS) {
-        return wrapId(resolved.id, ES_IMPORT_SUFFIX);
-      }
+    const {
+      meta: { commonjs: commonjsMeta }
+    } = await this.load(resolved);
+    if (commonjsMeta && commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS) {
+      return wrapId(resolved.id, ES_IMPORT_SUFFIX);
     }
     return resolved;
   };

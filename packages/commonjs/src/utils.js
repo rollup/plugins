@@ -34,14 +34,8 @@ export function normalizePathSlashes(path) {
   return path.replace(/\\/g, '/');
 }
 
-// TODO Lukas get rid of this?
-const VIRTUAL_PATH_BASE = '/$$rollup_base$$';
-export const getVirtualPathForDynamicRequirePath = (path, commonDir) => {
-  const normalizedPath = normalizePathSlashes(path);
-  return normalizedPath.startsWith(commonDir)
-    ? VIRTUAL_PATH_BASE + normalizedPath.slice(commonDir.length)
-    : normalizedPath;
-};
+export const getVirtualPathForDynamicRequirePath = (path, commonDir) =>
+  normalizePathSlashes(path).slice(commonDir.length);
 
 export function capitalize(name) {
   return name[0].toUpperCase() + name.slice(1);
