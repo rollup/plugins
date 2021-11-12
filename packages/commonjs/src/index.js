@@ -60,10 +60,11 @@ export default function commonjs(options = {}) {
       : () =>
           typeof defaultIsModuleExportsOption === 'boolean' ? defaultIsModuleExportsOption : 'auto';
 
-  const { resolveRequireSourcesAndGetMeta, getWrappedIds } = getResolveRequireSourcesAndGetMeta(
-    extensions,
-    detectCycles
-  );
+  const {
+    resolveRequireSourcesAndGetMeta,
+    getWrappedIds,
+    isRequiredId
+  } = getResolveRequireSourcesAndGetMeta(extensions, detectCycles);
   const dynamicRequireModuleSet = getDynamicRequireModuleSet(options.dynamicRequireTargets);
   const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
   const commonDir = isDynamicRequireModulesEnabled
@@ -115,7 +116,8 @@ export default function commonjs(options = {}) {
 
     if (
       !dynamicRequireModuleSet.has(normalizePathSlashes(id)) &&
-      (!hasCjsKeywords(code, ignoreGlobal) || (isEsModule && !options.transformMixedEsModules))
+      (!(hasCjsKeywords(code, ignoreGlobal) || isRequiredId(id)) ||
+        (isEsModule && !options.transformMixedEsModules))
     ) {
       return { meta: { commonjs: { isCommonJS: false } } };
     }
@@ -140,12 +142,27 @@ export default function commonjs(options = {}) {
       ast,
       getDefaultIsModuleExports(id),
       needsRequireWrapper,
-      resolveRequireSourcesAndGetMeta(this)
+      resolveRequireSourcesAndGetMeta(this),
+      isRequiredId(id)
     );
   }
 
   return {
     name: 'commonjs',
+
+    options(options) {
+      // Always sort the node-resolve plugin after the commonjs plugin as otherwise CommonJS entries
+      // will not work with strictRequires: true
+      const { plugins } = options;
+      if (Array.isArray(plugins)) {
+        const cjsIndex = plugins.findIndex((plugin) => plugin.name === 'commonjs');
+        const nodeResolveIndex = plugins.findIndex((plugin) => plugin.name === 'node-resolve');
+        if (nodeResolveIndex >= 0 && nodeResolveIndex < cjsIndex) {
+          plugins.splice(cjsIndex + 1, 0, plugins[nodeResolveIndex]);
+          plugins.splice(nodeResolveIndex, 1);
+        }
+      }
+    },
 
     buildStart() {
       validateRollupVersion(this.meta.rollupVersion, peerDependencies.rollup);

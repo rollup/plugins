@@ -51,7 +51,8 @@ export default async function transformCommonjs(
   astCache,
   defaultIsModuleExports,
   needsRequireWrapper,
-  resolveRequireSourcesAndGetMeta
+  resolveRequireSourcesAndGetMeta,
+  isRequired
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -418,6 +419,7 @@ export default async function transformCommonjs(
   if (
     !(
       shouldWrap ||
+      isRequired ||
       uses.module ||
       uses.exports ||
       uses.require ||
