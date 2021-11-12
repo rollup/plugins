@@ -15,7 +15,7 @@ module.exports = {
         buildStart({ plugins }) {
           assert.deepStrictEqual(
             plugins.map((plugin) => plugin.name),
-            ['before-node', 'after-node', 'commonjs', 'node-resolve']
+            ['commonjs--resolver', 'before-node', 'node-resolve', 'after-node', 'commonjs']
           );
         }
       },
