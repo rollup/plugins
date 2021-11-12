@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@rollup/plugin-node-resolve": "^13.0.6",
     "locate-character": "^2.0.5",
     "require-relative": "^0.8.7",
     "rollup": "^2.67.3",

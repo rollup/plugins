@@ -6,9 +6,8 @@ import getCommonDir from 'commondir';
 import { peerDependencies } from '../package.json';
 
 import analyzeTopLevelStatements from './analyze-top-level-statements';
-import { getDynamicRequireModules } from './dynamic-modules';
+import { getDynamicModuleRegistry, getDynamicRequireModules } from './dynamic-modules';
 
-import getDynamicRequireModuleSet from './dynamic-require-paths';
 import {
   DYNAMIC_MODULES_ID,
   ES_IMPORT_SUFFIX,
@@ -61,10 +60,11 @@ export default function commonjs(options = {}) {
     getWrappedIds,
     isRequiredId
   } = getResolveRequireSourcesAndGetMeta(extensions, detectCycles);
-  const dynamicRequireModuleSet = getDynamicRequireModuleSet(options.dynamicRequireTargets);
-  const isDynamicRequireModulesEnabled = dynamicRequireModuleSet.size > 0;
+  const dynamicRequireModules = getDynamicRequireModules(options.dynamicRequireTargets);
+  const isDynamicRequireModulesEnabled = dynamicRequireModules.size > 0;
+  // TODO Lukas do we need the CWD?
   const commonDir = isDynamicRequireModulesEnabled
-    ? getCommonDir(null, Array.from(dynamicRequireModuleSet).concat(process.cwd()))
+    ? getCommonDir(null, Array.from(dynamicRequireModules.keys()).concat(process.cwd()))
     : null;
 
   const esModulesWithDefaultExport = new Set();
@@ -111,7 +111,7 @@ export default function commonjs(options = {}) {
     }
 
     if (
-      !dynamicRequireModuleSet.has(normalizePathSlashes(id)) &&
+      !dynamicRequireModules.has(normalizePathSlashes(id)) &&
       (!(hasCjsKeywords(code, ignoreGlobal) || isRequiredId(id)) ||
         (isEsModule && !options.transformMixedEsModules))
     ) {
@@ -120,7 +120,7 @@ export default function commonjs(options = {}) {
 
     const needsRequireWrapper =
       !isEsModule &&
-      (dynamicRequireModuleSet.has(normalizePathSlashes(id)) || strictRequiresFilter(id));
+      (dynamicRequireModules.has(normalizePathSlashes(id)) || strictRequiresFilter(id));
 
     return transformCommonjs(
       this.parse,
@@ -133,7 +133,7 @@ export default function commonjs(options = {}) {
       getIgnoreTryCatchRequireStatementMode,
       sourceMap,
       isDynamicRequireModulesEnabled,
-      dynamicRequireModuleSet,
+      dynamicRequireModules,
       commonDir,
       ast,
       defaultIsModuleExports,
@@ -146,18 +146,19 @@ export default function commonjs(options = {}) {
   return {
     name: 'commonjs',
 
-    options(options) {
-      // Always sort the node-resolve plugin after the commonjs plugin as otherwise CommonJS entries
-      // will not work with strictRequires: true
-      const { plugins } = options;
-      if (Array.isArray(plugins)) {
-        const cjsIndex = plugins.findIndex((plugin) => plugin.name === 'commonjs');
-        const nodeResolveIndex = plugins.findIndex((plugin) => plugin.name === 'node-resolve');
-        if (nodeResolveIndex >= 0 && nodeResolveIndex < cjsIndex) {
-          plugins.splice(cjsIndex + 1, 0, plugins[nodeResolveIndex]);
-          plugins.splice(nodeResolveIndex, 1);
-        }
-      }
+    options(rawOptions) {
+      // We inject the resolver in the beginning so that "catch-all-resolver" like node-resolver
+      // do not prevent our plugin from resolving entry points ot proxies.
+      const plugins = Array.isArray(rawOptions.plugins)
+        ? rawOptions.plugins
+        : rawOptions.plugins
+        ? [rawOptions.plugins]
+        : [];
+      plugins.unshift({
+        name: 'commonjs--resolver',
+        resolveId
+      });
+      return { ...rawOptions, plugins };
     },
 
     buildStart() {
@@ -181,7 +182,6 @@ export default function commonjs(options = {}) {
               .join(',\n')}\n]`
           });
         } else {
-          // TODO Lukas test
           this.warn({
             code: 'WRAPPED_IDS',
             ids: wrappedIds,
@@ -190,8 +190,6 @@ export default function commonjs(options = {}) {
         }
       }
     },
-
-    resolveId,
 
     load(id) {
       if (id === HELPERS_ID) {
@@ -228,9 +226,9 @@ export default function commonjs(options = {}) {
       }
 
       if (id === DYNAMIC_MODULES_ID) {
-        return getDynamicRequireModules(
+        return getDynamicModuleRegistry(
           isDynamicRequireModulesEnabled,
-          dynamicRequireModuleSet,
+          dynamicRequireModules,
           commonDir,
           ignoreDynamicRequires
         );

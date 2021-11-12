@@ -13,7 +13,9 @@ import {
   isWrappedId,
   MODULE_SUFFIX,
   PROXY_SUFFIX,
-  wrapId
+  unwrapId,
+  wrapId,
+  WRAPPED_SUFFIX
 } from './helpers';
 
 function getCandidatesForExtension(resolved, extension) {
@@ -48,12 +50,18 @@ export function resolveExtensions(importee, importer, extensions) {
 
 export default function getResolveId(extensions) {
   return async function resolveId(importee, importer, resolveOptions) {
+    if (isWrappedId(importee, WRAPPED_SUFFIX)) {
+      return unwrapId(importee, WRAPPED_SUFFIX);
+    }
+
     if (
       isWrappedId(importee, MODULE_SUFFIX) ||
       isWrappedId(importee, EXPORTS_SUFFIX) ||
       isWrappedId(importee, PROXY_SUFFIX) ||
       isWrappedId(importee, ES_IMPORT_SUFFIX) ||
-      isWrappedId(importee, EXTERNAL_SUFFIX)
+      isWrappedId(importee, EXTERNAL_SUFFIX) ||
+      importee.startsWith(HELPERS_ID) ||
+      importee === DYNAMIC_MODULES_ID
     ) {
       return importee;
     }
@@ -69,37 +77,30 @@ export default function getResolveId(extensions) {
       return importee;
     }
 
-    if (importee.startsWith(HELPERS_ID) || importee === DYNAMIC_MODULES_ID) {
-      return importee;
+    if (importee.startsWith('\0')) {
+      return null;
     }
 
-    if (importee.startsWith('\0')) {
+    // If this is an entry point or ESM import, we need to figure out if it is wrapped and if that
+    // is the case, we need to add a proxy.
+    const customOptions = resolveOptions.custom;
+
+    // We are adding this option when resolving from CommonJS -> no ESM proxy needed
+    if (customOptions && customOptions['node-resolve'] && customOptions['node-resolve'].isRequire) {
       return null;
     }
 
     const resolved =
       (await this.resolve(importee, importer, Object.assign({ skipSelf: true }, resolveOptions))) ||
       resolveExtensions(importee, importer, extensions);
-    let isCommonJsImporter = false;
-    if (importer) {
-      const moduleInfo = this.getModuleInfo(importer);
-      if (moduleInfo) {
-        const importerCommonJsMeta = moduleInfo.meta.commonjs;
-        if (
-          importerCommonJsMeta &&
-          (importerCommonJsMeta.isCommonJS || importerCommonJsMeta.isMixedModule)
-        ) {
-          isCommonJsImporter = true;
-        }
-      }
+    if (!resolved || resolved.external) {
+      return resolved;
     }
-    if (resolved && !isCommonJsImporter) {
-      const {
-        meta: { commonjs: commonjsMeta }
-      } = await this.load(resolved);
-      if (commonjsMeta && commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS) {
-        return wrapId(resolved.id, ES_IMPORT_SUFFIX);
-      }
+    const {
+      meta: { commonjs: commonjsMeta }
+    } = await this.load(resolved);
+    if (commonjsMeta && commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS) {
+      return wrapId(resolved.id, ES_IMPORT_SUFFIX);
     }
     return resolved;
   };
