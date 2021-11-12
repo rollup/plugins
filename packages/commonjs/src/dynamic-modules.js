@@ -1,10 +1,63 @@
+import { existsSync, readFileSync, statSync } from 'fs';
+import { join, resolve } from 'path';
+
+import glob from 'glob';
+
 import { getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
+
+function getPackageEntryPoint(dirPath) {
+  let entryPoint = 'index.js';
+
+  try {
+    if (existsSync(join(dirPath, 'package.json'))) {
+      entryPoint =
+        JSON.parse(readFileSync(join(dirPath, 'package.json'), { encoding: 'utf8' })).main ||
+        entryPoint;
+    }
+  } catch (ignored) {
+    // ignored
+  }
+
+  return entryPoint;
+}
+
+function isDirectory(path) {
+  try {
+    if (statSync(path).isDirectory()) return true;
+  } catch (ignored) {
+    // Nothing to do here
+  }
+  return false;
+}
+
+export function getDynamicRequireModules(patterns) {
+  const dynamicRequireModules = new Map();
+  for (const pattern of !patterns || Array.isArray(patterns) ? patterns || [] : [patterns]) {
+    const isNegated = pattern.startsWith('!');
+    const modifyMap = (targetPath, resolvedPath) =>
+      isNegated
+        ? dynamicRequireModules.delete(targetPath)
+        : dynamicRequireModules.set(targetPath, resolvedPath);
+    for (const path of glob.sync(isNegated ? pattern.substr(1) : pattern)) {
+      const resolvedPath = resolve(path);
+      const requirePath = normalizePathSlashes(resolvedPath);
+      if (isDirectory(resolvedPath)) {
+        const modulePath = resolve(join(resolvedPath, getPackageEntryPoint(path)));
+        modifyMap(requirePath, modulePath);
+        modifyMap(normalizePathSlashes(modulePath), modulePath);
+      } else {
+        modifyMap(requirePath, resolvedPath);
+      }
+    }
+  }
+  return dynamicRequireModules;
+}
 
 const FAILED_REQUIRE_ERROR = `throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');`;
 
-export function getDynamicRequireModules(
+export function getDynamicModuleRegistry(
   isDynamicRequireModulesEnabled,
-  dynamicRequireModuleSet,
+  dynamicRequireModules,
   commonDir,
   ignoreDynamicRequires
 ) {
@@ -13,8 +66,7 @@ export function getDynamicRequireModules(
 	${FAILED_REQUIRE_ERROR}
 }`;
   }
-  const dynamicModuleIds = [...dynamicRequireModuleSet];
-  const dynamicModuleImports = dynamicModuleIds
+  const dynamicModuleImports = [...dynamicRequireModules.values()]
     .map(
       (id, index) =>
         `import ${
@@ -22,7 +74,7 @@ export function getDynamicRequireModules(
         } from ${JSON.stringify(id)};`
     )
     .join('\n');
-  const dynamicModuleProps = dynamicModuleIds
+  const dynamicModuleProps = [...dynamicRequireModules.keys()]
     .map(
       (id, index) =>
         `\t\t${JSON.stringify(

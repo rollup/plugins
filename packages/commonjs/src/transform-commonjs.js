@@ -46,7 +46,7 @@ export default async function transformCommonjs(
   getIgnoreTryCatchRequireStatementMode,
   sourceMap,
   isDynamicRequireModulesEnabled,
-  dynamicRequireModuleSet,
+  dynamicRequireModules,
   commonDir,
   astCache,
   defaultIsModuleExports,
@@ -195,7 +195,7 @@ export default async function transformCommonjs(
             node.callee.object &&
             node.callee.object.name === 'require' &&
             node.callee.property.name === 'resolve' &&
-            hasDynamicModuleForPath(id, '/', dynamicRequireModuleSet)
+            hasDynamicModuleForPath(id, '/', dynamicRequireModules)
           ) {
             // TODO Lukas reimplement?
             uses.require = true;
@@ -288,7 +288,7 @@ export default async function transformCommonjs(
               uses.require = true;
               if (isNodeRequirePropertyAccess(parent)) {
                 // TODO Lukas reimplement?
-                if (hasDynamicModuleForPath(id, '/', dynamicRequireModuleSet)) {
+                if (hasDynamicModuleForPath(id, '/', dynamicRequireModules)) {
                   if (parent.property.name === 'cache') {
                     magicString.overwrite(node.start, node.end, dynamicRequireName, {
                       storeName: true

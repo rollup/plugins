@@ -18,13 +18,6 @@ module.exports = {
         buildEnd() {
           assert.deepStrictEqual(resolveIdArgs, [
             ['other.js', 'main.js', { custom: { test: 42 }, isEntry: true }],
-            [
-              'other.js',
-              'main.js',
-              // This is the important one
-              { custom: { test: 42 }, isEntry: true }
-            ],
-            ['main.js', void 0, { custom: {}, isEntry: true }],
             ['main.js', void 0, { custom: {}, isEntry: true }]
           ]);
         },

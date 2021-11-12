@@ -42,6 +42,8 @@ export default {
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
+When used together with the node-resolve plugin
+
 ## Options
 
 ### `strictRequires`
@@ -378,7 +380,7 @@ export default {
     format: 'iife',
     name: 'MyModule'
   },
-  plugins: [resolve(), commonjs()]
+  plugins: [commonjs(), resolve()]
 };
 ```
 

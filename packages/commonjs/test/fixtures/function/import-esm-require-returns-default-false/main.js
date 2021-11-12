@@ -14,3 +14,11 @@ t.deepEqual(noExports, {}, 'no exports');
 t.deepEqual(externalNamed, { foo: 'foo' }, 'external named');
 t.deepEqual(externalMixed, { foo: 'foo', default: 'bar' }, 'external mixed');
 t.deepEqual(externalDefault, { default: 'bar' }, 'external default');
+
+/* eslint-disable no-prototype-builtins */
+t.is(namedExports.hasOwnProperty('foo'), true);
+t.is(mixedExports.hasOwnProperty('foo'), true);
+t.is(defaultExport.hasOwnProperty('foo'), false);
+t.is(externalNamed.hasOwnProperty('foo'), true);
+t.is(externalMixed.hasOwnProperty('foo'), true);
+t.is(externalDefault.hasOwnProperty('foo'), false);
