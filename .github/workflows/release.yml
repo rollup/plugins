@@ -46,8 +46,9 @@ jobs:
           npm install pnpm -g;
           echo node `pnpm -v`;
 
-      - name: Git Identify
+      - name: Set Git Config
         run: |
+          git config pull.rebase false
           git config --global user.email "release-workflow@rollup.dev"
           git config --global user.name "Release Workflow"
           git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
