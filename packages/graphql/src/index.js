@@ -6,8 +6,8 @@ import { toESModules } from './toESModules';
 export default function graphql({ include, exclude } = {}) {
   // path filter
   const filter = createFilter(include, exclude);
-  // only .graphql and .gql files
-  const filterExt = /\.(graphql|gql)$/i;
+  // only .graphql, .graphqls (schema), and .gql files
+  const filterExt = /\.(graphqls?|gql)$/i;
 
   return {
     name: 'graphql',

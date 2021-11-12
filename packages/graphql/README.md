@@ -9,7 +9,7 @@
 
 # @rollup/plugin-graphql
 
-🍣 A Rollup plugin which Converts .gql/.graphql files to ES6 modules.
+🍣 A Rollup plugin which Converts .gql/.graphql(s) files to ES6 modules.
 
 ## Requirements
 
