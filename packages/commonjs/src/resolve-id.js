@@ -66,26 +66,34 @@ export default function getResolveId(extensions) {
       return importee;
     }
 
-    // Except for exports, proxies are only importing resolved ids,
-    // no need to resolve again
-    if (
-      importer &&
-      (importer === DYNAMIC_MODULES_ID ||
+    if (importer) {
+      if (
+        importer === DYNAMIC_MODULES_ID ||
+        // Except for exports, proxies are only importing resolved ids, no need to resolve again
         isWrappedId(importer, PROXY_SUFFIX) ||
-        isWrappedId(importer, ES_IMPORT_SUFFIX))
-    ) {
-      return importee;
+        isWrappedId(importer, ES_IMPORT_SUFFIX)
+      ) {
+        return importee;
+      }
+      if (isWrappedId(importer, EXTERNAL_SUFFIX)) {
+        // We need to return null for unresolved imports so that the proper warning is shown
+        if (!(await this.resolve(importee, importer, { skipSelf: true }))) {
+          return null;
+        }
+        // For other external imports, we need to make sure they are handled as external
+        return { id: importee, external: true };
+      }
     }
 
     if (importee.startsWith('\0')) {
       return null;
     }
 
-    // If this is an entry point or ESM import, we need to figure out if it is wrapped and if that
-    // is the case, we need to add a proxy.
+    // If this is an entry point or ESM import, we need to figure out if the importee is wrapped and
+    // if that is the case, we need to add a proxy.
     const customOptions = resolveOptions.custom;
 
-    // We are adding this option when resolving from CommonJS -> no ESM proxy needed
+    // If this is a require, we do not need a proxy
     if (customOptions && customOptions['node-resolve'] && customOptions['node-resolve'].isRequire) {
       return null;
     }
