@@ -28,6 +28,20 @@ test.serial('runs code through typescript', async (t) => {
   t.false(code.includes('const'), code);
 });
 
+test.serial('runs code through typescript with compilerOptions', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({ tsconfig: 'fixtures/basic/tsconfig.json', compilerOptions: { target: 'es5' } })
+    ],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.false(code.includes('number'), code);
+  t.false(code.includes('const'), code);
+});
+
 test.serial('ensures outDir is located in Rollup output dir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',

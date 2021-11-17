@@ -58,7 +58,7 @@ The plugin loads any [`compilerOptions`](http://www.typescriptlang.org/docs/hand
 export default {
   input: './main.ts',
   plugins: [
-      typescript({lib: ["es5", "es6", "dom"], target: "es5"})
+      typescript({ compilerOptions: {lib: ["es5", "es6", "dom"], target: "es5"}})
   ]
 }
 ```
@@ -252,7 +252,7 @@ import commonjs from '@rollup/plugin-commonjs';
 export default {
   input: './main.ts',
   plugins: [
-    typescript({ module: 'CommonJS' }),
+    typescript({ compilerOptions: { module: 'CommonJS' } }),
     commonjs({ extensions: ['.js', '.ts'] }) // the ".ts" extension is required
   ]
 };
@@ -282,7 +282,7 @@ import typescript from '@rollup/plugin-typescript';
 export default {
   // … other options …
   acornInjectPlugins: [jsx()],
-  plugins: [typescript({ jsx: 'preserve' })]
+  plugins: [typescript({ compilerOptions: { jsx: 'preserve' } })]
 };
 ```
 

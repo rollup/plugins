@@ -24,7 +24,9 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     tslib,
     typescript,
     outputToFilesystem,
-    ...compilerOptions
+    compilerOptions,
+    // previously was compilerOptions
+    ...extra
   } = options;
 
   return {
@@ -33,7 +35,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     exclude,
     filterRoot,
     tsconfig,
-    compilerOptions: compilerOptions as PartialCompilerOptions,
+    compilerOptions: { ...extra, ...compilerOptions } as PartialCompilerOptions,
     typescript: typescript || defaultTs,
     tslib: tslib || getTsLibPath(),
     transformers,
