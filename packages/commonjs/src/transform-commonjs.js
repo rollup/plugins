@@ -8,8 +8,8 @@ import MagicString from 'magic-string';
 
 import {
   getKeypath,
-  isDefineCompiledEsm,
   hasDefineEsmProperty,
+  isDefineCompiledEsm,
   isFalsy,
   isReference,
   isShorthandProperty,
@@ -75,7 +75,6 @@ export default async function transformCommonjs(
   // TODO technically wrong since globals isn't populated yet, but ¯\_(ツ)_/¯
   const helpersName = deconflict([scope], globals, 'commonjsHelpers');
   const dynamicRequireName = deconflict([scope], globals, 'commonjsRequire');
-  let hasRemovedRequire = false;
 
   const { addRequireStatement, rewriteRequireExpressionsAndGetImportBlock } = getRequireHandlers();
 
@@ -84,7 +83,6 @@ export default async function transformCommonjs(
   // where `foo` is later reassigned. (This happens in the wild. CommonJS, sigh)
   const reassignedNames = new Set();
   const topLevelDeclarations = [];
-  const topLevelRequireDeclarators = new Set();
   const skippedNodes = new Set();
   const moduleAccessScopes = new Set([scope]);
   const exportsAccessScopes = new Set([scope]);
@@ -223,51 +221,14 @@ export default async function transformCommonjs(
 
           if (!isIgnoredRequireStatement(node, ignoreRequire)) {
             const usesReturnValue = parent.type !== 'ExpressionStatement';
-
-            let canConvertRequire = true;
-            let shouldRemoveRequireStatement = false;
-
-            if (currentTryBlockEnd !== null) {
-              const ignoreTryCatchRequire = getIgnoreTryCatchRequireStatementMode(
-                node.arguments[0].value
-              );
-              ({ canConvertRequire, shouldRemoveRequireStatement } = ignoreTryCatchRequire);
-              if (shouldRemoveRequireStatement) {
-                hasRemovedRequire = true;
-              }
-            }
-
-            const sourceId = getRequireStringArg(node);
-            if (shouldRemoveRequireStatement) {
-              if (usesReturnValue) {
-                magicString.overwrite(node.start, node.end, `undefined`);
-              } else {
-                magicString.remove(parent.start, parent.end);
-              }
-              return;
-            }
-
-            if (canConvertRequire) {
-              addRequireStatement(
-                sourceId,
-                node,
-                scope,
-                usesReturnValue,
-                parent.type === 'ExpressionStatement' ? parent : node
-              );
-            }
-
-            if (usesReturnValue) {
-              if (
-                parent.type === 'VariableDeclarator' &&
-                !scope.parent &&
-                parent.id.type === 'Identifier'
-              ) {
-                // This will allow us to reuse this variable name as the imported variable if it is not reassigned
-                // and does not conflict with variables in other places where this is imported
-                topLevelRequireDeclarators.add(parent);
-              }
-            }
+            addRequireStatement(
+              getRequireStringArg(node),
+              node,
+              scope,
+              usesReturnValue,
+              currentTryBlockEnd !== null,
+              parent.type === 'ExpressionStatement' ? parent : node
+            );
           }
           return;
         }
@@ -423,7 +384,6 @@ export default async function transformCommonjs(
       uses.module ||
       uses.exports ||
       uses.require ||
-      hasRemovedRequire ||
       topLevelDefineCompiledEsmExpressions.length > 0
     ) &&
     (ignoreGlobal || !uses.global)
@@ -453,7 +413,6 @@ export default async function transformCommonjs(
   const { importBlock, usesRequireWrapper } = await rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
-    topLevelRequireDeclarators,
     reassignedNames,
     helpersName,
     dynamicRequireName,
@@ -464,7 +423,8 @@ export default async function transformCommonjs(
     resolveRequireSourcesAndGetMeta,
     needsRequireWrapper,
     isEsModule,
-    uses.require
+    uses.require,
+    getIgnoreTryCatchRequireStatementMode
   );
   const exportBlock = isEsModule
     ? ''
