@@ -93,7 +93,7 @@ export default function commonjs(options = {}) {
 
     return {
       canConvertRequire: mode !== 'remove' && mode !== true,
-      shouldRemoveRequireStatement: mode === 'remove'
+      shouldRemoveRequire: mode === 'remove'
     };
   };
 

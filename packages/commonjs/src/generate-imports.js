@@ -5,8 +5,10 @@ import { sync as nodeResolveSync } from 'resolve';
 import {
   DYNAMIC_MODULES_ID,
   EXPORTS_SUFFIX,
+  EXTERNAL_SUFFIX,
   HELPERS_ID,
   IS_WRAPPED_COMMONJS,
+  isWrappedId,
   MODULE_SUFFIX,
   wrapId
 } from './helpers';
@@ -96,14 +98,27 @@ export function hasDynamicModuleForPath(source, id, dynamicRequireModules) {
 export function getRequireHandlers() {
   const requireExpressions = [];
 
-  function addRequireStatement(sourceId, node, scope, usesReturnValue, toBeRemoved) {
-    requireExpressions.push({ sourceId, node, scope, usesReturnValue, toBeRemoved });
+  function addRequireStatement(
+    sourceId,
+    node,
+    scope,
+    usesReturnValue,
+    isInsideTryBlock,
+    toBeRemoved
+  ) {
+    requireExpressions.push({
+      sourceId,
+      node,
+      scope,
+      usesReturnValue,
+      isInsideTryBlock,
+      toBeRemoved
+    });
   }
 
   async function rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
-    topLevelRequireDeclarators,
     reassignedNames,
     helpersName,
     dynamicRequireName,
@@ -114,7 +129,8 @@ export function getRequireHandlers() {
     resolveRequireSourcesAndGetMeta,
     needsRequireWrapper,
     isEsModule,
-    usesRequire
+    usesRequire,
+    getIgnoreTryCatchRequireStatementMode
   ) {
     const imports = [];
     imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
@@ -141,7 +157,13 @@ export function getRequireHandlers() {
       needsRequireWrapper ? IS_WRAPPED_COMMONJS : !isEsModule,
       Object.keys(requiresBySource)
     );
-    processRequireExpressions(imports, requireTargets, requiresBySource, magicString);
+    processRequireExpressions(
+      imports,
+      requireTargets,
+      requiresBySource,
+      getIgnoreTryCatchRequireStatementMode,
+      magicString
+    );
     return {
       importBlock: imports.length ? `${imports.join('\n')}\n\n` : '',
       usesRequireWrapper
@@ -156,37 +178,59 @@ export function getRequireHandlers() {
 
 function collectSources(requireExpressions) {
   const requiresBySource = Object.create(null);
-  for (const { sourceId, node, scope, usesReturnValue, toBeRemoved } of requireExpressions) {
+  for (const requireExpression of requireExpressions) {
+    const { sourceId } = requireExpression;
     if (!requiresBySource[sourceId]) {
       requiresBySource[sourceId] = [];
     }
     const requires = requiresBySource[sourceId];
-    requires.push({ node, scope, usesReturnValue, toBeRemoved });
+    requires.push(requireExpression);
   }
   return requiresBySource;
 }
 
-function processRequireExpressions(imports, requireTargets, requiresBySource, magicString) {
+function processRequireExpressions(
+  imports,
+  requireTargets,
+  requiresBySource,
+  getIgnoreTryCatchRequireStatementMode,
+  magicString
+) {
   const generateRequireName = getGenerateRequireName();
-  for (const { source, id: resolveId, isCommonJS } of requireTargets) {
+  for (const { source, id: resolvedId, isCommonJS } of requireTargets) {
     const requires = requiresBySource[source];
     const name = generateRequireName(requires);
-    if (isCommonJS === IS_WRAPPED_COMMONJS) {
-      for (const { node } of requires) {
-        magicString.overwrite(node.start, node.end, `${name}()`);
-      }
-      imports.push(`import { __require as ${name} } from ${JSON.stringify(resolveId)};`);
-    } else {
-      let usesRequired = false;
-      for (const { node, usesReturnValue, toBeRemoved } of requires) {
+    let usesRequired = false;
+    let needsImport = false;
+    for (const { node, usesReturnValue, toBeRemoved, isInsideTryBlock } of requires) {
+      const { canConvertRequire, shouldRemoveRequire } =
+        isInsideTryBlock && isWrappedId(resolvedId, EXTERNAL_SUFFIX)
+          ? getIgnoreTryCatchRequireStatementMode(source)
+          : { canConvertRequire: true, shouldRemoveRequire: false };
+      if (shouldRemoveRequire) {
         if (usesReturnValue) {
+          magicString.overwrite(node.start, node.end, 'undefined');
+        } else {
+          magicString.remove(toBeRemoved.start, toBeRemoved.end);
+        }
+      } else if (canConvertRequire) {
+        needsImport = true;
+        if (isCommonJS === IS_WRAPPED_COMMONJS) {
+          magicString.overwrite(node.start, node.end, `${name}()`);
+        } else if (usesReturnValue) {
           usesRequired = true;
           magicString.overwrite(node.start, node.end, name);
         } else {
           magicString.remove(toBeRemoved.start, toBeRemoved.end);
         }
       }
-      imports.push(`import ${usesRequired ? `${name} from ` : ''}${JSON.stringify(resolveId)};`);
+    }
+    if (needsImport) {
+      if (isCommonJS === IS_WRAPPED_COMMONJS) {
+        imports.push(`import { __require as ${name} } from ${JSON.stringify(resolvedId)};`);
+      } else {
+        imports.push(`import ${usesRequired ? `${name} from ` : ''}${JSON.stringify(resolvedId)};`);
+      }
     }
   }
 }

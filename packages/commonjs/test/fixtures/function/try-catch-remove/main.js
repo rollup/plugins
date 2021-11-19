@@ -3,5 +3,5 @@
 try {
   require('uninstalled-external-module');
 } catch (ignored) {
-  /* ignore */
+  throw new Error('This should no longer be reached as the require is removed.');
 }
