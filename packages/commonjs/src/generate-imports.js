@@ -104,6 +104,7 @@ export function getRequireHandlers() {
     scope,
     usesReturnValue,
     isInsideTryBlock,
+    isInsideConditional,
     toBeRemoved
   ) {
     requireExpressions.push({
@@ -112,6 +113,7 @@ export function getRequireHandlers() {
       scope,
       usesReturnValue,
       isInsideTryBlock,
+      isInsideConditional,
       toBeRemoved
     });
   }
@@ -135,7 +137,6 @@ export function getRequireHandlers() {
     const imports = [];
     imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
     if (usesRequire) {
-      // TODO Lukas check where to import it from or change to usesDynamicRequire
       imports.push(
         `import { commonjsRequire as ${dynamicRequireName} } from "${DYNAMIC_MODULES_ID}";`
       );
@@ -155,7 +156,12 @@ export function getRequireHandlers() {
     const { requireTargets, usesRequireWrapper } = await resolveRequireSourcesAndGetMeta(
       id,
       needsRequireWrapper ? IS_WRAPPED_COMMONJS : !isEsModule,
-      Object.keys(requiresBySource)
+      Object.keys(requiresBySource).map((source) => {
+        return {
+          source,
+          isConditional: requiresBySource[source].every((require) => require.isInsideConditional)
+        };
+      })
     );
     processRequireExpressions(
       imports,
