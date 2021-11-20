@@ -37,7 +37,7 @@ export default function commonjs(options = {}) {
   } = options;
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
-  const { strictRequiresFilter, detectCycles } = getStrictRequiresFilter(options);
+  const { strictRequiresFilter, detectCyclesAndConditional } = getStrictRequiresFilter(options);
 
   const getRequireReturnsDefault =
     typeof requireReturnsDefaultOption === 'function'
@@ -59,10 +59,11 @@ export default function commonjs(options = {}) {
     resolveRequireSourcesAndGetMeta,
     getWrappedIds,
     isRequiredId
-  } = getResolveRequireSourcesAndGetMeta(extensions, detectCycles);
+  } = getResolveRequireSourcesAndGetMeta(extensions, detectCyclesAndConditional);
   const dynamicRequireModules = getDynamicRequireModules(options.dynamicRequireTargets);
   const isDynamicRequireModulesEnabled = dynamicRequireModules.size > 0;
-  // TODO Lukas do we need the CWD?
+  // TODO Lukas replace with new dynamicRequireRoot to replace CWD
+  // TODO Lukas throw if require from outside commondir
   const commonDir = isDynamicRequireModulesEnabled
     ? getCommonDir(null, Array.from(dynamicRequireModules.keys()).concat(process.cwd()))
     : null;

@@ -11,6 +11,13 @@ import { commonjs } from './helpers/util';
 process.chdir(__dirname);
 
 const transformContext = {
+  error: (base, props) => {
+    let error = base;
+    if (!(base instanceof Error)) error = Object.assign(new Error(base.message), base);
+    if (props) Object.assign(error, props);
+    throw error;
+  },
+  load: ({ id }) => Promise.resolve({ id, meta: {} }),
   parse: (input, options) =>
     acorn.parse(input, {
       ecmaVersion: 9,
@@ -20,8 +27,7 @@ const transformContext = {
   resolve: (source, importer) =>
     Promise.resolve({
       id: `${path.resolve(path.dirname(importer), source)}${path.extname(source) ? '' : '.js'}`
-    }),
-  load: ({ id }) => Promise.resolve({ id, meta: {} })
+    })
 };
 
 // Do not run on Windows as we have full path names in the output
@@ -59,13 +65,6 @@ if (path.sep === '/') {
                   : []
             };
           };
-          transformContext.error = (base, props) => {
-            let error = base;
-            if (!(base instanceof Error)) error = Object.assign(new Error(base.message), base);
-            if (props) Object.assign(error, props);
-            throw error;
-          };
-
           const input = fs.readFileSync(id, 'utf-8');
 
           let outputFile = `fixtures/form/${dir}/${outputName}`;
