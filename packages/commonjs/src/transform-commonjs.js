@@ -71,7 +71,13 @@ export default async function transformCommonjs(
   let shouldWrap = false;
 
   const globals = new Set();
+  // A conditionalNode is a node for which execution is not guaranteed. If such a node is a require
+  // or contains nested requires, those should be handled as function calls unless there is an
+  // unconditional require elsewhere.
+  let currentConditionalNodeEnd = null;
+  const conditionalNodes = new Set();
 
+  // TODO Lukas fix this at last, we are close
   // TODO technically wrong since globals isn't populated yet, but ¯\_(ツ)_/¯
   const helpersName = deconflict([scope], globals, 'commonjsHelpers');
   const dynamicRequireName = deconflict([scope], globals, 'commonjsRequire');
@@ -102,6 +108,12 @@ export default async function transformCommonjs(
       if (currentTryBlockEnd !== null && node.start > currentTryBlockEnd) {
         currentTryBlockEnd = null;
       }
+      if (currentConditionalNodeEnd !== null && node.start > currentConditionalNodeEnd) {
+        currentConditionalNodeEnd = null;
+      }
+      if (currentConditionalNodeEnd === null && conditionalNodes.has(node)) {
+        currentConditionalNodeEnd = node.end;
+      }
 
       programDepth += 1;
       if (node.scope) ({ scope } = node);
@@ -113,11 +125,6 @@ export default async function transformCommonjs(
 
       // eslint-disable-next-line default-case
       switch (node.type) {
-        case 'TryStatement':
-          if (currentTryBlockEnd === null) {
-            currentTryBlockEnd = node.block.end;
-          }
-          return;
         case 'AssignmentExpression':
           if (node.left.type === 'MemberExpression') {
             const flattened = getKeypath(node.left);
@@ -227,6 +234,7 @@ export default async function transformCommonjs(
               scope,
               usesReturnValue,
               currentTryBlockEnd !== null,
+              currentConditionalNodeEnd !== null,
               parent.type === 'ExpressionStatement' ? parent : node
             );
           }
@@ -237,8 +245,26 @@ export default async function transformCommonjs(
           // skip dead branches
           if (isFalsy(node.test)) {
             skippedNodes.add(node.consequent);
-          } else if (node.alternate && isTruthy(node.test)) {
-            skippedNodes.add(node.alternate);
+          } else if (isTruthy(node.test)) {
+            if (node.alternate) {
+              skippedNodes.add(node.alternate);
+            }
+          } else {
+            conditionalNodes.add(node.consequent);
+            if (node.alternate) {
+              conditionalNodes.add(node.alternate);
+            }
+          }
+          return;
+        case 'ArrowFunctionExpression':
+        case 'FunctionDeclaration':
+        case 'FunctionExpression':
+          // requires in functions should be conditional unless it is an IIFE
+          if (
+            currentConditionalNodeEnd === null &&
+            !(parent.type === 'CallExpression' && parent.callee === node)
+          ) {
+            currentConditionalNodeEnd = node.end;
           }
           return;
         case 'Identifier': {
@@ -301,6 +327,22 @@ export default async function transformCommonjs(
               return;
           }
         }
+        case 'LogicalExpression':
+          // skip dead branches
+          if (node.operator === '&&') {
+            if (isFalsy(node.left)) {
+              skippedNodes.add(node.right);
+            } else if (!isTruthy(node.left)) {
+              conditionalNodes.add(node.right);
+            }
+          } else if (node.operator === '||') {
+            if (isTruthy(node.left)) {
+              skippedNodes.add(node.right);
+            } else if (!isFalsy(node.left)) {
+              conditionalNodes.add(node.right);
+            }
+          }
+          return;
         case 'MemberExpression':
           if (!isDynamicRequireModulesEnabled && isModuleRequire(node, scope)) {
             uses.require = true;
@@ -326,6 +368,11 @@ export default async function transformCommonjs(
                 storeName: true
               });
             }
+          }
+          return;
+        case 'TryStatement':
+          if (currentTryBlockEnd === null) {
+            currentTryBlockEnd = node.block.end;
           }
           return;
         case 'UnaryExpression':
