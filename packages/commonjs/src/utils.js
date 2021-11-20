@@ -44,20 +44,20 @@ export function capitalize(name) {
 export function getStrictRequiresFilter({ strictRequires }) {
   switch (strictRequires) {
     case true:
-      return { strictRequiresFilter: () => true, detectCycles: false };
+      return { strictRequiresFilter: () => true, detectCyclesAndConditional: false };
     // eslint-disable-next-line no-undefined
     case undefined:
     case 'auto':
     case 'debug':
     case null:
-      return { strictRequiresFilter: () => false, detectCycles: true };
+      return { strictRequiresFilter: () => false, detectCyclesAndConditional: true };
     case false:
-      return { strictRequiresFilter: () => false, detectCycles: false };
+      return { strictRequiresFilter: () => false, detectCyclesAndConditional: false };
     default:
       if (typeof strictRequires === 'string' || Array.isArray(strictRequires)) {
         return {
           strictRequiresFilter: createFilter(strictRequires),
-          detectCycles: false
+          detectCyclesAndConditional: false
         };
       }
       throw new Error('Unexpected value for "strictRequires" option.');
