@@ -2,6 +2,13 @@ import test from 'ava';
 
 import { dataToEsm } from '../';
 
+test('support bigint and symbol', (t) => {
+  t.is(
+    dataToEsm({ bigint: 0, symbol: Symbol.for('') }),
+    'export var bigint = 0n;\nexport var symbol = Symbol.for("");\nexport default {\n\tbigint: bigint,\n\tsymbol: symbol\n};\n'
+  );
+});
+
 test('outputs treeshakeable data', (t) => {
   t.is(
     dataToEsm({ some: 'data', another: 'data' }),
