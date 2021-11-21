@@ -4,8 +4,8 @@ import makeLegalIdentifier from './makeLegalIdentifier';
 
 export type Indent = string | null | undefined;
 
-function stringify(obj: unknown): string {
-  return (JSON.stringify(obj) || 'undefined').replace(
+function stringify(val: boolean | number | string): string {
+  return JSON.stringify(val).replace(
     /[\u2028\u2029]/g,
     (char) => `\\u${`000${char.charCodeAt(0).toString(16)}`.slice(-4)}`
   );
@@ -40,13 +40,20 @@ function serializeObject(obj: object, indent: Indent, baseIndent: string): strin
 function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
   if (obj === Infinity) return 'Infinity';
   if (obj === -Infinity) return '-Infinity';
-  if (obj === 0 && 1 / obj === -Infinity) return '-0';
+  if (obj === 0) return 1 / obj === Infinity ? '0' : '-0';
   if (obj instanceof Date) return `new Date(${obj.getTime()})`;
   if (obj instanceof RegExp) return obj.toString();
   if (obj !== obj) return 'NaN'; // eslint-disable-line no-self-compare
   if (Array.isArray(obj)) return serializeArray(obj, indent, baseIndent);
-  if (obj === null) return 'null';
+  if (obj == null) return obj === null ? 'null' : 'undefined';
   if (typeof obj === 'object') return serializeObject(obj!, indent, baseIndent);
+  if (typeof obj === 'bigint') return `${obj}n`;
+  if (typeof obj === 'symbol') {
+    const key = Symbol.keyFor(obj);
+    if (key === undefined) throw TypeError('dataToEsm can not serialize symbol');
+    return `Symbol.for(${stringify(key)})`;
+  }
+  if (typeof obj === 'function') throw TypeError('dataToEsm can not serialize function');
   return stringify(obj);
 }
 
