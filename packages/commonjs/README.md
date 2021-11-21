@@ -55,13 +55,13 @@ By default, this plugin will try to hoist `require` statements as imports to the
 
 Setting this option to `true` will wrap all CommonJS files in functions which are executed when they are required for the first time, preserving NodeJS semantics. Note that this can have an impact on the size and performance of the generated code.
 
-The default value of `"auto"` will only wrap CommonJS files when they are part of a CommonJS dependency cycle, e.g. an index file that is required by many of its dependencies. All other CommonJS files are hoisted. This is the recommended setting for most code bases.
+The default value of `"auto"` will only wrap CommonJS files when they are part of a CommonJS dependency cycle, e.g. an index file that is required by some of its dependencies, or if they are only required in a potentially "conditional" way like from within an if-statement or a function. All other CommonJS files are hoisted. This is the recommended setting for most code bases. Note that the detection of conditional requires can be subject to race conditions if there are both conditional and unconditional requires of the same file, which in edge cases may result in inconsistencies between builds. If you think this is a problem for you, you can avoid this by using any value other than `"auto"` or `"debug"`.
 
 `false` will entirely prevent wrapping and hoist all files. This may still work depending on the nature of cyclic dependencies but will often cause problems.
 
 You can also provide a [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, to only specify a subset of files which should be wrapped in functions for proper `require` semantics.
 
-`"debug"` works like `"auto"` but after bundling, it will display a warning containing a list of ids that have been wrapped which can be used as minimatch pattern for fine-tuning.
+`"debug"` works like `"auto"` but after bundling, it will display a warning containing a list of ids that have been wrapped which can be used as minimatch pattern for fine-tuning or to avoid the potential race conditions mentioned for `"auto"`.
 
 ### `dynamicRequireTargets`
 
@@ -89,6 +89,13 @@ commonjs({
   ]
 });
 ```
+
+### `dynamicRequireRoot`
+
+Type: `string`<br>
+Default: `process.cwd()`
+
+To avoid long paths when using the `dynamicRequireTargets` option, you can use this option to specify a directory that is a common parent for all files that use dynamic require statements. Using a directory higher up such as `/` may lead to unnecessarily long paths in the generated code and may expose directory names on your machine like your home directory name. By default it uses the current working directory.
 
 ### `exclude`
 
