@@ -50,10 +50,9 @@ function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
   if (typeof obj === 'bigint') return `${obj}n`;
   if (typeof obj === 'symbol') {
     const key = Symbol.keyFor(obj);
-    if (key === undefined) throw TypeError('dataToEsm can not serialize symbol');
-    return `Symbol.for(${stringify(key)})`;
+    return key === undefined ? 'undefined' : `Symbol.for(${stringify(key)})`;
   }
-  if (typeof obj === 'function') throw TypeError('dataToEsm can not serialize function');
+  if (typeof obj === 'function') return 'undefined';
   return stringify(obj);
 }
 
