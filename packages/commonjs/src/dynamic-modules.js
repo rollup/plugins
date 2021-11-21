@@ -1,5 +1,7 @@
 import { existsSync, readFileSync, statSync } from 'fs';
-import { join, resolve } from 'path';
+import { join, resolve, dirname } from 'path';
+
+import getCommonDir from 'commondir';
 
 import glob from 'glob';
 
@@ -30,8 +32,9 @@ function isDirectory(path) {
   return false;
 }
 
-export function getDynamicRequireModules(patterns) {
+export function getDynamicRequireModules(patterns, dynamicRequireRoot) {
   const dynamicRequireModules = new Map();
+  const dirNames = new Set();
   for (const pattern of !patterns || Array.isArray(patterns) ? patterns || [] : [patterns]) {
     const isNegated = pattern.startsWith('!');
     const modifyMap = (targetPath, resolvedPath) =>
@@ -42,15 +45,20 @@ export function getDynamicRequireModules(patterns) {
       const resolvedPath = resolve(path);
       const requirePath = normalizePathSlashes(resolvedPath);
       if (isDirectory(resolvedPath)) {
+        dirNames.add(resolvedPath);
         const modulePath = resolve(join(resolvedPath, getPackageEntryPoint(path)));
         modifyMap(requirePath, modulePath);
         modifyMap(normalizePathSlashes(modulePath), modulePath);
       } else {
+        dirNames.add(dirname(resolvedPath));
         modifyMap(requirePath, resolvedPath);
       }
     }
   }
-  return dynamicRequireModules;
+  return {
+    commonDir: dirNames.size ? getCommonDir([...dirNames, dynamicRequireRoot]) : null,
+    dynamicRequireModules
+  };
 }
 
 const FAILED_REQUIRE_ERROR = `throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');`;
@@ -77,9 +85,9 @@ export function getDynamicModuleRegistry(
   const dynamicModuleProps = [...dynamicRequireModules.keys()]
     .map(
       (id, index) =>
-        `\t\t${JSON.stringify(
-          getVirtualPathForDynamicRequirePath(normalizePathSlashes(id), commonDir)
-        )}: ${id.endsWith('.json') ? `function () { return json${index}; }` : `require${index}`}`
+        `\t\t${JSON.stringify(getVirtualPathForDynamicRequirePath(id, commonDir))}: ${
+          id.endsWith('.json') ? `function () { return json${index}; }` : `require${index}`
+        }`
     )
     .join(',\n');
   return `${dynamicModuleImports}
@@ -93,7 +101,7 @@ ${dynamicModuleProps}
 }
 
 export function commonjsRequire(path, originalModuleDir) {
-	var resolvedPath = commonjsResolveImpl(path, originalModuleDir, true);
+	var resolvedPath = commonjsResolveImpl(path, originalModuleDir);
 	if (resolvedPath !== null) {
 		return getDynamicModules()[resolvedPath]();
 	}
@@ -115,17 +123,15 @@ function commonjsResolveImpl (path, originalModuleDir) {
 	path = normalize(path);
 	var relPath;
 	if (path[0] === '/') {
-		originalModuleDir = '/';
+		originalModuleDir = '';
 	}
 	var modules = getDynamicModules();
 	var checkedExtensions = ['', '.js', '.json'];
 	while (true) {
 		if (!shouldTryNodeModules) {
-			relPath = originalModuleDir ? normalize(originalModuleDir + '/' + path) : path;
-		} else if (originalModuleDir) {
-			relPath = normalize(originalModuleDir + '/node_modules/' + path);
+			relPath = normalize(originalModuleDir + '/' + path);
 		} else {
-			relPath = normalize(join('node_modules', path));
+			relPath = normalize(originalModuleDir + '/node_modules/' + path);
 		}
 
 		if (relPath.endsWith('/..')) {
@@ -176,21 +182,5 @@ function normalize (path) {
 	if (slashed && path[0] !== '/') path = '/' + path;
 	else if (path.length === 0) path = '.';
 	return path;
-}
-
-function join () {
-	if (arguments.length === 0) return '.';
-	var joined;
-	for (var i = 0; i < arguments.length; ++i) {
-		var arg = arguments[i];
-		if (arg.length > 0) {
-		if (joined === undefined)
-			joined = arg;
-		else
-			joined += '/' + arg;
-		}
-	}
-	if (joined === undefined) return '.';
-	return joined;
 }`;
 }
