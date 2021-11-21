@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import { basename, dirname, extname } from 'path';
+import { basename, dirname, extname, relative } from 'path';
 
 import { createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
 
@@ -35,7 +35,7 @@ export function normalizePathSlashes(path) {
 }
 
 export const getVirtualPathForDynamicRequirePath = (path, commonDir) =>
-  normalizePathSlashes(path).slice(commonDir.length);
+  `/${normalizePathSlashes(relative(commonDir, path))}`;
 
 export function capitalize(name) {
   return name[0].toUpperCase() + name.slice(1);

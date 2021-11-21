@@ -1,7 +1,6 @@
-import { extname, relative } from 'path';
+import { extname, relative, resolve } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
-import getCommonDir from 'commondir';
 
 import { peerDependencies } from '../package.json';
 
@@ -60,13 +59,16 @@ export default function commonjs(options = {}) {
     getWrappedIds,
     isRequiredId
   } = getResolveRequireSourcesAndGetMeta(extensions, detectCyclesAndConditional);
-  const dynamicRequireModules = getDynamicRequireModules(options.dynamicRequireTargets);
-  const isDynamicRequireModulesEnabled = dynamicRequireModules.size > 0;
-  // TODO Lukas replace with new dynamicRequireRoot to replace CWD
+  const dynamicRequireRoot =
+    typeof options.dynamicRequireRoot === 'string'
+      ? resolve(options.dynamicRequireRoot)
+      : process.cwd();
   // TODO Lukas throw if require from outside commondir
-  const commonDir = isDynamicRequireModulesEnabled
-    ? getCommonDir(null, Array.from(dynamicRequireModules.keys()).concat(process.cwd()))
-    : null;
+  const { commonDir, dynamicRequireModules } = getDynamicRequireModules(
+    options.dynamicRequireTargets,
+    dynamicRequireRoot
+  );
+  const isDynamicRequireModulesEnabled = dynamicRequireModules.size > 0;
 
   const esModulesWithDefaultExport = new Set();
   const esModulesWithNamedExports = new Set();

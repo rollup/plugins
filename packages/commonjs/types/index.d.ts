@@ -210,6 +210,13 @@ interface RollupCommonJSOptions {
    * replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
    */
   dynamicRequireTargets?: string | ReadonlyArray<string>;
+  /**
+   * To avoid long paths when using the `dynamicRequireTargets` option, you can use this option to specify a directory
+   * that is a common parent for all files that use dynamic require statements. Using a directory higher up such as `/`
+   * may lead to unnecessarily long paths in the generated code and may expose directory names on your machine like your
+   * home directory name. By default it uses the current working directory.
+   */
+  dynamicRequireRoot?: string;
 }
 
 /**
