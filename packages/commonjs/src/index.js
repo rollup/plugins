@@ -1,4 +1,4 @@
-import { extname, relative, resolve } from 'path';
+import { extname, relative, resolve, dirname } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -125,6 +125,19 @@ export default function commonjs(options = {}) {
       !isEsModule &&
       (dynamicRequireModules.has(normalizePathSlashes(id)) || strictRequiresFilter(id));
 
+    const checkDynamicRequire = () => {
+      if (id.indexOf(dynamicRequireRoot) !== 0) {
+        this.error({
+          code: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
+          id,
+          dynamicRequireRoot,
+          message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${dirname(
+            id
+          )}" or one of its parent directories.`
+        });
+      }
+    };
+
     return transformCommonjs(
       this.parse,
       code,
@@ -142,7 +155,8 @@ export default function commonjs(options = {}) {
       defaultIsModuleExports,
       needsRequireWrapper,
       resolveRequireSourcesAndGetMeta(this),
-      isRequiredId(id)
+      isRequiredId(id),
+      checkDynamicRequire
     );
   }
 
