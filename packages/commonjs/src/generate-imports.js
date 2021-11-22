@@ -1,7 +1,3 @@
-import { dirname, resolve } from 'path';
-
-import { sync as nodeResolveSync } from 'resolve';
-
 import {
   DYNAMIC_MODULES_ID,
   EXPORTS_SUFFIX,
@@ -12,9 +8,8 @@ import {
   MODULE_SUFFIX,
   wrapId
 } from './helpers';
-import { normalizePathSlashes } from './utils';
 
-export function isRequireStatement(node, scope) {
+export function isRequireExpression(node, scope) {
   if (!node) return false;
   if (node.type !== 'CallExpression') return false;
 
@@ -24,7 +19,7 @@ export function isRequireStatement(node, scope) {
   return isRequire(node.callee, scope);
 }
 
-function isRequire(node, scope) {
+export function isRequire(node, scope) {
   return (
     (node.type === 'Identifier' && node.name === 'require' && !scope.contains('require')) ||
     (node.type === 'MemberExpression' && isModuleRequire(node, scope))
@@ -41,12 +36,7 @@ export function isModuleRequire({ object, property }, scope) {
   );
 }
 
-export function isStaticRequireStatement(node, scope) {
-  if (!isRequireStatement(node, scope)) return false;
-  return !hasDynamicArguments(node);
-}
-
-function hasDynamicArguments(node) {
+export function hasDynamicArguments(node) {
   return (
     node.arguments.length > 1 ||
     (node.arguments[0].type !== 'Literal' &&
@@ -60,39 +50,10 @@ export function isNodeRequirePropertyAccess(parent) {
   return parent && parent.property && reservedMethod[parent.property.name];
 }
 
-export function isIgnoredRequireStatement(requiredNode, ignoreRequire) {
-  return ignoreRequire(requiredNode.arguments[0].value);
-}
-
 export function getRequireStringArg(node) {
   return node.arguments[0].type === 'Literal'
     ? node.arguments[0].value
     : node.arguments[0].quasis[0].value.cooked;
-}
-
-export function hasDynamicModuleForPath(source, id, dynamicRequireModules) {
-  if (!/^(?:\.{0,2}[/\\]|[A-Za-z]:[/\\])/.test(source)) {
-    try {
-      const resolvedPath = normalizePathSlashes(nodeResolveSync(source, { basedir: dirname(id) }));
-      if (dynamicRequireModules.has(resolvedPath)) {
-        return true;
-      }
-    } catch (ex) {
-      // Probably a node.js internal module
-      return false;
-    }
-
-    return false;
-  }
-
-  for (const attemptExt of ['', '.js', '.json']) {
-    const resolvedPath = normalizePathSlashes(resolve(dirname(id), source + attemptExt));
-    if (dynamicRequireModules.has(resolvedPath)) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 export function getRequireHandlers() {

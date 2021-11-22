@@ -63,7 +63,6 @@ export default function commonjs(options = {}) {
     typeof options.dynamicRequireRoot === 'string'
       ? resolve(options.dynamicRequireRoot)
       : process.cwd();
-  // TODO Lukas throw if require from outside commondir
   const { commonDir, dynamicRequireModules } = getDynamicRequireModules(
     options.dynamicRequireTargets,
     dynamicRequireRoot
