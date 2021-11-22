@@ -684,3 +684,31 @@ if (os.platform() === 'win32') {
     t.regex(code, /var foo(\$\d+)? = {}/);
   });
 }
+
+test('throws when there is a dynamic require from outside dynamicRequireRoot', async (t) => {
+  let error = null;
+  try {
+    await rollup({
+      input: 'fixtures/samples/dynamic-require-outside-root/main.js',
+      plugins: [
+        commonjs({
+          dynamicRequireRoot: 'fixtures/samples/dynamic-require-outside-root/nested',
+          dynamicRequireTargets: ['fixtures/samples/dynamic-require-outside-root/nested/target.js']
+        })
+      ]
+    });
+  } catch (err) {
+    error = err;
+  }
+
+  const cwd = process.cwd();
+  const id = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/main.js');
+  const dynamicRequireRoot = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/nested');
+  const minimalDynamicRequireRoot = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root');
+  t.like(error, {
+    message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
+    pluginCode: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
+    id,
+    dynamicRequireRoot
+  });
+});

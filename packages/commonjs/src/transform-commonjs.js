@@ -52,7 +52,8 @@ export default async function transformCommonjs(
   defaultIsModuleExports,
   needsRequireWrapper,
   resolveRequireSourcesAndGetMeta,
-  isRequired
+  isRequired,
+  checkDynamicRequire
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -295,6 +296,7 @@ export default async function transformCommonjs(
                 );
               }
               if (!ignoreDynamicRequires) {
+                checkDynamicRequire();
                 if (isShorthandProperty(parent)) {
                   magicString.appendRight(node.end, `: ${dynamicRequireName}`);
                 } else {
