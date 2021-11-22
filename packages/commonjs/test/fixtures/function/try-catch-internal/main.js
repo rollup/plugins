@@ -5,3 +5,9 @@ try {
 } catch (err) {
   throw new Error(`Could not require: ${err}`);
 }
+
+try {
+  require('./throws.js');
+} catch (err) {
+  t.is(err.message, 'Expected error');
+}
