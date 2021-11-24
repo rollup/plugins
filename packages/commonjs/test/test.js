@@ -23,6 +23,11 @@ test('Rollup peer dependency has correct format', (t) => {
   t.regex(peerDependencies.rollup, /^\^\d+\.\d+\.\d+(\|\|\^\d+\.\d+\.\d+)*$/);
 });
 
+test('exposes plugin version', (t) => {
+  const plugin = commonjs();
+  t.regex(plugin.version, /^\d+\.\d+\.\d+/);
+});
+
 // most of these should be moved over to function...
 test('generates a sourcemap', async (t) => {
   const bundle = await rollup({
