@@ -5,6 +5,8 @@ import builtinList from 'builtin-modules';
 import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
+import { version } from '../package.json';
+
 import { isDirCached, isFileCached, readCachedFile } from './cache';
 import { fileExists, readFile, realpath } from './fs';
 import resolveImportSpecifiers from './resolveImportSpecifiers';
@@ -232,6 +234,8 @@ export function nodeResolve(opts = {}) {
 
   return {
     name: 'node-resolve',
+
+    version,
 
     buildStart(options) {
       rollupOptions = options;
