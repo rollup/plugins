@@ -2,7 +2,7 @@ import { extname, relative, resolve, dirname } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 
-import { peerDependencies } from '../package.json';
+import { peerDependencies, version } from '../package.json';
 
 import analyzeTopLevelStatements from './analyze-top-level-statements';
 import { getDynamicModuleRegistry, getDynamicRequireModules } from './dynamic-modules';
@@ -161,6 +161,8 @@ export default function commonjs(options = {}) {
 
   return {
     name: 'commonjs',
+
+    version,
 
     options(rawOptions) {
       // We inject the resolver in the beginning so that "catch-all-resolver" like node-resolver
