@@ -331,8 +331,8 @@ test('typeof transforms: sinon', async (t) => {
   } = await bundle.generate({ format: 'es' });
 
   t.is(code.indexOf('typeof require'), -1, code);
-  // t.not( code.indexOf( 'typeof module' ), -1, code ); // #151 breaks this test
-  // t.not( code.indexOf( 'typeof define' ), -1, code ); // #144 breaks this test
+  t.is(code.indexOf('typeof module'), -1, code);
+  t.is(code.indexOf('typeof define'), -1, code);
 });
 
 test('deconflicts helper name', async (t) => {
@@ -716,4 +716,18 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
     id,
     dynamicRequireRoot
   });
+});
+
+test('does not transform typeof exports for mixed modules', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/mixed-module-typeof-exports/main.js',
+    plugins: [commonjs({ transformMixedEsModules: true })]
+  });
+
+  const {
+    output: [{ code }]
+  } = await bundle.generate({ format: 'es' });
+
+  t.is(code.includes('typeof exports'), true, '"typeof exports" not found in the code');
+  t.snapshot(code);
 });
