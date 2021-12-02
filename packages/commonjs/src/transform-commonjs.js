@@ -198,7 +198,7 @@ export default async function transformCommonjs(
             isRequire(node.callee.object, scope) &&
             node.callee.property.name === 'resolve'
           ) {
-            checkDynamicRequire();
+            checkDynamicRequire(node.start);
             uses.require = true;
             const requireNode = node.callee.object;
             magicString.appendLeft(
@@ -220,6 +220,7 @@ export default async function transformCommonjs(
 
           if (hasDynamicArguments(node)) {
             if (isDynamicRequireModulesEnabled) {
+              checkDynamicRequire(node.start);
               magicString.appendLeft(
                 node.end - 1,
                 `, ${JSON.stringify(
@@ -228,7 +229,6 @@ export default async function transformCommonjs(
               );
             }
             if (!ignoreDynamicRequires) {
-              checkDynamicRequire();
               replacedDynamicRequires.push(node.callee);
             }
             return;
@@ -286,7 +286,6 @@ export default async function transformCommonjs(
                 return;
               }
               if (!ignoreDynamicRequires) {
-                checkDynamicRequire();
                 if (isShorthandProperty(parent)) {
                   magicString.prependRight(node.start, 'require: ');
                 }
@@ -370,9 +369,10 @@ export default async function transformCommonjs(
             if (scope.contains(flattened.name)) return;
 
             if (
-              flattened.keypath === 'module.exports' ||
-              flattened.keypath === 'module' ||
-              flattened.keypath === 'exports'
+              !isEsModule &&
+              (flattened.keypath === 'module.exports' ||
+                flattened.keypath === 'module' ||
+                flattened.keypath === 'exports')
             ) {
               magicString.overwrite(node.start, node.end, `'object'`, {
                 storeName: false
