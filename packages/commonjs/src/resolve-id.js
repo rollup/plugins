@@ -50,6 +50,14 @@ export function resolveExtensions(importee, importer, extensions) {
 
 export default function getResolveId(extensions) {
   return async function resolveId(importee, importer, resolveOptions) {
+    // We assume that all requires are pre-resolved
+    if (
+      resolveOptions.custom &&
+      resolveOptions.custom['node-resolve'] &&
+      resolveOptions.custom['node-resolve'].isRequire
+    ) {
+      return null;
+    }
     if (isWrappedId(importee, WRAPPED_SUFFIX)) {
       return unwrapId(importee, WRAPPED_SUFFIX);
     }
@@ -69,7 +77,7 @@ export default function getResolveId(extensions) {
     if (importer) {
       if (
         importer === DYNAMIC_MODULES_ID ||
-        // Except for exports, proxies are only importing resolved ids, no need to resolve again
+        // Proxies are only importing resolved ids, no need to resolve again
         isWrappedId(importer, PROXY_SUFFIX) ||
         isWrappedId(importer, ES_IMPORT_SUFFIX)
       ) {
