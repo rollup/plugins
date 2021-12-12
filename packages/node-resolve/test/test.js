@@ -487,13 +487,13 @@ test('passes on "isEntry" flag', async (t) => {
     ]
   });
   t.deepEqual(resolveOptions, [
-    ['other.js', 'main.js', { custom: void 0, isEntry: true }],
-    ['main.js', void 0, { custom: void 0, isEntry: true }],
-    ['dep.js', 'main.js', { custom: void 0, isEntry: false }]
+    ['other.js', 'main.js', { custom: {}, isEntry: true }],
+    ['main.js', void 0, { custom: {}, isEntry: true }],
+    ['dep.js', 'main.js', { custom: {}, isEntry: false }]
   ]);
 });
 
-test.only('passes on custom options', async (t) => {
+test('passes on custom options', async (t) => {
   const resolveOptions = [];
   await rollup({
     input: 'entry/other.js',
@@ -519,4 +519,28 @@ test.only('passes on custom options', async (t) => {
     ['main.js', void 0, { custom: { test: 42 }, isEntry: false }],
     ['other.js', void 0, { custom: {}, isEntry: true }]
   ]);
+});
+
+test('passes on meta information from other plugins', async (t) => {
+  await rollup({
+    input: 'entry/other.js',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve(),
+      {
+        name: 'test-meta',
+        resolveId(importee) {
+          return {
+            id: resolve(importee),
+            meta: { test: { 'I am': 'here' } }
+          };
+        },
+
+        load(id) {
+          const info = this.getModuleInfo(id);
+          t.deepEqual(info.meta, { test: { 'I am': 'here' } });
+        }
+      }
+    ]
+  });
 });

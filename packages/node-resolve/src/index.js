@@ -6,10 +6,10 @@ import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
+import handleDeprecatedOptions from './deprecated-options';
 import { fileExists, readFile, realpath } from './fs';
 import resolveImportSpecifiers from './resolveImportSpecifiers';
 import { getMainFields, getPackageName, normalizeInput } from './util';
-import handleDeprecatedOptions from './deprecated-options';
 
 const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
@@ -223,11 +223,10 @@ export function nodeResolve(opts = {}) {
       }
       return null;
     }
-    const result = {
+    return {
       id: `${location}${importSuffix}`,
       moduleSideEffects: hasModuleSideEffects(location)
     };
-    return result;
   };
 
   return {
@@ -267,9 +266,13 @@ export function nodeResolve(opts = {}) {
           importer,
           Object.assign({ skipSelf: true }, resolveOptions)
         );
-        const isExternal = !!(resolvedResolved && resolvedResolved.external);
-        if (isExternal) {
-          return false;
+        if (resolvedResolved) {
+          // Handle plugins that manually make the result external
+          if (resolvedResolved.external) {
+            return false;
+          }
+          // Pass on meta information added by other plugins
+          return { ...resolved, meta: resolvedResolved.meta };
         }
       }
       return resolved;
