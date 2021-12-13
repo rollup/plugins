@@ -16,6 +16,11 @@ const failOnWarn = (t) => (warning) =>
 
 const getLastPathFragment = (path) => path && path.split(/[\\/]/).slice(-1)[0];
 
+test('exposes plugin version', (t) => {
+  const plugin = nodeResolve();
+  t.regex(plugin.version, /^\d+\.\d+\.\d+/);
+});
+
 test('finds a module with jsnext:main', async (t) => {
   const bundle = await rollup({
     input: 'jsnext.js',
@@ -487,13 +492,13 @@ test('passes on "isEntry" flag', async (t) => {
     ]
   });
   t.deepEqual(resolveOptions, [
-    ['other.js', 'main.js', { custom: void 0, isEntry: true }],
-    ['main.js', void 0, { custom: void 0, isEntry: true }],
-    ['dep.js', 'main.js', { custom: void 0, isEntry: false }]
+    ['other.js', 'main.js', { custom: {}, isEntry: true }],
+    ['main.js', void 0, { custom: {}, isEntry: true }],
+    ['dep.js', 'main.js', { custom: {}, isEntry: false }]
   ]);
 });
 
-test.only('passes on custom options', async (t) => {
+test('passes on custom options', async (t) => {
   const resolveOptions = [];
   await rollup({
     input: 'entry/other.js',
