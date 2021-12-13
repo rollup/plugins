@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.1.0
+
+_2021-12-13_
+
+### Features
+
+- feat: expose plugin version (#1050)
+
 ## v13.0.6
 
 _2021-10-19_
