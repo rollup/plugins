@@ -18,7 +18,7 @@ export interface DataToEsmOptions {
 }
 
 /**
- * A valid `minimatch` pattern, or array of patterns.
+ * A valid `picomatch` glob pattern, or array of patterns.
  */
 export type FilterPattern = ReadonlyArray<string | RegExp> | string | RegExp | null;
 
