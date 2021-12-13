@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.1.1
+
+_2021-12-13_
+
+### Updates
+
+- test: add tests for mixing custom `exportConditions` with `browser: true` (#1043)
+
 ## v13.1.0
 
 _2021-12-13_
