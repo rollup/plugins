@@ -380,3 +380,23 @@ test('does not warn when resolving typescript imports with fallback', async (t) 
     a: 'A'
   });
 });
+
+test('custom condition takes precedence over browser field and condition with `browser: true`', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-worker-condition-with-browser-field.js',
+    plugins: [nodeResolve({ exportConditions: ['browser', 'webworker'], browser: true })]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, 'FROM WEBWORKER CONDITION');
+});
+
+test('custom condition takes precedence over browser field with `browser: true`', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-only-worker-condition-with-browser-field.js',
+    plugins: [nodeResolve({ exportConditions: ['browser', 'webworker'], browser: true })]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, 'FROM WEBWORKER CONDITION');
+});
