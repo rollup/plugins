@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v4.1.2
+
+_2021-12-13_
+
+### Bugfixes
+
+- fix: correct minimatch to picomatch in TSDoc (#1057)
+
 ## v4.1.1
 
 _2021-07-16_
