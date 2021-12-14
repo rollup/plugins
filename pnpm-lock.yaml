@@ -174,7 +174,7 @@ importers:
   packages/commonjs:
     specifiers:
       '@rollup/plugin-json': ^4.1.0
-      '@rollup/plugin-node-resolve': ^13.0.6
+      '@rollup/plugin-node-resolve': ^13.1.0
       '@rollup/pluginutils': ^3.1.0
       commondir: ^1.0.1
       estree-walker: ^2.0.1
@@ -199,7 +199,7 @@ importers:
       resolve: 1.18.1
     devDependencies:
       '@rollup/plugin-json': 4.1.0_rollup@2.67.3
-      '@rollup/plugin-node-resolve': 13.0.6_rollup@2.67.3
+      '@rollup/plugin-node-resolve': 13.1.0_rollup@2.67.3
       locate-character: 2.0.5
       require-relative: 0.8.7
       rollup: 2.67.3
@@ -2486,8 +2486,8 @@ packages:
     resolution: {integrity: sha512-33/L34xS7HVUx23e0wOT2V1qPF1IrHgQccdJVm9uXGTB9vFBrrzBtkQymT8VskeKOxjz55MSqMv0xuLq+u98WQ==}
     dev: true
 
-  /@types/node/16.11.7:
-    resolution: {integrity: sha512-QB5D2sqfSjCmTuWcBWyJ+/44bcjO7VbjSbOE0ucoVbAsSNQc4Lt6QkgkVXkTDwkL4z/beecZNDvVX15D4P8Jbw==}
+  /@types/node/16.11.12:
+    resolution: {integrity: sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw==}
 
   /@types/node/16.3.2:
     resolution: {integrity: sha512-jJs9ErFLP403I+hMLGnqDRWT0RYKSvArxuBVh2veudHV7ifEC1WAmjJADacZ7mRbA2nWgHtn8xyECMAot0SkAw==}
@@ -2516,7 +2516,7 @@ packages:
   /@types/resolve/1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 16.11.7
+      '@types/node': 16.11.12
 
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
