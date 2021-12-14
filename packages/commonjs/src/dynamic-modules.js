@@ -63,6 +63,9 @@ export function getDynamicRequireModules(patterns, dynamicRequireRoot) {
 
 const FAILED_REQUIRE_ERROR = `throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');`;
 
+export const COMMONJS_REQUIRE_EXPORT = 'commonjsRequire';
+export const CREATE_COMMONJS_REQUIRE_EXPORT = 'createCommonjsRequire';
+
 export function getDynamicModuleRegistry(
   isDynamicRequireModulesEnabled,
   dynamicRequireModules,
@@ -70,7 +73,7 @@ export function getDynamicModuleRegistry(
   ignoreDynamicRequires
 ) {
   if (!isDynamicRequireModulesEnabled) {
-    return `export function commonjsRequire(path) {
+    return `export function ${COMMONJS_REQUIRE_EXPORT}(path) {
 	${FAILED_REQUIRE_ERROR}
 }`;
   }
@@ -100,25 +103,25 @@ ${dynamicModuleProps}
 	});
 }
 
-export function commonjsRequire(path, originalModuleDir) {
-	var resolvedPath = commonjsResolveImpl(path, originalModuleDir);
-	if (resolvedPath !== null) {
-		return getDynamicModules()[resolvedPath]();
+export function ${CREATE_COMMONJS_REQUIRE_EXPORT}(originalModuleDir) {
+	function handleRequire(path) {
+		var resolvedPath = commonjsResolve(path, originalModuleDir);
+		if (resolvedPath !== null) {
+			return getDynamicModules()[resolvedPath]();
+		}
+		${ignoreDynamicRequires ? 'return require(path);' : FAILED_REQUIRE_ERROR}
 	}
-	${ignoreDynamicRequires ? 'return require(path);' : FAILED_REQUIRE_ERROR}
+	handleRequire.resolve = function (path) {
+		var resolvedPath = commonjsResolve(path, originalModuleDir);
+		if (resolvedPath !== null) {
+			return resolvedPath;
+		}
+		return require.resolve(path);
+	}
+	return handleRequire;
 }
 
 function commonjsResolve (path, originalModuleDir) {
-	const resolvedPath = commonjsResolveImpl(path, originalModuleDir);
-	if (resolvedPath !== null) {
-		return resolvedPath;
-	}
-	return require.resolve(path);
-}
-
-commonjsRequire.resolve = commonjsResolve;
-
-function commonjsResolveImpl (path, originalModuleDir) {
 	var shouldTryNodeModules = isPossibleNodeModulesPath(path);
 	path = normalize(path);
 	var relPath;

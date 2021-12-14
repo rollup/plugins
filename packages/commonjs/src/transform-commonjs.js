@@ -16,6 +16,7 @@ import {
   isTruthy,
   KEY_COMPILED_ESM
 } from './ast-utils';
+import { COMMONJS_REQUIRE_EXPORT, CREATE_COMMONJS_REQUIRE_EXPORT } from './dynamic-modules';
 import { rewriteExportsAndGetExportsBlock, wrapCode } from './generate-exports';
 import {
   getRequireHandlers,
@@ -201,12 +202,6 @@ export default async function transformCommonjs(
             checkDynamicRequire(node.start);
             uses.require = true;
             const requireNode = node.callee.object;
-            magicString.appendLeft(
-              node.end - 1,
-              `,${JSON.stringify(
-                dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
-              )}`
-            );
             replacedDynamicRequires.push(requireNode);
             return;
           }
@@ -221,12 +216,6 @@ export default async function transformCommonjs(
           if (hasDynamicArguments(node)) {
             if (isDynamicRequireModulesEnabled) {
               checkDynamicRequire(node.start);
-              magicString.appendLeft(
-                node.end - 1,
-                `, ${JSON.stringify(
-                  dirname(id) === '.' ? null /* default behavior */ : virtualDynamicRequirePath
-                )}`
-              );
             }
             if (!ignoreDynamicRequires) {
               replacedDynamicRequires.push(node.callee);
@@ -400,7 +389,13 @@ export default async function transformCommonjs(
   const requireName = deconflict([scope], globals, `require${capitalize(nameBase)}`);
   const isRequiredName = deconflict([scope], globals, `hasRequired${capitalize(nameBase)}`);
   const helpersName = deconflict([scope], globals, 'commonjsHelpers');
-  const dynamicRequireName = deconflict([scope], globals, 'commonjsRequire');
+  const dynamicRequireName =
+    replacedDynamicRequires.length > 0 &&
+    deconflict(
+      [scope],
+      globals,
+      isDynamicRequireModulesEnabled ? CREATE_COMMONJS_REQUIRE_EXPORT : COMMONJS_REQUIRE_EXPORT
+    );
   const deconflictedExportNames = Object.create(null);
   for (const [exportName, { scopes }] of exportsAssignmentsByName) {
     deconflictedExportNames[exportName] = deconflict([...scopes], globals, exportName);
@@ -412,10 +407,17 @@ export default async function transformCommonjs(
     });
   }
   for (const node of replacedDynamicRequires) {
-    magicString.overwrite(node.start, node.end, dynamicRequireName, {
-      contentOnly: true,
-      storeName: true
-    });
+    magicString.overwrite(
+      node.start,
+      node.end,
+      isDynamicRequireModulesEnabled
+        ? `${dynamicRequireName}(${JSON.stringify(virtualDynamicRequirePath)})`
+        : dynamicRequireName,
+      {
+        contentOnly: true,
+        storeName: true
+      }
+    );
   }
 
   // We cannot wrap ES/mixed modules
@@ -470,7 +472,7 @@ export default async function transformCommonjs(
     resolveRequireSourcesAndGetMeta,
     needsRequireWrapper,
     isEsModule,
-    uses.require,
+    isDynamicRequireModulesEnabled,
     getIgnoreTryCatchRequireStatementMode
   );
   const exportBlock = isEsModule

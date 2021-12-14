@@ -1,5 +1,4 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
-import { commonjsRequire as commonjsRequire } from "_commonjs-dynamic-modules";
 import { __exports as input_1 } from "\u0000fixtures/form/no-exports-entry/input.js?commonjs-exports"
 import require$$0 from "\u0000CWD/fixtures/form/no-exports-entry/dummy.js?commonjs-proxy";
 
