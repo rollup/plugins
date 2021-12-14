@@ -26,6 +26,7 @@
     "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prepublishOnly": "pnpm build",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
@@ -60,7 +61,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-node-resolve": "^13.1.0",
     "locate-character": "^2.0.5",
     "require-relative": "^0.8.7",
     "rollup": "^2.67.3",

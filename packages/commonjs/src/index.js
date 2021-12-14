@@ -23,7 +23,7 @@ import { hasCjsKeywords } from './parse';
 import { getEsImportProxy, getStaticRequireProxy, getUnknownRequireProxy } from './proxies';
 import getResolveId from './resolve-id';
 import { getResolveRequireSourcesAndGetMeta } from './resolve-require-sources';
-import validateRollupVersion from './rollup-version';
+import validateVersion from './rollup-version';
 import transformCommonjs from './transform-commonjs';
 import { getName, getStrictRequiresFilter, normalizePathSlashes } from './utils';
 
@@ -182,8 +182,12 @@ export default function commonjs(options = {}) {
       return { ...rawOptions, plugins };
     },
 
-    buildStart() {
-      validateRollupVersion(this.meta.rollupVersion, peerDependencies.rollup);
+    buildStart({ plugins }) {
+      validateVersion(this.meta.rollupVersion, peerDependencies.rollup, 'rollup');
+      const nodeResolve = plugins.find(({ name }) => name === 'node-resolve');
+      if (nodeResolve) {
+        validateVersion(nodeResolve.version, '^13.0.6', '@rollup/plugin-node-resolve');
+      }
       if (options.namedExports != null) {
         this.warn(
           'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
