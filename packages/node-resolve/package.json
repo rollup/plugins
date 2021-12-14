@@ -31,6 +31,7 @@
     "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prepublishOnly": "pnpm build",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
