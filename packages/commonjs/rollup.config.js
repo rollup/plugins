@@ -1,5 +1,7 @@
 import json from '@rollup/plugin-json';
 
+import { emitModulePackageFile } from '../../shared/rollup.config';
+
 import pkg from './package.json';
 
 export default {
@@ -10,6 +12,7 @@ export default {
     {
       file: pkg.module,
       format: 'es',
+      plugins: [emitModulePackageFile()],
       sourcemap: true
     },
     {

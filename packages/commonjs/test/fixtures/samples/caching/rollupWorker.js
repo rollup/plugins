@@ -2,7 +2,7 @@ const { workerData, parentPort } = require('worker_threads');
 
 const { rollup } = require('rollup');
 
-const commonjs = require('../../../../dist/index');
+const commonjs = require('../../../..');
 const { getCodeFromBundle } = require('../../../helpers/util');
 
 generateCode(workerData);

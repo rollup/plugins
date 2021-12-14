@@ -451,7 +451,7 @@ test('does not warn even if the ES module does not export "default"', async (t) 
 test('compiles with cache', async (t) => {
   // specific commonjs require() to ensure same instance is used
   // eslint-disable-next-line global-require
-  const commonjsInstance = require('../dist/index');
+  const commonjsInstance = require('..');
 
   const bundle = await rollup({
     input: 'fixtures/function/index/main.js',
