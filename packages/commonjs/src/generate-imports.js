@@ -1,3 +1,4 @@
+import { COMMONJS_REQUIRE_EXPORT, CREATE_COMMONJS_REQUIRE_EXPORT } from './dynamic-modules';
 import {
   DYNAMIC_MODULES_ID,
   EXPORTS_SUFFIX,
@@ -92,14 +93,16 @@ export function getRequireHandlers() {
     resolveRequireSourcesAndGetMeta,
     needsRequireWrapper,
     isEsModule,
-    usesRequire,
+    isDynamicRequireModulesEnabled,
     getIgnoreTryCatchRequireStatementMode
   ) {
     const imports = [];
     imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
-    if (usesRequire) {
+    if (dynamicRequireName) {
       imports.push(
-        `import { commonjsRequire as ${dynamicRequireName} } from "${DYNAMIC_MODULES_ID}";`
+        `import { ${
+          isDynamicRequireModulesEnabled ? CREATE_COMMONJS_REQUIRE_EXPORT : COMMONJS_REQUIRE_EXPORT
+        } as ${dynamicRequireName} } from "${DYNAMIC_MODULES_ID}";`
       );
     }
     if (exportMode === 'module') {
