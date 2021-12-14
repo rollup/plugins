@@ -2,7 +2,7 @@
 import * as path from 'path';
 import os from 'os';
 
-import resolve from '@rollup/plugin-node-resolve';
+import nodeResolve from '@rollup/plugin-node-resolve';
 
 import test from 'ava';
 import { getLocator } from 'locate-character';
@@ -91,7 +91,7 @@ test('supports an object of multiple entry points', async (t) => {
       b: require.resolve('./fixtures/samples/multiple-entry-points/b.js'),
       c: require.resolve('./fixtures/samples/multiple-entry-points/c.js')
     },
-    plugins: [resolve(), commonjs()]
+    plugins: [nodeResolve(), commonjs()]
   });
 
   const { output } = await bundle.generate({
@@ -212,7 +212,7 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
         throw new Error(`Unexpected warning: ${warning.message}`);
       },
       plugins: [
-        resolve({
+        nodeResolve({
           preserveSymlinks: false,
           preferBuiltins: false
         }),
@@ -400,7 +400,7 @@ test('rewrites top-level defines', async (t) => {
 test('respects options.external', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/external/main.js',
-    plugins: [resolve(), commonjs()],
+    plugins: [nodeResolve(), commonjs()],
     external: ['baz']
   });
 
@@ -730,4 +730,36 @@ test('does not transform typeof exports for mixed modules', async (t) => {
 
   t.is(code.includes('typeof exports'), true, '"typeof exports" not found in the code');
   t.snapshot(code);
+});
+
+test('throws when using an old node_resolve version', async (t) => {
+  let error = null;
+  try {
+    await rollup({
+      input: 'ignored',
+      plugins: [commonjs(), { name: nodeResolve().name }]
+    });
+  } catch (err) {
+    error = err;
+  }
+  t.like(error, {
+    message:
+      'Insufficient @rollup/plugin-node-resolve version: "@rollup/plugin-commonjs" requires at least @rollup/plugin-node-resolve@13.0.6.'
+  });
+});
+
+test('throws when using an inadequate node_resolve version', async (t) => {
+  let error = null;
+  try {
+    await rollup({
+      input: 'ignored',
+      plugins: [commonjs(), { name: nodeResolve().name, version: '13.0.5' }]
+    });
+  } catch (err) {
+    error = err;
+  }
+  t.like(error, {
+    message:
+      'Insufficient @rollup/plugin-node-resolve version: "@rollup/plugin-commonjs" requires at least @rollup/plugin-node-resolve@13.0.6 but found @rollup/plugin-node-resolve@13.0.5.'
+  });
 });
