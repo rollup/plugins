@@ -20,13 +20,14 @@ module.exports = function sucrase(opts = {}) {
           `${resolved}.tsx`,
           `${resolved}/index.ts`,
           `${resolved}/index.tsx`
-        ]
-        if(importee.endsWith('.js')) {
+        ];
+        if (importee.endsWith('.js')) {
           resolvedFilenames.splice(
-            2, 0,
+            2,
+            0,
             `${resolved.slice(0, -3)}.ts`,
-            `${resolved.slice(0, -3)}.tsx`,
-          )
+            `${resolved.slice(0, -3)}.tsx`
+          );
         }
         const resolvedFilename = resolvedFilenames.find((filename) => fs.existsSync(filename));
 
