@@ -1,6 +1,6 @@
 const path = require('path');
 
-const commonjsPlugin = require('../../dist/index');
+const commonjsPlugin = require('../..');
 
 function commonjs(options) {
   delete require.cache[require.resolve('../..')];
