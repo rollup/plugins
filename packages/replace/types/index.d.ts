@@ -24,6 +24,11 @@ export interface RollupReplaceOptions {
    */
   exclude?: FilterPattern;
   /**
+   * If false, skips source map generation. This will improve performance.
+   * @default true
+   */
+  sourceMap?: boolean;
+  /**
    * To replace every occurrence of `<@foo@>` instead of every occurrence
    * of `foo`, supply delimiters
    */
