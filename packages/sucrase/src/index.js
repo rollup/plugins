@@ -21,7 +21,7 @@ module.exports = function sucrase(opts = {}) {
           `${resolved}/index.ts`,
           `${resolved}/index.tsx`
         ];
-        if (importee.endsWith('.js')) {
+        if (resolved.endsWith('.js')) {
           resolvedFilenames.splice(
             2,
             0,
