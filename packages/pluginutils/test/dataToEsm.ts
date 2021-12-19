@@ -4,15 +4,15 @@ import { dataToEsm } from '../';
 
 test('support bigint', (t) => {
   t.is(
-    dataToEsm({ bigint: 0n }),
-    'export var bigint = 0n;\nexport default {\n\tbigint: bigint\n};\n'
+    dataToEsm({ positive: 0n, negative: -1n }),
+    'export var positive = 0n;\nexport var negative = -1n;\nexport default {\n\tpositive: positive,\n\tnegative: negative\n};\n'
   );
 });
 
 test('support symbol', (t) => {
   t.is(
-    dataToEsm({ symbol: Symbol.for('') }),
-    'export var symbol = Symbol.for("");\nexport default {\n\tsymbol: symbol\n};\n'
+    dataToEsm({ normal: Symbol.for('key'), empty: Symbol.for('') }),
+    'export var normal = Symbol.for("key");\nexport var symbol = Symbol.for("");\nexport default {\n\tnormal: normal,\n\tempty: empty\n};\n'
   );
 });
 
