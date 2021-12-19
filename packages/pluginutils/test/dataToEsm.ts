@@ -2,10 +2,17 @@ import test from 'ava';
 
 import { dataToEsm } from '../';
 
-test('support bigint and symbol', (t) => {
+test('support bigint', (t) => {
   t.is(
-    dataToEsm({ bigint: 0, symbol: Symbol.for('') }),
-    'export var bigint = 0n;\nexport var symbol = Symbol.for("");\nexport default {\n\tbigint: bigint,\n\tsymbol: symbol\n};\n'
+    dataToEsm({ bigint: 0n }),
+    'export var bigint = 0n;\nexport default {\n\tbigint: bigint\n};\n'
+  );
+});
+
+test('support symbol', (t) => {
+  t.is(
+    dataToEsm({ symbol: Symbol.for('') }),
+    'export var symbol = Symbol.for("");\nexport default {\n\tsymbol: symbol\n};\n'
   );
 });
 
