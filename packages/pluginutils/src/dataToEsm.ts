@@ -5,7 +5,7 @@ import makeLegalIdentifier from './makeLegalIdentifier';
 export type Indent = string | null | undefined;
 
 function stringify(obj: unknown): string {
-  return JSON.stringify(obj).replace(
+  return (JSON.stringify(obj) || 'undefined').replace(
     /[\u2028\u2029]/g,
     (char) => `\\u${`000${char.charCodeAt(0).toString(16)}`.slice(-4)}`
   );
@@ -38,21 +38,23 @@ function serializeObject(obj: object, indent: Indent, baseIndent: string): strin
 }
 
 function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
-  if (obj === Infinity) return 'Infinity';
-  if (obj === -Infinity) return '-Infinity';
-  if (obj === 0) return 1 / obj === Infinity ? '0' : '-0';
-  if (obj instanceof Date) return `new Date(${obj.getTime()})`;
-  if (obj instanceof RegExp) return obj.toString();
-  if (obj !== obj) return 'NaN'; // eslint-disable-line no-self-compare
-  if (Array.isArray(obj)) return serializeArray(obj, indent, baseIndent);
-  if (obj == null) return obj === null ? 'null' : 'undefined';
-  if (typeof obj === 'object') return serializeObject(obj!, indent, baseIndent);
-  if (typeof obj === 'bigint') return `${obj}n`;
+  if (typpeof obj === 'object' && obj !== null) {
+    if (Array.isArray(obj)) return serializeArray(obj, indent, baseIndent);
+    if (obj instanceof Date) return `new Date(${obj.getTime()})`;
+    if (obj instanceof RegExp) return obj.toString();
+    return serializeObject(obj!, indent, baseIndent);
+  }
+  if (typeof obj === 'number') {
+    if (obj === Infinity) return 'Infinity';
+    if (obj === -Infinity) return '-Infinity';
+    if (obj === 0) return 1 / obj === Infinity ? '0' : '-0';
+    if (obj !== obj) return 'NaN'; // eslint-disable-line no-self-compare
+  }
   if (typeof obj === 'symbol') {
     const key = Symbol.keyFor(obj);
-    return key === undefined ? 'undefined' : `Symbol.for(${stringify(key)})`;
+    if (key !== undefined) return `Symbol.for(${stringify(key)})`;
   }
-  if (typeof obj === 'function') return 'undefined';
+  if (typeof obj === 'bigint') return `${obj}n`;
   return stringify(obj);
 }
 
