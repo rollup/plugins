@@ -4,8 +4,8 @@ import makeLegalIdentifier from './makeLegalIdentifier';
 
 export type Indent = string | null | undefined;
 
-function stringify(val: unknown): string {
-  return JSON.stringify(val).replace(
+function stringify(obj: unknown): string {
+  return JSON.stringify(obj).replace(
     /[\u2028\u2029]/g,
     (char) => `\\u${`000${char.charCodeAt(0).toString(16)}`.slice(-4)}`
   );
