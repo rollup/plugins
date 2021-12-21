@@ -7,7 +7,7 @@ output/
 .DS_Store
 .eslintcache
 coverage.lcov
-pnpm-debug.log
+.pnpm-debug.log
 .idea
 .rollup.cache
 
