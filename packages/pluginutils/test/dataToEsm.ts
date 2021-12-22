@@ -12,7 +12,7 @@ test('support bigint', (t) => {
 test('support symbol', (t) => {
   t.is(
     dataToEsm({ normal: Symbol.for('key'), empty: Symbol.for('') }),
-    'export var normal = Symbol.for("key");\nexport var symbol = Symbol.for("");\nexport default {\n\tnormal: normal,\n\tempty: empty\n};\n'
+    'export var normal = Symbol.for("key");\nexport var empty = Symbol.for("");\nexport default {\n\tnormal: normal,\n\tempty: empty\n};\n'
   );
 });
 
