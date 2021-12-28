@@ -2,7 +2,7 @@ import path from 'path';
 
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
-import globby from 'globby';
+import fastGlob from 'fast-glob';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -41,7 +41,7 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
             }
 
             // execute the glob
-            const result = globby.sync(glob, { cwd: path.dirname(id) });
+            const result = fastGlob.sync(glob, { cwd: path.dirname(id) });
             const paths = result.map((r) =>
               r.startsWith('./') || r.startsWith('../') ? r : `./${r}`
             );
