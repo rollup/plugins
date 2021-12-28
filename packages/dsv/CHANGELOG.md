@@ -1,5 +1,13 @@
 # @rollup/plugin-dsv ChangeLog
 
+## v2.0.3
+
+_2021-12-28_
+
+### Updates
+
+- docs: remove copypasta from wasm (#1074)
+
 ## v2.0.2
 
 _2021-07-26_
