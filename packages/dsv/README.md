@@ -11,8 +11,6 @@
 
 🍣 A Rollup plugin which converts `.csv` and `.tsv` files into JavaScript modules with [d3-dsv](https://github.com/d3/d3-dsv).
 
-WebAssembly Modules are imported asynchronous as base64 strings. Small modules [can be imported synchronously](#synchronous-modules).
-
 ## Requirements
 
 This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
