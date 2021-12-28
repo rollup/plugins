@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v1.4.2
+
+_2021-12-28_
+
+### Updates
+
+- refactor: update, swap dependencies (#1073)
+
 ## v1.4.1
 
 _2021-10-19_
