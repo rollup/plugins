@@ -1,5 +1,17 @@
 # @rollup/plugin-replace ChangeLog
 
+## v3.0.1
+
+_2021-12-28_
+
+### Bugfixes
+
+- fix: add types for `sourceMap` option (#1066)
+
+### Updates
+
+- docs: clarify delimiters typing (#1013)
+
 ## v3.0.0
 
 _2021-07-16_
