@@ -1,5 +1,13 @@
 # @rollup/plugin-inject ChangeLog
 
+## v4.0.4
+
+_2021-12-28_
+
+### Bugfixes
+
+- fix: add types for `sourceMap` option (#1066)
+
 ## v4.0.3
 
 _2021-10-19_
