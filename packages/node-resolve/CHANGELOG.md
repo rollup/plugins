@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.1.2
+
+_2021-12-31_
+
+### Bugfixes
+
+- fix: forward meta-information from other plugins (#1062)
+
 ## v13.1.1
 
 _2021-12-13_
