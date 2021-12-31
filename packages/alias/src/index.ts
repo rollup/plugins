@@ -1,8 +1,6 @@
-import { PartialResolvedId, Plugin } from 'rollup';
+import { Plugin } from 'rollup';
 
-import { Alias, ResolverFunction, RollupAliasOptions } from '../types';
-
-const noop = () => null;
+import { ResolvedAlias, ResolverFunction, ResolverObject, RollupAliasOptions } from '../types';
 
 function matches(pattern: string | RegExp, importee: string) {
   if (pattern instanceof RegExp) {
@@ -14,46 +12,42 @@ function matches(pattern: string | RegExp, importee: string) {
   if (importee === pattern) {
     return true;
   }
-  const importeeStartsWithKey = importee.indexOf(pattern) === 0;
-  const importeeHasSlashAfterKey = importee.substring(pattern.length)[0] === '/';
-  return importeeStartsWithKey && importeeHasSlashAfterKey;
+  // eslint-disable-next-line prefer-template
+  return importee.startsWith(pattern + '/');
 }
 
-function normalizeId(id: string): string;
-function normalizeId(id: string | undefined): string | undefined;
-function normalizeId(id: string | undefined) {
-  return id;
-}
-
-function getEntries({ entries }: RollupAliasOptions): readonly Alias[] {
+function getEntries({ entries, customResolver }: RollupAliasOptions): readonly ResolvedAlias[] {
   if (!entries) {
     return [];
   }
 
+  const resolverFunctionFromOptions = resolveCustomResolver(customResolver);
+
   if (Array.isArray(entries)) {
-    return entries;
+    return entries.map((entry) => {
+      return {
+        find: entry.find,
+        replacement: entry.replacement,
+        resolverFunction: resolveCustomResolver(entry.customResolver) || resolverFunctionFromOptions
+      };
+    });
   }
 
   return Object.entries(entries).map(([key, value]) => {
-    return { find: key, replacement: value };
+    return { find: key, replacement: value, resolverFunction: resolverFunctionFromOptions };
   });
 }
 
-function getCustomResolver(
-  { customResolver }: Alias,
-  options: RollupAliasOptions
+function resolveCustomResolver(
+  customResolver: ResolverFunction | ResolverObject | null | undefined
 ): ResolverFunction | null {
-  if (typeof customResolver === 'function') {
-    return customResolver;
-  }
-  if (customResolver && typeof customResolver.resolveId === 'function') {
-    return customResolver.resolveId;
-  }
-  if (typeof options.customResolver === 'function') {
-    return options.customResolver;
-  }
-  if (options.customResolver && typeof options.customResolver.resolveId === 'function') {
-    return options.customResolver.resolveId;
+  if (customResolver) {
+    if (typeof customResolver === 'function') {
+      return customResolver;
+    }
+    if (typeof customResolver.resolveId === 'function') {
+      return customResolver.resolveId;
+    }
   }
   return null;
 }
@@ -64,56 +58,44 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
   if (entries.length === 0) {
     return {
       name: 'alias',
-      resolveId: noop
+      resolveId: () => null
     };
   }
 
   return {
     name: 'alias',
-    buildStart(inputOptions) {
-      return Promise.all(
-        [...entries, options].map(
+    async buildStart(inputOptions) {
+      await Promise.all(
+        [...(Array.isArray(options.entries) ? options.entries : []), options].map(
           ({ customResolver }) =>
             customResolver &&
             typeof customResolver === 'object' &&
             typeof customResolver.buildStart === 'function' &&
             customResolver.buildStart.call(this, inputOptions)
         )
-      ).then(() => {
-        // enforce void return value
-      });
+      );
     },
     resolveId(importee, importer, resolveOptions) {
-      const importeeId = normalizeId(importee);
-      const importerId = normalizeId(importer);
-
+      if (!importer) {
+        return null;
+      }
       // First match is supposed to be the correct one
-      const matchedEntry = entries.find((entry) => matches(entry.find, importeeId));
-      if (!matchedEntry || !importerId) {
+      const matchedEntry = entries.find((entry) => matches(entry.find, importee));
+      if (!matchedEntry) {
         return null;
       }
 
-      const updatedId = normalizeId(
-        importeeId.replace(matchedEntry.find, matchedEntry.replacement)
-      );
+      const updatedId = importee.replace(matchedEntry.find, matchedEntry.replacement);
 
-      const customResolver = getCustomResolver(matchedEntry, options);
-      if (customResolver) {
-        return customResolver.call(this, updatedId, importerId, resolveOptions);
+      if (matchedEntry.resolverFunction) {
+        return matchedEntry.resolverFunction.call(this, updatedId, importer, resolveOptions);
       }
 
       return this.resolve(
         updatedId,
         importer,
         Object.assign({ skipSelf: true }, resolveOptions)
-      ).then((resolved) => {
-        let finalResult: PartialResolvedId | null = resolved;
-        if (!finalResult) {
-          finalResult = { id: updatedId };
-        }
-
-        return finalResult;
-      });
+      ).then((resolved) => resolved || { id: updatedId });
     }
   };
 }

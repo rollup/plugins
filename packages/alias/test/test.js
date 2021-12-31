@@ -531,3 +531,37 @@ test('Forwards isEntry and custom options to other plugins', (t) => {
     t.deepEqual(result, ['entry-point', 'non-entry-point']);
   });
 });
+
+test('CustomResolver plugin-like object with buildStart', (t) => {
+  const count = {
+    entry: 0,
+    option: 0
+  };
+  return resolveAliasWithRollup(
+    {
+      entries: [
+        {
+          find: 'this',
+          replacement: path.resolve('./that.jsx'),
+          customResolver: {
+            resolveId: () => 'custom Resolver',
+            buildStart: () => (count.entry += 1)
+          }
+        },
+        {
+          find: 'that',
+          replacement: ''
+        }
+      ],
+      customResolver: {
+        buildStart: () => (count.option += 1)
+      }
+    },
+    []
+  ).then(() =>
+    t.deepEqual(count, {
+      entry: 1,
+      option: 1
+    })
+  );
+});
