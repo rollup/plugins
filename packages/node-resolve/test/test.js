@@ -525,3 +525,27 @@ test('passes on custom options', async (t) => {
     ['other.js', void 0, { custom: {}, isEntry: true }]
   ]);
 });
+
+test('passes on meta information from other plugins', async (t) => {
+  await rollup({
+    input: 'entry/other.js',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve(),
+      {
+        name: 'test-meta',
+        resolveId(importee) {
+          return {
+            id: resolve(importee),
+            meta: { test: { 'I am': 'here' } }
+          };
+        },
+
+        load(id) {
+          const info = this.getModuleInfo(id);
+          t.deepEqual(info.meta, { test: { 'I am': 'here' } });
+        }
+      }
+    ]
+  });
+});
