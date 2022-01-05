@@ -54,27 +54,30 @@ test('converts typescript', async (t) => {
   return testBundle(t, bundle);
 });
 
-test('converts typescript with aliases', async (t) => {
-  const bundle = await rollup({
-    input: 'fixtures/typescript-with-aliases/main.js',
-    plugins: [
-      sucrase({
-        transforms: ['typescript']
-      }),
-      alias({
-        entries: [
-          {
-            find: '~src',
-            replacement: path.resolve(__dirname, 'fixtures', 'typescript-with-aliases', 'src')
-          }
-        ]
-      })
-    ]
-  });
-  t.plan(1);
+// Note: Windows struggles with this test setup as trying to read a directory
+if (process.platform !== 'win32') {
+  test('converts typescript with aliases', async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/typescript-with-aliases/main.js',
+      plugins: [
+        sucrase({
+          transforms: ['typescript']
+        }),
+        alias({
+          entries: [
+            {
+              find: '~src',
+              replacement: path.resolve(__dirname, 'fixtures', 'typescript-with-aliases', 'src')
+            }
+          ]
+        })
+      ]
+    });
+    t.plan(1);
 
-  return testBundle(t, bundle);
-});
+    return testBundle(t, bundle);
+  });
+}
 
 test('resolves typescript directory imports', async (t) => {
   const bundle = await rollup({
