@@ -9,7 +9,7 @@ export default {
   plugins: [json()],
   external: [...Object.keys(pkg.dependencies), 'fs', 'path', 'os', 'util', 'url'],
   onwarn: (warning) => {
-    throw new Error(warning);
+    throw Object.assign(new Error(), warning);
   },
   output: [
     { file: pkg.main, format: 'cjs', exports: 'named' },
