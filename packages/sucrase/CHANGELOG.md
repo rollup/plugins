@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v4.0.2
+
+_2022-01-05_
+
+### Updates
+
+- test: skip test on Windows (f95bc18)
+
 ## v4.0.1
 
 _2021-10-01_
