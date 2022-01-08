@@ -36,8 +36,7 @@ function mapToFunctions(object) {
   }, {});
 }
 
-const objKeyRegEx =
-  /^([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)(\.([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*))+$/;
+const objKeyRegEx = /^([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)(\.([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*))+$/;
 function expandTypeofReplacements(replacements) {
   Object.keys(replacements).forEach((key) => {
     const objMatch = key.match(objKeyRegEx);
