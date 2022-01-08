@@ -45,7 +45,9 @@ function expandTypeofReplacements(replacements) {
     let lastIndex = 0;
     do {
       // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)}`] = '"object"';
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)} ==`] = '"object" ==';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)} !=`] = '"object" !=';
       lastIndex = dotIndex + 1;
       dotIndex = key.indexOf('.', lastIndex);
     } while (dotIndex !== -1);
