@@ -70,6 +70,39 @@ For example, if you pass `typeof window` in `values` to-be-replaced, then you co
 - `typeof window.document` **will not** be replaced due to `(?!\.)` boundary
 - `typeof windowSmth` **will not** be replaced due to a `\b` boundary
 
+### `typeofReplacements`
+
+Type: `Boolean`<br>
+Default: `false`
+
+When replacing dot-separated object properties like `process.env.NODE_ENV`, will also replace typeof checks against the objects
+with `"object"`.
+
+For example:
+
+```js
+replace({
+  values: {
+    'process.env.NODE_ENV': '"production"',
+  },
+});
+```
+
+```js
+// Input
+if (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
+  console.log('production');
+}
+// Without `typeofReplacements`
+if (typeof process !== 'undefined' && 'production' === 'production') {
+  console.log('production');
+}
+// With `typeofReplacements`
+if ('object' !== 'undefined' && 'production' === 'production') {
+  console.log('production');
+}
+```
+
 ### `preventAssignment`
 
 Type: `Boolean`<br>
