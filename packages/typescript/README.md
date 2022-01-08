@@ -172,8 +172,8 @@ typescript({
       {
         type: 'typeChecker',
         factory: (typeChecker) => {
-          // Allow the transformer to get a Program reference in it's factory
-          return TypeCheckerRequiringTransformerFactory(program);
+          // Allow the transformer to get a TypeChecker reference in it's factory
+          return TypeCheckerRequiringTransformerFactory(typeChecker);
         }
       }
     ],
