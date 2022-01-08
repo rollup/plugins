@@ -83,8 +83,8 @@ For example:
 ```js
 replace({
   values: {
-    'process.env.NODE_ENV': '"production"',
-  },
+    'process.env.NODE_ENV': '"production"'
+  }
 });
 ```
 
