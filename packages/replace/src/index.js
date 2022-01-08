@@ -36,7 +36,8 @@ function mapToFunctions(object) {
   }, {});
 }
 
-const objKeyRegEx = /^([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)(\.([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*))+$/;
+const objKeyRegEx =
+  /^([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)(\.([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*))+$/;
 function expandTypeofReplacements(replacements) {
   Object.keys(replacements).forEach((key) => {
     const objMatch = key.match(objKeyRegEx);
@@ -44,7 +45,7 @@ function expandTypeofReplacements(replacements) {
     let dotIndex = objMatch[1].length;
     let lastIndex = 0;
     do {
-      // eslint-disable-next-line no-param-reassign 
+      // eslint-disable-next-line no-param-reassign
       replacements[`typeof ${key.slice(lastIndex, dotIndex)}`] = '"object"';
       lastIndex = dotIndex + 1;
       dotIndex = key.indexOf('.', lastIndex);
