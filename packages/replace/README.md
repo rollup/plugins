@@ -61,7 +61,7 @@ In addition to the properties and values specified for replacement, users may al
 ### `delimiters`
 
 Type: `Array[String, String]`<br>
-Default: `['\b', '\b(?!\.)']`
+Default: `['\\b', '\\b(?!\\.)']`
 
 Specifies the boundaries around which strings will be replaced. By default, delimiters are [word boundaries](https://www.regular-expressions.info/wordboundaries.html) and also prevent replacements of instances with nested access. See [Word Boundaries](#word-boundaries) below for more information.
 For example, if you pass `typeof window` in `values` to-be-replaced, then you could expect the following scenarios:
@@ -69,6 +69,8 @@ For example, if you pass `typeof window` in `values` to-be-replaced, then you co
 - `typeof window` **will** be replaced
 - `typeof window.document` **will not** be replaced due to `(?!\.)` boundary
 - `typeof windowSmth` **will not** be replaced due to a `\b` boundary
+
+Delimiters will be used to build a `Regexp`. To match special characters (any of `.*+?^${}()|[]\`), be sure to [escape](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping) them.
 
 ### `objectGuards`
 
