@@ -3,6 +3,6 @@ module.exports = {
   options: {
     'process.env.NODE_ENV': '"production"',
     preventAssignment: true,
-    typeofReplacements: true
+    objectGuards: true
   }
 };
