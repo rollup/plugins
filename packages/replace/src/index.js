@@ -24,7 +24,7 @@ function getReplacements(options) {
   delete values.exclude;
   delete values.sourcemap;
   delete values.sourceMap;
-  delete values.typeofReplacements;
+  delete values.objectGuards;
   return values;
 }
 
@@ -68,9 +68,9 @@ function expandTypeofReplacements(replacements) {
 
 export default function replace(options = {}) {
   const filter = createFilter(options.include, options.exclude);
-  const { delimiters, preventAssignment, typeofReplacements } = options;
+  const { delimiters, preventAssignment, objectGuards } = options;
   const replacements = getReplacements(options);
-  if (typeofReplacements) expandTypeofReplacements(replacements);
+  if (objectGuards) expandTypeofReplacements(replacements);
   const functionValues = mapToFunctions(replacements);
   const keys = Object.keys(functionValues).sort(longest).map(escape);
   const lookahead = preventAssignment ? '(?!\\s*=[^=])' : '';
