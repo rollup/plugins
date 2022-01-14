@@ -54,15 +54,16 @@ if (path.sep === '/') {
     (config.solo ? test.only : test)(dir, (t) =>
       Promise.all(
         inputEntries.map(async ([outputName, id]) => {
-          const { transform } = commonjs(config.options);
-
+          const { buildStart, transform } = commonjs(config.options);
+          buildStart.call({ meta: { rollupVersion: '99.0.0' } }, { plugins: [] });
           transformContext.getModuleInfo = (moduleId) => {
             return {
               isEntry: config.entry && moduleId === id,
               importers:
                 config.importers && config.importers[outputName]
                   ? config.importers[outputName].map((x) => `fixtures/form/${dir}/${x}`)
-                  : []
+                  : [],
+              meta: {}
             };
           };
           const input = fs.readFileSync(id, 'utf-8');

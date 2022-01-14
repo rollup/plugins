@@ -1,11 +1,13 @@
 /* eslint-disable line-comment-position, no-new-func, no-undefined */
-import * as path from 'path';
 import os from 'os';
+
+import * as path from 'path';
 
 import nodeResolve from '@rollup/plugin-node-resolve';
 
 import test from 'ava';
 import { getLocator } from 'locate-character';
+
 import { rollup } from 'rollup';
 import { SourceMapConsumer } from 'source-map';
 import { install } from 'source-map-support';
@@ -18,6 +20,23 @@ import { commonjs, executeBundle, getCodeFromBundle } from './helpers/util';
 install();
 
 process.chdir(__dirname);
+
+const loader = (modules) => {
+  return {
+    load(id) {
+      if (Object.hasOwnProperty.call(modules, id)) {
+        return modules[id];
+      }
+      return null;
+    },
+    resolveId(id) {
+      if (Object.hasOwnProperty.call(modules, id)) {
+        return id;
+      }
+      return null;
+    }
+  };
+};
 
 test('Rollup peer dependency has correct format', (t) => {
   t.regex(peerDependencies.rollup, /^\^\d+\.\d+\.\d+(\|\|\^\d+\.\d+\.\d+)*$/);
@@ -449,20 +468,18 @@ test('does not warn even if the ES module does not export "default"', async (t) 
 });
 
 test('compiles with cache', async (t) => {
-  // specific commonjs require() to ensure same instance is used
-  // eslint-disable-next-line global-require
-  const commonjsInstance = require('..');
+  const plugin = commonjs();
 
-  const bundle = await rollup({
+  const { cache } = await rollup({
     input: 'fixtures/function/index/main.js',
-    plugins: [commonjsInstance()]
+    plugins: [plugin]
   });
 
   await t.notThrowsAsync(
     rollup({
       input: 'fixtures/function/index/main.js',
-      plugins: [commonjsInstance()],
-      cache: bundle
+      plugins: [plugin],
+      cache
     })
   );
 });
@@ -547,20 +564,10 @@ test('produces optimized code when importing esm with a known default export', a
     input: 'main.js',
     plugins: [
       commonjs({ requireReturnsDefault: true }),
-      {
-        load(id) {
-          if (id === 'main.js') {
-            return 'module.exports = require("esm.js")';
-          }
-          if (id === 'esm.js') {
-            return 'export const ignored = "ignored"; export default "default"';
-          }
-          return null;
-        },
-        resolveId(id) {
-          return id;
-        }
-      }
+      loader({
+        'main.js': 'module.exports = require("esm.js")',
+        'esm.js': 'export const ignored = "ignored"; export default "default"'
+      })
     ]
   });
   t.snapshot(await getCodeFromBundle(bundle));
@@ -571,20 +578,10 @@ test('produces optimized code when importing esm without a default export', asyn
     input: 'main.js',
     plugins: [
       commonjs(),
-      {
-        load(id) {
-          if (id === 'main.js') {
-            return 'module.exports = require("esm.js")';
-          }
-          if (id === 'esm.js') {
-            return 'export const value = "value";';
-          }
-          return null;
-        },
-        resolveId(id) {
-          return id;
-        }
-      }
+      loader({
+        'main.js': 'module.exports = require("esm.js")',
+        'esm.js': 'export const value = "value";'
+      })
     ]
   });
   t.snapshot(await getCodeFromBundle(bundle));
@@ -762,4 +759,109 @@ test('throws when using an inadequate node_resolve version', async (t) => {
     message:
       'Insufficient @rollup/plugin-node-resolve version: "@rollup/plugin-commonjs" requires at least @rollup/plugin-node-resolve@13.0.6 but found @rollup/plugin-node-resolve@13.0.5.'
   });
+});
+
+test('updates all relevant modules when using the cache and the wrapping of a module changes', async (t) => {
+  const modules = {};
+  const resetModules = () => {
+    modules['main.js'] = "module.exports = 'main' + require('first.js').first;";
+    modules['first.js'] = "exports.first = 'first'; exports.first += require('second.js').second;";
+    modules['second.js'] = "exports.second = 'second';";
+  };
+  const options = {
+    input: 'main.js',
+    plugins: [commonjs({ transformMixedEsModules: true }), loader(modules)],
+    onwarn(warning) {
+      if (warning.code !== 'CIRCULAR_DEPENDENCY') {
+        throw new Error(warning.message);
+      }
+    }
+  };
+
+  resetModules();
+  let bundle = await rollup(options);
+  t.is((await executeBundle(bundle, t)).exports, 'mainfirstsecond');
+  const firstCode = await getCodeFromBundle(bundle);
+  t.snapshot(firstCode);
+
+  options.cache = bundle.cache;
+  modules['second.js'] = "exports.second = 'second'; exports.second += require('first.js').first;";
+  bundle = await rollup(options);
+  t.is((await executeBundle(bundle, t)).exports, 'mainfirstsecondfirst');
+  t.snapshot(await getCodeFromBundle(bundle));
+
+  options.cache = bundle.cache;
+  resetModules();
+  bundle = await rollup(options);
+  t.is(await getCodeFromBundle(bundle), firstCode);
+
+  options.cache = bundle.cache;
+  modules['first.js'] =
+    "export let first = 'first'; if (Math.random() < 1) first += require('second.js').second;";
+  bundle = await rollup(options);
+  t.is((await executeBundle(bundle, t)).exports, 'mainfirstsecond');
+  t.snapshot(await getCodeFromBundle(bundle));
+
+  options.cache = bundle.cache;
+  resetModules();
+  bundle = await rollup(options);
+  t.is(await getCodeFromBundle(bundle), firstCode);
+});
+
+test('updates mixed modules when using the cache and the wrapping of a module changes', async (t) => {
+  const modules = {};
+  const resetModules = () => {
+    modules['main.js'] =
+      "export const main = 'main'; export const result = require('first.js').first;";
+    modules['first.js'] = "exports.first = 'first';";
+  };
+  const options = {
+    input: 'main.js',
+    plugins: [commonjs({ transformMixedEsModules: true }), loader(modules)],
+    onwarn(warning) {
+      if (warning.code !== 'CIRCULAR_DEPENDENCY') {
+        throw new Error(warning.message);
+      }
+    }
+  };
+
+  resetModules();
+  let bundle = await rollup(options);
+  t.deepEqual((await executeBundle(bundle, t)).exports, { main: 'main', result: 'first' });
+  const firstCode = await getCodeFromBundle(bundle);
+  t.snapshot(firstCode);
+
+  options.cache = bundle.cache;
+  modules['first.js'] = "exports.first = 'first' + require('main.js').main";
+  bundle = await rollup(options);
+  t.deepEqual((await executeBundle(bundle, t)).exports, { main: 'main', result: 'firstmain' });
+  t.snapshot(await getCodeFromBundle(bundle));
+
+  options.cache = bundle.cache;
+  resetModules();
+  bundle = await rollup(options);
+  t.is(await getCodeFromBundle(bundle), firstCode);
+});
+
+test('allows the config to be reused', async (t) => {
+  const config = {
+    preserveModules: true,
+    plugins: [
+      commonjs({ requireReturnsDefault: true }),
+      loader({
+        'foo.js': "console.log('foo')",
+        'bar.js': "console.log('bar')"
+      })
+    ]
+  };
+  let bundle = await rollup({ input: 'foo.js', ...config });
+  t.deepEqual(
+    bundle.cache.modules.map(({ id }) => id),
+    ['foo.js', 'foo.js?commonjs-entry']
+  );
+  bundle = await rollup({ input: 'bar.js', ...config });
+  t.deepEqual(
+    bundle.cache.modules.map(({ id }) => id),
+    ['bar.js', 'bar.js?commonjs-entry']
+  );
 });
