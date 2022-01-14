@@ -51,9 +51,10 @@ export default async function transformCommonjs(
   astCache,
   defaultIsModuleExports,
   needsRequireWrapper,
-  resolveRequireSourcesAndGetMeta,
+  resolveRequireSourcesAndUpdateMeta,
   isRequired,
-  checkDynamicRequire
+  checkDynamicRequire,
+  commonjsMeta
 ) {
   const ast = astCache || tryParse(parse, code, id);
   const magicString = new MagicString(code);
@@ -437,7 +438,7 @@ export default async function transformCommonjs(
     ) &&
     (ignoreGlobal || !uses.global)
   ) {
-    return { meta: { commonjs: { isCommonJS: false, isMixedModule: false } } };
+    return { meta: { commonjs: { isCommonJS: false } } };
   }
 
   let leadingComment = '';
@@ -459,7 +460,7 @@ export default async function transformCommonjs(
     ? 'exports'
     : 'module';
 
-  const { importBlock, usesRequireWrapper } = await rewriteRequireExpressionsAndGetImportBlock(
+  const importBlock = await rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
     reassignedNames,
@@ -469,12 +470,14 @@ export default async function transformCommonjs(
     exportsName,
     id,
     exportMode,
-    resolveRequireSourcesAndGetMeta,
+    resolveRequireSourcesAndUpdateMeta,
     needsRequireWrapper,
     isEsModule,
     isDynamicRequireModulesEnabled,
-    getIgnoreTryCatchRequireStatementMode
+    getIgnoreTryCatchRequireStatementMode,
+    commonjsMeta
   );
+  const usesRequireWrapper = commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS;
   const exportBlock = isEsModule
     ? ''
     : rewriteExportsAndGetExportsBlock(
@@ -527,11 +530,6 @@ function ${requireName} () {
     code: magicString.toString(),
     map: sourceMap ? magicString.generateMap() : null,
     syntheticNamedExports: isEsModule || usesRequireWrapper ? false : '__moduleExports',
-    meta: {
-      commonjs: {
-        isCommonJS: !isEsModule && (usesRequireWrapper ? IS_WRAPPED_COMMONJS : true),
-        isMixedModule: isEsModule
-      }
-    }
+    meta: { commonjs: commonjsMeta }
   };
 }

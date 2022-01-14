@@ -9,6 +9,7 @@ import { getDynamicModuleRegistry, getDynamicRequireModules } from './dynamic-mo
 
 import {
   DYNAMIC_MODULES_ID,
+  ENTRY_SUFFIX,
   ES_IMPORT_SUFFIX,
   EXPORTS_SUFFIX,
   EXTERNAL_SUFFIX,
@@ -20,12 +21,19 @@ import {
   unwrapId
 } from './helpers';
 import { hasCjsKeywords } from './parse';
-import { getEsImportProxy, getStaticRequireProxy, getUnknownRequireProxy } from './proxies';
+import {
+  getEntryProxy,
+  getEsImportProxy,
+  getStaticRequireProxy,
+  getUnknownRequireProxy
+} from './proxies';
 import getResolveId from './resolve-id';
-import { getResolveRequireSourcesAndGetMeta } from './resolve-require-sources';
+import { getRequireResolver } from './resolve-require-sources';
 import validateVersion from './rollup-version';
 import transformCommonjs from './transform-commonjs';
 import { getName, getStrictRequiresFilter, normalizePathSlashes } from './utils';
+
+const PLUGIN_NAME = 'commonjs';
 
 export default function commonjs(options = {}) {
   const {
@@ -54,11 +62,6 @@ export default function commonjs(options = {}) {
   const defaultIsModuleExports =
     typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
 
-  const {
-    resolveRequireSourcesAndGetMeta,
-    getWrappedIds,
-    isRequiredId
-  } = getResolveRequireSourcesAndGetMeta(extensions, detectCyclesAndConditional);
   const dynamicRequireRoot =
     typeof options.dynamicRequireRoot === 'string'
       ? resolve(options.dynamicRequireRoot)
@@ -68,9 +71,6 @@ export default function commonjs(options = {}) {
     dynamicRequireRoot
   );
   const isDynamicRequireModulesEnabled = dynamicRequireModules.size > 0;
-
-  const esModulesWithDefaultExport = new Set();
-  const esModulesWithNamedExports = new Set();
 
   const ignoreRequire =
     typeof options.ignore === 'function'
@@ -99,25 +99,31 @@ export default function commonjs(options = {}) {
 
   const sourceMap = options.sourceMap !== false;
 
+  // Initialized in buildStart
+  let requireResolver;
+
   function transformAndCheckExports(code, id) {
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
       this.parse,
       code,
       id
     );
+
+    const commonjsMeta = this.getModuleInfo(id).meta.commonjs || {};
     if (hasDefaultExport) {
-      esModulesWithDefaultExport.add(id);
+      commonjsMeta.hasDefaultExport = true;
     }
     if (hasNamedExports) {
-      esModulesWithNamedExports.add(id);
+      commonjsMeta.hasNamedExports = true;
     }
 
     if (
       !dynamicRequireModules.has(normalizePathSlashes(id)) &&
-      (!(hasCjsKeywords(code, ignoreGlobal) || isRequiredId(id)) ||
+      (!(hasCjsKeywords(code, ignoreGlobal) || requireResolver.isRequiredId(id)) ||
         (isEsModule && !options.transformMixedEsModules))
     ) {
-      return { meta: { commonjs: { isCommonJS: false } } };
+      commonjsMeta.isCommonJS = false;
+      return { meta: { commonjs: commonjsMeta } };
     }
 
     const needsRequireWrapper =
@@ -156,14 +162,15 @@ export default function commonjs(options = {}) {
       ast,
       defaultIsModuleExports,
       needsRequireWrapper,
-      resolveRequireSourcesAndGetMeta(this),
-      isRequiredId(id),
-      checkDynamicRequire
+      requireResolver.resolveRequireSourcesAndUpdateMeta(this),
+      requireResolver.isRequiredId(id),
+      checkDynamicRequire,
+      commonjsMeta
     );
   }
 
   return {
-    name: 'commonjs',
+    name: PLUGIN_NAME,
 
     version,
 
@@ -171,7 +178,7 @@ export default function commonjs(options = {}) {
       // We inject the resolver in the beginning so that "catch-all-resolver" like node-resolver
       // do not prevent our plugin from resolving entry points ot proxies.
       const plugins = Array.isArray(rawOptions.plugins)
-        ? rawOptions.plugins
+        ? [...rawOptions.plugins]
         : rawOptions.plugins
         ? [rawOptions.plugins]
         : [];
@@ -193,11 +200,12 @@ export default function commonjs(options = {}) {
           'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
         );
       }
+      requireResolver = getRequireResolver(extensions, detectCyclesAndConditional);
     },
 
     buildEnd() {
       if (options.strictRequires === 'debug') {
-        const wrappedIds = getWrappedIds();
+        const wrappedIds = requireResolver.getWrappedIds();
         if (wrappedIds.length) {
           this.warn({
             code: 'WRAPPED_IDS',
@@ -246,6 +254,15 @@ export default function commonjs(options = {}) {
         );
       }
 
+      // entry suffix is just appended to not mess up relative external resolution
+      if (id.endsWith(ENTRY_SUFFIX)) {
+        return getEntryProxy(
+          id.slice(0, -ENTRY_SUFFIX.length),
+          defaultIsModuleExports,
+          this.getModuleInfo
+        );
+      }
+
       if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
         return getEsImportProxy(unwrapId(id, ES_IMPORT_SUFFIX), defaultIsModuleExports);
       }
@@ -261,16 +278,14 @@ export default function commonjs(options = {}) {
 
       if (isWrappedId(id, PROXY_SUFFIX)) {
         const actualId = unwrapId(id, PROXY_SUFFIX);
-        return getStaticRequireProxy(
-          actualId,
-          getRequireReturnsDefault(actualId),
-          esModulesWithDefaultExport,
-          esModulesWithNamedExports,
-          this.load
-        );
+        return getStaticRequireProxy(actualId, getRequireReturnsDefault(actualId), this.load);
       }
 
       return null;
+    },
+
+    shouldTransformCachedModule(...args) {
+      return requireResolver.shouldTransformCachedModule.call(this, ...args);
     },
 
     transform(code, id) {

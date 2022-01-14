@@ -90,11 +90,12 @@ export function getRequireHandlers() {
     exportsName,
     id,
     exportMode,
-    resolveRequireSourcesAndGetMeta,
+    resolveRequireSourcesAndUpdateMeta,
     needsRequireWrapper,
     isEsModule,
     isDynamicRequireModulesEnabled,
-    getIgnoreTryCatchRequireStatementMode
+    getIgnoreTryCatchRequireStatementMode,
+    commonjsMeta
   ) {
     const imports = [];
     imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
@@ -117,9 +118,10 @@ export function getRequireHandlers() {
       );
     }
     const requiresBySource = collectSources(requireExpressions);
-    const { requireTargets, usesRequireWrapper } = await resolveRequireSourcesAndGetMeta(
+    const requireTargets = await resolveRequireSourcesAndUpdateMeta(
       id,
       needsRequireWrapper ? IS_WRAPPED_COMMONJS : !isEsModule,
+      commonjsMeta,
       Object.keys(requiresBySource).map((source) => {
         return {
           source,
@@ -134,10 +136,7 @@ export function getRequireHandlers() {
       getIgnoreTryCatchRequireStatementMode,
       magicString
     );
-    return {
-      importBlock: imports.length ? `${imports.join('\n')}\n\n` : '',
-      usesRequireWrapper
-    };
+    return imports.length ? `${imports.join('\n')}\n\n` : '';
   }
 
   return {

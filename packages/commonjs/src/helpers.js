@@ -7,7 +7,8 @@ export const WRAPPED_SUFFIX = '?commonjs-wrapped';
 export const EXTERNAL_SUFFIX = '?commonjs-external';
 export const EXPORTS_SUFFIX = '?commonjs-exports';
 export const MODULE_SUFFIX = '?commonjs-module';
-export const ES_IMPORT_SUFFIX = '?es-import';
+export const ENTRY_SUFFIX = '?commonjs-entry';
+export const ES_IMPORT_SUFFIX = '?commonjs-es-import';
 
 export const DYNAMIC_MODULES_ID = '\0commonjs-dynamic-modules';
 export const HELPERS_ID = '\0commonjsHelpers.js';
