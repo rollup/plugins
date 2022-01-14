@@ -70,13 +70,13 @@ For example, if you pass `typeof window` in `values` to-be-replaced, then you co
 - `typeof window.document` **will not** be replaced due to `(?!\.)` boundary
 - `typeof windowSmth` **will not** be replaced due to a `\b` boundary
 
-### `typeofReplacements`
+### `objectGuards`
 
 Type: `Boolean`<br>
 Default: `false`
 
-When replacing dot-separated object properties like `process.env.NODE_ENV`, will also replace typeof checks against the objects
-with `"object"`.
+When replacing dot-separated object properties like `process.env.NODE_ENV`, will also replace `typeof process` object guard
+checks against the objects with the string `"object"`.
 
 For example:
 
@@ -93,11 +93,11 @@ replace({
 if (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
   console.log('production');
 }
-// Without `typeofReplacements`
+// Without `objectGuards`
 if (typeof process !== 'undefined' && 'production' === 'production') {
   console.log('production');
 }
-// With `typeofReplacements`
+// With `objectGuards`
 if ('object' !== 'undefined' && 'production' === 'production') {
   console.log('production');
 }
