@@ -22,18 +22,22 @@ export const HELPERS_ID = '\0commonjsHelpers.js';
 const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+/** @param {{ [x: string]: any; }} x */
 export function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
+/** @param {{ [n: string]: any; }} n */
 export function getDefaultExportFromNamespaceIfPresent (n) {
 	return n && Object.prototype.hasOwnProperty.call(n, 'default') ? n['default'] : n;
 }
 
+/** @param {{ [n: string]: any; }} n */
 export function getDefaultExportFromNamespaceIfNotNamed (n) {
 	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
 }
 
+/** @param {{ [n: string]: any; }} n */
 export function getAugmentedNamespace(n) {
 	if (n.__esModule) return n;
 	var a = Object.defineProperty({}, '__esModule', {value: true});
