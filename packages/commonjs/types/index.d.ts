@@ -175,6 +175,18 @@ interface RollupCommonJSOptions {
    * replacing strings like `"/Users/John/Desktop/foo-project/"` -> `"/"`.
    */
   dynamicRequireTargets?: string | ReadonlyArray<string>;
+  /**
+	 * Controls what is the default export when importing a CommonJS file from an ES module.
+	 * - `true`: The value of the default export is module.exports. This currently matches the
+	 *   behavior of Node.js when importing a CommonJS file.
+	 * - `false`: The value of the default export is exports.default.
+	 * - `"auto"`: The value of the default export is exports.default if the CommonJS file has
+	 *   an `exports.__esModule === true` property; otherwise it's module.exports. This makes it
+	 *   possible to import the default export of ES modules compiled to CommonJS as if they
+	 *   were not compiled.
+	 * @default "auto"
+	 */
+	defaultIsModuleExports?: boolean | "auto";
 }
 
 /**
