@@ -2,6 +2,6 @@
 
 // test.ts
 export namespace MODE {
-  // eslint-disable-next-line no-shadow
+  // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
   export class MODE {}
 }
