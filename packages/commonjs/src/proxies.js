@@ -73,7 +73,6 @@ export function getEsImportProxy(id, defaultIsModuleExports) {
   }
   return {
     code,
-    syntheticNamedExports: '__moduleExports',
-    meta: { commonjs: { isCommonJS: false } }
+    syntheticNamedExports: '__moduleExports'
   };
 }

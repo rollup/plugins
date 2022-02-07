@@ -95,6 +95,7 @@ export default async function transformCommonjs(
   const topLevelDefineCompiledEsmExpressions = [];
   const replacedGlobal = [];
   const replacedDynamicRequires = [];
+  const importedVariables = new Set();
 
   walk(ast, {
     enter(node, parent) {
@@ -208,6 +209,11 @@ export default async function transformCommonjs(
           }
 
           if (!isRequireExpression(node, scope)) {
+            const keypath = getKeypath(node.callee);
+            if (keypath && importedVariables.has(keypath.name)) {
+              // Heuristic to deoptimize requires after a required function has been called
+              currentConditionalNodeEnd = Infinity;
+            }
             return;
           }
 
@@ -236,6 +242,11 @@ export default async function transformCommonjs(
               currentConditionalNodeEnd !== null,
               parent.type === 'ExpressionStatement' ? parent : node
             );
+            if (parent.type === 'VariableDeclarator' && parent.id.type === 'Identifier') {
+              for (const name of extractAssignedNames(parent.id)) {
+                importedVariables.add(name);
+              }
+            }
           }
           return;
         }
@@ -448,7 +459,9 @@ export default async function transformCommonjs(
     magicString.remove(0, commentEnd).trim();
   }
 
-  const exportMode = shouldWrap
+  const exportMode = isEsModule
+    ? 'none'
+    : shouldWrap
     ? uses.module
       ? 'module'
       : 'exports'
