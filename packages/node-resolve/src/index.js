@@ -44,7 +44,7 @@ export function nodeResolve(opts = {}) {
   const { warnings } = handleDeprecatedOptions(opts);
 
   const options = { ...defaults, ...opts };
-  const { extensions, jail, moduleDirectories, ignoreSideEffectsForRoot } = options;
+  const { extensions, jail, moduleDirectories, modulePaths, ignoreSideEffectsForRoot } = options;
   const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
   const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
   const packageInfoCache = new Map();
@@ -167,6 +167,7 @@ export function nodeResolve(opts = {}) {
       useBrowserOverrides,
       baseDir,
       moduleDirectories,
+      modulePaths,
       rootDir,
       ignoreSideEffectsForRoot
     });

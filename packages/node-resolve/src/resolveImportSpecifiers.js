@@ -43,6 +43,7 @@ async function resolveIdClassic({
   useBrowserOverrides,
   baseDir,
   moduleDirectories,
+  modulePaths,
   rootDir,
   ignoreSideEffectsForRoot
 }) {
@@ -77,6 +78,7 @@ async function resolveIdClassic({
     extensions,
     includeCoreModules: false,
     moduleDirectory: moduleDirectories,
+    paths: modulePaths,
     preserveSymlinks,
     packageFilter: filter
   };
@@ -111,6 +113,7 @@ async function resolveWithExportMap({
   useBrowserOverrides,
   baseDir,
   moduleDirectories,
+  modulePaths,
   rootDir,
   ignoreSideEffectsForRoot
 }) {
@@ -130,7 +133,8 @@ async function resolveWithExportMap({
           preserveSymlinks,
           useBrowserOverrides,
           baseDir,
-          moduleDirectories
+          moduleDirectories,
+          modulePaths
         });
       }
     });
@@ -180,6 +184,7 @@ async function resolveWithExportMap({
       extensions,
       includeCoreModules: false,
       moduleDirectory: moduleDirectories,
+      paths: modulePaths,
       preserveSymlinks,
       packageFilter: filter
     };
@@ -230,6 +235,7 @@ async function resolveWithClassic({
   useBrowserOverrides,
   baseDir,
   moduleDirectories,
+  modulePaths,
   rootDir,
   ignoreSideEffectsForRoot
 }) {
@@ -247,6 +253,7 @@ async function resolveWithClassic({
       useBrowserOverrides,
       baseDir,
       moduleDirectories,
+      modulePaths,
       rootDir,
       ignoreSideEffectsForRoot
     });
@@ -275,6 +282,7 @@ export default async function resolveImportSpecifiers({
   useBrowserOverrides,
   baseDir,
   moduleDirectories,
+  modulePaths,
   rootDir,
   ignoreSideEffectsForRoot
 }) {
@@ -290,6 +298,7 @@ export default async function resolveImportSpecifiers({
       useBrowserOverrides,
       baseDir,
       moduleDirectories,
+      modulePaths,
       rootDir,
       ignoreSideEffectsForRoot
     });
@@ -315,6 +324,7 @@ export default async function resolveImportSpecifiers({
     useBrowserOverrides,
     baseDir,
     moduleDirectories,
+    modulePaths,
     rootDir,
     ignoreSideEffectsForRoot
   });
