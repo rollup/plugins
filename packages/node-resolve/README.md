@@ -75,7 +75,14 @@ If `true`, instructs the plugin to use the browser module resolutions in `packag
 Type: `Array[...String]`<br>
 Default: `['node_modules']`
 
-One or more directories in which to recursively look for modules.
+A list of directory names in which to recursively look for modules.
+
+### `modulePaths`
+
+Type: `Array[...String]`<br>
+Default: `[]`
+
+A list of absolute paths to additional locations to search for modules. This is analogous to setting the `NODE_PATH` environment variable for node.
 
 ### `dedupe`
 
