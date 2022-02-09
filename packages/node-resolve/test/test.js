@@ -273,6 +273,36 @@ test('allows custom moduleDirectories with legacy customResolveOptions.moduleDir
   t.snapshot(warnings);
 });
 
+test('custom moduleDirectories do not support nested dependencies', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'custom-module-path/main.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        moduleDirectories: [join(process.cwd(), 'custom-module-path/node_modules')]
+      })
+    ]
+  });
+
+  t.is(warnings.length, 1);
+  t.is(bundle.cache.modules.length, 2);
+});
+
+test('allows custom modulePaths', async (t) => {
+  const bundle = await rollup({
+    input: 'custom-module-path/main.js',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        modulePaths: [join(process.cwd(), 'custom-module-path/node_modules')]
+      })
+    ]
+  });
+
+  t.is(bundle.cache.modules.length, 3);
+});
+
 test('ignores deep-import non-modules', async (t) => {
   const warnings = [];
   const bundle = await rollup({
