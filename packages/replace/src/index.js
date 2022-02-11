@@ -24,6 +24,7 @@ function getReplacements(options) {
   delete values.exclude;
   delete values.sourcemap;
   delete values.sourceMap;
+  delete values.objectGuards;
   return values;
 }
 
@@ -35,10 +36,42 @@ function mapToFunctions(object) {
   }, {});
 }
 
+const objKeyRegEx = /^([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)(\.([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*))+$/;
+function expandTypeofReplacements(replacements) {
+  Object.keys(replacements).forEach((key) => {
+    const objMatch = key.match(objKeyRegEx);
+    if (!objMatch) return;
+    let dotIndex = objMatch[1].length;
+    let lastIndex = 0;
+    do {
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)} ===`] = '"object" ===';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)} !==`] = '"object" !==';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)}===`] = '"object"===';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)}!==`] = '"object"!==';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)} ==`] = '"object" ===';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)} !=`] = '"object" !==';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)}==`] = '"object"===';
+      // eslint-disable-next-line no-param-reassign
+      replacements[`typeof ${key.slice(lastIndex, dotIndex)}!=`] = '"object"!==';
+      lastIndex = dotIndex + 1;
+      dotIndex = key.indexOf('.', lastIndex);
+    } while (dotIndex !== -1);
+  });
+}
+
 export default function replace(options = {}) {
   const filter = createFilter(options.include, options.exclude);
-  const { delimiters, preventAssignment } = options;
-  const functionValues = mapToFunctions(getReplacements(options));
+  const { delimiters, preventAssignment, objectGuards } = options;
+  const replacements = getReplacements(options);
+  if (objectGuards) expandTypeofReplacements(replacements);
+  const functionValues = mapToFunctions(replacements);
   const keys = Object.keys(functionValues).sort(longest).map(escape);
   const lookahead = preventAssignment ? '(?!\\s*=[^=])' : '';
   const pattern = delimiters
