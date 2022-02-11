@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v3.1.0
+
+_2022-02-11_
+
+### Features
+
+- feat: typeofReplacements option (#1084)
+
 ## v3.0.1
 
 _2021-12-28_
