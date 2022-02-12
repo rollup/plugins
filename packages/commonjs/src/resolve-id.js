@@ -121,7 +121,7 @@ export default function getResolveId(extensions) {
       meta: { commonjs: commonjsMeta }
     } = moduleInfo;
     if (commonjsMeta && commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS) {
-      return wrapId(resolved.id, ES_IMPORT_SUFFIX);
+      return { id: wrapId(resolved.id, ES_IMPORT_SUFFIX), meta: { commonjs: { resolved } } };
     }
     return resolved;
   };

@@ -459,7 +459,9 @@ export default async function transformCommonjs(
     magicString.remove(0, commentEnd).trim();
   }
 
-  const exportMode = shouldWrap
+  const exportMode = isEsModule
+    ? 'none'
+    : shouldWrap
     ? uses.module
       ? 'module'
       : 'exports'

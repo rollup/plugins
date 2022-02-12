@@ -236,14 +236,14 @@ export function nodeResolve(opts = {}) {
 
     version,
 
-    buildStart(options) {
-      rollupOptions = options;
+    buildStart(buildOptions) {
+      rollupOptions = buildOptions;
 
       for (const warning of warnings) {
         this.warn(warning);
       }
 
-      ({ preserveSymlinks } = options);
+      ({ preserveSymlinks } = buildOptions);
     },
 
     generateBundle() {

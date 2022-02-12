@@ -99,13 +99,13 @@ test('throws an error when bundle is not written to disk', async (t) => {
 
 test('detects changes - forks a new child process and kills older process', async (t) => {
   // eslint-disable-next-line no-shadow
-  const input = join(cwd, 'change-detect-input.js');
+  const testInput = join(cwd, 'change-detect-input.js');
   const bundle = await rollup({
-    input,
+    input: testInput,
     plugins: [run()]
   });
   await bundle.write(outputOptions);
-  await writeFile(input, "export const Greeting = () => 'Hola';  // eslint-disable-line");
+  await writeFile(testInput, "export const Greeting = () => 'Hola';  // eslint-disable-line");
   await bundle.write(outputOptions);
   t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
   t.is(mockChildProcess().kill.callCount, 1);
