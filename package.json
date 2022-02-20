@@ -1,5 +1,6 @@
 {
   "name": "@rollup/plugins",
+  "packageManager": "pnpm@6.10.0",
   "private": true,
   "scripts": {
     "ci:coverage:submit": "node scripts/codecov",
