@@ -18,7 +18,13 @@ Working on your first Pull Request? You can learn how from this _free_ series, [
 
 ## Submitting code
 
-Any code change should be submitted as a pull request. The description should explain what the code does and give steps to execute it. The pull request should also contain tests.
+Any code change should be submitted as a pull request. Our guidelines for Pull Requests:
+
+- Please fill in our template in its entirety. Please don't reformat it or modify it
+- The description should explain what the code does and give steps to execute it
+- The pull request should also contain tests
+- Before submitting your Pull Request, please lint your changes by running `pnpm lint` in the root directory
+- If any checks fail for your Pull Request, please resolve them. Always feel free to ask for help if unable to resolve issues with checks
 
 ## Code review process
 
