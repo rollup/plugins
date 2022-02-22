@@ -31,5 +31,5 @@ test('transforms files', async (t) =>
     .then(getChunksFromBundle)
     .then((generated) => {
       t.is(generated.length, 1);
-      t.is(generated[0].code, 'function main () { return 42; }\n\nexport default main;\n');
+      t.is(generated[0].code, 'function main () { return 42; }\n\nexport { main as default };\n');
     }));

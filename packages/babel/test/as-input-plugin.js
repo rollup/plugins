@@ -226,7 +226,7 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 var _classCallCheck__default = /*#__PURE__*/_interopDefaultLegacy(_classCallCheck);
 
 var Foo = function Foo() {
-  _classCallCheck__default['default'](this, Foo);
+  _classCallCheck__default["default"](this, Foo);
 };
 
 module.exports = Foo;
@@ -259,7 +259,7 @@ var Foo = function Foo() {
   _classCallCheck(this, Foo);
 };
 
-export default Foo;
+export { Foo as default };
 `
   );
 });

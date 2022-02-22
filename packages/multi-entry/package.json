@@ -53,7 +53,7 @@
     "matched": "^5.0.0"
   },
   "devDependencies": {
-    "rollup": "^2.23.0"
+    "rollup": "^2.67.3"
   },
   "types": "./types/index.d.ts",
   "ava": {

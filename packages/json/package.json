@@ -52,7 +52,7 @@
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
-    "rollup": "^2.23.0",
+    "rollup": "^2.67.3",
     "source-map-support": "^0.5.19"
   },
   "types": "types/index.d.ts",
