@@ -34,7 +34,8 @@ function helpersTestTransform() {
 const mismatchError = (actual, expected, filename) =>
   `You have declared using "${expected}" babelHelpers, but transforming ${filename} resulted in "${actual}". Please check your configuration.`;
 
-const inheritsHelperRe = /\/helpers\/(esm\/)?inherits/;
+// Revert to /\/helpers\/(esm\/)?inherits/ when Babel 8 gets released, this was fixed in https://github.com/babel/babel/issues/14185
+const inheritsHelperRe = /[\\/]+helpers[\\/]+(esm[\\/]+)?inherits/;
 
 export default async function preflightCheck(ctx, babelHelpers, transformOptions) {
   const finalOptions = addBabelPlugin(transformOptions, helpersTestTransform);
