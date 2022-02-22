@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v4.0.0
+
+_2022-02-22_
+
+### Breaking Changes
+
+- fix: do not escape delimiters (#1088)
+
 ## v3.1.0
 
 _2022-02-11_
