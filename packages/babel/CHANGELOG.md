@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v5.3.1
+
+_2022-02-22_
+
+### Bugfixes
+
+- fix: consider path delimeter on windows (#1090)
+
 ## v5.3.0
 
 _2021-02-14_
