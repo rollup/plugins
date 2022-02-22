@@ -68,18 +68,16 @@ function expandTypeofReplacements(replacements) {
 
 export default function replace(options = {}) {
   const filter = createFilter(options.include, options.exclude);
-  const { delimiters, preventAssignment, objectGuards } = options;
+  const { delimiters = ['\\b', '\\b(?!\\.)'], preventAssignment, objectGuards } = options;
   const replacements = getReplacements(options);
   if (objectGuards) expandTypeofReplacements(replacements);
   const functionValues = mapToFunctions(replacements);
   const keys = Object.keys(functionValues).sort(longest).map(escape);
   const lookahead = preventAssignment ? '(?!\\s*=[^=])' : '';
-  const pattern = delimiters
-    ? new RegExp(
-        `${escape(delimiters[0])}(${keys.join('|')})${escape(delimiters[1])}${lookahead}`,
-        'g'
-      )
-    : new RegExp(`\\b(${keys.join('|')})\\b(?!\\.)${lookahead}`, 'g');
+  const pattern = new RegExp(
+    `${delimiters[0]}(${keys.join('|')})${delimiters[1]}${lookahead}`,
+    'g'
+  );
 
   return {
     name: 'replace',
