@@ -69,7 +69,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@types/babel__core": "^7.1.9",
-    "rollup": "^2.23.0",
+    "rollup": "^2.67.3",
     "source-map": "^0.7.3"
   },
   "types": "types/index.d.ts",

@@ -53,7 +53,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.4.0",
     "del-cli": "^3.0.1",
-    "rollup": "^2.23.0",
+    "rollup": "^2.67.3",
     "source-map-support": "^0.5.19"
   },
   "types": "./types/index.d.ts",

@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "del-cli": "^3.0.1",
-    "rollup": "^2.23.0"
+    "rollup": "^2.67.3"
   },
   "types": "./types/index.d.ts",
   "ava": {
