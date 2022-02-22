@@ -43,7 +43,7 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 import virtual from '@rollup/plugin-virtual';
 
 export default {
-  entry: 'src/entry.js',
+  input: 'src/entry.js',
   // ...
   plugins: [
     virtual({
