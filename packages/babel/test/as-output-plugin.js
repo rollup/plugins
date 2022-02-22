@@ -112,7 +112,7 @@ var Foo = function Foo() {
   _classCallCheck(this, Foo);
 };
 
-export default Foo;
+export { Foo as default };
 `
   );
 });
@@ -224,7 +224,7 @@ test('transforms all chunks in a code-splitting setup', async (t) => {
   return 42;
 };
 
-export default dep;
+export { dep as default };
 `
     ]
   );
@@ -259,7 +259,7 @@ console.log(getResult(value));
   return value + 1;
 };
 
-export default getResult;
+export { getResult as default };
 `
     ]
   );
