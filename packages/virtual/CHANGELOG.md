@@ -1,5 +1,19 @@
 # @rollup/plugin-virtual ChangeLog
 
+## v2.1.0
+
+_2022-02-22_
+
+### Features
+
+- feat: Move to Typescript (#578)
+
+### Updates
+
+- docs: Replace 'entry' with 'input' in readme (#1102)
+- chore: upgrade TypeScript (#716)
+- chore: update dependencies (236d7f1)
+
 ## v2.0.3
 
 _2020-06-22_
