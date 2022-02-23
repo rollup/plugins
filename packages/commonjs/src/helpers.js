@@ -74,7 +74,7 @@ export function commonjsRegister (path, loader) {
 }
 
 export function commonjsRegisterOrShort (path, to) {
-	const resolvedPath = commonjsResolveImpl(path, null, true);
+	var resolvedPath = commonjsResolveImpl(path, null, true);
 	if (resolvedPath !== null && DYNAMIC_REQUIRE_CACHE[resolvedPath]) {
 	  DYNAMIC_REQUIRE_CACHE[path] = DYNAMIC_REQUIRE_CACHE[resolvedPath];
 	} else {
@@ -82,24 +82,24 @@ export function commonjsRegisterOrShort (path, to) {
 	}
 }
 
-const DYNAMIC_REQUIRE_LOADERS = Object.create(null);
-const DYNAMIC_REQUIRE_CACHE = Object.create(null);
-const DYNAMIC_REQUIRE_SHORTS = Object.create(null);
-const DEFAULT_PARENT_MODULE = {
+var DYNAMIC_REQUIRE_LOADERS = Object.create(null);
+var DYNAMIC_REQUIRE_CACHE = Object.create(null);
+var DYNAMIC_REQUIRE_SHORTS = Object.create(null);
+var DEFAULT_PARENT_MODULE = {
 	id: '<' + 'rollup>', exports: {}, parent: undefined, filename: null, loaded: false, children: [], paths: []
 };
-const CHECKED_EXTENSIONS = ['', '.js', '.json'];
+var CHECKED_EXTENSIONS = ['', '.js', '.json'];
 
 function normalize (path) {
 	path = path.replace(/\\\\/g, '/');
-	const parts = path.split('/');
-	const slashed = parts[0] === '';
-	for (let i = 1; i < parts.length; i++) {
+	var parts = path.split('/');
+	var slashed = parts[0] === '';
+	for (var i = 1; i < parts.length; i++) {
 		if (parts[i] === '.' || parts[i] === '') {
 			parts.splice(i--, 1);
 		}
 	}
-	for (let i = 1; i < parts.length; i++) {
+	for (var i = 1; i < parts.length; i++) {
 		if (parts[i] !== '..') continue;
 		if (i > 0 && parts[i - 1] !== '..' && parts[i - 1] !== '.') {
 			parts.splice(--i, 2);
@@ -117,9 +117,9 @@ function normalize (path) {
 function join () {
 	if (arguments.length === 0)
 	  return '.';
-	let joined;
-	for (let i = 0; i < arguments.length; ++i) {
-	  let arg = arguments[i];
+	var joined;
+	for (var i = 0; i < arguments.length; ++i) {
+	  var arg = arguments[i];
 	  if (arg.length > 0) {
 		if (joined === undefined)
 		  joined = arg;
@@ -134,9 +134,9 @@ function join () {
 }
 
 function isPossibleNodeModulesPath (modulePath) {
-	let c0 = modulePath[0];
+	var c0 = modulePath[0];
 	if (c0 === '/' || c0 === '\\\\') return false;
-	let c1 = modulePath[1], c2 = modulePath[2];
+	var c1 = modulePath[1], c2 = modulePath[2];
 	if ((c0 === '.' && (!c1 || c1 === '/' || c1 === '\\\\')) ||
 		(c0 === '.' && c1 === '.' && (!c2 || c2 === '/' || c2 === '\\\\'))) return false;
 	if (c1 === ':' && (c2 === '/' || c2 === '\\\\'))
@@ -148,9 +148,9 @@ function dirname (path) {
   if (path.length === 0)
     return '.';
 
-  let i = path.length - 1;
+  var i = path.length - 1;
   while (i > 0) {
-    const c = path.charCodeAt(i);
+    var c = path.charCodeAt(i);
     if ((c === 47 || c === 92) && i !== path.length - 1)
       break;
     i--;
@@ -166,9 +166,9 @@ function dirname (path) {
 }
 
 export function commonjsResolveImpl (path, originalModuleDir, testCache) {
-	const shouldTryNodeModules = isPossibleNodeModulesPath(path);
+	var shouldTryNodeModules = isPossibleNodeModulesPath(path);
 	path = normalize(path);
-	let relPath;
+	var relPath;
 	if (path[0] === '/') {
 		originalModuleDir = '/';
 	}
@@ -185,8 +185,8 @@ export function commonjsResolveImpl (path, originalModuleDir, testCache) {
 			break; // Travelled too far up, avoid infinite loop
 		}
 
-		for (let extensionIndex = 0; extensionIndex < CHECKED_EXTENSIONS.length; extensionIndex++) {
-			const resolvedPath = relPath + CHECKED_EXTENSIONS[extensionIndex];
+		for (var extensionIndex = 0; extensionIndex < CHECKED_EXTENSIONS.length; extensionIndex++) {
+			var resolvedPath = relPath + CHECKED_EXTENSIONS[extensionIndex];
 			if (DYNAMIC_REQUIRE_CACHE[resolvedPath]) {
 				return resolvedPath;
 			}
@@ -198,7 +198,7 @@ export function commonjsResolveImpl (path, originalModuleDir, testCache) {
 			}
 		}
 		if (!shouldTryNodeModules) break;
-		const nextDir = normalize(originalModuleDir + '/..');
+		var nextDir = normalize(originalModuleDir + '/..');
 		if (nextDir === originalModuleDir) break;
 		originalModuleDir = nextDir;
 	}
@@ -206,7 +206,7 @@ export function commonjsResolveImpl (path, originalModuleDir, testCache) {
 }
 
 export function commonjsResolve (path, originalModuleDir) {
-	const resolvedPath = commonjsResolveImpl(path, originalModuleDir);
+	var resolvedPath = commonjsResolveImpl(path, originalModuleDir);
 	if (resolvedPath !== null) {
 		return resolvedPath;
 	}
@@ -214,18 +214,18 @@ export function commonjsResolve (path, originalModuleDir) {
 }
 
 export function commonjsRequire (path, originalModuleDir) {
-	let resolvedPath = commonjsResolveImpl(path, originalModuleDir, true);
+	var resolvedPath = commonjsResolveImpl(path, originalModuleDir, true);
 	if (resolvedPath !== null) {
-    let cachedModule = DYNAMIC_REQUIRE_CACHE[resolvedPath];
+    var cachedModule = DYNAMIC_REQUIRE_CACHE[resolvedPath];
     if (cachedModule) return cachedModule.exports;
-    let shortTo = DYNAMIC_REQUIRE_SHORTS[resolvedPath];
+    var shortTo = DYNAMIC_REQUIRE_SHORTS[resolvedPath];
     if (shortTo) {
       cachedModule = DYNAMIC_REQUIRE_CACHE[shortTo];
       if (cachedModule)
         return cachedModule.exports;
       resolvedPath = commonjsResolveImpl(shortTo, null, true);
     }
-    const loader = DYNAMIC_REQUIRE_LOADERS[resolvedPath];
+    var loader = DYNAMIC_REQUIRE_LOADERS[resolvedPath];
     if (loader) {
       DYNAMIC_REQUIRE_CACHE[resolvedPath] = cachedModule = {
         id: resolvedPath,
