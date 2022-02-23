@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v21.0.2
+
+_2022-02-23_
+
+### Updates
+
+- chore: transpile dynamic helper to ES5 (#1082)
+
 ## v21.0.1
 
 _2021-10-19_
