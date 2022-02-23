@@ -1,5 +1,17 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.3.1
+
+_2022-02-23_
+
+### Bugfixes
+
+- fix: allow explicity compilerOptions (#1045)
+
+### Updates
+
+- docs: readme copy/paste mistake (#1086)
+
 ## v8.3.0
 
 _2021-10-15_

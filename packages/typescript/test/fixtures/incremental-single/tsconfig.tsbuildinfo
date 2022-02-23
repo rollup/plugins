@@ -721,7 +721,7 @@
         "signature": "d0f6d36b2d86f934560c48d8bfdc7ab60c67cfb2ab6dc1916706aa68e83d6dc2",
         "affectsGlobalScope": false
       },
-      "../../../../../node_modules/.pnpm/@types+source-map-support@0.5.4/node_modules/@types/source-map-support/node_modules/source-map/source-map.d.ts": {
+      "../../../../../node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.d.ts": {
         "version": "2887592574fcdfd087647c539dcb0fbe5af2521270dad4a37f9d17c16190d579",
         "signature": "2887592574fcdfd087647c539dcb0fbe5af2521270dad4a37f9d17c16190d579",
         "affectsGlobalScope": false
@@ -1149,7 +1149,7 @@
         "../../../../../node_modules/.pnpm/@types+semver@7.3.7/node_modules/@types/semver/index.d.ts"
       ],
       "../../../../../node_modules/.pnpm/@types+source-map-support@0.5.4/node_modules/@types/source-map-support/index.d.ts": [
-        "../../../../../node_modules/.pnpm/@types+source-map-support@0.5.4/node_modules/@types/source-map-support/node_modules/source-map/source-map.d.ts"
+        "../../../../../node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.d.ts"
       ]
     },
     "exportedModulesMap": {
@@ -1551,7 +1551,7 @@
         "../../../../../node_modules/.pnpm/@types+semver@7.3.7/node_modules/@types/semver/index.d.ts"
       ],
       "../../../../../node_modules/.pnpm/@types+source-map-support@0.5.4/node_modules/@types/source-map-support/index.d.ts": [
-        "../../../../../node_modules/.pnpm/@types+source-map-support@0.5.4/node_modules/@types/source-map-support/node_modules/source-map/source-map.d.ts"
+        "../../../../../node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.d.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -1667,9 +1667,9 @@
       "../../../../../node_modules/.pnpm/@types+semver@7.3.7/node_modules/@types/semver/ranges/to-comparators.d.ts",
       "../../../../../node_modules/.pnpm/@types+semver@7.3.7/node_modules/@types/semver/ranges/valid.d.ts",
       "../../../../../node_modules/.pnpm/@types+source-map-support@0.5.4/node_modules/@types/source-map-support/index.d.ts",
-      "../../../../../node_modules/.pnpm/@types+source-map-support@0.5.4/node_modules/@types/source-map-support/node_modules/source-map/source-map.d.ts",
       "../../../../../node_modules/.pnpm/@types+yargs-parser@20.2.1/node_modules/@types/yargs-parser/index.d.ts",
       "../../../../../node_modules/.pnpm/magic-string@0.25.7/node_modules/magic-string/index.d.ts",
+      "../../../../../node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.d.ts",
       "../../../../../node_modules/.pnpm/typescript@4.2.4/node_modules/typescript/lib/lib.d.ts",
       "../../../../../node_modules/.pnpm/typescript@4.2.4/node_modules/typescript/lib/lib.dom.d.ts",
       "../../../../../node_modules/.pnpm/typescript@4.2.4/node_modules/typescript/lib/lib.es2015.collection.d.ts",
