@@ -79,6 +79,10 @@ export interface RollupTypescriptPluginOptions {
    * If not set, will default to true with a warning.
    */
   outputToFilesystem?: boolean;
+  /**
+   * Pass additional compiler options to the plugin.
+   */
+  compilerOptions?: PartialCompilerOptions;
 }
 
 export interface FlexibleCompilerOptions extends CompilerOptions {
