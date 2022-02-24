@@ -1147,6 +1147,46 @@ test('handles ESM cycles when using the cache', async (t) => {
   t.snapshot(await getCodeFromBundle(bundle));
 });
 
+test('handles external dependencies when using the cache', async (t) => {
+  const modules = {};
+  const resetModules = () => {
+    modules['main.js'] =
+      "import first from 'first.js';import second from 'second.js';export default first + second;";
+    modules['first.js'] = "export {first as default} from 'external';";
+    modules['second.js'] = "module.exports = require('external').second;";
+  };
+  const options = {
+    input: 'main.js',
+    external: ['external'],
+    plugins: [commonjs(), loader(modules)],
+    onwarn
+  };
+
+  resetModules();
+  let bundle = await rollup(options);
+  t.is(
+    (
+      await executeBundle(bundle, t, {
+        context: {
+          require(id) {
+            if (id === 'external') {
+              return { first: 'first', second: 'second' };
+            }
+            throw new Error(`Unexpected require "${id}"`);
+          }
+        }
+      })
+    ).exports,
+    'firstsecond'
+  );
+  const code = await getCodeFromBundle(bundle);
+  t.snapshot(code);
+
+  options.cache = bundle.cache;
+  bundle = await rollup(options);
+  t.is(await getCodeFromBundle(bundle), code);
+});
+
 test('allows the config to be reused', async (t) => {
   const config = {
     preserveModules: true,

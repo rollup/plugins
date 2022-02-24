@@ -100,7 +100,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional) {
       resolvedSources,
       meta: { commonjs: parentMeta }
     }) {
-      // We explicitly track ES modules to handle ciruclar imports
+      // We explicitly track ES modules to handle circular imports
       if (!(parentMeta && parentMeta.isCommonJS)) knownCjsModuleTypes[parentId] = false;
       if (isWrappedId(parentId, ES_IMPORT_SUFFIX)) return false;
       const parentRequires = parentMeta && parentMeta.requires;
@@ -135,7 +135,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional) {
         await Promise.all(
           Object.keys(resolvedSources)
             .map((source) => resolvedSources[source])
-            .filter(({ id }) => !parentRequireSet.has(id))
+            .filter(({ id, external }) => !(external || parentRequireSet.has(id)))
             .map(async (resolved) => {
               if (isWrappedId(resolved.id, ES_IMPORT_SUFFIX)) {
                 return (
