@@ -38,7 +38,7 @@ function serializeObject(obj: object, indent: Indent, baseIndent: string): strin
 }
 
 function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
-  if (typpeof obj === 'object' && obj !== null) {
+  if (typeof obj === 'object' && obj !== null) {
     if (Array.isArray(obj)) return serializeArray(obj, indent, baseIndent);
     if (obj instanceof Date) return `new Date(${obj.getTime()})`;
     if (obj instanceof RegExp) return obj.toString();
