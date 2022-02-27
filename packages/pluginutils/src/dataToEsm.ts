@@ -42,7 +42,7 @@ function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
     if (Array.isArray(obj)) return serializeArray(obj, indent, baseIndent);
     if (obj instanceof Date) return `new Date(${obj.getTime()})`;
     if (obj instanceof RegExp) return obj.toString();
-    return serializeObject(obj!, indent, baseIndent);
+    return serializeObject(obj, indent, baseIndent);
   }
   if (typeof obj === 'number') {
     if (obj === Infinity) return 'Infinity';
