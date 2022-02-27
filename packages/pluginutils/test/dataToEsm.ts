@@ -4,7 +4,7 @@ import { dataToEsm } from '../';
 
 test('support bigint', (t) => {
   t.is(
-    dataToEsm({ positive: 0n, negative: -1n }),
+    dataToEsm({ positive: BigInt('0'), negative: BigInt('-1') }),
     'export var positive = 0n;\nexport var negative = -1n;\nexport default {\n\tpositive: positive,\n\tnegative: negative\n};\n'
   );
 });
