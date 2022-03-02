@@ -99,18 +99,6 @@ importers:
       rollup: 2.67.3
       typescript: 4.1.2
 
-  packages/auto-install/test/fixtures/pnpm:
-    specifiers:
-      node-noop: ^1.0.0
-    dependencies:
-      node-noop: 1.0.0
-
-  packages/auto-install/test/fixtures/pnpm-bare:
-    specifiers:
-      node-noop: ^1.0.0
-    dependencies:
-      node-noop: 1.0.0
-
   packages/babel:
     specifiers:
       '@babel/core': ^7.10.5
@@ -388,9 +376,9 @@ importers:
       '@rollup/plugin-json': ^4.1.0
       '@rollup/pluginutils': ^3.1.0
       '@types/resolve': 1.17.1
-      builtin-modules: ^3.1.0
       deepmerge: ^4.2.2
       es5-ext: ^0.10.53
+      is-builtin-module: ^3.1.0
       is-module: ^1.0.0
       resolve: ^1.19.0
       rollup: ^2.67.3
@@ -399,8 +387,8 @@ importers:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.67.3
       '@types/resolve': 1.17.1
-      builtin-modules: 3.1.0
       deepmerge: 4.2.2
+      is-builtin-module: 3.1.0
       is-module: 1.0.0
       resolve: 1.19.0
     devDependencies:
@@ -5300,6 +5288,13 @@ packages:
       call-bind: 1.0.2
     dev: true
 
+  /is-builtin-module/3.1.0:
+    resolution: {integrity: sha512-OV7JjAgOTfAFJmHZLvpSTb4qi0nIILDV1gWPYDnDJUTNFM5aGlRAhk4QcT8i7TuAleeEV5Fdkqn3t4mS+Q11fg==}
+    engines: {node: '>=6'}
+    dependencies:
+      builtin-modules: 3.1.0
+    dev: false
+
   /is-callable/1.2.2:
     resolution: {integrity: sha512-dnMqspv5nU3LoewK2N/y7KLtxtakvTuaCsU9FU50/QDmdbHNy/4/JuRtMHqRU22o3q+W89YQndQEeCVwK+3qrA==}
     engines: {node: '>= 0.4'}
@@ -6181,6 +6176,7 @@ packages:
 
   /node-noop/1.0.0:
     resolution: {integrity: sha1-R6Pn2Az/qmRYNkvSLthcqzMHvnk=}
+    dev: true
 
   /node-preload/0.2.1:
     resolution: {integrity: sha512-RM5oyBy45cLEoHqCeh+MNuFAxO0vTFBLskvQbOKnEE7YTTSN4tbN8QWDIPQ6L+WvKsB/qLEGpYe2ZZ9d4W9OIQ==}

@@ -103,3 +103,16 @@ test('does not warn when using a builtin module when there is no local version, 
 
   t.is(warning, null);
 });
+
+test('detects builtins imported with node: protocol', async (t) => {
+  const warnings = [];
+  await rollup({
+    input: 'node-protocol.js',
+    onwarn({ message }) {
+      warnings.push(message);
+    },
+    plugins: [nodeResolve()]
+  });
+
+  t.is(warnings.length, 0);
+});
