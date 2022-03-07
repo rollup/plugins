@@ -69,6 +69,18 @@ Default: (empty string)
 
 A string which will be added in front of filenames when they are not inlined but are copied.
 
+### `targetEnv`
+
+Type: `"auto" | "browser" | "node"`<br>
+Default: `"auto"`
+
+Configures what code is emitted to instantiate the Wasm (both inline and separate):
+
+- `"auto"` will determine the environment at runtime and invoke the correct methods accordingly
+- `"auto-inline"` always inlines the Wasm and will decode it according to the environment
+- `"browser"` omits emitting code that requires node.js builtin modules that may play havoc on downstream bundlers
+- `"node"` omits emitting code that requires `fetch`
+
 ## WebAssembly Example
 
 Given the following simple C file:

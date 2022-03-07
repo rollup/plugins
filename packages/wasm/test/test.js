@@ -149,3 +149,58 @@ test('injectHelper', async (t) => {
   });
   await testBundle(t, bundle);
 });
+
+test('target environment auto', async (t) => {
+  t.plan(5);
+
+  const bundle = await rollup({
+    input: 'fixtures/async.js',
+    plugins: [wasm({ targetEnv: "auto" })]
+  });
+  const code = await getCode(bundle);
+  await testBundle(t, bundle);
+  t.true(code.includes(`require("fs")`));
+  t.true(code.includes(`require("path")`));
+  t.true(code.includes(`fetch`));
+});
+
+test('target environment auto-inline', async (t) => {
+  t.plan(6);
+
+  const bundle = await rollup({
+    input: 'fixtures/async.js',
+    plugins: [wasm({ targetEnv: "auto-inline" })]
+  });
+  const code = await getCode(bundle);
+  await testBundle(t, bundle);
+  t.true(!code.includes(`require("fs")`));
+  t.true(!code.includes(`require("path")`));
+  t.true(!code.includes(`fetch`));
+  t.true(code.includes(`if (isNode)`));
+});
+
+test('target environment browser', async (t) => {
+  t.plan(4);
+
+  const bundle = await rollup({
+    input: 'fixtures/async.js',
+    plugins: [wasm({ targetEnv: "browser" })]
+  });
+  const code = await getCode(bundle);
+  await testBundle(t, bundle);
+  t.true(!code.includes(`require("`));
+  t.true(code.includes(`fetch`));
+});
+
+test('target environment node', async (t) => {
+  t.plan(4);
+
+  const bundle = await rollup({
+    input: 'fixtures/async.js',
+    plugins: [wasm({ targetEnv: "node" })]
+  });
+  const code = await getCode(bundle);
+  await testBundle(t, bundle);
+  t.true(code.includes(`require("`));
+  t.true(!code.includes(`fetch`));
+});

@@ -9,7 +9,7 @@ import { RollupWasmOptions } from '../types';
 import { getHelpersModule, HELPERS_ID } from './helper';
 
 export function wasm(options: RollupWasmOptions = {}): Plugin {
-  const { sync = [], maxFileSize = 14 * 1024, publicPath = '' } = options;
+  const { sync = [], maxFileSize = 14 * 1024, publicPath = '', targetEnv = "auto" } = options;
 
   const syncFiles = sync.map((x) => path.resolve(x));
   const copies = Object.create(null);
@@ -27,7 +27,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
     load(id) {
       if (id === HELPERS_ID) {
-        return getHelpersModule();
+        return getHelpersModule(targetEnv);
       }
 
       if (!/\.wasm$/.test(id)) {
@@ -36,6 +36,10 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
       return Promise.all([fs.promises.stat(id), fs.promises.readFile(id)]).then(
         ([stats, buffer]) => {
+          if (targetEnv == 'auto-inline') {
+            return buffer.toString('binary');
+          }
+
           if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
             const hash = createHash('sha1').update(buffer).digest('hex').substr(0, 16);
 
