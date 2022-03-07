@@ -2,6 +2,20 @@ import test from 'ava';
 
 import { dataToEsm } from '../';
 
+test('support bigint', (t) => {
+  t.is(
+    dataToEsm({ positive: BigInt('0'), negative: BigInt('-1') }),
+    'export var positive = 0n;\nexport var negative = -1n;\nexport default {\n\tpositive: positive,\n\tnegative: negative\n};\n'
+  );
+});
+
+test('support symbol', (t) => {
+  t.is(
+    dataToEsm({ normal: Symbol.for('key'), empty: Symbol.for('') }),
+    'export var normal = Symbol.for("key");\nexport var empty = Symbol.for("");\nexport default {\n\tnormal: normal,\n\tempty: empty\n};\n'
+  );
+});
+
 test('outputs treeshakeable data', (t) => {
   t.is(
     dataToEsm({ some: 'data', another: 'data' }),
