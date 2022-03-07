@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v4.2.0
+
+_2022-03-07_
+
+### Features
+
+- feat: support bigint and symbol in dataToEsm (#1047)
+
 ## v4.1.2
 
 _2021-12-13_
