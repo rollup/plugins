@@ -133,23 +133,19 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     async generateBundle(outputOptions) {
-      parsedOptions.fileNames.forEach((fileName) => {
-        const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
-        output.declarations.forEach((id) => {
-          const code = getEmittedFile(id, emittedFiles, tsCache);
-          let baseDir = outputOptions.dir;
-          if (!baseDir && tsconfig) {
-            baseDir = tsconfig.substring(0, tsconfig.lastIndexOf('/'));
-          }
-          if (!code || !baseDir) return;
-
-          this.emitFile({
-            type: 'asset',
-            fileName: normalizePath(path.relative(baseDir, id)),
-            source: code
-          });
-        });
-      });
+      await Promise.all(
+        parsedOptions.fileNames.map(async (fileName) => {
+          const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
+          await Promise.all(
+            output.declarations
+              .map(async (id) => {
+                const code = getEmittedFile(id, emittedFiles, tsCache);
+                await emitFile(outputOptions, outputToFilesystem, this, id, code);
+              })
+              .filter((x) => x)
+          );
+        })
+      );
 
       const tsBuildInfoPath = ts.getTsBuildInfoEmitOutputFilePath(parsedOptions.options);
       if (tsBuildInfoPath) {
