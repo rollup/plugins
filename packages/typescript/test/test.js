@@ -1184,3 +1184,29 @@ test.serial('works when code is in src directory', async (t) => {
     ['index.js', 'index.d.ts']
   );
 });
+
+test.serial(
+  'resolves declaration output directly when tsconfig.json is not located at root',
+  async () => {
+    await rollup({
+      input: 'fixtures/declaration-directory-resolution/src/input.ts',
+      output: [
+        {
+          // Type declarations will not be located in dist/
+          dir: 'fixtures/declaration-directory-resolution/dist',
+          format: 'esm'
+        }
+      ],
+      plugins: [
+        typescript({
+          // Tsconfig is not located at root
+          tsconfig: 'fixtures/declaration-directory-resolution/src/tsconfig.json',
+          declaration: true,
+          // Output directory is relative to root, not tsconfig nor output.dir
+          declarationDir: 'fixtures/declaration-directory-resolution/types'
+        })
+      ],
+      onwarn
+    });
+  }
+);
