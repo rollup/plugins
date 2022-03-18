@@ -51,7 +51,7 @@
     "utils"
   ],
   "dependencies": {
-    "estree-walker": "^2.0.1",
+    "estree-walker": "^3.0.1",
     "picomatch": "^2.2.2"
   },
   "devDependencies": {
