@@ -322,6 +322,39 @@ test('respects the package.json sideEffects property for files in root package b
   t.snapshot(code);
 });
 
+test('respects the package.json sideEffects property for files in the root package and does not do deep side effects by default', async (t) => {
+  const bundle = await rollup({
+    input: 'deep-side-effects/index.js',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        rootDir: 'deep-side-effects'
+      })
+    ]
+  });
+  const code = await getCode(bundle);
+  t.true(code.includes('shallow side effect'));
+  t.false(code.includes('deep side effects'));
+  t.snapshot(code);
+});
+
+test('respects the package.json sideEffects property for files in the root package and supports deep side effects', async (t) => {
+  const bundle = await rollup({
+    input: 'deep-side-effects/index.js',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        rootDir: 'deep-side-effects',
+        deepSideEffects: true
+      })
+    ]
+  });
+  const code = await getCode(bundle);
+  t.true(code.includes('shallow side effect'));
+  t.true(code.includes('deep side effect'));
+  t.snapshot(code);
+});
+
 test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async (t) => {
   const bundle = await rollup({
     input: 'root-package-side-effect/index.js',

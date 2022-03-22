@@ -163,6 +163,13 @@ rootDir: path.join(process.cwd(), '..')
 
 If you use the `sideEffects` property in the package.json, by default this is respected for files in the root package. Set to `true` to ignore the `sideEffects` configuration for the root package.
 
+### `deepSideEffects`
+
+Type: `Boolean`<br>
+Default: `false`
+
+A boolean which instructs how to handle deep side effects. This is useful for packages that have nested files in their dist directory and also utilize `sideEffects` configuration in their package.json. 
+
 ## Preserving symlinks
 
 This plugin honours the rollup [`preserveSymlinks`](https://rollupjs.org/guide/en/#preservesymlinks) option.

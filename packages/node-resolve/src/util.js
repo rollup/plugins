@@ -48,7 +48,8 @@ export function getPackageInfo(options) {
     preserveSymlinks,
     useBrowserOverrides,
     rootDir,
-    ignoreSideEffectsForRoot
+    ignoreSideEffectsForRoot,
+    deepSideEffects,
   } = options;
   let { pkgPath } = options;
 
@@ -144,7 +145,11 @@ export function getPackageInfo(options) {
     if (typeof packageSideEffects === 'boolean') {
       internalPackageInfo.hasModuleSideEffects = () => packageSideEffects;
     } else if (Array.isArray(packageSideEffects)) {
-      internalPackageInfo.hasModuleSideEffects = createFilter(packageSideEffects, null, {
+      let _packageSideEffects = packageSideEffects
+      if (deepSideEffects) {
+        _packageSideEffects = _packageSideEffects.map((sideEffect) => `**/${sideEffect}`)
+      }
+      internalPackageInfo.hasModuleSideEffects = createFilter(_packageSideEffects, null, {
         resolve: pkgRoot
       });
     }

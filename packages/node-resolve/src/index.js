@@ -37,7 +37,8 @@ const defaults = {
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: [],
   moduleDirectories: ['node_modules'],
-  ignoreSideEffectsForRoot: false
+  ignoreSideEffectsForRoot: false,
+  deepSideEffects: false,
 };
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
@@ -45,7 +46,7 @@ export function nodeResolve(opts = {}) {
   const { warnings } = handleDeprecatedOptions(opts);
 
   const options = { ...defaults, ...opts };
-  const { extensions, jail, moduleDirectories, ignoreSideEffectsForRoot } = options;
+  const { extensions, jail, moduleDirectories, ignoreSideEffectsForRoot, deepSideEffects } = options;
   const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
   const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
   const packageInfoCache = new Map();
@@ -163,7 +164,8 @@ export function nodeResolve(opts = {}) {
       baseDir,
       moduleDirectories,
       rootDir,
-      ignoreSideEffectsForRoot
+      ignoreSideEffectsForRoot,
+      deepSideEffects
     });
 
     const importeeIsBuiltin = builtins.has(importee);
