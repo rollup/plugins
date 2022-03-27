@@ -145,6 +145,8 @@ Default: `null`
 
 An `Array` which instructs the plugin to limit module resolution to those whose names match patterns in the array. _Note: Modules not matching any patterns will be marked as external._
 
+Alternatively, you may pass in a function that returns a boolean to confirm whether the module should be included or not.
+
 Examples:
 
 - `resolveOnly: ['batman', /^@batcave\/.*$/]`
