@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v21.0.3
+
+_2022-03-27_
+
+### Updates
+
+- docs: sync required rollup version (#1118)
+
 ## v21.0.2
 
 _2022-02-23_
