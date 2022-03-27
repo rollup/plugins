@@ -408,4 +408,3 @@ function cjsDetectionPlugin() {
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
 
 [LICENSE (MIT)](/LICENSE)
- 
