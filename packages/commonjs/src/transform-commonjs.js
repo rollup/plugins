@@ -78,7 +78,7 @@ export default async function transformCommonjs(
   // unconditional require elsewhere.
   let currentConditionalNodeEnd = null;
   const conditionalNodes = new Set();
-  const { addRequireStatement, rewriteRequireExpressionsAndGetImportBlock } = getRequireHandlers();
+  const { addRequireExpression, rewriteRequireExpressionsAndGetImportBlock } = getRequireHandlers();
 
   // See which names are assigned to. This is necessary to prevent
   // illegally replacing `var foo = require('foo')` with `import foo from 'foo'`,
@@ -233,14 +233,22 @@ export default async function transformCommonjs(
           const requireStringArg = getRequireStringArg(node);
           if (!ignoreRequire(requireStringArg)) {
             const usesReturnValue = parent.type !== 'ExpressionStatement';
-            addRequireStatement(
+            const toBeRemoved =
+              parent.type === 'ExpressionStatement' &&
+              (!currentConditionalNodeEnd ||
+                // We should completely remove requires directly in a try-catch
+                // so that Rollup can remove up the try-catch
+                (currentTryBlockEnd !== null && currentTryBlockEnd < currentConditionalNodeEnd))
+                ? parent
+                : node;
+            addRequireExpression(
               requireStringArg,
               node,
               scope,
               usesReturnValue,
               currentTryBlockEnd !== null,
               currentConditionalNodeEnd !== null,
-              parent.type === 'ExpressionStatement' ? parent : node
+              toBeRemoved
             );
             if (parent.type === 'VariableDeclarator' && parent.id.type === 'Identifier') {
               for (const name of extractAssignedNames(parent.id)) {
