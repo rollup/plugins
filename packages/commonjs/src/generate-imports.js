@@ -60,7 +60,7 @@ export function getRequireStringArg(node) {
 export function getRequireHandlers() {
   const requireExpressions = [];
 
-  function addRequireStatement(
+  function addRequireExpression(
     sourceId,
     node,
     scope,
@@ -140,7 +140,7 @@ export function getRequireHandlers() {
   }
 
   return {
-    addRequireStatement,
+    addRequireExpression,
     rewriteRequireExpressionsAndGetImportBlock
   };
 }
