@@ -450,6 +450,7 @@ export default async function transformCommonjs(
     !(
       shouldWrap ||
       isRequired ||
+      needsRequireWrapper ||
       uses.module ||
       uses.exports ||
       uses.require ||
