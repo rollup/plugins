@@ -115,7 +115,7 @@ async function resolveWithExportMap({
   moduleDirectories,
   rootDir,
   ignoreSideEffectsForRoot,
-  deepSideEffects,
+  deepSideEffects
 }) {
   if (importSpecifier.startsWith('#')) {
     // this is a package internal import, resolve using package imports field
@@ -133,7 +133,7 @@ async function resolveWithExportMap({
           preserveSymlinks,
           useBrowserOverrides,
           baseDir,
-          moduleDirectories,
+          moduleDirectories
         });
       }
     });
@@ -168,7 +168,7 @@ async function resolveWithExportMap({
         useBrowserOverrides,
         rootDir,
         ignoreSideEffectsForRoot,
-        deepSideEffects,
+        deepSideEffects
       });
 
       ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
@@ -236,7 +236,7 @@ async function resolveWithClassic({
   moduleDirectories,
   rootDir,
   ignoreSideEffectsForRoot,
-  deepSideEffects,
+  deepSideEffects
 }) {
   for (let i = 0; i < importSpecifierList.length; i++) {
     // eslint-disable-next-line no-await-in-loop
@@ -254,7 +254,7 @@ async function resolveWithClassic({
       moduleDirectories,
       rootDir,
       ignoreSideEffectsForRoot,
-      deepSideEffects,
+      deepSideEffects
     });
 
     if (result) {
@@ -283,7 +283,7 @@ export default async function resolveImportSpecifiers({
   moduleDirectories,
   rootDir,
   ignoreSideEffectsForRoot,
-  deepSideEffects,
+  deepSideEffects
 }) {
   try {
     const exportMapRes = await resolveWithExportMap({
@@ -299,7 +299,7 @@ export default async function resolveImportSpecifiers({
       moduleDirectories,
       rootDir,
       ignoreSideEffectsForRoot,
-      deepSideEffects,
+      deepSideEffects
     });
     if (exportMapRes) return exportMapRes;
   } catch (error) {
@@ -325,6 +325,6 @@ export default async function resolveImportSpecifiers({
     moduleDirectories,
     rootDir,
     ignoreSideEffectsForRoot,
-    deepSideEffects,
+    deepSideEffects
   });
 }
