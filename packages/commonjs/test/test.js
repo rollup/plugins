@@ -282,6 +282,30 @@ test('import CommonJS module with esm property should get default export ', asyn
   t.is(result2.error.message, 'lib is not a function');
 });
 
+test('import CommonJS module with re-exported esm property should get default export ', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/cjs-with-reexported-esm-property/main.js',
+    plugins: [
+      commonjs({
+        defaultIsModuleExports: 'auto'
+      })
+    ]
+  });
+  const result = await executeBundle(bundle, t);
+  t.is(result.error, undefined);
+
+  const bundle2 = await rollup({
+    input: 'fixtures/samples/cjs-with-reexported-esm-property/main.js',
+    plugins: [
+      commonjs({
+        defaultIsModuleExports: true
+      })
+    ]
+  });
+  const result2 = await executeBundle(bundle2, t);
+  t.is(result2.error.message, 'lib is not a function');
+});
+
 test('identifies named exports from object literals', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/named-exports-from-object-literal/main.js',
