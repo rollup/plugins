@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.2.0
+
+_2022-04-11_
+
+### Features
+
+- feat: Add the ability to pass a function into resolveOnly (#1152)
+
 ## v13.1.3
 
 _2022-01-05_
