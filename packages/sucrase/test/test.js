@@ -50,7 +50,7 @@ test('converts typescript', async (t) => {
       })
     ]
   });
-  t.plan(1);
+  t.plan(4);
   return testBundle(t, bundle);
 });
 
@@ -102,7 +102,7 @@ test('converts typescript jsx ("tsx")', async (t) => {
       })
     ]
   });
-  t.plan(2);
+  t.plan(5);
 
   return testBundle(t, bundle);
 });
