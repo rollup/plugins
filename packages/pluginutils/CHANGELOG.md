@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v4.2.1
+
+_2022-04-13_
+
+### Bugfixes
+
+- fix: fix path normalisation for createFilter on absolute and * paths (#1161)
+
 ## v4.2.0
 
 _2022-03-07_
