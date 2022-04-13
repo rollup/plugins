@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.3.2
+
+_2022-04-13_
+
+### Bugfixes
+
+- fix: Drive letter casing on win32 platforms. fixes #1133 (#1134)
+
 ## v8.3.1
 
 _2022-02-23_
