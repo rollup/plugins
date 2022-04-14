@@ -144,8 +144,7 @@ export function getPackageInfo(options) {
     if (typeof packageSideEffects === 'boolean') {
       internalPackageInfo.hasModuleSideEffects = () => packageSideEffects;
     } else if (Array.isArray(packageSideEffects)) {
-      let finalPackageSideEffects = packageSideEffects;
-      finalPackageSideEffects = packageSideEffects.map((sideEffect) => {
+      const finalPackageSideEffects = packageSideEffects.map((sideEffect) => {
         /*
          * The array accepts simple glob patterns to the relevant files... Patterns like .css, which do not include a /, will be treated like **\/.css.
          * https://webpack.js.org/guides/tree-shaking/
