@@ -355,6 +355,23 @@ test('respects the package.json sideEffects property for files in the root packa
   t.snapshot(code);
 });
 
+test('does not prefix the sideEffects property if the property starts with "./" even if deep side effects is set', async (t) => {
+  const bundle = await rollup({
+    input: 'deep-side-effects-with-specific-side-effects/index.js',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        rootDir: 'deep-side-effects-with-specific-side-effects',
+        deepSideEffects: true
+      })
+    ]
+  });
+  const code = await getCode(bundle);
+  t.true(code.includes('shallow side effect'));
+  t.false(code.includes('deep side effects'));
+  t.snapshot(code);
+});
+
 test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async (t) => {
   const bundle = await rollup({
     input: 'root-package-side-effect/index.js',

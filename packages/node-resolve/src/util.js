@@ -145,11 +145,17 @@ export function getPackageInfo(options) {
     if (typeof packageSideEffects === 'boolean') {
       internalPackageInfo.hasModuleSideEffects = () => packageSideEffects;
     } else if (Array.isArray(packageSideEffects)) {
-      let _packageSideEffects = packageSideEffects;
+      let finalPackageSideEffects = packageSideEffects;
       if (deepSideEffects) {
-        _packageSideEffects = _packageSideEffects.map((sideEffect) => `**/${sideEffect}`);
+        finalPackageSideEffects = packageSideEffects.map((sideEffect) => {
+          // if the sideEffect starts with "./" or starts with "/" do nothing
+          if (sideEffect.indexOf('./') === 0 || sideEffect.indexOf('/') === 0) {
+            return sideEffect;
+          }
+          return `**/${sideEffect}`;
+        });
       }
-      internalPackageInfo.hasModuleSideEffects = createFilter(_packageSideEffects, null, {
+      internalPackageInfo.hasModuleSideEffects = createFilter(finalPackageSideEffects, null, {
         resolve: pkgRoot
       });
     }
