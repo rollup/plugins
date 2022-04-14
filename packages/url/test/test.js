@@ -1,5 +1,5 @@
 const { readFileSync } = require('fs');
-const { join, posix, sep } = require('path');
+const { join, posix, sep, resolve } = require('path');
 
 const test = require('ava');
 const del = require('del');
@@ -71,6 +71,14 @@ test.serial('copy files, limit: 0', async (t) => {
 
 test.serial('copy "large" binary files, limit: 10', async (t) => {
   await run(t, 'svg', { limit: 10, emitFiles: true });
+});
+
+test.serial('copy files with include by absolute path, limit: 0', async (t) => {
+  await run(t, 'svg', {
+    limit: 0,
+    emitFiles: true,
+    include: [resolve('.', 'fixtures', '*.svg')]
+  });
 });
 
 test.serial('use publicPath', async (t) => {
