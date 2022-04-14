@@ -44,8 +44,7 @@ async function resolveIdClassic({
   baseDir,
   moduleDirectories,
   rootDir,
-  ignoreSideEffectsForRoot,
-  deepSideEffects
+  ignoreSideEffectsForRoot
 }) {
   let hasModuleSideEffects = () => null;
   let hasPackageEntry = true;
@@ -62,8 +61,7 @@ async function resolveIdClassic({
       preserveSymlinks,
       useBrowserOverrides,
       rootDir,
-      ignoreSideEffectsForRoot,
-      deepSideEffects
+      ignoreSideEffectsForRoot
     });
 
     ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
@@ -114,8 +112,7 @@ async function resolveWithExportMap({
   baseDir,
   moduleDirectories,
   rootDir,
-  ignoreSideEffectsForRoot,
-  deepSideEffects
+  ignoreSideEffectsForRoot
 }) {
   if (importSpecifier.startsWith('#')) {
     // this is a package internal import, resolve using package imports field
@@ -167,8 +164,7 @@ async function resolveWithExportMap({
         preserveSymlinks,
         useBrowserOverrides,
         rootDir,
-        ignoreSideEffectsForRoot,
-        deepSideEffects
+        ignoreSideEffectsForRoot
       });
 
       ({ packageInfo, hasModuleSideEffects, hasPackageEntry, packageBrowserField } = info);
@@ -235,8 +231,7 @@ async function resolveWithClassic({
   baseDir,
   moduleDirectories,
   rootDir,
-  ignoreSideEffectsForRoot,
-  deepSideEffects
+  ignoreSideEffectsForRoot
 }) {
   for (let i = 0; i < importSpecifierList.length; i++) {
     // eslint-disable-next-line no-await-in-loop
@@ -253,8 +248,7 @@ async function resolveWithClassic({
       baseDir,
       moduleDirectories,
       rootDir,
-      ignoreSideEffectsForRoot,
-      deepSideEffects
+      ignoreSideEffectsForRoot
     });
 
     if (result) {
@@ -282,8 +276,7 @@ export default async function resolveImportSpecifiers({
   baseDir,
   moduleDirectories,
   rootDir,
-  ignoreSideEffectsForRoot,
-  deepSideEffects
+  ignoreSideEffectsForRoot
 }) {
   try {
     const exportMapRes = await resolveWithExportMap({
@@ -298,8 +291,7 @@ export default async function resolveImportSpecifiers({
       baseDir,
       moduleDirectories,
       rootDir,
-      ignoreSideEffectsForRoot,
-      deepSideEffects
+      ignoreSideEffectsForRoot
     });
     if (exportMapRes) return exportMapRes;
   } catch (error) {
@@ -324,7 +316,6 @@ export default async function resolveImportSpecifiers({
     baseDir,
     moduleDirectories,
     rootDir,
-    ignoreSideEffectsForRoot,
-    deepSideEffects
+    ignoreSideEffectsForRoot
   });
 }
