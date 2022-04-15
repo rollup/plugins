@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.2.1
+
+_2022-04-15_
+
+### Bugfixes
+
+- fix: update side effects logic to be deep when glob doesn’t contain `/` (#1148)
+
 ## v13.2.0
 
 _2022-04-11_
