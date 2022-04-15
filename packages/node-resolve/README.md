@@ -82,7 +82,7 @@ A list of directory names in which to recursively look for modules.
 Type: `Array[...String]`<br>
 Default: `[]`
 
-A list of absolute paths to additional locations to search for modules. This is analogous to setting the `NODE_PATH` environment variable for node.
+A list of absolute paths to additional locations to search for modules. [This is analogous to setting the `NODE_PATH` environment variable for node](https://nodejs.org/api/modules.html#loading-from-the-global-folders).
 
 ### `dedupe`
 
