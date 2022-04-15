@@ -47,6 +47,7 @@ export default function commonjs(options = {}) {
     ignoreGlobal,
     ignoreDynamicRequires,
     requireReturnsDefault: requireReturnsDefaultOption,
+    defaultIsModuleExports: defaultIsModuleExportsOption,
     esmExternals
   } = options;
   const getRequireReturnsDefault =
@@ -60,8 +61,11 @@ export default function commonjs(options = {}) {
       : Array.isArray(esmExternals)
       ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
       : () => esmExternals;
-  const defaultIsModuleExports =
-    typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
+  const getDefaultIsModuleExports =
+    typeof defaultIsModuleExportsOption === 'function'
+      ? defaultIsModuleExportsOption
+      : () =>
+          typeof defaultIsModuleExportsOption === 'boolean' ? defaultIsModuleExportsOption : 'auto';
 
   const { dynamicRequireModuleSet, dynamicRequireModuleDirPaths } = getDynamicRequirePaths(
     options.dynamicRequireTargets
@@ -150,7 +154,7 @@ export default function commonjs(options = {}) {
       disableWrap,
       commonDir,
       ast,
-      defaultIsModuleExports
+      getDefaultIsModuleExports(id)
     );
   }
 

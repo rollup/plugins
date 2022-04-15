@@ -2,6 +2,7 @@ import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
 
 type RequireReturnsDefaultOption = boolean | 'auto' | 'preferred' | 'namespace';
+type DefaultIsModuleExportsOption = boolean | 'auto';
 
 interface RollupCommonJSOptions {
   /**
@@ -161,6 +162,13 @@ interface RollupCommonJSOptions {
   requireReturnsDefault?:
     | RequireReturnsDefaultOption
     | ((id: string) => RequireReturnsDefaultOption);
+
+  /**
+   * @default "auto"
+   */
+  defaultIsModuleExports?:
+    | DefaultIsModuleExportsOption
+    | ((id: string) => DefaultIsModuleExportsOption);
   /**
    * Some modules contain dynamic `require` calls, or require modules that
    * contain circular dependencies, which are not handled well by static
