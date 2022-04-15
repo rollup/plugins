@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v21.1.0
+
+_2022-04-15_
+
+### Features
+
+- feat: make defaultIsModuleExports as funtion to config defaultIsModuleExports for each source (#1052)
+
 ## v21.0.3
 
 _2022-03-27_
