@@ -300,7 +300,8 @@ test('allows custom modulePaths', async (t) => {
     ]
   });
 
-  t.is(bundle.cache.modules.length, 3);
+  const { dependency } = await evaluateBundle(bundle);
+  t.is(dependency, 'DEPENDENCY');
 });
 
 test('ignores deep-import non-modules', async (t) => {
