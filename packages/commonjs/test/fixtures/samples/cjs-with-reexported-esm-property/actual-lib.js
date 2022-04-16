@@ -1,6 +1,4 @@
-module.exports = {
-  default: () => {
-    t.is('beep', 'beep');
-  },
-  __esModule: true
+module.exports = { 
+  "foo": () => { console.log('beep') },
+   __esModule: true
 };
