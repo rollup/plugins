@@ -199,7 +199,7 @@ export function nodeResolve(opts = {}) {
       browserMapCache.set(location, packageBrowserField);
     }
 
-    if (hasPackageEntry && !preserveSymlinks) {
+    if (hasPackageEntry && !preserveSymlinks && location) {
       const exists = await fileExists(location);
       if (exists) {
         location = await realpath(location);
@@ -221,7 +221,7 @@ export function nodeResolve(opts = {}) {
       }
     }
 
-    if (options.modulesOnly && (await fileExists(location))) {
+    if (options.modulesOnly && location && (await fileExists(location))) {
       const code = await readFile(location, 'utf-8');
       if (isModule(code)) {
         return {
