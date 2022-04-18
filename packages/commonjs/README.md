@@ -68,6 +68,8 @@ You can also provide a [minimatch pattern](https://github.com/isaacs/minimatch),
 Type: `string | string[]`<br>
 Default: `[]`
 
+_Note: In previous versions, this option would spin up a rather comprehensive mock environment that was capable of handling modules that manipulate `require.cache`. This is no longer supported. If you rely on this e.g. when using request-promise-native, use version 21 of this plugin._
+
 Some modules contain dynamic `require` calls, or require modules that contain circular dependencies, which are not handled well by static imports.
 Including those modules as `dynamicRequireTargets` will simulate a CommonJS (NodeJS-like) environment for them with support for dynamic dependencies. It also enables `strictRequires` for those modules, see above.
 
