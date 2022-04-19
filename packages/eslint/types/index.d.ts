@@ -1,5 +1,6 @@
 import { Plugin } from 'rollup';
 import { CLIEngine } from 'eslint';
+import { CreateFilter } from '@rollup/pluginutils';
 
 export interface RollupEslintOptions extends CLIEngine.Options {
   /**
@@ -24,13 +25,13 @@ export interface RollupEslintOptions extends CLIEngine.Options {
    * A single file, or array of files, to include when linting.
    * @default []
    */
-  include?: string[] | string;
+  include?: Parameters<CreateFilter>[0];
 
   /**
    * A single file, or array of files, to exclude when linting.
    * @default node_modules/**
    */
-  exclude?: string[] | string;
+  exclude?: Parameters<CreateFilter>[1];
 
   /**
    * Custom error formatter or the name of a built-in formatter.

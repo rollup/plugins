@@ -40,6 +40,7 @@ export default function commonjs(options = {}) {
     ignoreGlobal,
     ignoreDynamicRequires,
     requireReturnsDefault: requireReturnsDefaultOption,
+    defaultIsModuleExports: defaultIsModuleExportsOption,
     esmExternals
   } = options;
   const extensions = options.extensions || ['.js'];
@@ -59,8 +60,11 @@ export default function commonjs(options = {}) {
       ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
       : () => esmExternals;
 
-  const defaultIsModuleExports =
-    typeof options.defaultIsModuleExports === 'boolean' ? options.defaultIsModuleExports : 'auto';
+  const getDefaultIsModuleExports =
+    typeof defaultIsModuleExportsOption === 'function'
+      ? defaultIsModuleExportsOption
+      : () =>
+          typeof defaultIsModuleExportsOption === 'boolean' ? defaultIsModuleExportsOption : 'auto';
 
   const dynamicRequireRoot =
     typeof options.dynamicRequireRoot === 'string'
@@ -95,7 +99,7 @@ export default function commonjs(options = {}) {
     };
   };
 
-  const resolveId = getResolveId(extensions);
+  const { currentlyResolving, resolveId } = getResolveId(extensions);
 
   const sourceMap = options.sourceMap !== false;
 
@@ -160,7 +164,7 @@ export default function commonjs(options = {}) {
       dynamicRequireModules,
       commonDir,
       ast,
-      defaultIsModuleExports,
+      getDefaultIsModuleExports(id),
       needsRequireWrapper,
       requireResolver.resolveRequireSourcesAndUpdateMeta(this),
       requireResolver.isRequiredId(id),
@@ -200,7 +204,11 @@ export default function commonjs(options = {}) {
           'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
         );
       }
-      requireResolver = getRequireResolver(extensions, detectCyclesAndConditional);
+      requireResolver = getRequireResolver(
+        extensions,
+        detectCyclesAndConditional,
+        currentlyResolving
+      );
     },
 
     buildEnd() {
@@ -256,15 +264,13 @@ export default function commonjs(options = {}) {
 
       // entry suffix is just appended to not mess up relative external resolution
       if (id.endsWith(ENTRY_SUFFIX)) {
-        return getEntryProxy(
-          id.slice(0, -ENTRY_SUFFIX.length),
-          defaultIsModuleExports,
-          this.getModuleInfo
-        );
+        const acutalId = id.slice(0, -ENTRY_SUFFIX.length);
+        return getEntryProxy(acutalId, getDefaultIsModuleExports(acutalId), this.getModuleInfo);
       }
 
       if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
-        return getEsImportProxy(unwrapId(id, ES_IMPORT_SUFFIX), defaultIsModuleExports);
+        const actualId = unwrapId(id, ES_IMPORT_SUFFIX);
+        return getEsImportProxy(actualId, getDefaultIsModuleExports(actualId));
       }
 
       if (id === DYNAMIC_MODULES_ID) {

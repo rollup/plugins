@@ -9,7 +9,7 @@ import normalizePath from './normalizePath';
 
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
   if (resolutionBase === false || isAbsolute(id) || id.startsWith('*')) {
-    return id;
+    return normalizePath(id);
   }
 
   // resolve('') is valid and will default to process.cwd()
@@ -20,7 +20,7 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
   // 1. the basePath has been normalized to use /
   // 2. the incoming glob (id) matcher, also uses /
   // otherwise Node will force backslash (\) on windows
-  return posix.join(basePath, id);
+  return posix.join(basePath, normalizePath(id));
 }
 
 const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {

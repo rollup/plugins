@@ -63,13 +63,22 @@ export function nodeResolve(opts = {}) {
       options.dedupe.includes(importee) || options.dedupe.includes(getPackageName(importee));
   }
 
-  const resolveOnly = options.resolveOnly.map((pattern) => {
-    if (pattern instanceof RegExp) {
-      return pattern;
-    }
-    const normalized = pattern.replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
-    return new RegExp(`^${normalized}$`);
-  });
+  // creates a function from the patterns to test if a particular module should be bundled.
+  const allowPatterns = (patterns) => {
+    const regexPatterns = patterns.map((pattern) => {
+      if (pattern instanceof RegExp) {
+        return pattern;
+      }
+      const normalized = pattern.replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+      return new RegExp(`^${normalized}$`);
+    });
+    return (id) => !regexPatterns.length || regexPatterns.some((pattern) => pattern.test(id));
+  };
+
+  const resolveOnly =
+    typeof options.resolveOnly === 'function'
+      ? options.resolveOnly
+      : allowPatterns(options.resolveOnly);
 
   const browserMapCache = new Map();
   let preserveSymlinks;
@@ -112,11 +121,8 @@ export function nodeResolve(opts = {}) {
       isRelativeImport = true;
     }
 
-    if (
-      !isRelativeImport &&
-      resolveOnly.length &&
-      !resolveOnly.some((pattern) => pattern.test(id))
-    ) {
+    // if it's not a relative import, and it's not requested, reject it.
+    if (!isRelativeImport && !resolveOnly(id)) {
       if (normalizeInput(rollupOptions.input).includes(importee)) {
         return null;
       }

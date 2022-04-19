@@ -81,7 +81,7 @@ export interface RollupNodeResolveOptions {
    * names match patterns in the array.
    * @default []
    */
-  resolveOnly?: ReadonlyArray<string | RegExp> | null;
+  resolveOnly?: ReadonlyArray<string | RegExp> | null | ((module: string) => boolean);
 
   /**
    * Specifies the root directory from which to resolve modules. Typically used when

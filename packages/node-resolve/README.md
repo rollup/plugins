@@ -140,12 +140,17 @@ If `true`, inspect resolved files to assert that they are ES2015 modules.
 
 ### `resolveOnly`
 
-Type: `Array[...String|RegExp]`<br>
+Type: `Array[...String|RegExp] | (module: string) => boolean`<br>
 Default: `null`
 
 An `Array` which instructs the plugin to limit module resolution to those whose names match patterns in the array. _Note: Modules not matching any patterns will be marked as external._
 
-Example: `resolveOnly: ['batman', /^@batcave\/.*$/]`
+Alternatively, you may pass in a function that returns a boolean to confirm whether the module should be included or not.
+
+Examples:
+
+- `resolveOnly: ['batman', /^@batcave\/.*$/]`
+- `resolveOnly: module => !module.includes('joker')`
 
 ### `rootDir`
 

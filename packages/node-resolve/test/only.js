@@ -68,3 +68,28 @@ test('regex', async (t) => {
   t.deepEqual(imports, ['test']);
   t.assert(Object.keys(modules).includes(resolve('only-local.js')));
 });
+
+test('allows a function as the parameter', async (t) => {
+  function allowed(...modules) {
+    const set = new Set(modules);
+    return (id) => set.has(id);
+  }
+
+  const warnings = [];
+  const bundle = await rollup({
+    input: ['only.js'],
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        resolveOnly: allowed('test')
+      })
+    ]
+  });
+  const imports = await getImports(bundle);
+  const modules = await getResolvedModules(bundle);
+
+  t.is(warnings.length, 0);
+  t.snapshot(warnings);
+  t.deepEqual(imports, ['@scoped/foo', '@scoped/bar']);
+  t.assert(Object.keys(modules).includes(resolve('only-local.js')));
+});

@@ -58,7 +58,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 
 ## Contributing
 
-This repository is a [monorepo](https://en.wikipedia.org/wiki/Monorepo) which leverages [pnpm](https://pnpm.js.org/) for dependency management.
+This repository is a [monorepo](https://en.wikipedia.org/wiki/Monorepo) which leverages [pnpm](https://pnpm.io/) for dependency management.
 
 To begin, please install `pnpm`:
 

@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v4.0.3
+
+_2022-04-13_
+
+### Bugfixes
+
+- fix: allow js files for TypeScript resolutuon (#1019)
+
 ## v4.0.2
 
 _2022-01-05_

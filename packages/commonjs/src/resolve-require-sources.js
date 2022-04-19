@@ -9,7 +9,7 @@ import {
 } from './helpers';
 import { resolveExtensions } from './resolve-id';
 
-export function getRequireResolver(extensions, detectCyclesAndConditional) {
+export function getRequireResolver(extensions, detectCyclesAndConditional, currentlyResolving) {
   const knownCjsModuleTypes = Object.create(null);
   const requiredIds = Object.create(null);
   const unconditionallyRequiredIds = Object.create(null);
@@ -161,16 +161,20 @@ export function getRequireResolver(extensions, detectCyclesAndConditional) {
       parentMeta.requires = [];
       parentMeta.isRequiredCommonJS = Object.create(null);
       setInitialParentType(parentId, isParentCommonJS);
+      const currentlyResolvingForParent = currentlyResolving.get(parentId) || new Set();
+      currentlyResolving.set(parentId, currentlyResolvingForParent);
       const requireTargets = await Promise.all(
         sources.map(async ({ source, isConditional }) => {
           // Never analyze or proxy internal modules
           if (source.startsWith('\0')) {
             return { id: source, allowProxy: false };
           }
+          currentlyResolvingForParent.add(source);
           const resolved =
             (await rollupContext.resolve(source, parentId, {
               custom: { 'node-resolve': { isRequire: true } }
             })) || resolveExtensions(source, parentId, extensions);
+          currentlyResolvingForParent.delete(source);
           if (!resolved) {
             return { id: wrapId(source, EXTERNAL_SUFFIX), allowProxy: false };
           }
@@ -201,6 +205,10 @@ export function getRequireResolver(extensions, detectCyclesAndConditional) {
           isCommonJS
         };
       });
+    },
+    isCurrentlyResolving(source, parentId) {
+      const currentlyResolvingForParent = currentlyResolving.get(parentId);
+      return currentlyResolvingForParent && currentlyResolvingForParent.has(source);
     }
   };
 }
