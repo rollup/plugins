@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-dynamic-import-vars",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "publishConfig": {
     "access": "public"
   },

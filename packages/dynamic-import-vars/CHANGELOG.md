@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v1.4.3
+
+_2022-04-19_
+
+### Bugfixes
+
+- fix: parameter types for dynamicImportToGlob (#1166)
+
 ## v1.4.2
 
 _2021-12-28_
