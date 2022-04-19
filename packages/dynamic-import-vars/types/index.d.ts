@@ -1,5 +1,4 @@
 import { FilterPattern } from '@rollup/pluginutils';
-import { walk } from 'estree-walker';
 import { Plugin } from 'rollup';
 
 interface RollupDynamicImportVariablesOptions {
@@ -25,7 +24,10 @@ interface RollupDynamicImportVariablesOptions {
 
 export class VariableDynamicImportError extends Error {}
 
-export function dynamicImportToGlob(...params: Parameters<typeof walk>): null | string;
+export function dynamicImportToGlob(
+  node: import('estree').BaseNode,
+  sourceString: string
+): null | string;
 
 /**
  * Support variables in dynamic imports in Rollup.
