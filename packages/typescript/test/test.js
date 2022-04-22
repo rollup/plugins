@@ -253,7 +253,9 @@ test.serial('reports diagnostics and throws if errors occur during transpilation
     })
   );
 
-  t.is(caughtError.message, '@rollup/plugin-typescript TS1110: Type expected.');
+  const messagePrefix = `${caughtError.loc.file} (${caughtError.loc.line},${caughtError.loc.column}):`;
+
+  t.is(caughtError.message, `${messagePrefix} @rollup/plugin-typescript TS1110: Type expected.`);
   t.is(caughtError.pluginCode, 'TS1110');
 });
 
@@ -267,6 +269,7 @@ test.serial('ignore type errors if noEmitOnError is false', async (t) => {
     }
   });
   const code = await getCode(bundle, outputOptions);
+  const messagePrefix = `${warnings[0].loc.file} (${warnings[0].loc.line},${warnings[0].loc.column}):`;
 
   t.true(code.includes(`console.log('hello world')`));
 
@@ -275,7 +278,7 @@ test.serial('ignore type errors if noEmitOnError is false', async (t) => {
   t.is(warnings[0].code, 'PLUGIN_WARNING');
   t.is(warnings[0].plugin, 'typescript');
   t.is(warnings[0].pluginCode, 'TS1110');
-  t.is(warnings[0].message, '@rollup/plugin-typescript TS1110: Type expected.');
+  t.is(warnings[0].message, `${messagePrefix} @rollup/plugin-typescript TS1110: Type expected.`);
 
   t.is(warnings[0].loc.line, 1);
   t.is(warnings[0].loc.column, 8);

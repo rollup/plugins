@@ -21,12 +21,15 @@ export default function diagnosticToWarning(
   if (diagnostic.file) {
     // Add information about the file location
     const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
+    const { fileName } = diagnostic.file;
 
     warning.loc = {
       column: character + 1,
       line: line + 1,
-      file: diagnostic.file.fileName
+      file: fileName
     };
+
+    warning.message = `${fileName} (${line + 1},${character + 1}): ${warning.message}`;
 
     if (host) {
       // Extract a code frame from Typescript
