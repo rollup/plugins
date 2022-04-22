@@ -6,7 +6,7 @@ _2022-04-15_
 
 ### Features
 
-- feat: make defaultIsModuleExports as funtion to config defaultIsModuleExports for each source (#1052)
+- feat: make defaultIsModuleExports as function to config defaultIsModuleExports for each source (#1052)
 
 ## v21.0.3
 
