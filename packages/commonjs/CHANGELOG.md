@@ -1,5 +1,43 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v22.0.0
+
+_2022-04-24_
+
+### Breaking Changes
+
+- fix: add heuristic to deoptimize requires after calling imported function (requires rollup@2.68.0) (#1038)
+- feat: reimplement dynamic import handling (requires Node 12, no longer supports require.cache) (#1038)
+
+### Bugfixes
+
+- fix: support CJS modules re-exporting transpiled ESM modules (#1165)
+- fix: Warn when plugins do not pass options to resolveId (#1038)
+- fix: Do not change semantics when removing requires in if statements (#1038)
+- fix: handle external dependencies when using the cache (#1038)
+- fix: proxy all entries to not break legacy polyfill plugins (#1038)
+- fix: use correct version and add package exports (#1038)
+- fix: validate node-resolve peer version (#1038)
+- fix: inject module name into dynamic require function (#1038)
+- fix: do not transform "typeof exports" for mixed modules (#1038)
+- fix: attach correct plugin meta-data to commonjs modules (#1038)
+
+### Features
+
+- feat: expose plugin version (#1038)
+- feat: throw for dynamic requires from outside the configured root (#1038)
+- feat: add dynamicRequireRoot option (#1038)
+- feat: auto-detect conditional requires (#1038)
+- feat: limit ignoreTryCatch to external requires (#1038)
+- feat: make namespace callable when requiring ESM with function default (#1038)
+- feat: Infer type for unidentified modules (#1038)
+- feat: automatically wrap cyclic modules (#1038)
+- feat: add strictRequires option to wrap modules (#1038)
+
+### Updates
+
+- refactor: deconflict helpers only once globals are known (#1038)
+
 ## v21.1.0
 
 _2022-04-15_
