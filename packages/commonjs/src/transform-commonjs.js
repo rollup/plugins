@@ -71,6 +71,7 @@ export default async function transformCommonjs(
   let programDepth = 0;
   let currentTryBlockEnd = null;
   let shouldWrap = false;
+  let reexports = false;
 
   const globals = new Set();
   // A conditionalNode is a node for which execution is not guaranteed. If such a node is a require
@@ -151,8 +152,9 @@ export default async function transformCommonjs(
                   if (hasDefineEsmProperty(node.right)) {
                     shouldWrap = true;
                   }
-                } else if (defaultIsModuleExports === false) {
+                } else if (isRequireExpression(node.right, scope)) {
                   shouldWrap = true;
+                  reexports = true;
                 }
               }
             } else if (exportName === KEY_COMPILED_ESM) {
@@ -444,7 +446,9 @@ export default async function transformCommonjs(
   shouldWrap = !isEsModule && (shouldWrap || (uses.exports && moduleExportsAssignments.length > 0));
   const detectWrappedDefault =
     shouldWrap &&
-    (topLevelDefineCompiledEsmExpressions.length > 0 || code.indexOf('__esModule') >= 0);
+    (reexports ||
+      topLevelDefineCompiledEsmExpressions.length > 0 ||
+      code.indexOf('__esModule') >= 0);
 
   if (
     !(
