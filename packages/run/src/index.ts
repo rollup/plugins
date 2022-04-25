@@ -18,7 +18,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
   return {
     name: 'run',
 
-    buildStart(options) {
+    async buildStart(options) {
       let inputs = options.input;
 
       if (typeof inputs === 'string') {
@@ -33,7 +33,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
         throw new Error(`@rollup/plugin-run only works with a single entry point`);
       }
 
-      input = resolve(inputs[0]);
+      input = await this.resolve(inputs[0], undefined, {isEntry: true});
     },
 
     generateBundle(_outputOptions, _bundle, isWrite) {
@@ -51,7 +51,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       const dir = outputOptions.dir || dirname(outputOptions.file!);
       const entryFileName = Object.keys(bundle).find((fileName) => {
         const chunk = bundle[fileName] as RenderedChunk;
-        return chunk.isEntry && chunk.facadeModuleId === input;
+        return chunk.isEntry;
       });
 
       if (entryFileName) {
