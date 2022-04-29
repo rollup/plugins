@@ -1,5 +1,17 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v5.2.0
+
+_2022-04-29_
+
+### Features
+
+- feat: Add target environment configuration (#1132)
+
+### Updates
+
+- test: reference atob polyfill in browser test (#1179)
+
 ## v5.1.2
 
 _2020-12-14_
