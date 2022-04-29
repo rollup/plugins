@@ -1,5 +1,13 @@
 # @rollup/plugin-url ChangeLog
 
+## v7.0.0
+
+_2022-04-29_
+
+### Breaking Changes
+
+- chore: update pluginutils deps, extend tests (#1144)
+
 ## v6.1.0
 
 _2021-07-26_
