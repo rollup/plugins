@@ -1,5 +1,13 @@
 import { Plugin } from 'rollup';
 
+/**
+ * - `"auto"` will determine the environment at runtime and invoke the correct methods accordingly
+ * - `"auto-inline"` always inlines the Wasm and will decode it according to the environment
+ * - `"browser"` omits emitting code that requires node.js builtin modules that may play havoc on downstream bundlers
+ * - `"node"` omits emitting code that requires `fetch`
+ */
+export type TargetEnv = 'auto' | 'auto-inline' | 'browser' | 'node';
+
 export interface RollupWasmOptions {
   /**
    * Specifies an array of strings that each represent a WebAssembly file to load synchronously.
@@ -15,6 +23,10 @@ export interface RollupWasmOptions {
    * A string which will be added in front of filenames when they are not inlined but are copied.
    */
   publicPath?: string;
+  /**
+   * Configures what code is emitted to instantiate the Wasm (both inline and separate)
+   */
+  targetEnv?: TargetEnv;
 }
 
 /**
