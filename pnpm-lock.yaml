@@ -520,14 +520,14 @@ importers:
 
   packages/url:
     specifiers:
-      '@rollup/pluginutils': ^3.1.0
+      '@rollup/pluginutils': ^4.2.1
       del: ^5.1.0
       globby: ^11.0.1
       make-dir: ^3.1.0
       mime: ^2.4.6
       rollup: ^2.67.3
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.67.3
+      '@rollup/pluginutils': 4.2.1
       make-dir: 3.1.0
       mime: 2.4.6
     devDependencies:
@@ -2317,6 +2317,14 @@ packages:
     dependencies:
       estree-walker: 2.0.1
       picomatch: 2.2.2
+    dev: false
+
+  /@rollup/pluginutils/4.2.1:
+    resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      estree-walker: 2.0.1
+      picomatch: 2.3.0
     dev: false
 
   /@sindresorhus/is/0.14.0:
