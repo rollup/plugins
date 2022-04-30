@@ -8,7 +8,7 @@ import { rollup } from 'rollup';
 
 import { nodeResolve } from '..';
 
-import { getCode, getImports, testBundle } from '../../../util/test';
+import { evaluateBundle, getCode, getImports, testBundle } from '../../../util/test';
 
 process.chdir(join(__dirname, 'fixtures'));
 
