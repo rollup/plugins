@@ -45,6 +45,11 @@ export default function commonjs(options = {}) {
   } = options;
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
+  const isPossibleCjsId = (id) => {
+    const extName = extname(id);
+    return extName === '.cjs' || (extensions.includes(extName) && filter(id));
+  };
+
   const { strictRequiresFilter, detectCyclesAndConditional } = getStrictRequiresFilter(options);
 
   const getRequireReturnsDefault =
@@ -99,7 +104,7 @@ export default function commonjs(options = {}) {
     };
   };
 
-  const { currentlyResolving, resolveId } = getResolveId(extensions);
+  const { currentlyResolving, resolveId } = getResolveId(extensions, isPossibleCjsId);
 
   const sourceMap = options.sourceMap !== false;
 
@@ -295,10 +300,7 @@ export default function commonjs(options = {}) {
     },
 
     transform(code, id) {
-      const extName = extname(id);
-      if (extName !== '.cjs' && (!filter(id) || !extensions.includes(extName))) {
-        return null;
-      }
+      if (!isPossibleCjsId(id)) return null;
 
       try {
         return transformAndCheckExports.call(this, code, id);

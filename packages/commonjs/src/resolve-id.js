@@ -49,7 +49,7 @@ export function resolveExtensions(importee, importer, extensions) {
   return undefined;
 }
 
-export default function getResolveId(extensions) {
+export default function getResolveId(extensions, isPossibleCjsId) {
   const currentlyResolving = new Map();
 
   return {
@@ -141,21 +141,27 @@ export default function getResolveId(extensions) {
         !resolved ||
         resolved.external ||
         resolved.id.endsWith(ENTRY_SUFFIX) ||
-        isWrappedId(resolved.id, ES_IMPORT_SUFFIX)
+        isWrappedId(resolved.id, ES_IMPORT_SUFFIX) ||
+        !isPossibleCjsId(resolved.id)
       ) {
         return resolved;
       }
       const moduleInfo = await this.load(resolved);
-      if (resolveOptions.isEntry) {
-        moduleInfo.moduleSideEffects = true;
-        // We must not precede entry proxies with a `\0` as that will mess up relative external resolution
-        return resolved.id + ENTRY_SUFFIX;
-      }
       const {
         meta: { commonjs: commonjsMeta }
       } = moduleInfo;
-      if (commonjsMeta && commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS) {
-        return { id: wrapId(resolved.id, ES_IMPORT_SUFFIX), meta: { commonjs: { resolved } } };
+      if (commonjsMeta) {
+        const { isCommonJS } = commonjsMeta;
+        if (isCommonJS) {
+          if (resolveOptions.isEntry) {
+            moduleInfo.moduleSideEffects = true;
+            // We must not precede entry proxies with a `\0` as that will mess up relative external resolution
+            return resolved.id + ENTRY_SUFFIX;
+          }
+          if (isCommonJS === IS_WRAPPED_COMMONJS) {
+            return { id: wrapId(resolved.id, ES_IMPORT_SUFFIX), meta: { commonjs: { resolved } } };
+          }
+        }
       }
       return resolved;
     }
