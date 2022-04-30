@@ -57,6 +57,12 @@ export function nodeResolve(opts = {}) {
   let { dedupe } = options;
   let rollupOptions;
 
+  if (moduleDirectories.some((name) => name.includes('/'))) {
+    throw new Error(
+      '`moduleDirectories` option must only contain directory names. If you want to load modules from somewhere not supported by the default module resolution algorithm, see `modulePaths`.'
+    );
+  }
+
   if (typeof dedupe !== 'function') {
     dedupe = (importee) =>
       options.dedupe.includes(importee) || options.dedupe.includes(getPackageName(importee));

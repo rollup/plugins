@@ -273,20 +273,16 @@ test('allows custom moduleDirectories with legacy customResolveOptions.moduleDir
   t.snapshot(warnings);
 });
 
-test('custom moduleDirectories do not support nested dependencies', async (t) => {
-  const warnings = [];
-  const bundle = await rollup({
-    input: 'custom-module-path/main.js',
-    onwarn: (warning) => warnings.push(warning),
-    plugins: [
+test('moduleDirectories option rejects paths that contain a slash', async (t) => {
+  t.throws(
+    () =>
       nodeResolve({
-        moduleDirectories: [join(process.cwd(), 'custom-module-path/node_modules')]
-      })
-    ]
-  });
-
-  t.is(warnings.length, 1);
-  t.is(bundle.cache.modules.length, 2);
+        moduleDirectories: ['some/path']
+      }),
+    {
+      message: /must only contain directory names/
+    }
+  );
 });
 
 test('allows custom modulePaths', async (t) => {
