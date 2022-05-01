@@ -34,7 +34,7 @@ jobs:
         run: git branch -f master origin/master
 
       - name: Install pnpm
-        run: npm install pnpm -g
+        run: npm install pnpm@6 -g
 
       - name: Sanity Check
         run: |

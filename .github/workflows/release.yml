@@ -43,7 +43,7 @@ jobs:
 
       - name: Install pnpm
         run: |
-          npm install pnpm -g;
+          npm install pnpm@6 -g;
           echo node `pnpm -v`;
 
       - name: Set Git Config
