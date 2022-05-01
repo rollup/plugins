@@ -281,6 +281,11 @@ export function nodeResolve(opts = {}) {
           if (resolvedResolved.external) {
             return false;
           }
+          // Allow other plugins to take over resolution. Rollup core will not
+          // change the id if it corresponds to an existing file
+          if (resolvedResolved.id !== resolved.id) {
+            return resolvedResolved;
+          }
           // Pass on meta information added by other plugins
           return { ...resolved, meta: resolvedResolved.meta };
         }
