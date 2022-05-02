@@ -376,9 +376,9 @@ importers:
       '@rollup/plugin-json': ^4.1.0
       '@rollup/pluginutils': ^3.1.0
       '@types/resolve': 1.17.1
-      builtin-modules: ^3.1.0
       deepmerge: ^4.2.2
       es5-ext: ^0.10.53
+      is-builtin-module: ^3.1.0
       is-module: ^1.0.0
       resolve: ^1.19.0
       rollup: ^2.67.3
@@ -387,8 +387,8 @@ importers:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.67.3
       '@types/resolve': 1.17.1
-      builtin-modules: 3.1.0
       deepmerge: 4.2.2
+      is-builtin-module: 3.1.0
       is-module: 1.0.0
       resolve: 1.19.0
     devDependencies:
@@ -5339,6 +5339,13 @@ packages:
     dependencies:
       call-bind: 1.0.2
     dev: true
+
+  /is-builtin-module/3.1.0:
+    resolution: {integrity: sha512-OV7JjAgOTfAFJmHZLvpSTb4qi0nIILDV1gWPYDnDJUTNFM5aGlRAhk4QcT8i7TuAleeEV5Fdkqn3t4mS+Q11fg==}
+    engines: {node: '>=6'}
+    dependencies:
+      builtin-modules: 3.1.0
+    dev: false
 
   /is-callable/1.2.2:
     resolution: {integrity: sha512-dnMqspv5nU3LoewK2N/y7KLtxtakvTuaCsU9FU50/QDmdbHNy/4/JuRtMHqRU22o3q+W89YQndQEeCVwK+3qrA==}

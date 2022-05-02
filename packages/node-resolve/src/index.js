@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign, no-shadow, no-undefined */
 import { dirname, normalize, resolve, sep } from 'path';
 
-import builtinList from 'builtin-modules';
+import isBuiltinModule from 'is-builtin-module';
 import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
@@ -13,7 +13,6 @@ import { fileExists, readFile, realpath } from './fs';
 import resolveImportSpecifiers from './resolveImportSpecifiers';
 import { getMainFields, getPackageName, normalizeInput } from './util';
 
-const builtins = new Set(builtinList);
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
 const deepFreeze = (object) => {
   Object.freeze(object);
@@ -172,7 +171,7 @@ export function nodeResolve(opts = {}) {
       ignoreSideEffectsForRoot
     });
 
-    const importeeIsBuiltin = builtins.has(importee);
+    const importeeIsBuiltin = isBuiltinModule(importee);
     const resolved =
       importeeIsBuiltin && preferBuiltins
         ? {
