@@ -1,4 +1,4 @@
-import { join, resolve } from 'path';
+import { join, resolve, dirname } from 'path';
 
 import test from 'ava';
 import { rollup } from 'rollup';
@@ -576,6 +576,34 @@ test('passes on meta information from other plugins', async (t) => {
         load(id) {
           const info = this.getModuleInfo(id);
           t.deepEqual(info.meta, { test: { 'I am': 'here' } });
+        }
+      }
+    ]
+  });
+});
+
+test('allow other plugins to take over resolution', async (t) => {
+  await rollup({
+    input: 'entry/main.js',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve(),
+      {
+        name: 'change-resolution',
+        resolveId(importee) {
+          if (importee.endsWith('main.js')) {
+            return {
+              id: join(dirname(importee), 'other.js'),
+              meta: { 'change-resolution': 'changed' }
+            };
+          }
+          return null;
+        },
+
+        load(id) {
+          const info = this.getModuleInfo(id);
+          t.is(info.id, join(__dirname, 'fixtures', 'entry', 'other.js'));
+          t.deepEqual(info.meta, { 'change-resolution': 'changed' });
         }
       }
     ]
