@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.3.0
+
+_2022-05-02_
+
+### Features
+
+- feat: support `node:` protocol (#1124)
+
 ## v13.2.2
 
 _2022-05-02_
