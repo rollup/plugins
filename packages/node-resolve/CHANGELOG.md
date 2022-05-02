@@ -1,5 +1,15 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v13.2.2
+
+_2022-05-02_
+
+### Bugfixes
+
+- fix: Respect if other plugins resolve the resolution to a different id (#1181)
+- fix: Revert respect if other plugins resolve the resolution to a different id (ae59ceb)
+- fix: Respect if other plugins resolve the resolution to a different id (f8d4c44)
+
 ## v13.2.1
 
 _2022-04-15_
