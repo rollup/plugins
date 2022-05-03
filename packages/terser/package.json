@@ -1,0 +1,64 @@
+{
+  "name": "@rollup/plugin-terser",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "A Rollup plugin to minify code via Terser",
+  "license": "MIT",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/terser"
+  },
+  "author": "nemzes",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/terser",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
+    "ci:lint": "pnpm build && pnpm lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
+    "prebuild": "del-cli dist",
+    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build",
+    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
+    "test": "ava",
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
+  },
+  "files": [
+    "src/",
+    "types/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "plugin",
+    "rollup",
+    "terser"
+  ],
+  "peerDependencies": {
+    "rollup": "^1.20.0||^2.0.0"
+  },
+  "dependencies": {
+    "terser": "^5.13.1"
+  },
+  "devDependencies": {
+    "rollup": "^2.67.3"
+  },
+  "types": "types/index.d.ts",
+  "ava": {
+    "babel": {
+      "compileEnhancements": false
+    },
+    "files": [
+      "!**/fixtures/**",
+      "!**/helpers/**",
+      "!**/output/**",
+      "!**/recipes/**"
+    ]
+  }
+}
