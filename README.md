@@ -42,6 +42,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [run](packages/run)                                 | Run your bundles in Node once they're built                                               |
 | [strip](packages/strip)                             | Remove debugger statements and functions like assert.equal and console.log from your code |
 | [sucrase](packages/sucrase)                         | Compile TypeScript, Flow, JSX, etc with Sucrase                                           |
+| [terser](packages/terser)                           | Minify code with Terser                                                                   |
 | [typescript](packages/typescript)                   | Integration between Rollup and Typescript                                                 |
 | [url](packages/url)                                 | Import files as data-URIs or ES Modules                                                   |
 | [virtual](packages/virtual)                         | Load virtual modules from memory                                                          |
