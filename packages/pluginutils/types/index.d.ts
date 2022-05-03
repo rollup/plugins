@@ -13,6 +13,7 @@ export interface DataToEsmOptions {
   compact?: boolean;
   indent?: string;
   namedExports?: boolean;
+  defaultExport?: boolean;
   objectShorthand?: boolean;
   preferConst?: boolean;
 }
