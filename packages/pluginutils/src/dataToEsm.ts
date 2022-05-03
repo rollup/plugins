@@ -94,9 +94,8 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
       );
     }
   }
-  return `${namedExportCode}export default${_}{${n}${t}${defaultExportRows.join(
-    `,${n}${t}`
-  )}${n}};${n}`;
+  const defaultExportCode = options.defaultExport !== false ? `export default${_}{${n}${t}${defaultExportRows.join(`,${n}${t}`)}${n}};${n}` : '';
+  return `${namedExportCode}${defaultExportCode}`;
 };
 
 export { dataToEsm as default };
