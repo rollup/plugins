@@ -9,7 +9,6 @@ import test from 'ava';
 import { getLocator } from 'locate-character';
 
 import { rollup } from 'rollup';
-import { SourceMapConsumer } from 'source-map';
 import { install } from 'source-map-support';
 
 import { testBundle } from '../../../util/test';
@@ -63,6 +62,9 @@ test('generates a sourcemap', async (t) => {
     sourcemapFile: path.resolve('bundle.js')
   });
 
+  // Hack to make it work on Node 18
+  delete global.fetch;
+  const { SourceMapConsumer } = await import('source-map');
   const smc = await new SourceMapConsumer(map);
   const locator = getLocator(code, { offsetLine: 1 });
 
