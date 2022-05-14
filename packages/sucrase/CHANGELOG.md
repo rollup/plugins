@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v4.0.4
+
+_2022-05-14_
+
+### Bugfixes
+
+- fix: use bare specifier to obtain SucraseOptions type (#1185)
+
 ## v4.0.3
 
 _2022-04-13_
