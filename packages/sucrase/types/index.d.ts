@@ -1,6 +1,6 @@
 import { FilterPattern } from '@rollup/pluginutils';
 import { Plugin } from 'rollup';
-import { Options as SucraseOptions } from 'sucrase/dist/Options';
+import { Options as SucraseOptions } from 'sucrase';
 
 interface RollupSucraseOptions
   extends Pick<
