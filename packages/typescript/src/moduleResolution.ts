@@ -27,7 +27,7 @@ export default function createModuleResolver(
   const moduleHost = { ...ts.sys, ...host };
 
   return (moduleName, containingFile) => {
-    const resolved = ts.nodeModuleNameResolver(
+    const resolved = ts.resolveModuleName(
       moduleName,
       containingFile,
       compilerOptions,

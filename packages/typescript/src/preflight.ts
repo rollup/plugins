@@ -20,7 +20,7 @@ ${pluginName}: Rollup requires that TypeScript produces ES Modules. Unfortunatel
 const tsLibErrorMessage = `${pluginName}: Could not find module 'tslib', which is required by this plugin. Is it installed?`;
 
 let undef;
-const validModules = [ModuleKind.ES2015, ModuleKind.ES2020, ModuleKind.ESNext, undef];
+const validModules = [ModuleKind.ES2015, ModuleKind.ES2020, ModuleKind.ESNext, ModuleKind.NodeNext, ModuleKind.Node16, undef];
 
 // eslint-disable-next-line import/prefer-default-export
 export const preflight = ({ config, context, rollupOptions, tslib }: PreflightOptions) => {
