@@ -23,9 +23,22 @@ test.serial('runs code through typescript', async (t) => {
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
+  console.log('FOOO', code);
 
   t.false(code.includes('number'), code);
   t.false(code.includes('const'), code);
+});
+
+test.serial('allows nodenext module', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'nodenext' })],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.false(code.includes('number'), code);
+  t.true(code.includes('const'), code);
 });
 
 test.serial('runs code through typescript with compilerOptions', async (t) => {
