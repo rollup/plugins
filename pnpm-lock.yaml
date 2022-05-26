@@ -505,18 +505,18 @@ importers:
       buble: ^0.20.0
       resolve: ^1.17.0
       rollup: ^2.67.3
-      typescript: ^4.2.2
+      typescript: ^4.7.2
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.67.3
       resolve: 1.18.1
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@2.67.3
       '@rollup/plugin-commonjs': 11.1.0_rollup@2.67.3
-      '@rollup/plugin-typescript': 5.0.2_rollup@2.67.3+typescript@4.2.4
+      '@rollup/plugin-typescript': 5.0.2_rollup@2.67.3+typescript@4.7.2
       '@types/node': 10.17.48
       buble: 0.20.0
       rollup: 2.67.3
-      typescript: 4.2.4
+      typescript: 4.7.2
 
   packages/url:
     specifiers:
@@ -2238,7 +2238,7 @@ packages:
       typescript: 4.1.2
     dev: true
 
-  /@rollup/plugin-typescript/5.0.2_rollup@2.67.3+typescript@4.2.4:
+  /@rollup/plugin-typescript/5.0.2_rollup@2.67.3+typescript@4.7.2:
     resolution: {integrity: sha512-CkS028Itwjqm1uLbFVfpJgtVtnNvZ+og/m6UlNRR5wOOnNTWPcVQzOu5xGdEX+WWJxdvWIqUq2uR/RBt2ZipWg==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
@@ -2249,7 +2249,7 @@ packages:
       '@rollup/pluginutils': 3.1.0_rollup@2.67.3
       resolve: 1.18.1
       rollup: 2.67.3
-      typescript: 4.2.4
+      typescript: 4.7.2
     dev: true
 
   /@rollup/plugin-typescript/6.0.0_rollup@2.67.3+typescript@4.1.2:
@@ -8277,14 +8277,14 @@ packages:
     hasBin: true
     dev: true
 
-  /typescript/4.2.4:
-    resolution: {integrity: sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==}
+  /typescript/4.3.5:
+    resolution: {integrity: sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
 
-  /typescript/4.3.5:
-    resolution: {integrity: sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==}
+  /typescript/4.7.2:
+    resolution: {integrity: sha512-Mamb1iX2FDUpcTRzltPxgWMKy3fhg0TN378ylbktPGPK/99KbDtMQ4W1hwgsbPAsG3a0xKa1vmw4VKZQbkvz5A==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true

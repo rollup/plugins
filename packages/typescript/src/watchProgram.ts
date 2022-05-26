@@ -54,7 +54,7 @@ function createDeferred(timeout?: number): Deferred {
   let resolve: DeferredResolve = () => {};
 
   if (timeout) {
-    promise = Promise.race<Promise<boolean>>([
+    promise = Promise.race<boolean | void>([
       new Promise((r) => setTimeout(r, timeout, true)),
       new Promise((r) => (resolve = r))
     ]);
