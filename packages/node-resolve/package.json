@@ -17,6 +17,7 @@
   "module": "./dist/es/index.js",
   "type": "commonjs",
   "exports": {
+    "types": "./types/index.d.ts",
     "require": "./dist/cjs/index.js",
     "import": "./dist/es/index.js"
   },
