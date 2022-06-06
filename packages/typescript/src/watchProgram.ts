@@ -175,8 +175,21 @@ function createWatchHost(
       return baseHost.afterProgramCreate!(program);
     },
     /** Add helper to deal with module resolution */
-    resolveModuleNames(moduleNames, containingFile) {
-      return moduleNames.map((moduleName) => resolveModule(moduleName, containingFile));
+    resolveModuleNames(
+      moduleNames,
+      containingFile,
+      _reusedNames,
+      redirectedReference,
+      _optionsOnlyWithNewerTsVersions,
+      containingSourceFile
+    ) {
+      return moduleNames.map((moduleName, i) => {
+        const mode = containingSourceFile
+          ? ts.getModeForResolutionAtIndex?.(containingSourceFile, i)
+          : undefined;
+
+        return resolveModule(moduleName, containingFile, redirectedReference, mode);
+      });
     }
   };
 }

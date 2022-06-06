@@ -1,4 +1,9 @@
-import type { ModuleResolutionHost, ResolvedModuleFull } from 'typescript';
+import type {
+  ModuleResolutionHost,
+  ResolvedModuleFull,
+  ResolvedProjectReference,
+  ModuleKind
+} from 'typescript';
 
 import { DiagnosticsHost } from './diagnostics/host';
 
@@ -6,7 +11,9 @@ type ModuleResolverHost = Partial<ModuleResolutionHost> & DiagnosticsHost;
 
 export type Resolver = (
   moduleName: string,
-  containingFile: string
+  containingFile: string,
+  redirectedReference?: ResolvedProjectReference | undefined,
+  mode?: ModuleKind.ESNext | ModuleKind.CommonJS | undefined
 ) => ResolvedModuleFull | undefined;
 
 /**
@@ -26,13 +33,15 @@ export default function createModuleResolver(
   );
   const moduleHost = { ...ts.sys, ...host };
 
-  return (moduleName, containingFile) => {
+  return (moduleName, containingFile, redirectedReference, mode) => {
     const resolved = ts.resolveModuleName(
       moduleName,
       containingFile,
       compilerOptions,
       moduleHost,
-      cache
+      cache,
+      redirectedReference,
+      mode
     );
     return resolved.resolvedModule;
   };

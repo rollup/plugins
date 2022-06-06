@@ -23,7 +23,6 @@ test.serial('runs code through typescript', async (t) => {
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-  console.log('FOOO', code);
 
   t.false(code.includes('number'), code);
   t.false(code.includes('const'), code);
