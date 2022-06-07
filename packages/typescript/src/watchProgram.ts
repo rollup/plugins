@@ -185,7 +185,7 @@ function createWatchHost(
     ) {
       return moduleNames.map((moduleName, i) => {
         const mode = containingSourceFile
-          ? ts.getModeForResolutionAtIndex(containingSourceFile, i)
+          ? ts.getModeForResolutionAtIndex?.(containingSourceFile, i)
           : undefined;
 
         return resolveModule(moduleName, containingFile, redirectedReference, mode);
