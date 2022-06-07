@@ -3,7 +3,7 @@ import * as path from 'path';
 import { createFilter } from '@rollup/pluginutils';
 
 import { Plugin, RollupOptions, SourceDescription } from 'rollup';
-import { ModuleKind, Watch } from 'typescript';
+import type { Watch } from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
@@ -106,7 +106,16 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       // Convert path from windows separators to posix separators
       const containingFile = normalizePath(importer);
 
-      const resolved = resolveModule(importee, containingFile, undefined, ModuleKind.ESNext);
+      // when using node16 or nodenext module resolution, we need to tell ts if
+      // we are resolving to a commonjs or esnext module
+      const mode = ts.getImpliedNodeFormatForFile?.(
+        // @ts-expect-error
+        containingFile,
+        undefined,
+        { ...ts.sys, ...formatHost },
+        parsedOptions.options
+      );
+      const resolved = resolveModule(importee, containingFile, undefined, mode);
 
       if (resolved) {
         if (resolved.extension.match(/\.d\.[cm]?ts/)) return null;

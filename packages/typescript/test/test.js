@@ -1201,7 +1201,7 @@ test.serial('works when code is in src directory', async (t) => {
   );
 });
 
-test('correctly resolves types in a nodenext module', async (t) => {
+test.serial('correctly resolves types in a nodenext module', async (t) => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/nodenext-resolution/index.ts',
