@@ -111,10 +111,11 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const mode = ts.getImpliedNodeFormatForFile?.(
         // @ts-expect-error
         containingFile,
-        undefined,
+        undefined, // eslint-disable-line no-undefined
         { ...ts.sys, ...formatHost },
         parsedOptions.options
       );
+      // eslint-disable-next-line no-undefined
       const resolved = resolveModule(importee, containingFile, undefined, mode);
 
       if (resolved) {
