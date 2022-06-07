@@ -5,9 +5,14 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     # let's ignore release commits, otherwise it'll try to run twice
+    permissions:
+      contents: write  # for Git to git push
     if: |
       !startsWith(github.event.head_commit.message , 'chore(release):') &&
       !startsWith(github.event.head_commit.message , 'chore(repo):')

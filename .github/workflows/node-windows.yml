@@ -11,6 +11,9 @@ on:
       - '*'
       - '!master'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: windows-2019
