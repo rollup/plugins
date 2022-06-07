@@ -96,6 +96,10 @@ function containsEnumOptions(
   return enums.some((prop) => prop in compilerOptions && typeof compilerOptions[prop] === 'number');
 }
 
+/**
+ * The module resolution kind is a function of the resolved `compilerOptions.module`.
+ * This needs to be set explicitly for `resolveModuleName` to select the correct resolution method
+ */
 function setModuleResolutionKind(parsedConfig: ParsedCommandLine): ParsedCommandLine {
   const moduleKind = parsedConfig.options.module;
   const moduleResolution =

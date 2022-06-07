@@ -1200,3 +1200,23 @@ test.serial('works when code is in src directory', async (t) => {
     ['index.js', 'index.d.ts']
   );
 });
+
+test('correctly resolves types in a nodenext module', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/nodenext-resolution/index.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/nodenext-resolution/tsconfig.json'
+      })
+    ],
+    onwarn({ toString, ...warning }) {
+      warnings.push(warning);
+    }
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.true(code.includes('const bar = foo'), code);
+  t.is(warnings.length, 1);
+  t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
+});
