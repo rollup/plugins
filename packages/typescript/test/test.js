@@ -122,6 +122,30 @@ test.serial('ensures multiple outputs can be built', async (t) => {
   ]);
 });
 
+test.serial('supports emitting types also for single file output', async (t) => {
+  // Navigate to folder and use default local tsconfig instead of specifying tsconfig via file path
+  // as that would have the side effect that the tsconfig's path would be used as fallback path for
+  // the here unspecified outputOptions.dir, in which case the original issue wouldn't show.
+  process.chdir('fixtures/basic');
+
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript({ declaration: true, declarationDir: 'dist' })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  // generate a single output bundle, in which case, declaration files were not correctly emitted
+  const output = await getCode(bundle, { format: 'esm', file: 'dist/main.js' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'main.d.ts']
+  );
+  t.is(warnings.length, 0);
+});
+
 test.serial('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/relative-dir/main.ts',
