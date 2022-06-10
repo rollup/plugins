@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.3.3
+
+_2022-06-10_
+
+### Bugfixes
+
+- fix: allow tslib peerDependency to be optional for npm and pnpm (#1191)
+
 ## v8.3.2
 
 _2022-04-13_
