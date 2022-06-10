@@ -168,6 +168,11 @@ rootDir: path.join(process.cwd(), '..')
 
 If you use the `sideEffects` property in the package.json, by default this is respected for files in the root package. Set to `true` to ignore the `sideEffects` configuration for the root package.
 
+### `useResolveModule`
+
+By default modules are loaded by looking in package.json. With this option classic behaviour is configured by using resolve module rather then looking
+in package.json.
+
 ## Preserving symlinks
 
 This plugin honours the rollup [`preserveSymlinks`](https://rollupjs.org/guide/en/#preservesymlinks) option.
