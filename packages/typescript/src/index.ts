@@ -108,13 +108,17 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       // when using node16 or nodenext module resolution, we need to tell ts if
       // we are resolving to a commonjs or esnext module
-      const mode = ts.getImpliedNodeFormatForFile?.(
-        // @ts-expect-error
-        containingFile,
-        undefined, // eslint-disable-line no-undefined
-        { ...ts.sys, ...formatHost },
-        parsedOptions.options
-      );
+      const mode =
+        typeof ts.getImpliedNodeFormatForFile === 'function'
+          ? ts.getImpliedNodeFormatForFile(
+              // @ts-expect-error
+              containingFile,
+              undefined, // eslint-disable-line no-undefined
+              { ...ts.sys, ...formatHost },
+              parsedOptions.options
+            )
+          : undefined; // eslint-disable-line no-undefined
+
       // eslint-disable-next-line no-undefined
       const resolved = resolveModule(importee, containingFile, undefined, mode);
 
