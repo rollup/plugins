@@ -35,7 +35,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const watchProgramHelper = new WatchProgramHelper();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
-  const filter = createFilter(include || ['*.(|c|m)ts+(|x)', '**/*.(|c|m)ts+(|x)'], exclude, {
+  const filter = createFilter(include || '{,**/}*.?(c|m)ts?(x)', exclude, {
     resolve: filterRoot ?? parsedOptions.options.rootDir
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
