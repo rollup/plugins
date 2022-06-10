@@ -1,12 +1,12 @@
 import { ChildProcess, fork } from 'child_process';
-import { resolve, join, dirname } from 'path';
+import { join, dirname } from 'path';
 
-import { Plugin, RenderedChunk } from 'rollup';
+import { Plugin, RenderedChunk, ResolvedId } from 'rollup';
 
 import { RollupRunOptions } from '../types';
 
 export default function run(opts: RollupRunOptions = {}): Plugin {
-  let input: string;
+  let input: ResolvedId | null;
   let proc: ChildProcess;
 
   const args = opts.args || [];
@@ -33,7 +33,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
         throw new Error(`@rollup/plugin-run only works with a single entry point`);
       }
 
-      input = await this.resolve(inputs[0], undefined, {isEntry: true});
+      input = await this.resolve(inputs[0], undefined, { isEntry: true });
     },
 
     generateBundle(_outputOptions, _bundle, isWrite) {
@@ -51,7 +51,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       const dir = outputOptions.dir || dirname(outputOptions.file!);
       const entryFileName = Object.keys(bundle).find((fileName) => {
         const chunk = bundle[fileName] as RenderedChunk;
-        return chunk.isEntry;
+        return chunk.modules && input && Object.keys(chunk.modules).includes(input.id);
       });
 
       if (entryFileName) {
