@@ -279,7 +279,7 @@ export default async function resolveImportSpecifiers({
   ignoreSideEffectsForRoot,
   useResolveModule
 }) {
-  if (!useResolveModule)
+  if (!useResolveModule) {
     try {
       const exportMapRes = await resolveWithExportMap({
         importer,
