@@ -276,30 +276,34 @@ export default async function resolveImportSpecifiers({
   baseDir,
   moduleDirectories,
   rootDir,
-  ignoreSideEffectsForRoot
+  ignoreSideEffectsForRoot,
+  useResolveModule
 }) {
-  try {
-    const exportMapRes = await resolveWithExportMap({
-      importer,
-      importSpecifier: importSpecifierList[0],
-      exportConditions,
-      packageInfoCache,
-      extensions,
-      mainFields,
-      preserveSymlinks,
-      useBrowserOverrides,
-      baseDir,
-      moduleDirectories,
-      rootDir,
-      ignoreSideEffectsForRoot
-    });
-    if (exportMapRes) return exportMapRes;
-  } catch (error) {
-    if (error instanceof ResolveError) {
-      warn(error);
-      return null;
+  if (!useResolveModule)
+    try {
+      const exportMapRes = await resolveWithExportMap({
+        importer,
+        importSpecifier: importSpecifierList[0],
+        exportConditions,
+        packageInfoCache,
+        extensions,
+        mainFields,
+        preserveSymlinks,
+        useBrowserOverrides,
+        baseDir,
+        moduleDirectories,
+        rootDir,
+        ignoreSideEffectsForRoot,
+        useResolveModule
+      });
+      if (exportMapRes) return exportMapRes;
+    } catch (error) {
+      if (error instanceof ResolveError) {
+        warn(error);
+        return null;
+      }
+      throw error;
     }
-    throw error;
   }
 
   // package has no imports or exports, use classic node resolve
