@@ -293,8 +293,7 @@ export default async function resolveImportSpecifiers({
         baseDir,
         moduleDirectories,
         rootDir,
-        ignoreSideEffectsForRoot,
-        useResolveModule
+        ignoreSideEffectsForRoot
       });
       if (exportMapRes) return exportMapRes;
     } catch (error) {
