@@ -221,7 +221,7 @@ export default ({
 })
 ```
 
-## Resolving require statements
+## Resolving Require Statements
 
 According to [NodeJS module resolution](https://nodejs.org/api/packages.html#packages_package_entry_points) `require` statements should resolve using the `require` condition in the package exports field, while es modules should use the `import` condition.
 
