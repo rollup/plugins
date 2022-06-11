@@ -61,9 +61,23 @@ function expressionToGlob(node) {
   }
 }
 
+function isUrl(what) {
+  try {
+    return new URL(what);
+  } catch (_) {
+    return false;
+  }
+}
+
+function shouldIgnore(g) {
+  const url = isUrl(g);
+  return url && url.protocol.match(/^(data|http|https):(.+)?/);
+}
+
 export function dynamicImportToGlob(node, sourceString) {
   let glob = expressionToGlob(node);
-  if (!glob.includes('*') || glob.startsWith('data:') || glob.startsWith('http')) {
+
+  if (!glob.includes('*') || shouldIgnore(glob)) {
     return null;
   }
   glob = glob.replace(/\*\*/g, '*');
