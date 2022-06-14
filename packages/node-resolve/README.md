@@ -23,6 +23,12 @@ Using npm:
 npm install @rollup/plugin-node-resolve --save-dev
 ```
 
+Using yarn:
+
+```console
+yarn add -D @rollup/plugin-node-resolve
+```
+
 ## Usage
 
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
