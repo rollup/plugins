@@ -226,8 +226,6 @@ export function nodeResolve(opts = {}) {
             importee = importee.slice(5);
           }
           return { id: importee, external: true };
-        } else {
-          return false;
         }
       } else if (jail && location.indexOf(normalize(jail.trim(sep))) !== 0) {
         return null;
