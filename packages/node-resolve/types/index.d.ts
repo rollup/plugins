@@ -72,9 +72,13 @@ export interface RollupNodeResolveOptions {
   /**
    * If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`,
    * the plugin will look for locally installed modules of the same name.
+   *
+   * When set to `true`, `prefer-protocol` and `prefer-no-protocol` can also be used to
+   * deduplicate, e.g. `fs` and `node:fs`, as the same module. The final import path would
+   * be `node:fs` for `prefer-protocol` or `fs` for `prefer-no-protocol`.
    * @default true
    */
-  preferBuiltins?: boolean;
+  preferBuiltins?: boolean | 'prefer-protocol' | 'prefer-no-protocol';
 
   /**
    * An `Array` which instructs the plugin to limit module resolution to those whose

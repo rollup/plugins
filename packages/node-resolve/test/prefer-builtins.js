@@ -116,3 +116,39 @@ test('detects builtins imported with node: protocol', async (t) => {
 
   t.is(warnings.length, 0);
 });
+
+test('dedupe builtins for prefer-protocol', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'node-dedupe-protocol.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        preferBuiltins: 'prefer-protocol'
+      })
+    ]
+  });
+
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 0);
+  t.deepEqual(imports, ['node:fs']);
+});
+
+test('dedupe builtins for prefer-no-protocol', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'node-dedupe-protocol.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        preferBuiltins: 'prefer-no-protocol'
+      })
+    ]
+  });
+
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 0);
+  t.deepEqual(imports, ['fs']);
+});

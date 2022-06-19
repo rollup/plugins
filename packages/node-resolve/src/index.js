@@ -51,7 +51,7 @@ export function nodeResolve(opts = {}) {
   const idToPackageInfo = new Map();
   const mainFields = getMainFields(options);
   const useBrowserOverrides = mainFields.indexOf('browser') !== -1;
-  const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
+  const isPreferBuiltinsSet = options.preferBuiltins != null;
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
   const rootDir = resolve(options.rootDir || process.cwd());
   let { dedupe } = options;
@@ -214,7 +214,21 @@ export function nodeResolve(opts = {}) {
             `preferring built-in module '${importee}' over local alternative at '${resolvedWithoutBuiltins.location}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
           );
         }
-        return false;
+        if (preferBuiltins === true) {
+          return false;
+        } else if (preferBuiltins === 'prefer-protocol') {
+          if (!importee.startsWith('node:')) {
+            importee = `node:${importee}`;
+          }
+          return { id: importee, external: true };
+        } else if (preferBuiltins === 'prefer-no-protocol') {
+          if (importee.startsWith('node:')) {
+            importee = importee.slice(5);
+          }
+          return { id: importee, external: true };
+        } else {
+          return false;
+        }
       } else if (jail && location.indexOf(normalize(jail.trim(sep))) !== 0) {
         return null;
       }
