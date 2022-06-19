@@ -126,10 +126,12 @@ Specifies the properties to scan within a `package.json`, used to determine the 
 
 ### `preferBuiltins`
 
-Type: `Boolean`<br>
+Type: `Boolean | 'prefer-protocol' | 'prefer-no-protocol'`<br>
 Default: `true` (with warnings if a builtin module is used over a local version. Set to `true` to disable warning.)
 
 If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
+
+When set to `true`, `prefer-protocol` and `prefer-no-protocol` can also be used to deduplicate, e.g. `fs` and `node:fs`, as the same module. The final import path would be `node:fs` for `prefer-protocol` or `fs` for `prefer-no-protocol`.
 
 ### `modulesOnly`
 
