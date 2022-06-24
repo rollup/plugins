@@ -9,7 +9,6 @@ import test from 'ava';
 import { getLocator } from 'locate-character';
 
 import { rollup } from 'rollup';
-import { SourceMapConsumer } from 'source-map';
 import { install } from 'source-map-support';
 
 import { testBundle } from '../../../util/test';
@@ -63,6 +62,9 @@ test('generates a sourcemap', async (t) => {
     sourcemapFile: path.resolve('bundle.js')
   });
 
+  // Hack to make it work on Node 18
+  delete global.fetch;
+  const { SourceMapConsumer } = await import('source-map');
   const smc = await new SourceMapConsumer(map);
   const locator = getLocator(code, { offsetLine: 1 });
 
@@ -804,7 +806,7 @@ test('handles when an imported dependency of an ES module changes type', async (
   let bundle = await rollup(options);
   t.is(meta.isCommonJS, false);
   t.deepEqual((await executeBundle(bundle, t)).exports, 'esm');
-  t.deepEqual(trackedTransforms, ['main.js', 'dep.js', 'main.js?commonjs-entry']);
+  t.deepEqual(trackedTransforms, ['main.js', 'dep.js']);
   trackedTransforms.length = 0;
   const esCode = await getCodeFromBundle(bundle);
   t.snapshot(esCode);
@@ -889,7 +891,7 @@ test('handles when a dynamically imported dependency of an ES module changes typ
   let bundle = await rollup(options);
   t.is(meta.isCommonJS, false);
   t.deepEqual(await (await executeBundle(bundle, t)).exports, 'esm');
-  t.deepEqual(trackedTransforms, ['main.js', 'main.js?commonjs-entry', 'dep.js']);
+  t.deepEqual(trackedTransforms, ['main.js', 'dep.js']);
   trackedTransforms.length = 0;
 
   modules['dep.js'] = "exports.dep = 'cjs';";
@@ -1057,7 +1059,6 @@ test('handles when a required dependency of a mixed ES module changes type', asy
   t.deepEqual(trackedTransforms, [
     'dep.js',
     'main.js',
-    'main.js?commonjs-entry',
     '\0commonjsHelpers.js',
     '\0dep.js?commonjs-proxy'
   ]);
@@ -1201,11 +1202,11 @@ test('allows the config to be reused', async (t) => {
   let bundle = await rollup({ input: 'foo.js', ...config });
   t.deepEqual(
     bundle.cache.modules.map(({ id }) => id),
-    ['foo.js', 'foo.js?commonjs-entry']
+    ['foo.js']
   );
   bundle = await rollup({ input: 'bar.js', ...config });
   t.deepEqual(
     bundle.cache.modules.map(({ id }) => id),
-    ['bar.js', 'bar.js?commonjs-entry']
+    ['bar.js']
   );
 });
