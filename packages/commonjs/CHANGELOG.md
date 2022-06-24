@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v22.0.1
+
+_2022-06-24_
+
+### Bugfixes
+
+- fix: Only proxy detected commonjs entry points (#1180)
+
 ## v22.0.0
 
 _2022-04-24_
