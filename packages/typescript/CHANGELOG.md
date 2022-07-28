@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.3.4
+
+_2022-07-28_
+
+### Bugfixes
+
+- fix: fix declaration file generation for single file outputs (#1201)
+
 ## v8.3.3
 
 _2022-06-10_
