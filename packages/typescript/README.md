@@ -304,7 +304,7 @@ export default {
   output: {
     file: 'dist/index.mjs'
   },
-  plugins: [typescript({ tsconfig: './tsconfig.json' })]
+  plugins: [typescript()]
 };
 ```
 
@@ -320,7 +320,7 @@ And accompanying `tsconfig.json` file:
 }
 ```
 
-This setup will produce `dist/index.mjs` and `dist/dist/index.d.ts`. To correctly place the declaration file, add an `exclude` setting in `tsconfig` and modify the `declarationDir` setting in `compilerOptions` to resemble:
+This setup will produce `dist/index.mjs` and `dist/src/index.d.ts`. To correctly place the declaration file, add an `exclude` setting in `tsconfig` and modify the `declarationDir` setting in `compilerOptions` to resemble:
 
 ```json
 {
