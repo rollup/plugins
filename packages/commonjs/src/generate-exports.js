@@ -1,4 +1,4 @@
-export function wrapCode(magicString, uses, moduleName, exportsName) {
+export function wrapCode(magicString, uses, moduleName, exportsName, indentExclusionRanges) {
   const args = [];
   const passedArgs = [];
   if (uses.module) {
@@ -11,7 +11,7 @@ export function wrapCode(magicString, uses, moduleName, exportsName) {
   }
   magicString
     .trim()
-    .indent('\t')
+    .indent('\t', { exclude: indentExclusionRanges })
     .prepend(`(function (${args.join(', ')}) {\n`)
     .append(`\n} (${passedArgs.join(', ')}));`);
 }
