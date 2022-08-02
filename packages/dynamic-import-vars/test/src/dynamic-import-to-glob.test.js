@@ -17,6 +17,24 @@ test('template literal with variable filename', (t) => {
   t.is(glob, './foo/*.js');
 });
 
+test('external', (t) => {
+  const ast = CustomParser.parse('import(`https://some.cdn.com/package/${version}/index.js`);', {
+    sourceType: 'module'
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  t.is(glob, null);
+});
+
+test('external - leaves bare module specifiers starting with https in tact', (t) => {
+  const ast = CustomParser.parse('import("http_utils");', {
+    sourceType: 'module'
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  t.is(glob, null);
+});
+
 test('data uri', (t) => {
   const ast = CustomParser.parse('import(`data:${bar}`);', {
     sourceType: 'module'
