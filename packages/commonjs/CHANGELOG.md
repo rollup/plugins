@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v22.0.2
+
+_2022-08-05_
+
+### Bugfixes
+
+- fix: Exclude multi-line template strings from indent (#1229)
+
 ## v22.0.1
 
 _2022-06-24_
