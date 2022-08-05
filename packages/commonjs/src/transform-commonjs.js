@@ -97,6 +97,7 @@ export default async function transformCommonjs(
   const replacedGlobal = [];
   const replacedDynamicRequires = [];
   const importedVariables = new Set();
+  const indentExclusionRanges = [];
 
   walk(ast, {
     enter(node, parent) {
@@ -395,6 +396,11 @@ export default async function transformCommonjs(
           if (!scope.parent) {
             topLevelDeclarations.push(node);
           }
+          return;
+        case 'TemplateElement':
+          if (node.value.raw.includes('\n')) {
+            indentExclusionRanges.push([node.start, node.end]);
+          }
       }
     },
 
@@ -527,11 +533,13 @@ export default async function transformCommonjs(
       );
 
   if (shouldWrap) {
-    wrapCode(magicString, uses, moduleName, exportsName);
+    wrapCode(magicString, uses, moduleName, exportsName, indentExclusionRanges);
   }
 
   if (usesRequireWrapper) {
-    magicString.trim().indent('\t');
+    magicString.trim().indent('\t', {
+      exclude: indentExclusionRanges
+    });
     magicString.prepend(
       `var ${isRequiredName};
 
