@@ -81,3 +81,13 @@ test('makes a bundle with entryFileName as the filename', async (t) => {
   const [result] = await getCode(bundle, { format: 'cjs' }, true);
   t.is(result.fileName, 'testing.js');
 });
+
+test('maintains filename when preserveModules = true', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/{0,1}.js',
+    plugins: [multiEntry()]
+  });
+  const [result1, result2] = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
+  t.is(result1.fileName, '0.js');
+  t.is(result2.fileName, '1.js');
+});
