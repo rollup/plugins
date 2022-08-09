@@ -1,18 +1,18 @@
-import * as path from 'path';
+import { relative, resolve, sep } from 'path';
 
 import { Plugin } from 'rollup';
 import { createFilter } from '@rollup/pluginutils';
-import { CLIEngine } from 'eslint';
+import { ESLint } from 'eslint';
 
-import { RollupEslintOptions } from '../types';
+import type { RollupEslintOptions } from '../types';
 
 function normalizePath(id: string) {
-  return path.relative(process.cwd(), id).split(path.sep).join('/');
+  return relative(process.cwd(), id).split(sep).join('/');
 }
 
 export default function eslint(options = {} as RollupEslintOptions): Plugin {
   if (typeof options === 'string') {
-    const configFile = path.resolve(process.cwd(), options);
+    const configFile = resolve(process.cwd(), options);
     // eslint-disable-next-line global-require, import/no-dynamic-require, no-param-reassign
     options = require(configFile);
     // Tell eslint not to look for configuration files.
@@ -20,62 +20,64 @@ export default function eslint(options = {} as RollupEslintOptions): Plugin {
     options.useEslintrc = false;
   }
 
-  const cli = new CLIEngine(options);
-  let formatter: CLIEngine.Formatter;
+  const {
+    include,
+    exclude = /node_modules/,
+    throwOnWarning = false,
+    throwOnError = false,
+    formatter = 'stylish',
+    ...eslintOptions
+  } = options;
 
-  switch (typeof options.formatter) {
-    case 'string':
-      formatter = cli.getFormatter(options.formatter);
-      break;
-    case 'function':
-      ({ formatter } = options);
-      break;
-    default:
-      formatter = cli.getFormatter('stylish');
-  }
-
-  const filter = createFilter(options.include, options.exclude || /node_modules/);
+  const eslintInstance = new ESLint(eslintOptions);
+  const filter = createFilter(include, exclude);
 
   return {
     name: 'eslint',
-
-    // eslint-disable-next-line consistent-return
-    transform(code, id) {
+    async transform(_, id: string) {
       const file = normalizePath(id);
-      if (!filter(id) || cli.isPathIgnored(file)) {
+      if (!filter(id) || (await eslintInstance.isPathIgnored(file))) {
         return null;
       }
 
-      const report = cli.executeOnText(code, file);
-      const hasWarnings = options.throwOnWarning && report.warningCount !== 0;
-      const hasErrors = options.throwOnError && report.errorCount !== 0;
+      const results = await eslintInstance.lintFiles(file);
+      const [result] = results;
 
-      if (options.fix && report) {
-        CLIEngine.outputFixes(report);
+      if (eslintOptions.fix) {
+        await ESLint.outputFixes(results);
       }
 
-      if (report.warningCount === 0 && report.errorCount === 0) {
+      if (result.warningCount === 0 && result.errorCount === 0) {
         return null;
       }
 
-      const result = formatter(report.results);
+      const eslintFormatter: ESLint.Formatter =
+        typeof formatter === 'string'
+          ? await eslintInstance.loadFormatter(formatter)
+          : { format: formatter };
+      const output = eslintFormatter.format(results);
 
-      if (result) {
+      if (output) {
         // eslint-disable-next-line no-console
-        console.log(result);
+        console.log(output);
       }
 
-      if (hasWarnings && hasErrors) {
-        throw Error('Warnings or errors were found');
+      const errorMessages = [];
+      if (result.warningCount > 0 && throwOnWarning) {
+        errorMessages.push(`${result.warningCount} warning${result.warningCount > 1 ? 's' : ''}`);
       }
 
-      if (hasWarnings) {
-        throw Error('Warnings were found');
+      if (result.errorCount > 0 && throwOnError) {
+        errorMessages.push(`${result.errorCount} error${result.errorCount > 1 ? 's' : ''}`);
       }
 
-      if (hasErrors) {
-        throw Error('Errors were found');
+      if (errorMessages.length > 0) {
+        throw new Error(
+          `Found ${errorMessages.join(' and ')} in ${relative('.', result.filePath)}`
+        );
       }
+
+      return null;
     }
   };
 }
