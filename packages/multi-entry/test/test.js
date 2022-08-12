@@ -87,7 +87,60 @@ test('maintains filename when preserveModules = true', async (t) => {
     input: 'test/fixtures/{0,1}.js',
     plugins: [multiEntry()]
   });
-  const [result1, result2] = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
-  t.is(result1.fileName, '0.js');
-  t.is(result2.fileName, '1.js');
+  const files = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
+
+  const nonVirtualFiles = files
+    .filter(({ fileName }) => !fileName.startsWith('_virtual/'))
+    .sort((a, b) => a.fileName.localeCompare(b.fileName));
+
+  t.is(nonVirtualFiles.length, 2);
+
+  t.is(nonVirtualFiles[0].fileName, '0.js');
+  t.is(nonVirtualFiles[1].fileName, '1.js');
+});
+
+test('makes a bundle with entryFileName as the filename when preserveModules = true and entryName is set', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/{0,1}.js',
+    plugins: [multiEntry({ entryFileName: 'testing.js' })],
+    output: {
+      preserveModules: true
+    }
+  });
+
+  const files = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
+  const nonVirtualFiles = files
+    .filter(({ fileName }) => !fileName.startsWith('_virtual/'))
+    .sort((a, b) => a.fileName.localeCompare(b.fileName));
+
+  t.is(nonVirtualFiles.length, 2);
+
+  t.is(nonVirtualFiles[0].fileName, 'testing.js');
+  t.is(nonVirtualFiles[1].fileName, 'testing2.js');
+});
+
+test('makes a bundle with entryFileName as the output.entryFileName when preserveModules = true and entryName is not set', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/{0,1}.js',
+    plugins: [multiEntry()],
+    output: {
+      preserveModules: true,
+      entryFileNames: 'outputEntryFileName.js'
+    }
+  });
+
+  const files = await getCode(
+    bundle,
+    { format: 'cjs', preserveModules: true, entryFileNames: 'outputEntryFileName.js' },
+    true
+  );
+
+  const nonVirtualFiles = files
+    .filter(({ fileName }) => !fileName.startsWith('_virtual/'))
+    .sort((a, b) => a.fileName.localeCompare(b.fileName));
+
+  t.is(nonVirtualFiles.length, 2);
+
+  t.is(nonVirtualFiles[0].fileName, 'outputEntryFileName.js');
+  t.is(nonVirtualFiles[1].fileName, 'outputEntryFileName2.js');
 });
