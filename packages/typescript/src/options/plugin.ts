@@ -35,7 +35,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     include,
     exclude,
     filterRoot,
-    noForceEmit,
+    noForceEmit: noForceEmit || false,
     tsconfig,
     compilerOptions: { ...extra, ...compilerOptions } as PartialCompilerOptions,
     typescript: typescript || defaultTs,
