@@ -21,6 +21,7 @@ import {
   DEFAULT_COMPILER_OPTIONS,
   EnumCompilerOptions,
   FORCED_COMPILER_OPTIONS,
+  OVERRIDABLE_EMIT_COMPILER_OPTIONS,
   PartialCompilerOptions
 } from './interfaces';
 import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
@@ -36,6 +37,10 @@ export interface TypeScriptConfig {
   errors: Diagnostic[];
   wildcardDirectories?: MapLike<WatchDirectoryFlags> | undefined;
   compileOnSave?: boolean | undefined;
+}
+
+function makeForcedCompilerOptions(noForceEmit: boolean) {
+  return { ...FORCED_COMPILER_OPTIONS, ...(noForceEmit ? OVERRIDABLE_EMIT_COMPILER_OPTIONS : {}) };
 }
 
 /**
@@ -110,7 +115,8 @@ const configCache = new Map() as import('typescript').Map<ExtendedConfigCacheEnt
 export function parseTypescriptConfig(
   ts: typeof import('typescript'),
   tsconfig: RollupTypescriptOptions['tsconfig'],
-  compilerOptions: PartialCompilerOptions
+  compilerOptions: PartialCompilerOptions,
+  noForceEmit: boolean
 ): TypeScriptConfig {
   /* eslint-disable no-undefined */
   const cwd = process.cwd();
@@ -136,7 +142,7 @@ export function parseTypescriptConfig(
       },
       ts.sys,
       basePath,
-      { ...compilerOptions, ...FORCED_COMPILER_OPTIONS },
+      { ...compilerOptions, ...makeForcedCompilerOptions(noForceEmit) },
       tsConfigPath,
       undefined,
       undefined,
@@ -154,7 +160,7 @@ export function parseTypescriptConfig(
       },
       ts.sys,
       basePath,
-      FORCED_COMPILER_OPTIONS,
+      makeForcedCompilerOptions(noForceEmit),
       tsConfigPath,
       undefined,
       undefined,
