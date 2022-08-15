@@ -1208,3 +1208,46 @@ test.serial('works when code is in src directory', async (t) => {
     ['index.js', 'index.d.ts']
   );
 });
+
+test.serial('noForceEmit option defers to tsconfig.json for emitDeclarationOnly', async (t) => {
+  process.chdir('fixtures/noForceEmit/emitDeclarationOnly');
+
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript({ noForceEmit: true })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  // generate a single output bundle, in which case, declaration files were not correctly emitted
+  const output = await getCode(bundle, { format: 'esm', file: 'dist/main.js' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'main.d.ts']
+  );
+  t.is(warnings.length, 0);
+  // TODO test that `main.js` still has typescript in it, since `emitDeclarationOnly` would have skipped ts transpilation
+});
+
+test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) => {
+  process.chdir('fixtures/noForceEmit/noEmit');
+
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'main.ts',
+    plugins: [typescript({ noForceEmit: true })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  // generate a single output bundle, in which case, declaration files were not correctly emitted
+  const output = await getCode(bundle, { format: 'esm', file: 'dist/main.js' }, true);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js']
+  );
+  t.is(warnings.length, 0);
+});
