@@ -40,7 +40,7 @@ export interface TypeScriptConfig {
 }
 
 function makeForcedCompilerOptions(noForceEmit: boolean) {
-  return { ...FORCED_COMPILER_OPTIONS, ...(noForceEmit ? OVERRIDABLE_EMIT_COMPILER_OPTIONS : {}) };
+  return { ...FORCED_COMPILER_OPTIONS, ...(noForceEmit ? {} : OVERRIDABLE_EMIT_COMPILER_OPTIONS) };
 }
 
 /**

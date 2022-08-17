@@ -1210,44 +1210,64 @@ test.serial('works when code is in src directory', async (t) => {
 });
 
 test.serial('noForceEmit option defers to tsconfig.json for emitDeclarationOnly', async (t) => {
-  process.chdir('fixtures/noForceEmit/emitDeclarationOnly');
-
+  const input = 'fixtures/noForceEmit/emitDeclarationOnly/main.ts';
   const warnings = [];
   const bundle = await rollup({
-    input: 'main.ts',
-    plugins: [typescript({ noForceEmit: true })],
+    input,
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/noForceEmit/emitDeclarationOnly/tsconfig.json',
+        noForceEmit: true
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
   // generate a single output bundle, in which case, declaration files were not correctly emitted
-  const output = await getCode(bundle, { format: 'esm', file: 'dist/main.js' }, true);
+  const output = await getCode(
+    bundle,
+    { format: 'esm', file: 'fixtures/noForceEmit/emitDeclarationOnly/dist/main.js' },
+    true
+  );
 
   t.deepEqual(
     output.map((out) => out.fileName),
+    // original file is passed through, main.d.ts is emitted
     ['main.js', 'main.d.ts']
   );
   t.is(warnings.length, 0);
-  // TODO test that `main.js` still has typescript in it, since `emitDeclarationOnly` would have skipped ts transpilation
+  // test that NO transpilation happened
+  const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
+  t.is(output[0].code, originalCode);
 });
 
 test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) => {
-  process.chdir('fixtures/noForceEmit/noEmit');
-
+  const input = 'fixtures/noForceEmit/noEmit/main.ts';
   const warnings = [];
   const bundle = await rollup({
-    input: 'main.ts',
-    plugins: [typescript({ noForceEmit: true })],
+    input,
+    plugins: [
+      typescript({ tsconfig: 'fixtures/noForceEmit/noEmit/tsconfig.json', noForceEmit: true })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
   // generate a single output bundle, in which case, declaration files were not correctly emitted
-  const output = await getCode(bundle, { format: 'esm', file: 'dist/main.js' }, true);
+  const output = await getCode(
+    bundle,
+    { format: 'esm', file: 'fixtures/noForceEmit/noEmit/dist/main.js' },
+    true
+  );
 
   t.deepEqual(
     output.map((out) => out.fileName),
+    // no `main.d.ts`, main.js is passed through
     ['main.js']
   );
   t.is(warnings.length, 0);
+  // test that NO transpilation happened
+  const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
+  t.is(output[0].code, originalCode);
 });
