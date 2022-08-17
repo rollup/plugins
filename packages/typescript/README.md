@@ -247,7 +247,7 @@ These compiler options are ignored by Rollup:
 
 - `noEmitHelpers`, `importHelpers`: The `tslib` helper module always must be used.
 - `noEmit`, `emitDeclarationOnly`: Typescript needs to emit code for the plugin to work with.
-  - While this was true for early iterations of `@rollup/plugin-typescript`, it is no longer. To override this behavior, and defer to `tsconfig.json` for these options, see the `noForceEmit` options
+  - _Note: While this was true for early iterations of `@rollup/plugin-typescript`, it is no longer. To override this behavior, and defer to `tsconfig.json` for these options, see the [`noForceEmit`](#noForceEmit) option_
 - `noResolve`: Preventing Typescript from resolving code may break compilation
 
 ### Importing CommonJS
