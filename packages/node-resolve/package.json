@@ -52,7 +52,7 @@
     "modules"
   ],
   "peerDependencies": {
-    "rollup": "^2.42.0"
+    "rollup": "^2.78.0"
   },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
@@ -66,10 +66,10 @@
     "@babel/core": "^7.10.5",
     "@babel/plugin-transform-typescript": "^7.10.5",
     "@rollup/plugin-babel": "^5.1.0",
-    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-json": "^4.1.0",
     "es5-ext": "^0.10.53",
-    "rollup": "^2.67.3",
+    "rollup": "^2.78.1",
     "source-map": "^0.7.3",
     "string-capitalize": "^1.0.1"
   },
