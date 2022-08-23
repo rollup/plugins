@@ -1208,3 +1208,66 @@ test.serial('works when code is in src directory', async (t) => {
     ['index.js', 'index.d.ts']
   );
 });
+
+test.serial('noForceEmit option defers to tsconfig.json for emitDeclarationOnly', async (t) => {
+  const input = 'fixtures/noForceEmit/emitDeclarationOnly/main.ts';
+  const warnings = [];
+  const bundle = await rollup({
+    input,
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/noForceEmit/emitDeclarationOnly/tsconfig.json',
+        noForceEmit: true
+      })
+    ],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  // generate a single output bundle, in which case, declaration files were not correctly emitted
+  const output = await getCode(
+    bundle,
+    { format: 'esm', file: 'fixtures/noForceEmit/emitDeclarationOnly/dist/main.js' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    // original file is passed through, main.d.ts is emitted
+    ['main.js', 'main.d.ts']
+  );
+  t.is(warnings.length, 0);
+  // test that NO transpilation happened
+  const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
+  t.is(output[0].code, originalCode);
+});
+
+test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) => {
+  const input = 'fixtures/noForceEmit/noEmit/main.ts';
+  const warnings = [];
+  const bundle = await rollup({
+    input,
+    plugins: [
+      typescript({ tsconfig: 'fixtures/noForceEmit/noEmit/tsconfig.json', noForceEmit: true })
+    ],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  // generate a single output bundle, in which case, declaration files were not correctly emitted
+  const output = await getCode(
+    bundle,
+    { format: 'esm', file: 'fixtures/noForceEmit/noEmit/dist/main.js' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    // no `main.d.ts`, main.js is passed through
+    ['main.js']
+  );
+  t.is(warnings.length, 0);
+  // test that NO transpilation happened
+  const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
+  t.is(output[0].code, originalCode);
+});
