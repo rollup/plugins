@@ -3,7 +3,7 @@ import * as path from 'path';
 import { createFilter } from '@rollup/pluginutils';
 
 import { Plugin, RollupOptions, SourceDescription } from 'rollup';
-import type { Watch } from 'typescript';
+import type { ResolvedModuleFull, Watch } from 'typescript';
 
 import { RollupTypescriptOptions } from '../types';
 
@@ -119,8 +119,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const resolved = resolveModule(importee, containingFile);
 
       if (resolved) {
-        if (resolved.extension.startsWith('.d.') && resolved.extension.match(/\./g)?.length === 2)
-          return null;
+        if (isTypeDeclarationFile(resolved)) return null;
         return path.normalize(resolved.resolvedFileName);
       }
 
@@ -182,4 +181,17 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       }
     }
   };
+}
+
+/**
+ * Check if the given resolved TypeScript module is a type declaration.
+ */
+function isTypeDeclarationFile(resolved: ResolvedModuleFull) {
+  const lastDotDDot = resolved.extension.lastIndexOf('.d.');
+  if (lastDotDDot < 0) return false;
+
+  const lastDot = resolved.extension.lastIndexOf('.');
+
+  // Ensure the dot is the second one in `.d.`
+  return lastDot === lastDotDDot + 2;
 }
