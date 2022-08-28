@@ -17,6 +17,8 @@ import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
 
+const defaultTsExtensionsGlob = '?(m|c)ts+(|x)';
+
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const {
     cacheDir,
@@ -36,9 +38,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const watchProgramHelper = new WatchProgramHelper();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
-  const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude, {
-    resolve: filterRoot ?? parsedOptions.options.rootDir
-  });
+  const filter = createFilter(
+    include || [`*.${defaultTsExtensionsGlob}`, `**/*.${defaultTsExtensionsGlob}`],
+    exclude,
+    {
+      resolve: filterRoot ?? parsedOptions.options.rootDir
+    }
+  );
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
   const formatHost = createFormattingHost(ts, parsedOptions.options);
@@ -110,7 +116,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const resolved = resolveModule(importee, containingFile);
 
       if (resolved) {
-        if (resolved.extension === '.d.ts') return null;
+        if (resolved.extension.startsWith('.d.') && resolved.extension.match(/\./g)?.length === 2)
+          return null;
         return path.normalize(resolved.resolvedFileName);
       }
 
