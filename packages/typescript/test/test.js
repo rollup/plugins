@@ -16,10 +16,34 @@ test.beforeEach(() => process.chdir(__dirname));
 
 const outputOptions = { format: 'esm' };
 
-test.serial('runs code through typescript', async (t) => {
+test.serial('runs ts code through typescript', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', target: 'es5' })],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.false(code.includes('number'), code);
+  t.false(code.includes('const'), code);
+});
+
+test.serial('runs mts code through typescript', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/mts/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/mts/tsconfig.json', target: 'es5' })],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.false(code.includes('number'), code);
+  t.false(code.includes('const'), code);
+});
+
+test.serial('runs cts code through typescript', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/cts/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/cts/tsconfig.json', target: 'es5' })],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
@@ -368,6 +392,28 @@ test.serial('should not resolve .d.ts files', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/dts/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/dts/tsconfig.json' })],
+    onwarn,
+    external: ['an-import']
+  });
+  const imports = bundle.cache.modules[0].dependencies;
+  t.deepEqual(imports, ['an-import']);
+});
+
+test.serial('should not resolve .d.cts files', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/dts/main.cts',
+    plugins: [typescript({ tsconfig: 'fixtures/dcts/tsconfig.json' })],
+    onwarn,
+    external: ['an-import']
+  });
+  const imports = bundle.cache.modules[0].dependencies;
+  t.deepEqual(imports, ['an-import']);
+});
+
+test.serial('should not resolve .d.mts files', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/dts/main.mts',
+    plugins: [typescript({ tsconfig: 'fixtures/dmts/tsconfig.json' })],
     onwarn,
     external: ['an-import']
   });
