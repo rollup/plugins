@@ -17,6 +17,9 @@ import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
 
+/**
+ * The glob pattern used to test if a given file extension corresponds to a TypeScript file.
+ */
 const defaultTsExtensionsGlob = '?(m|c)ts+(|x)';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
