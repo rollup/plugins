@@ -76,8 +76,24 @@ function shouldIgnore(glob) {
   return !containsAsterisk || containsIgnoredProtocol;
 }
 
-export function dynamicImportToGlob(node, sourceString) {
+const npmPackageNameAndGlobRegex = /^((@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*)\/(.+)$/;
+
+/**
+ *
+ * @param {unknown} node The AST node representing the dynamic import.
+ * @param {string} sourceString The fraction of the source code containing the dynamic import.
+ * @param {string} id The id of the module containing this dynamic import.
+ * @param {unknown} r The rollup instance
+ * @returns {Promise<null | { glob: string, bareImport?: string, resolvedBareImport?: string }>} The glob to match files and the bare part of it
+ */
+export async function dynamicImportToGlob(node, sourceString, id, r) {
+  if (sourceString.includes('webpackIgnore: true')) {
+    return null;
+  }
+
   let glob = expressionToGlob(node);
+  let bareImport;
+  let resolvedBareImport;
 
   if (shouldIgnore(glob)) {
     return null;
@@ -98,9 +114,29 @@ export function dynamicImportToGlob(node, sourceString) {
   }
 
   if (!glob.startsWith('./') && !glob.startsWith('../')) {
-    throw new VariableDynamicImportError(
-      `invalid import "${sourceString}". Variable bare imports are not supported, imports must start with ./ in the static part of the import. ${example}`
-    );
+    const match = glob.match(npmPackageNameAndGlobRegex);
+
+    if (match) {
+      const [, packageName, , packageGlob] = match;
+      const resolvedPackageJson = await r.resolve(`${packageName}/package.json`, id);
+
+      if (!resolvedPackageJson) {
+        throw new VariableDynamicImportError(
+          `invalid import "${sourceString}". Could not resolve module "${packageName}".`
+        );
+      }
+
+      glob = `${path.relative(
+        path.dirname(id),
+        path.dirname(resolvedPackageJson.id)
+      )}/${packageGlob}`;
+      bareImport = packageName;
+      resolvedBareImport = path.dirname(resolvedPackageJson.id);
+    } else {
+      throw new VariableDynamicImportError(
+        `invalid import "${sourceString}". Non-relative variable imports that do not match an NPM package name are not supported, imports must start with either an npm package name or ./ in the static part of the import. ${example}`
+      );
+    }
   }
 
   // Disallow ./*.ext
@@ -120,5 +156,5 @@ export function dynamicImportToGlob(node, sourceString) {
     );
   }
 
-  return glob;
+  return { glob, bareImport, resolvedBareImport };
 }

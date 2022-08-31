@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { walk } from 'estree-walker';
+import { asyncWalk } from 'estree-walker';
 import MagicString from 'magic-string';
 import fastGlob from 'fast-glob';
 
@@ -14,7 +14,7 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
   return {
     name: 'rollup-plugin-dynamic-import-variables',
 
-    transform(code, id) {
+    async transform(code, id) {
       if (!filter(id)) {
         return null;
       }
@@ -24,8 +24,8 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
       let dynamicImportIndex = -1;
       let ms;
 
-      walk(parsed, {
-        enter: (node) => {
+      await asyncWalk(parsed, {
+        enter: async (node) => {
           if (node.type !== 'ImportExpression') {
             return;
           }
@@ -33,18 +33,43 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
 
           try {
             // see if this is a variable dynamic import, and generate a glob expression
-            const glob = dynamicImportToGlob(node.source, code.substring(node.start, node.end));
+            const globAndBareResolution = await dynamicImportToGlob(
+              node.source,
+              code.substring(node.start, node.end),
+              id,
+              this
+            );
 
-            if (!glob) {
+            if (!globAndBareResolution) {
               // this was not a variable dynamic import
               return;
             }
 
+            const { glob } = globAndBareResolution;
+
             // execute the glob
             const result = fastGlob.sync(glob, { cwd: path.dirname(id) });
-            const paths = result.map((r) =>
+            let paths = result.map((r) =>
               r.startsWith('./') || r.startsWith('../') ? r : `./${r}`
             );
+
+            // undo the resolution of bare imports if applicable
+            if (globAndBareResolution.bareImport && globAndBareResolution.resolvedBareImport) {
+              paths = paths.map((p) => {
+                const relativeResolvedBareImport = path.relative(
+                  path.dirname(id),
+                  globAndBareResolution.resolvedBareImport
+                );
+
+                if (!p.startsWith(relativeResolvedBareImport)) {
+                  throw new Error(
+                    `TODO: Expected resolved path ${p} to start with the resolved part (${relativeResolvedBareImport}) of the bare import ${globAndBareResolution.bareImport}`
+                  );
+                }
+
+                return p.replace(relativeResolvedBareImport, globAndBareResolution.bareImport);
+              });
+            }
 
             // create magic string if it wasn't created already
             ms = ms || new MagicString(code);
