@@ -81,6 +81,11 @@ export function normalizePath(fileName: string) {
   return fileName.split(path.win32.sep).join(path.posix.sep);
 }
 
+export async function outputFileAsync(filepath: string, fileSource: any): Promise<void> {
+  await fs.mkdir(path.dirname(filepath), { recursive: true });
+  await fs.writeFile(filepath, fileSource);
+}
+
 export async function emitFile(
   { dir }: OutputOptions,
   outputToFilesystem: boolean | undefined,
@@ -101,8 +106,7 @@ export async function emitFile(
       context.warn(`@rollup/plugin-typescript: outputToFilesystem option is defaulting to true.`);
     }
     if (outputToFilesystem !== false) {
-      await fs.mkdir(path.dirname(normalizedFilePath), { recursive: true });
-      await fs.writeFile(normalizedFilePath, fileSource);
+      await outputFileAsync(normalizedFilePath, fileSource);
     }
   } else {
     context.emitFile({

@@ -12,10 +12,15 @@ import createModuleResolver from './moduleResolution';
 import { getPluginOptions } from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
-import findTypescriptOutput, { getEmittedFile, normalizePath, emitFile } from './outputFile';
+import findTypescriptOutput, {
+  emitFile,
+  getEmittedFile,
+  normalizePath,
+  outputFileAsync
+} from './outputFile';
 import { preflight } from './preflight';
-import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
+import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 
 export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const {
@@ -148,11 +153,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           }
           if (!code || !baseDir) return;
 
-          this.emitFile({
-            type: 'asset',
-            fileName: normalizePath(path.relative(baseDir, id)),
-            source: code
-          });
+          outputFileAsync(id, code);
         });
       });
 
