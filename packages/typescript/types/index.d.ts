@@ -83,6 +83,10 @@ export interface RollupTypescriptPluginOptions {
    * Pass additional compiler options to the plugin.
    */
   compilerOptions?: PartialCompilerOptions;
+  /**
+   * Override force setting of `noEmit` and `emitDeclarationOnly` and use what is defined in `tsconfig.json`
+   */
+  noForceEmit?: boolean;
 }
 
 export interface FlexibleCompilerOptions extends CompilerOptions {

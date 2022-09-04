@@ -25,6 +25,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     filterRoot,
     include,
     outputToFilesystem,
+    noForceEmit,
     transformers,
     tsconfig,
     tslib,
@@ -34,7 +35,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
 
-  const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
+  const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
   const filter = createFilter(include || '{,**/}*.?(c|m)ts?(x)', exclude, {
     resolve: filterRoot ?? parsedOptions.options.rootDir
   });
@@ -151,7 +152,11 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
           const code = getEmittedFile(id, emittedFiles, tsCache);
-          let baseDir = outputOptions.dir;
+          let baseDir =
+            outputOptions.dir ||
+            (parsedOptions.options.declaration
+              ? parsedOptions.options.declarationDir || parsedOptions.options.outDir
+              : null);
           if (!baseDir && tsconfig) {
             baseDir = tsconfig.substring(0, tsconfig.lastIndexOf('/'));
           }

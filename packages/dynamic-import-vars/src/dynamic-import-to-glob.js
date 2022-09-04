@@ -61,11 +61,28 @@ function expressionToGlob(node) {
   }
 }
 
+const defaultProtocol = 'file:';
+const ignoredProtocols = ['data:', 'http:', 'https:'];
+
+function shouldIgnore(glob) {
+  const containsAsterisk = glob.includes('*');
+
+  const globURL = new URL(glob, defaultProtocol);
+
+  const containsIgnoredProtocol = ignoredProtocols.some(
+    (ignoredProtocol) => ignoredProtocol === globURL.protocol
+  );
+
+  return !containsAsterisk || containsIgnoredProtocol;
+}
+
 export function dynamicImportToGlob(node, sourceString) {
   let glob = expressionToGlob(node);
-  if (!glob.includes('*') || glob.startsWith('data:')) {
+
+  if (shouldIgnore(glob)) {
     return null;
   }
+
   glob = glob.replace(/\*\*/g, '*');
 
   if (glob.startsWith('*')) {

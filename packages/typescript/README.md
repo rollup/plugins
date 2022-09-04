@@ -214,6 +214,15 @@ typescript({
 });
 ```
 
+### `noForceEmit`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Earlier version of `@rollup/plugin-typescript` required that the `compilerOptions` `noEmit` and `emitDeclarationOnly` both false to guarantee that source code was fed into the next plugin/output. This is no longer true. This option disables the plugin forcing the values of those options and instead defers to the values set in `tsconfig.json`.
+
+`noForceEmit` can be very useful if you use with `@rollup/plugin-babel` and `@babel/preset-typescript`. Having `@rollup/plugin-typescript` only do typechecking / declarations with `"emitDeclarationOnly": true` while deferring to `@rollup/plugin-babel` for transpilation can dramatically reduce `rollup` build times for large projects.
+
 ### Typescript compiler options
 
 Some of Typescript's [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html) affect how Rollup builds files.
@@ -238,6 +247,7 @@ These compiler options are ignored by Rollup:
 
 - `noEmitHelpers`, `importHelpers`: The `tslib` helper module always must be used.
 - `noEmit`, `emitDeclarationOnly`: Typescript needs to emit code for the plugin to work with.
+  - _Note: While this was true for early iterations of `@rollup/plugin-typescript`, it is no longer. To override this behavior, and defer to `tsconfig.json` for these options, see the [`noForceEmit`](#noForceEmit) option_
 - `noResolve`: Preventing Typescript from resolving code may break compilation
 
 ### Importing CommonJS
@@ -304,7 +314,7 @@ export default {
   output: {
     file: 'dist/index.mjs'
   },
-  plugins: [typescript({ tsconfig: './tsconfig.json' })]
+  plugins: [typescript()]
 };
 ```
 
@@ -320,7 +330,7 @@ And accompanying `tsconfig.json` file:
 }
 ```
 
-This setup will produce `dist/index.mjs` and `dist/dist/index.d.ts`. To correctly place the declaration file, add an `exclude` setting in `tsconfig` and modify the `declarationDir` setting in `compilerOptions` to resemble:
+This setup will produce `dist/index.mjs` and `dist/src/index.d.ts`. To correctly place the declaration file, add an `exclude` setting in `tsconfig` and modify the `declarationDir` setting in `compilerOptions` to resemble:
 
 ```json
 {

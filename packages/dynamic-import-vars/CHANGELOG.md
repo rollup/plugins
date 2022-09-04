@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v1.4.4
+
+_2022-08-02_
+
+### Bugfixes
+
+- fix: exclude external imports (#1193)
+
 ## v1.4.3
 
 _2022-04-19_
