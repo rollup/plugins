@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.5.0
+
+_2022-09-06_
+
+### Features
+
+- feat: support 4.7 nodenext (#1194)
+
 ## v8.4.0
 
 _2022-08-23_
