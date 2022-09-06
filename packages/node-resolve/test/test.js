@@ -1,13 +1,14 @@
-import { join, resolve, dirname } from 'path';
+import { dirname, join, resolve } from 'path';
 
-import test from 'ava';
-import { rollup } from 'rollup';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 
-import { getCode, getImports, testBundle } from '../../../util/test';
+import test from 'ava';
+import { rollup } from 'rollup';
 
 import { nodeResolve } from '..';
+
+import { getCode, getImports, testBundle } from '../../../util/test';
 
 process.chdir(join(__dirname, 'fixtures'));
 
@@ -185,7 +186,7 @@ test('handles package.json being a directory earlier in the path', async (t) => 
 });
 
 test('ignores IDs with null character', async (t) => {
-  const result = await nodeResolve().resolveId('\0someid', 'test.js', {});
+  const result = await nodeResolve().resolveId.handler('\0someid', 'test.js', {});
   t.is(result, null);
 });
 
@@ -304,83 +305,6 @@ test('resolves dynamic imports', async (t) => {
   const { module } = await testBundle(t, bundle);
   const result = await module.exports;
   t.is(result.default, 42);
-});
-
-test('respects the package.json sideEffects property for files in root package by default', async (t) => {
-  const bundle = await rollup({
-    input: 'root-package-side-effect/index.js',
-    onwarn: failOnWarn(t),
-    plugins: [
-      nodeResolve({
-        rootDir: 'root-package-side-effect'
-      })
-    ]
-  });
-
-  const code = await getCode(bundle);
-  t.false(code.includes('side effect'));
-  t.snapshot(code);
-});
-
-test('respects the package.json sideEffects property for files in the root package and supports deep side effects', async (t) => {
-  const bundle = await rollup({
-    input: 'deep-side-effects/index.js',
-    onwarn: failOnWarn(t),
-    plugins: [
-      nodeResolve({
-        rootDir: 'deep-side-effects'
-      })
-    ]
-  });
-  const code = await getCode(bundle);
-  t.true(code.includes('shallow side effect'));
-  t.true(code.includes('deep side effect'));
-  t.snapshot(code);
-});
-
-test('does not prefix the sideEffects property if the side effect contains a "/"', async (t) => {
-  const bundle = await rollup({
-    input: 'deep-side-effects-with-specific-side-effects/index.js',
-    onwarn: failOnWarn(t),
-    plugins: [
-      nodeResolve({
-        rootDir: 'deep-side-effects-with-specific-side-effects'
-      })
-    ]
-  });
-  const code = await getCode(bundle);
-  t.true(code.includes('shallow side effect'));
-  t.false(code.includes('deep side effects'));
-  t.snapshot(code);
-});
-
-test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async (t) => {
-  const bundle = await rollup({
-    input: 'root-package-side-effect/index.js',
-    onwarn: failOnWarn(t),
-    plugins: [
-      nodeResolve({
-        rootDir: 'root-package-side-effect',
-        ignoreSideEffectsForRoot: true
-      })
-    ]
-  });
-
-  const code = await getCode(bundle);
-  t.true(code.includes('side effect'));
-  t.snapshot(code);
-});
-
-test('handles package side-effects', async (t) => {
-  const bundle = await rollup({
-    input: 'side-effects.js',
-    onwarn: failOnWarn(t),
-    plugins: [nodeResolve()]
-  });
-  await testBundle(t, bundle);
-  t.snapshot(global.sideEffects);
-
-  delete global.sideEffects;
 });
 
 test('can resolve imports with hash in path', async (t) => {
@@ -526,7 +450,52 @@ test('passes on "isEntry" flag', async (t) => {
   t.deepEqual(resolveOptions, [
     ['other.js', 'main.js', { custom: {}, isEntry: true }],
     ['main.js', void 0, { custom: {}, isEntry: true }],
-    ['dep.js', 'main.js', { custom: {}, isEntry: false }]
+    [
+      'other.js',
+      'main.js',
+      {
+        custom: {
+          'node-resolve': {
+            resolved: {
+              id: join(__dirname, 'fixtures', 'entry', 'other.js'),
+              moduleSideEffects: null
+            }
+          }
+        },
+        isEntry: true
+      }
+    ],
+    [
+      'main.js',
+      void 0,
+      {
+        custom: {
+          'node-resolve': {
+            resolved: {
+              id: join(__dirname, 'fixtures', 'entry', 'main.js'),
+              moduleSideEffects: null
+            }
+          }
+        },
+        isEntry: true
+      }
+    ],
+    ['dep.js', 'main.js', { custom: {}, isEntry: false }],
+    [
+      'dep.js',
+      'main.js',
+      {
+        custom: {
+          'node-resolve': {
+            resolved: {
+              id: join(__dirname, 'fixtures', 'entry', 'dep.js'),
+              moduleSideEffects: null
+            }
+          }
+        },
+        isEntry: false
+      }
+    ]
   ]);
 });
 
@@ -554,7 +523,38 @@ test('passes on custom options', async (t) => {
   });
   t.deepEqual(resolveOptions, [
     ['main.js', void 0, { custom: { test: 42 }, isEntry: false }],
-    ['other.js', void 0, { custom: {}, isEntry: true }]
+    [
+      'main.js',
+      void 0,
+      {
+        custom: {
+          test: 42,
+          'node-resolve': {
+            resolved: {
+              id: join(__dirname, 'fixtures', 'entry', 'main.js'),
+              moduleSideEffects: null
+            }
+          }
+        },
+        isEntry: false
+      }
+    ],
+    ['other.js', void 0, { custom: {}, isEntry: true }],
+    [
+      'other.js',
+      void 0,
+      {
+        custom: {
+          'node-resolve': {
+            resolved: {
+              id: join(__dirname, 'fixtures', 'entry', 'other.js'),
+              moduleSideEffects: null
+            }
+          }
+        },
+        isEntry: true
+      }
+    ]
   ]);
 });
 
@@ -591,7 +591,8 @@ test('allow other plugins to take over resolution', async (t) => {
       {
         name: 'change-resolution',
         resolveId(importee) {
-          if (importee.endsWith('main.js')) {
+          // Only resolve if the id has been pre-resolved by node-resolve
+          if (importee === join(__dirname, 'fixtures', 'entry', 'main.js')) {
             return {
               id: join(dirname(importee), 'other.js'),
               meta: { 'change-resolution': 'changed' }
