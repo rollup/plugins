@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v14.0.0
+
+_2022-09-06_
+
+### Breaking Changes
+
+- fix: preserve moduleSideEffects when re-resolving files (#1245)
+
 ## v13.3.0
 
 _2022-05-02_
