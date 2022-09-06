@@ -28,6 +28,18 @@ test.serial('runs code through typescript', async (t) => {
   t.false(code.includes('const'), code);
 });
 
+test.serial('allows nodenext module', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'nodenext' })],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.false(code.includes('number'), code);
+  t.true(code.includes('const'), code);
+});
+
 test.serial('runs code through typescript with compilerOptions', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -172,7 +184,9 @@ test.serial('throws for unsupported module types', async (t) => {
   );
 
   t.true(
-    caughtError.message.includes("The module kind should be 'ES2015' or 'ESNext, found: 'AMD'"),
+    caughtError.message.includes(
+      "The module kind should be 'ES2015', 'ESNext', 'node16' or 'nodenext', found: 'AMD'"
+    ),
     `Unexpected error message: ${caughtError.message}`
   );
 });
@@ -195,7 +209,7 @@ test.serial('warns for invalid module types', async (t) => {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
       pluginCode: 'TS6046',
-      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'esnext'.`
+      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
     }
   ]);
 });
@@ -1039,7 +1053,7 @@ test('supports custom transformers', async (t) => {
                   return function removeOneParameter(source) {
                     function visitor(node) {
                       if (ts.isArrowFunction(node)) {
-                        return ts.createArrowFunction(
+                        return ts.factory.createArrowFunction(
                           node.modifiers,
                           node.typeParameters,
                           [node.parameters[0]],
@@ -1069,7 +1083,9 @@ test('supports custom transformers', async (t) => {
                   return function enforceConstantReturn(source) {
                     function visitor(node) {
                       if (ts.isReturnStatement(node)) {
-                        return ts.createReturn(ts.createNumericLiteral('1'));
+                        return ts.factory.createReturnStatement(
+                          ts.factory.createNumericLiteral('1')
+                        );
                       }
 
                       return ts.visitEachChild(node, visitor, context);
@@ -1087,10 +1103,10 @@ test('supports custom transformers', async (t) => {
               return function fixDeclaration(source) {
                 function visitor(node) {
                   if (ts.isFunctionTypeNode(node)) {
-                    return ts.createFunctionTypeNode(
+                    return ts.factory.createFunctionTypeNode(
                       node.typeParameters,
                       [node.parameters[0]],
-                      ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+                      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
                     );
                   }
 
@@ -1207,6 +1223,26 @@ test.serial('works when code is in src directory', async (t) => {
     output.map((out) => out.fileName),
     ['index.js', 'index.d.ts']
   );
+});
+
+test.serial('correctly resolves types in a nodenext module', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/nodenext-resolution/index.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/nodenext-resolution/tsconfig.json'
+      })
+    ],
+    onwarn({ toString, ...warning }) {
+      warnings.push(warning);
+    }
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.true(code.includes('const bar = foo'), code);
+  t.is(warnings.length, 1);
+  t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
 });
 
 test.serial('noForceEmit option defers to tsconfig.json for emitDeclarationOnly', async (t) => {

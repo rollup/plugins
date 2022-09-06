@@ -47,6 +47,8 @@ export function normalizeCompilerOptions(
   switch (compilerOptions.module) {
     case ts.ModuleKind.ES2015:
     case ts.ModuleKind.ESNext:
+    case ts.ModuleKind.Node16:
+    case ts.ModuleKind.NodeNext:
     case ts.ModuleKind.CommonJS:
       // OK module type
       return autoSetSourceMap;
@@ -57,7 +59,7 @@ export function normalizeCompilerOptions(
       // Invalid module type
       const moduleType = ts.ModuleKind[compilerOptions.module];
       throw new Error(
-        `@rollup/plugin-typescript: The module kind should be 'ES2015' or 'ESNext, found: '${moduleType}'`
+        `@rollup/plugin-typescript: The module kind should be 'ES2015', 'ESNext', 'node16' or 'nodenext', found: '${moduleType}'`
       );
     }
     default:
