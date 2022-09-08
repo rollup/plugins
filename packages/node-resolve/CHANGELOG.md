@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v14.0.1
+
+_2022-09-08_
+
+### Bugfixes
+
+- fix: handle circular commonjs (#1259)
+
 ## v14.0.0
 
 _2022-09-06_
