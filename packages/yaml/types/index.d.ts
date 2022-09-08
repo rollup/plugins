@@ -11,13 +11,13 @@ type ValidYamlType =
 
 interface RollupYamlOptions {
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin
    * should operate on.
    * By default all files are targeted.
    */
   include?: FilterPattern;
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin
    * should _ignore_.
    * By default no files are ignored.
    */
