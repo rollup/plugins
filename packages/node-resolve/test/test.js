@@ -44,6 +44,21 @@ test('finds and converts a basic CommonJS module', async (t) => {
   t.is(module.exports, 'It works!');
 });
 
+test('handles cyclic CommonJS modules', async (t) => {
+  const bundle = await rollup({
+    input: 'cyclic-commonjs/main.js',
+    onwarn(warning) {
+      if (warning.code !== 'CIRCULAR_DEPENDENCY') {
+        t.fail(`Unexpected warning:\n${warning.code}\n${warning.message}`);
+      }
+    },
+    plugins: [nodeResolve(), commonjs()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports.main, 'main');
+});
+
 test('handles a trailing slash', async (t) => {
   const bundle = await rollup({
     input: 'trailing-slash.js',
