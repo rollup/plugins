@@ -285,7 +285,7 @@ export function nodeResolve(opts = {}) {
           // `moduleSideEffects` information.
           const resolvedResolved = await this.resolve(resolved.id, importer, {
             ...resolveOptions,
-            custom: { ...custom, 'node-resolve': { resolved } }
+            custom: { ...custom, 'node-resolve': { ...custom['node-resolve'], resolved } }
           });
           if (resolvedResolved) {
             // Handle plugins that manually make the result external
