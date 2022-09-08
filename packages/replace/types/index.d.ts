@@ -15,7 +15,7 @@ export interface RollupReplaceOptions {
     | RollupReplaceOptions['preventAssignment'];
 
   /**
-   * A minimatch pattern, or array of patterns, of files that should be
+   * A picomatch pattern, or array of patterns, of files that should be
    * processed by this plugin (if omitted, all files are included by default)
    */
   include?: FilterPattern;
