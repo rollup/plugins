@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v14.1.0
+
+_2022-09-12_
+
+### Features
+
+- feat: add new option, modulePaths (#1104)
+
 ## v14.0.1
 
 _2022-09-08_
