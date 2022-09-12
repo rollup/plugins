@@ -59,9 +59,9 @@ The default value of `"auto"` will only wrap CommonJS files when they are part o
 
 `false` will entirely prevent wrapping and hoist all files. This may still work depending on the nature of cyclic dependencies but will often cause problems.
 
-You can also provide a [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, to only specify a subset of files which should be wrapped in functions for proper `require` semantics.
+You can also provide a [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, to only specify a subset of files which should be wrapped in functions for proper `require` semantics.
 
-`"debug"` works like `"auto"` but after bundling, it will display a warning containing a list of ids that have been wrapped which can be used as minimatch pattern for fine-tuning or to avoid the potential race conditions mentioned for `"auto"`.
+`"debug"` works like `"auto"` but after bundling, it will display a warning containing a list of ids that have been wrapped which can be used as picomatch pattern for fine-tuning or to avoid the potential race conditions mentioned for `"auto"`.
 
 ### `dynamicRequireTargets`
 
@@ -104,14 +104,14 @@ To avoid long paths when using the `dynamicRequireTargets` option, you can use t
 Type: `string | string[]`<br>
 Default: `null`
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default, all files with extensions other than those in `extensions` or `".cjs"` are ignored, but you can exclude additional files. See also the `include` option.
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default, all files with extensions other than those in `extensions` or `".cjs"` are ignored, but you can exclude additional files. See also the `include` option.
 
 ### `include`
 
 Type: `string | string[]`<br>
 Default: `null`
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default, all files with extension `".cjs"` or those in `extensions` are included, but you can narrow this list by only including specific files. These files will be analyzed and transpiled if either the analysis does not find ES module specific statements or `transformMixedEsModules` is `true`.
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default, all files with extension `".cjs"` or those in `extensions` are included, but you can narrow this list by only including specific files. These files will be analyzed and transpiled if either the analysis does not find ES module specific statements or `transformMixedEsModules` is `true`.
 
 ### `extensions`
 

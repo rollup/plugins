@@ -6,7 +6,7 @@ type DefaultIsModuleExportsOption = boolean | 'auto';
 
 interface RollupCommonJSOptions {
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in
+   * A picomatch pattern, or array of patterns, which specifies the files in
    * the build the plugin should operate on. By default, all files with
    * extension `".cjs"` or those in `extensions` are included, but you can
    * narrow this list by only including specific files. These files will be
@@ -16,7 +16,7 @@ interface RollupCommonJSOptions {
    */
   include?: FilterPattern;
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in
+   * A picomatch pattern, or array of patterns, which specifies the files in
    * the build the plugin should _ignore_. By default, all files with
    * extensions other than those in `extensions` or `".cjs"` are ignored, but you
    * can exclude additional files. See also the `include` option.
@@ -88,13 +88,13 @@ interface RollupCommonJSOptions {
    * work depending on the nature of cyclic dependencies but will often cause
    * problems.
    *
-   * You can also provide a minimatch pattern, or array of patterns, to only
+   * You can also provide a picomatch pattern, or array of patterns, to only
    * specify a subset of files which should be wrapped in functions for proper
    * `require` semantics.
    *
    * `"debug"` works like `"auto"` but after bundling, it will display a warning
    * containing a list of ids that have been wrapped which can be used as
-   * minimatch pattern for fine-tuning.
+   * picomatch pattern for fine-tuning.
    * @default "auto"
    */
   strictRequires?: boolean | FilterPattern;

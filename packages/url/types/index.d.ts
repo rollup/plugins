@@ -5,14 +5,14 @@ interface RollupUrlOptions {
   // Note: the @default tag below uses the zero-width character joiner "‍" to escape the "*/"
   // https://en.wikipedia.org/wiki/Zero-width_joiner
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin
    * should operate on.
    * By default all files are targeted.
    * @default ['**‍/*.svg', '**‍/*.png', '**‍/*.jp(e)?g', '**‍/*.gif', '**‍/*.webp']
    */
   include?: FilterPattern;
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin
    * should _ignore_.
    * By default no files are ignored.
    */

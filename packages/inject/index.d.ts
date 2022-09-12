@@ -14,7 +14,7 @@ export interface RollupInjectOptions {
     | RollupInjectOptions['modules'];
 
   /**
-   * A minimatch pattern, or array of patterns, of files that should be
+   * A picomatch pattern, or array of patterns, of files that should be
    * processed by this plugin (if omitted, all files are included by default)
    */
   include?: string | RegExp | ReadonlyArray<string | RegExp> | null;

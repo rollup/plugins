@@ -5,12 +5,12 @@ import * as babelCore from '@babel/core';
 export interface RollupBabelInputPluginOptions
   extends Omit<babelCore.TransformOptions, 'include' | 'exclude'> {
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
    * @default undefined;
    */
   include?: FilterPattern;
   /**
-   * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin should ignore. When relaying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin should ignore. When relaying on Babel configuration files you can only exclude additional files with this option, you cannot override what you have configured for Babel itself.
    * @default undefined;
    */
   exclude?: FilterPattern;
