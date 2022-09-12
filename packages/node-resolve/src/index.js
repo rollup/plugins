@@ -44,7 +44,7 @@ export function nodeResolve(opts = {}) {
   const { warnings } = handleDeprecatedOptions(opts);
 
   const options = { ...defaults, ...opts };
-  const { extensions, jail, moduleDirectories, ignoreSideEffectsForRoot } = options;
+  const { extensions, jail, moduleDirectories, modulePaths, ignoreSideEffectsForRoot } = options;
   const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
   const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
   const packageInfoCache = new Map();
@@ -56,6 +56,12 @@ export function nodeResolve(opts = {}) {
   const rootDir = resolve(options.rootDir || process.cwd());
   let { dedupe } = options;
   let rollupOptions;
+
+  if (moduleDirectories.some((name) => name.includes('/'))) {
+    throw new Error(
+      '`moduleDirectories` option must only contain directory names. If you want to load modules from somewhere not supported by the default module resolution algorithm, see `modulePaths`.'
+    );
+  }
 
   if (typeof dedupe !== 'function') {
     dedupe = (importee) =>
@@ -167,6 +173,7 @@ export function nodeResolve(opts = {}) {
       useBrowserOverrides,
       baseDir,
       moduleDirectories,
+      modulePaths,
       rootDir,
       ignoreSideEffectsForRoot
     });
