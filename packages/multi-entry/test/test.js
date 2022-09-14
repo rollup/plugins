@@ -85,44 +85,25 @@ test('makes a bundle with entryFileName as the filename', async (t) => {
 test('maintains filename when preserveModules = true', async (t) => {
   const bundle = await rollup({
     input: 'test/fixtures/{0,1}.js',
-    plugins: [multiEntry()]
-  });
-  const files = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
-
-  const nonVirtualFiles = files
-    .filter(({ fileName }) => !fileName.startsWith('_virtual/'))
-    .sort((a, b) => a.fileName.localeCompare(b.fileName));
-
-  t.is(nonVirtualFiles.length, 2);
-
-  t.is(nonVirtualFiles[0].fileName, '0.js');
-  t.is(nonVirtualFiles[1].fileName, '1.js');
-});
-
-test('makes a bundle with entryFileName as the filename when preserveModules = true and entryName is set', async (t) => {
-  const bundle = await rollup({
-    input: 'test/fixtures/{0,1}.js',
-    plugins: [multiEntry({ entryFileName: 'testing.js' })],
+    plugins: [multiEntry({ preserveModules: true, entryFileName: 'testing.js' })],
     output: {
       preserveModules: true
     }
   });
-
   const files = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
-  const nonVirtualFiles = files
-    .filter(({ fileName }) => !fileName.startsWith('_virtual/'))
-    .sort((a, b) => a.fileName.localeCompare(b.fileName));
+
+  const nonVirtualFiles = files.filter(({ fileName }) => !fileName.startsWith('_virtual/'));
 
   t.is(nonVirtualFiles.length, 2);
 
-  t.is(nonVirtualFiles[0].fileName, 'testing.js');
-  t.is(nonVirtualFiles[1].fileName, 'testing2.js');
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === '0.js'));
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === '1.js'));
 });
 
 test('makes a bundle with entryFileName as the output.entryFileName when preserveModules = true and entryName is not set', async (t) => {
   const bundle = await rollup({
     input: 'test/fixtures/{0,1}.js',
-    plugins: [multiEntry()],
+    plugins: [multiEntry({ preserveModules: true })],
     output: {
       preserveModules: true,
       entryFileNames: 'outputEntryFileName.js'
@@ -135,12 +116,10 @@ test('makes a bundle with entryFileName as the output.entryFileName when preserv
     true
   );
 
-  const nonVirtualFiles = files
-    .filter(({ fileName }) => !fileName.startsWith('_virtual/'))
-    .sort((a, b) => a.fileName.localeCompare(b.fileName));
+  const nonVirtualFiles = files.filter(({ fileName }) => !fileName.startsWith('_virtual/'));
 
   t.is(nonVirtualFiles.length, 2);
 
-  t.is(nonVirtualFiles[0].fileName, 'outputEntryFileName.js');
-  t.is(nonVirtualFiles[1].fileName, 'outputEntryFileName2.js');
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'outputEntryFileName.js'));
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'outputEntryFileName2.js'));
 });
