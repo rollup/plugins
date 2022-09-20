@@ -145,8 +145,14 @@ const updateChangelog = (commits: Commit[], cwd: string, shortName: string, vers
 
   for (const commit of commits) {
     const { breaking, hash, header, type } = commit;
-    const ref = /\(#\d+\)/.test(header as string) ? '' : ` (${hash?.substring(0, 7)})`;
-    const message = header?.trim().replace(/\(.+\)!?:/, ':') + ref;
+    const ref = /\(#\d+\)/.test(header as string)
+      ? ''
+      : ` ([${hash?.substring(0, 7)}](https://github.com/rollup/plugins/commit/${hash}))`;
+    const message =
+      header
+        ?.trim()
+        .replace(/\(.+\)!?:/, ':')
+        .replace(/\((#(\d+))\)/, '[$1](https://github.com/rollup/plugins/pull/$2)') + ref;
 
     if (breaking) {
       notes.breaking.push(message);
