@@ -1,6 +1,6 @@
 import { Plugin } from 'rollup';
 
-import { ResolvedAlias, ResolverFunction, ResolverObject, RollupAliasOptions } from '../types';
+import type { ResolvedAlias, ResolverFunction, ResolverObject, RollupAliasOptions } from '../types';
 
 function matches(pattern: string | RegExp, importee: string) {
   if (pattern instanceof RegExp) {
@@ -38,16 +38,24 @@ function getEntries({ entries, customResolver }: RollupAliasOptions): readonly R
   });
 }
 
+function getHookFunction<T extends Function>(hook: T | { handler?: T }): T | null {
+  if (typeof hook === 'function') {
+    return hook;
+  }
+  if (hook && 'handler' in hook && typeof hook.handler === 'function') {
+    return hook.handler;
+  }
+  return null;
+}
+
 function resolveCustomResolver(
   customResolver: ResolverFunction | ResolverObject | null | undefined
 ): ResolverFunction | null {
+  if (typeof customResolver === 'function') {
+    return customResolver;
+  }
   if (customResolver) {
-    if (typeof customResolver === 'function') {
-      return customResolver;
-    }
-    if (typeof customResolver.resolveId === 'function') {
-      return customResolver.resolveId;
-    }
+    return getHookFunction(customResolver.resolveId);
   }
   return null;
 }
@@ -68,10 +76,7 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
       await Promise.all(
         [...(Array.isArray(options.entries) ? options.entries : []), options].map(
           ({ customResolver }) =>
-            customResolver &&
-            typeof customResolver === 'object' &&
-            typeof customResolver.buildStart === 'function' &&
-            customResolver.buildStart.call(this, inputOptions)
+            customResolver && getHookFunction(customResolver.buildStart)?.call(this, inputOptions)
         )
       );
     },

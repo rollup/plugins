@@ -1,6 +1,8 @@
 import { Plugin, PluginHooks } from 'rollup';
 
-export type ResolverFunction = PluginHooks['resolveId'];
+type MapToFunction<T> = T extends Function ? T : never;
+
+export type ResolverFunction = MapToFunction<PluginHooks['resolveId']>;
 
 export interface ResolverObject {
   buildStart?: PluginHooks['buildStart'];
