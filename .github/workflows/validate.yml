@@ -34,7 +34,7 @@ jobs:
         run: git branch -f master origin/master
 
       - name: Install pnpm
-        run: npm install pnpm@6 -g
+        run: npm install pnpm@7 -g
 
       - name: Sanity Check
         run: |
@@ -53,10 +53,10 @@ jobs:
       #   run: pnpm security
 
       - name: Build Packages
-        run: pnpm build --recursive
+        run: pnpm --recursive build
 
       - name: Lint Monorepo
         run: pnpm lint:js
 
       - name: Run Tests
-        run: pnpm ci:coverage --filter "...[origin/master]"
+        run: pnpm --filter "...[origin/master]" ci:coverage

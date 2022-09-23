@@ -34,8 +34,8 @@
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
-    "pretest": "pnpm build -- --sourcemap",
-    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
+    "pretest": "pnpm build --sourcemap",
+    "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
     "test": "ava",
     "test:ts": "tsc --noEmit"
   },

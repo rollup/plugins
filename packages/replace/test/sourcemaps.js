@@ -2,9 +2,14 @@
 
 const test = require('ava');
 const { rollup } = require('rollup');
-const { SourceMapConsumer } = require('source-map');
 const { getLocator } = require('locate-character');
+// source-map uses the presence of fetch to detect browser environments which
+// breaks in Node 18
+const { fetch } = global;
+delete global.fetch;
+const { SourceMapConsumer } = require('source-map');
 
+global.fetch = fetch;
 const replace = require('../dist/rollup-plugin-replace.cjs.js');
 
 const { getOutputFromGenerated } = require('./helpers/util');
