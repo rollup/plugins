@@ -6,7 +6,7 @@ import { promisify } from 'util';
 
 import { Plugin } from 'rollup';
 
-import { RollupAutoInstallOptions } from '../types';
+import type { RollupAutoInstallOptions } from '../types';
 
 const execAsync = promisify(exec);
 
