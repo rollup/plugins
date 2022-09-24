@@ -25,7 +25,7 @@
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
-    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
+    "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
     "test": "ava"
   },
   "files": [

@@ -36,10 +36,10 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: install pnpm
-        run: npm install pnpm@6 -g
+        run: npm install pnpm@7 -g
 
       - name: pnpm install
         run: pnpm install --ignore-scripts
 
       - name: run tests
-        run: pnpm ci:test --filter "...[origin/master]"
+        run: pnpm --filter "...[origin/master]" ci:test

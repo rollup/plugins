@@ -28,14 +28,14 @@
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
+    "ci:test": "pnpm test -- --verbose",
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prepublishOnly": "pnpm build",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
-    "release": "pnpm plugin:release --workspace-root -- --pkg $npm_package_name",
-    "test": "ava && pnpm test:ts",
+    "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
+    "test": "pnpm test:ts && ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [

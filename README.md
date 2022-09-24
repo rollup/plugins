@@ -73,7 +73,7 @@ All plugin packages are kept in the `/packages` directory.
 #### Adding dependencies:
 
 ```console
-$ pnpm add <package> --filter ./packages/<name>
+$ pnpm --filter ./packages/<name> add <package>
 ```
 
 Where `<package>` is the name of the NPM package you wish to add for a plugin package, and `<name>` is the proper name of the plugin. e.g. `@rollup/plugin-beep`.
@@ -81,7 +81,7 @@ Where `<package>` is the name of the NPM package you wish to add for a plugin pa
 #### Publishing:
 
 ```console
-$ pnpm publish -- <name> [flags]
+$ pnpm publish <name> [flags]
 ```
 
 Where `<name>` is the portion of the plugin package name following `@rollup/plugin-`. (e.g. `beep`)
@@ -118,7 +118,7 @@ $ pnpm test
 To run tests on a specific package:
 
 ```console
-$ pnpm test --filter ./packages/<name>
+$ pnpm --filter ./packages/<name> test
 ```
 
 Linting:
@@ -132,10 +132,10 @@ $ pnpm lint
 To lint a specific package:
 
 ```console
-$ pnpm lint --filter ./packages/<name>
+$ pnpm --filter ./packages/<name> lint
 ```
 
-_Note: Scripts in the repository will run the root `test` and `lint` script on those packages which have changes. This is also how the CI pipelines function. To run either on a package outside of that pipeline, use `pnpm <script> -- @rollup/plugin-<name>`._
+_Note: Scripts in the repository will run the root `test` and `lint` script on those packages which have changes. This is also how the CI pipelines function. To run either on a package outside of that pipeline, use `pnpm <script> @rollup/plugin-<name>`._
 
 ## Adding Plugins
 

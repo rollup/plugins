@@ -62,12 +62,15 @@ test('generates a sourcemap', async (t) => {
     sourcemapFile: path.resolve('bundle.js')
   });
 
-  // Hack to make it work on Node 18
+  // source-map uses the presence of fetch to detect browser environments which
+  // breaks in Node 18
+  const { fetch } = global;
   delete global.fetch;
   const { SourceMapConsumer } = await import('source-map');
   const smc = await new SourceMapConsumer(map);
-  const locator = getLocator(code, { offsetLine: 1 });
+  global.fetch = fetch;
 
+  const locator = getLocator(code, { offsetLine: 1 });
   let generatedLoc = locator('42');
   let loc = smc.originalPositionFor(generatedLoc); // 42
   t.is(loc.source, 'fixtures/samples/sourcemap/foo.js');

@@ -3,7 +3,6 @@ import * as fs from 'fs';
 
 import test from 'ava';
 import { rollup } from 'rollup';
-import { SourceMapConsumer } from 'source-map';
 import jsonPlugin from '@rollup/plugin-json';
 import nodeResolvePlugin from '@rollup/plugin-node-resolve';
 import { createFilter } from '@rollup/pluginutils';
@@ -172,7 +171,15 @@ test('generates sourcemap by default', async (t) => {
   } = await bundle.generate({ format: 'cjs', exports: 'auto', sourcemap: true });
 
   const target = 'log';
+
+  // source-map uses the presence of fetch to detect browser environments which
+  // breaks in Node 18
+  const { fetch } = global;
+  delete global.fetch;
+  const { SourceMapConsumer } = await import('source-map');
   const smc = await new SourceMapConsumer(map);
+  global.fetch = fetch;
+
   const loc = getLocation(code, code.indexOf(target));
   const original = smc.originalPositionFor(loc);
 
