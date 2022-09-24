@@ -46,6 +46,11 @@
   "peerDependencies": {
     "rollup": "^1.20.0 || ^2.0.0"
   },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true 
+    }
+  },
   "dependencies": {
     "@rollup/pluginutils": "^3.1.0",
     "estree-walker": "^2.0.1",
