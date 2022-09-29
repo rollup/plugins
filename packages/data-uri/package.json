@@ -57,15 +57,7 @@
   },
   "types": "types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/output/**",

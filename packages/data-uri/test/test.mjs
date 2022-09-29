@@ -1,14 +1,15 @@
-import { join } from 'path';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
 
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import { testBundle } from '../../../util/test';
+import dataUri from 'current-package';
 
-// eslint-disable-next-line import/no-unresolved, import/extensions
-import dataUri from '../';
+import { testBundle } from '../../../util/test.js';
 
-process.chdir(join(__dirname, 'fixtures'));
+const DIRNAME = fileURLToPath(new URL('./fixtures', import.meta.url));
+process.chdir(DIRNAME);
 
 test('json', async (t) => {
   t.plan(3);
@@ -45,6 +46,18 @@ test('base64', async (t) => {
   const bundle = await rollup({
     input: 'base64.js',
     plugins: [dataUri()]
+  });
+  const { code } = await testBundle(t, bundle);
+  t.snapshot(code);
+});
+
+test('works as CJS plugin', async (t) => {
+  t.plan(3);
+  const require = createRequire(import.meta.url);
+  const dataUriCjs = require('current-package');
+  const bundle = await rollup({
+    input: 'json.js',
+    plugins: [dataUriCjs()]
   });
   const { code } = await testBundle(t, bundle);
   t.snapshot(code);

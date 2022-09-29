@@ -18,7 +18,7 @@ const getImports = async (bundle) => {
   if (bundle.imports) {
     return bundle.imports;
   }
-  const { output } = await bundle.generate({ format: 'esm' });
+  const { output } = await bundle.generate({ format: 'es' });
   const [{ imports }] = output;
   return imports;
 };
@@ -26,7 +26,7 @@ const getImports = async (bundle) => {
 const getResolvedModules = async (bundle) => {
   const {
     output: [{ modules }]
-  } = await bundle.generate({ format: 'esm' });
+  } = await bundle.generate({ format: 'es' });
   return modules;
 };
 
@@ -38,13 +38,13 @@ const onwarn = (warning) => console.warn(warning.toString());
  * @param {import('rollup').RollupBuild} bundle
  * @param {object} args
  */
-const testBundle = async (t, bundle, args = {}) => {
-  const { output } = await bundle.generate({ format: 'cjs', exports: 'auto' });
+const testBundle = async (t, bundle, { inject = {}, options = {} } = {}) => {
+  const { output } = await bundle.generate({ format: 'cjs', exports: 'auto', ...options });
   const [{ code }] = output;
   const module = { exports: {} };
   // as of 1/2/2020 Github Actions + Windows has changed in a way that we must now escape backslashes
   const cwd = process.cwd().replace(/\\/g, '\\\\');
-  const params = ['module', 'exports', 'require', 't', ...Object.keys(args)].concat(
+  const params = ['module', 'exports', 'require', 't', ...Object.keys(inject)].concat(
     `process.chdir('${cwd}'); let result;\n\n${code}\n\nreturn result;`
   );
 
@@ -54,7 +54,7 @@ const testBundle = async (t, bundle, args = {}) => {
   let result;
 
   try {
-    result = func(...[module, module.exports, require, t, ...Object.values(args)]);
+    result = func(...[module, module.exports, require, t, ...Object.values(inject)]);
   } catch (e) {
     error = e;
   }

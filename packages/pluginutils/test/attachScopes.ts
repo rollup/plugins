@@ -75,7 +75,7 @@ test('supports catch without a parameter', (t) => {
 });
 
 test('supports ForStatement', (t) => {
-  const ast = (parse(
+  const ast = parse(
     `
     for (let a = 0; a < 10; a++) {
       console.log(a);
@@ -83,7 +83,7 @@ test('supports ForStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as estree.Program;
+  ) as unknown as estree.Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
@@ -100,7 +100,7 @@ test('supports ForStatement', (t) => {
 });
 
 test('supports ForOfStatement', (t) => {
-  const ast = (parse(
+  const ast = parse(
     `
     for (const a of [1, 2, 3]) {
       console.log(a);
@@ -108,7 +108,7 @@ test('supports ForOfStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as estree.Program;
+  ) as unknown as estree.Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));
@@ -124,7 +124,7 @@ test('supports ForOfStatement', (t) => {
 });
 
 test('supports ForInStatement', (t) => {
-  const ast = (parse(
+  const ast = parse(
     `
     for (let a in [1, 2, 3]) {
       console.log(a);
@@ -132,7 +132,7 @@ test('supports ForInStatement', (t) => {
     }
   `,
     { ecmaVersion: 2020, sourceType: 'module' }
-  ) as unknown) as estree.Program;
+  ) as unknown as estree.Program;
 
   const scope = attachScopes(ast, 'scope');
   t.falsy(scope.contains('a'));

@@ -60,9 +60,7 @@
   },
   "types": "types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",

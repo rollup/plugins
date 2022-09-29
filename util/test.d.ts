@@ -26,7 +26,7 @@ export function onwarn(warning: string | any): void;
 export function testBundle(
   t: Assertions,
   bundle: RollupBuild,
-  args?: object
+  options: { inject: Record<string, any>; options: Record<string, any> }
 ): Promise<{
   code: string;
   error?: any;
