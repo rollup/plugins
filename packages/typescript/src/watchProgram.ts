@@ -10,7 +10,7 @@ import type {
   WriteFileCallback
 } from 'typescript';
 
-import { CustomTransformerFactories } from '../types';
+import type { CustomTransformerFactories } from '../types';
 
 import { buildDiagnosticReporter } from './diagnostics/emit';
 import { DiagnosticsHost } from './diagnostics/host';

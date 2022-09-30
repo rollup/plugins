@@ -5,7 +5,7 @@ import { rollup, RollupError } from 'rollup';
 
 import typescript from '..';
 
-import { evaluateBundle, getCode, onwarn } from '../../../util/test';
+import { evaluateBundle, getCode, onwarn } from '../../../util/test.js';
 
 test.beforeEach(() => process.chdir(__dirname));
 
@@ -93,11 +93,10 @@ test.serial('creates _tslib.js file when preserveModules is used', async (t) => 
   const bundle = await rollup({
     input: 'fixtures/preserve-modules/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/preserve-modules/tsconfig.json' })],
-    preserveModules: true,
     onwarn
   });
 
-  const files = await getCode(bundle, { format: 'es' }, true);
+  const files = await getCode(bundle, { format: 'es', preserveModules: true }, true);
   t.true(files[0].fileName.includes('main.js'), files[0].fileName);
   t.true(files[1].fileName.includes('tslib.es6.js'), files[1].fileName);
 });

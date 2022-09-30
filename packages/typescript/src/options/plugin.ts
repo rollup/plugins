@@ -1,6 +1,6 @@
 import * as defaultTs from 'typescript';
 
-import { RollupTypescriptOptions, PartialCompilerOptions } from '../../types';
+import type { RollupTypescriptOptions, PartialCompilerOptions } from '../../types';
 import { getTsLibPath } from '../tslib';
 
 /**

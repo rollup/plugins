@@ -15,7 +15,7 @@ import {
   WatchOptions
 } from 'typescript';
 
-import { RollupTypescriptOptions } from '../../types';
+import type { RollupTypescriptOptions } from '../../types';
 import diagnosticToWarning from '../diagnostics/toWarning';
 
 import {
