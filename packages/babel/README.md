@@ -26,7 +26,7 @@ Using Rollup with `@rollup/plugin-babel` makes the process far easier.
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v10.0.0+) and Rollup v1.20.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v1.20.0+.
 
 ## Install
 
@@ -45,7 +45,7 @@ const config = {
   input: 'src/index.js',
   output: {
     dir: 'output',
-    format: 'esm'
+    format: 'es'
   },
   plugins: [babel({ babelHelpers: 'bundled' })]
 };
@@ -174,7 +174,7 @@ export default {
   ],
   output: [
     { file: 'bundle.cjs.js', format: 'cjs' },
-    { file: 'bundle.esm.js', format: 'esm' }
+    { file: 'bundle.es.js', format: 'es' }
   ]
 };
 ```
@@ -188,10 +188,10 @@ import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 export default {
   input: 'main.js',
   output: [
-    { file: 'bundle.js', format: 'esm' },
+    { file: 'bundle.js', format: 'es' },
     {
       file: 'bundle.es5.js',
-      format: 'esm',
+      format: 'es',
       plugins: [getBabelOutputPlugin({ presets: ['@babel/preset-env'] })]
     }
   ]
@@ -212,7 +212,7 @@ export default {
   output: [
     {
       file: 'bundle.js',
-      format: 'esm',
+      format: 'es',
       plugins: [getBabelOutputPlugin({ presets: ['@babel/preset-env'] })]
     }
   ]
@@ -231,7 +231,7 @@ getBabelOutputPlugin({
 
 ### Using formats other than ES modules or CommonJS
 
-As `getBabelOutputPlugin(...)` will run _after_ Rollup has done all its transformations, it needs to make sure it preserves the semantics of Rollup's output format. This is especially important for Babel plugins that add, modify or remove imports or exports, but also for other transformations that add new variables as they can accidentally become global variables depending on the format. Therefore it is recommended that for formats other than `esm` or `cjs`, you set Rollup to use the `esm` output format and let Babel handle the transformation to another format, e.g. via
+As `getBabelOutputPlugin(...)` will run _after_ Rollup has done all its transformations, it needs to make sure it preserves the semantics of Rollup's output format. This is especially important for Babel plugins that add, modify or remove imports or exports, but also for other transformations that add new variables as they can accidentally become global variables depending on the format. Therefore it is recommended that for formats other than `es` or `cjs`, you set Rollup to use the `es` output format and let Babel handle the transformation to another format, e.g. via
 
 ```
 presets: [['@babel/preset-env', { modules: 'umd' }], ...]
@@ -256,12 +256,12 @@ By default, helpers e.g. when transpiling classes will be inserted at the top of
 
 Alternatively, you can use imported runtime helpers by adding the `@babel/transform-runtime` plugin. This will make `@babel/runtime` an external dependency of your project, see [@babel/plugin-transform-runtime](https://babeljs.io/docs/en/babel-plugin-transform-runtime) for details.
 
-Note that this will only work for `esm` and `cjs` formats, and you need to make sure to set the `useESModules` option of `@babel/plugin-transform-runtime` to `true` if you create ESM output:
+Note that this will only work for `es` and `cjs` formats, and you need to make sure to set the `useESModules` option of `@babel/plugin-transform-runtime` to `true` if you create ES output:
 
 ```js
 rollup.rollup({...})
 .then(bundle => bundle.generate({
-  format: 'esm',
+  format: 'es',
   plugins: [getBabelOutputPlugin({
     presets: ['@babel/preset-env'],
     plugins: [['@babel/plugin-transform-runtime', { useESModules: true }]]

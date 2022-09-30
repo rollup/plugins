@@ -1,13 +1,16 @@
 import * as nodePath from 'path';
 
+import { fileURLToPath } from 'url';
+
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import { getCode } from '../../../util/test';
+import { getBabelOutputPlugin, createBabelOutputPluginFactory } from 'current-package';
 
-import { getBabelOutputPlugin, createBabelOutputPluginFactory } from '../dist';
+import { getCode } from '../../../util/test.js';
 
-process.chdir(__dirname);
+const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
+const FIXTURES = `${DIRNAME}/fixtures/`;
 
 function getLocation(source, charIndex) {
   const lines = source.split('\n');
@@ -46,7 +49,7 @@ function replaceConsoleLogProperty({ types: t }) {
 
 async function generate(input, babelOptions = {}, generateOptions = {}, rollupOptions = {}) {
   const bundle = await rollup({
-    input,
+    input: FIXTURES + input,
     ...rollupOptions
   });
 
@@ -59,20 +62,20 @@ async function generate(input, babelOptions = {}, generateOptions = {}, rollupOp
 }
 
 test('allows running the plugin on the output via output options', async (t) => {
-  const code = await generate('fixtures/basic/main.js', {
+  const code = await generate('basic/main.js', {
     presets: ['@babel/env']
   });
   t.false(code.includes('const'));
 });
 
 test('ignores .babelrc when transforming the output by default', async (t) => {
-  const code = await generate('fixtures/basic/main.js');
+  const code = await generate('basic/main.js');
   t.true(code.includes('const'));
 });
 
 test("allows transform-runtime to be used with `useESModules: false` (the default) and `format: 'cjs'`", async (t) => {
   const code = await generate(
-    'fixtures/runtime-helpers/main.js',
+    'runtime-helpers/main.js',
     {
       presets: ['@babel/env'],
       plugins: [['@babel/transform-runtime', { useESModules: false }]]
@@ -83,33 +86,36 @@ test("allows transform-runtime to be used with `useESModules: false` (the defaul
     code,
     `'use strict';
 
+var _createClass = require("@babel/runtime/helpers/createClass");
+
 var _classCallCheck = require("@babel/runtime/helpers/classCallCheck");
 
-var Foo = function Foo() {
+var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
-};
+});
 
 module.exports = Foo;
 `
   );
 });
 
-test("allows transform-runtime to be used with `useESModules: true` and `format: 'esm'`", async (t) => {
+test("allows transform-runtime to be used with `useESModules: true` and `format: 'es'`", async (t) => {
   const code = await generate(
-    'fixtures/runtime-helpers/main.js',
+    'runtime-helpers/main.js',
     {
       presets: ['@babel/env'],
       plugins: [['@babel/transform-runtime', { useESModules: true }]]
     },
-    { format: 'esm' }
+    { format: 'es' }
   );
   t.is(
     code,
-    `import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
+    `import _createClass from "@babel/runtime/helpers/esm/createClass";
+import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
 
-var Foo = function Foo() {
+var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
-};
+});
 
 export { Foo as default };
 `
@@ -117,7 +123,7 @@ export { Foo as default };
 });
 
 test('generates sourcemap by default', async (t) => {
-  const bundle = await rollup({ input: 'fixtures/class/main.js' });
+  const bundle = await rollup({ input: `${FIXTURES}class/main.js` });
 
   const {
     output: [{ code, map }]
@@ -142,7 +148,7 @@ test('generates sourcemap by default', async (t) => {
   const original = smc.originalPositionFor(loc);
 
   t.deepEqual(original, {
-    source: 'fixtures/class/main.js'.split(nodePath.sep).join('/'),
+    source: 'test/fixtures/class/main.js'.split(nodePath.sep).join('/'),
     line: 3,
     column: 12,
     name: target
@@ -152,7 +158,7 @@ test('generates sourcemap by default', async (t) => {
 test('allows using external-helpers plugin even if the externalHelpers flag is not passed', async (t) => {
   const warnings = [];
   const code = await generate(
-    'fixtures/external-helpers/main.js',
+    'external-helpers/main.js',
     {
       presets: ['@babel/env'],
       plugins: ['@babel/external-helpers']
@@ -171,14 +177,12 @@ test('allows using external-helpers plugin even if the externalHelpers flag is n
     code,
     `'use strict';
 
-var Foo = function Foo() {
+var Foo = /*#__PURE__*/babelHelpers.createClass(function Foo() {
   babelHelpers.classCallCheck(this, Foo);
-};
-
-var Bar = function Bar() {
+});
+var Bar = /*#__PURE__*/babelHelpers.createClass(function Bar() {
   babelHelpers.classCallCheck(this, Bar);
-};
-
+});
 var main = [new Foo(), new Bar()];
 module.exports = main;
 `
@@ -188,7 +192,7 @@ module.exports = main;
 test('warns when using the "include" option', async (t) => {
   const warnings = [];
   await generate(
-    'fixtures/basic/main.js',
+    'basic/main.js',
     {
       include: ['*.js']
     },
@@ -205,11 +209,11 @@ test('warns when using the "include" option', async (t) => {
 });
 
 test('transforms all chunks in a code-splitting setup', async (t) => {
-  const bundle = await rollup({ input: 'fixtures/chunks/main.js' });
+  const bundle = await rollup({ input: `${FIXTURES}chunks/main.js` });
   const output = await getCode(
     bundle,
     {
-      format: 'esm',
+      format: 'es',
       plugins: [
         getBabelOutputPlugin({
           plugins: ['@babel/syntax-dynamic-import'],
@@ -223,7 +227,7 @@ test('transforms all chunks in a code-splitting setup', async (t) => {
   t.deepEqual(
     output.map(({ code }) => code),
     [
-      `import('./dep-525a96b3.js').then(function (result) {
+      `import('./dep-0fdca0d5.js').then(function (result) {
   return console.log(result);
 });
 `,
@@ -239,13 +243,13 @@ export { dep as default };
 
 test('transforms all chunks when preserving modules', async (t) => {
   const bundle = await rollup({
-    input: 'fixtures/preserve-modules/main.js',
-    preserveModules: true
+    input: `${FIXTURES}preserve-modules/main.js`
   });
   const output = await getCode(
     bundle,
     {
-      format: 'esm',
+      format: 'es',
+      preserveModules: true,
       plugins: [
         getBabelOutputPlugin({
           presets: ['@babel/env']
@@ -307,7 +311,7 @@ test('supports customizing the loader', async (t) => {
       }
     };
   });
-  const bundle = await rollup({ input: 'fixtures/basic/main.js' });
+  const bundle = await rollup({ input: `${FIXTURES}basic/main.js` });
   const code = await getCode(bundle, { format: 'cjs', plugins: [customBabelPlugin()] });
 
   t.true(code.includes('// Generated by some custom loader'), 'adds the custom comment');
@@ -315,14 +319,14 @@ test('supports customizing the loader', async (t) => {
 });
 
 test('throws when using a Rollup output format other than esm or cjs', async (t) => {
-  await t.throwsAsync(() => generate('fixtures/basic/main.js', {}, { format: 'iife' }), {
+  await t.throwsAsync(() => generate('basic/main.js', {}, { format: 'iife' }), {
     message: `Using Babel on the generated chunks is strongly discouraged for formats other than "esm" or "cjs" as it can easily break wrapper code and lead to accidentally created global variables. Instead, you should set "output.format" to "esm" and use Babel to transform to another format, e.g. by adding "presets: [['@babel/env', { modules: 'umd' }]]" to your Babel options. If you still want to proceed, add "allowAllFormats: true" to your plugin options.`
   });
 });
 
 test('allows using a Rollup output format other than esm or cjs with allowAllFormats', async (t) => {
   const code = await generate(
-    'fixtures/basic/main.js',
+    'basic/main.js',
     { presets: ['@babel/env'], allowAllFormats: true },
     { format: 'iife' }
   );
@@ -340,9 +344,9 @@ test('allows using a Rollup output format other than esm or cjs with allowAllFor
 
 test('allows using Babel to transform to other formats', async (t) => {
   const code = await generate(
-    'fixtures/basic/main.js',
+    'basic/main.js',
     { presets: [['@babel/env', { modules: 'umd' }]] },
-    { format: 'esm' }
+    { format: 'es' }
   );
   t.is(
     code,
@@ -369,8 +373,8 @@ test('allows using Babel to transform to other formats', async (t) => {
 });
 
 test('loads configuration files when configFile is passed', async (t) => {
-  const code = await generate('fixtures/config-file/main.js', {
-    configFile: nodePath.resolve(__dirname, 'fixtures/config-file/config.json')
+  const code = await generate('config-file/main.js', {
+    configFile: nodePath.resolve(DIRNAME, 'fixtures/config-file/config.json')
   });
   t.is(
     code,

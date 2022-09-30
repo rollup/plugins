@@ -1,7 +1,7 @@
 import * as babel from '@babel/core';
 
-import { INLINE, RUNTIME, EXTERNAL, BUNDLED } from './constants';
-import { addBabelPlugin } from './utils';
+import { INLINE, RUNTIME, EXTERNAL, BUNDLED } from './constants.js';
+import { addBabelPlugin } from './utils.js';
 
 const MODULE_ERROR =
   'Rollup requires that your Babel configuration keeps ES6 module syntax intact. ' +

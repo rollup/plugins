@@ -1,6 +1,6 @@
 import { addNamed } from '@babel/helper-module-imports';
 
-import { HELPERS } from './constants';
+import { HELPERS } from './constants.js';
 
 export default function importHelperPlugin({ types: t }) {
   return {
