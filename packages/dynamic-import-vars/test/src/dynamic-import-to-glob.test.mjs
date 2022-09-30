@@ -1,147 +1,144 @@
 /* eslint-disable import/extensions, import/no-unresolved, no-template-curly-in-string */
 
-import { Parser } from 'acorn';
-import dynamicImport from 'acorn-dynamic-import';
+import { parse } from 'acorn';
 import test from 'ava';
 
-import { dynamicImportToGlob, VariableDynamicImportError } from '../../dist/index';
-
-const CustomParser = Parser.extend(dynamicImport);
+import { dynamicImportToGlob, VariableDynamicImportError } from 'current-package';
 
 test('template literal with variable filename', (t) => {
-  const ast = CustomParser.parse('import(`./foo/${bar}.js`);', {
+  const ast = parse('import(`./foo/${bar}.js`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*.js');
 });
 
 test('external', (t) => {
-  const ast = CustomParser.parse('import(`https://some.cdn.com/package/${version}/index.js`);', {
+  const ast = parse('import(`https://some.cdn.com/package/${version}/index.js`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, null);
 });
 
 test('external - leaves bare module specifiers starting with https in tact', (t) => {
-  const ast = CustomParser.parse('import("http_utils");', {
+  const ast = parse('import("http_utils");', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, null);
 });
 
 test('data uri', (t) => {
-  const ast = CustomParser.parse('import(`data:${bar}`);', {
+  const ast = parse('import(`data:${bar}`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, null);
 });
 
 test('template literal with dot-prefixed suffix', (t) => {
-  const ast = CustomParser.parse('import(`./${bar}.entry.js`);', {
+  const ast = parse('import(`./${bar}.entry.js`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './*.entry.js');
 });
 
 test('template literal with variable directory', (t) => {
-  const ast = CustomParser.parse('import(`./foo/${bar}/x.js`);', {
+  const ast = parse('import(`./foo/${bar}/x.js`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*/x.js');
 });
 
 test('template literal with multiple variables', (t) => {
-  const ast = CustomParser.parse('import(`./${foo}/${bar}.js`);', {
+  const ast = parse('import(`./${foo}/${bar}.js`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './*/*.js');
 });
 
 test('dynamic expression with variable filename', (t) => {
-  const ast = CustomParser.parse('import("./foo/".concat(bar,".js"));', {
+  const ast = parse('import("./foo/".concat(bar,".js"));', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*.js');
 });
 
 test('dynamic expression with variable directory', (t) => {
-  const ast = CustomParser.parse('import("./foo/".concat(bar, "/x.js"));', {
+  const ast = parse('import("./foo/".concat(bar, "/x.js"));', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*/x.js');
 });
 
 test('dynamic expression with multiple variables', (t) => {
-  const ast = CustomParser.parse('import("./".concat(foo, "/").concat(bar,".js"));', {
+  const ast = parse('import("./".concat(foo, "/").concat(bar,".js"));', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './*/*.js');
 });
 
 test('string concatenation', (t) => {
-  const ast = CustomParser.parse('import("./foo/" + bar + ".js");', {
+  const ast = parse('import("./foo/" + bar + ".js");', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*.js');
 });
 
 test('string concatenation and template literals combined', (t) => {
-  const ast = CustomParser.parse('import("./" + `foo/${bar}` + ".js");', {
+  const ast = parse('import("./" + `foo/${bar}` + ".js");', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*.js');
 });
 
 test('string literal in a template literal expression', (t) => {
-  const ast = CustomParser.parse('import(`${"./foo/"}${bar}.js`);', {
+  const ast = parse('import(`${"./foo/"}${bar}.js`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*.js');
 });
 
 test('multiple variables are collapsed into a single *', (t) => {
-  const ast = CustomParser.parse('import(`./foo/${bar}${baz}/${x}${y}.js`);', {
+  const ast = parse('import(`./foo/${bar}${baz}/${x}${y}.js`);', {
     sourceType: 'module'
   });
 
-  const glob = dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './foo/*/*.js');
 });
 
 test('throws when dynamic import contains a *', (t) => {
-  const ast = CustomParser.parse('import(`./*${foo}.js`);', {
+  const ast = parse('import(`./*${foo}.js`);', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+    dynamicImportToGlob(ast.body[0].expression.source);
   } catch (e) {
     error = e;
   }
@@ -150,13 +147,13 @@ test('throws when dynamic import contains a *', (t) => {
 });
 
 test('throws when dynamic import contains a non + operator', (t) => {
-  const ast = CustomParser.parse('import("foo" - "bar.js");', {
+  const ast = parse('import("foo" - "bar.js");', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0]);
+    dynamicImportToGlob(ast.body[0].expression.source);
   } catch (e) {
     error = e;
   }
@@ -165,13 +162,13 @@ test('throws when dynamic import contains a non + operator', (t) => {
 });
 
 test('throws when dynamic import is a single variable', (t) => {
-  const ast = CustomParser.parse('import(foo);', {
+  const ast = parse('import(foo);', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0], '${sourceString}');
+    dynamicImportToGlob(ast.body[0].expression.source, '${sourceString}');
   } catch (e) {
     error = e;
   }
@@ -183,13 +180,13 @@ test('throws when dynamic import is a single variable', (t) => {
 });
 
 test('throws when dynamic import starts with a variable', (t) => {
-  const ast = CustomParser.parse('import(`${folder}/foo.js`);', {
+  const ast = parse('import(`${folder}/foo.js`);', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0], '${sourceString}');
+    dynamicImportToGlob(ast.body[0].expression.source, '${sourceString}');
   } catch (e) {
     error = e;
   }
@@ -201,13 +198,13 @@ test('throws when dynamic import starts with a variable', (t) => {
 });
 
 test('throws when dynamic import starts with a /', (t) => {
-  const ast = CustomParser.parse('import(`/foo/${bar}.js`);', {
+  const ast = parse('import(`/foo/${bar}.js`);', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0], '${sourceString}');
+    dynamicImportToGlob(ast.body[0].expression.source, '${sourceString}');
   } catch (e) {
     error = e;
   }
@@ -219,13 +216,13 @@ test('throws when dynamic import starts with a /', (t) => {
 });
 
 test('throws when dynamic import does not start with ./', (t) => {
-  const ast = CustomParser.parse('import(`foo/${bar}.js`);', {
+  const ast = parse('import(`foo/${bar}.js`);', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0], '${sourceString}');
+    dynamicImportToGlob(ast.body[0].expression.source, '${sourceString}');
   } catch (e) {
     error = e;
   }
@@ -237,13 +234,13 @@ test('throws when dynamic import does not start with ./', (t) => {
 });
 
 test("throws when dynamic import imports it's own directory", (t) => {
-  const ast = CustomParser.parse('import(`./${foo}.js`);', {
+  const ast = parse('import(`./${foo}.js`);', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0], '${sourceString}');
+    dynamicImportToGlob(ast.body[0].expression.source, '${sourceString}');
   } catch (e) {
     error = e;
   }
@@ -255,13 +252,13 @@ test("throws when dynamic import imports it's own directory", (t) => {
 });
 
 test('throws when dynamic import imports does not contain a file extension', (t) => {
-  const ast = CustomParser.parse('import(`./foo/${bar}`);', {
+  const ast = parse('import(`./foo/${bar}`);', {
     sourceType: 'module'
   });
 
   let error;
   try {
-    dynamicImportToGlob(ast.body[0].expression.arguments[0], '${sourceString}');
+    dynamicImportToGlob(ast.body[0].expression.source, '${sourceString}');
   } catch (e) {
     error = e;
   }

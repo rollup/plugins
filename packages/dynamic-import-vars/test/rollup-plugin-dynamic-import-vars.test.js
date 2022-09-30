@@ -5,7 +5,7 @@ const { join } = require('path');
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const dynamicImportVars = require('../dist/index').default;
+const dynamicImportVars = require('current-package');
 
 process.chdir(join(__dirname, 'fixtures'));
 

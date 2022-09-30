@@ -232,24 +232,22 @@ importers:
 
   packages/dynamic-import-vars:
     specifiers:
-      '@rollup/pluginutils': ^4.1.2
-      acorn: ^7.3.1
-      acorn-dynamic-import: ^4.0.0
-      estree-walker: ^2.0.1
-      fast-glob: ^3.2.7
-      magic-string: ^0.25.7
-      prettier: ^2.0.5
-      rollup: ^2.67.3
+      '@rollup/pluginutils': ^4.2.1
+      acorn: ^8.8.0
+      estree-walker: ^2.0.2
+      fast-glob: ^3.2.12
+      magic-string: ^0.26.4
+      prettier: ^2.7.1
+      rollup: ^3.0.0-7
     dependencies:
       '@rollup/pluginutils': 4.2.1
       estree-walker: 2.0.2
       fast-glob: 3.2.12
-      magic-string: 0.25.9
+      magic-string: 0.26.4
     devDependencies:
-      acorn: 7.4.1
-      acorn-dynamic-import: 4.0.0_acorn@7.4.1
+      acorn: 8.8.0
       prettier: 2.7.1
-      rollup: 2.79.1
+      rollup: 3.0.0-7
 
   packages/eslint:
     specifiers:
@@ -2728,15 +2726,6 @@ packages:
       acorn: ^6.0.0
     dependencies:
       acorn: 6.4.2
-
-  /acorn-dynamic-import/4.0.0_acorn@7.4.1:
-    resolution: {integrity: sha512-d3OEjQV4ROpoflsnUA8HozoIR504TFxNivYEUi6uwz0IYhBkTDXGuWlNdMtybRt3nqVx/L6XqMt0FxkXuWKZhw==}
-    deprecated: This is probably built in to whatever tool you're using. If you still need it... idk
-    peerDependencies:
-      acorn: ^6.0.0
-    dependencies:
-      acorn: 7.4.1
-    dev: true
 
   /acorn-jsx/5.3.2_acorn@6.4.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
