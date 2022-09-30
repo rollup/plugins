@@ -11,6 +11,10 @@
 
 🍣 A Rollup plugin to lint entry points and all imported files with ESLint.
 
+## Requirements
+
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v1.20.0+.
+
 ## Install
 
 Using npm:

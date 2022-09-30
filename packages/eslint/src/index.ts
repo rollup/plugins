@@ -4,7 +4,7 @@ import { Plugin } from 'rollup';
 import { createFilter } from '@rollup/pluginutils';
 import { CLIEngine } from 'eslint';
 
-import { RollupEslintOptions } from '../types';
+import type { RollupEslintOptions } from '../types';
 
 function normalizePath(id: string) {
   return path.relative(process.cwd(), id).split(path.sep).join('/');

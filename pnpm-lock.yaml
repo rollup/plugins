@@ -254,21 +254,21 @@ importers:
 
   packages/eslint:
     specifiers:
-      '@rollup/plugin-node-resolve': ^9.0.0
-      '@rollup/plugin-typescript': ^6.0.0
-      '@rollup/pluginutils': ^4.0.0
-      '@types/eslint': ^7.2.2
-      eslint: ^7.12.0
-      rollup: ^2.67.3
-      typescript: ^4.1.2
+      '@rollup/plugin-node-resolve': ^14.1.0
+      '@rollup/plugin-typescript': ^8.5.0
+      '@rollup/pluginutils': ^4.2.1
+      '@types/eslint': ^7.29.0
+      eslint: ^7.32.0
+      rollup: ^3.0.0-7
+      typescript: ^4.8.3
     dependencies:
       '@rollup/pluginutils': 4.2.1
       eslint: 7.32.0
     devDependencies:
-      '@rollup/plugin-node-resolve': 9.0.0_rollup@2.79.1
-      '@rollup/plugin-typescript': 6.1.0_5q64ijqsuisqe52alrh6v6njki
+      '@rollup/plugin-node-resolve': 14.1.0_rollup@3.0.0-7
+      '@rollup/plugin-typescript': 8.5.0_vmpcm5aav5u37diqfc6pdubvhq
       '@types/eslint': 7.29.0
-      rollup: 2.79.1
+      rollup: 3.0.0-7
       typescript: 4.8.3
 
   packages/graphql:
@@ -2128,6 +2128,21 @@ packages:
       rollup: 2.79.1
     dev: true
 
+  /@rollup/plugin-node-resolve/14.1.0_rollup@3.0.0-7:
+    resolution: {integrity: sha512-5G2niJroNCz/1zqwXtk0t9+twOSDlG00k1Wfd7bkbbXmwg8H8dvgHdIWAun53Ps/rckfvOC7scDBjuGFg5OaWw==}
+    engines: {node: '>= 10.0.0'}
+    peerDependencies:
+      rollup: ^2.78.0
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@3.0.0-7
+      '@types/resolve': 1.17.1
+      deepmerge: 4.2.2
+      is-builtin-module: 3.2.0
+      is-module: 1.0.0
+      resolve: 1.22.1
+      rollup: 3.0.0-7
+    dev: true
+
   /@rollup/plugin-node-resolve/8.4.0_rollup@2.67.3:
     resolution: {integrity: sha512-LFqKdRLn0ShtQyf6SBYO69bGE1upV6wUhBX0vFOUnLAyzx5cwp8svA0eHUnu8+YU57XOkrMtfG63QOpQx25pHQ==}
     engines: {node: '>= 8.0.0'}
@@ -2154,21 +2169,6 @@ packages:
       '@types/resolve': 1.17.1
       builtin-modules: 3.3.0
       deep-freeze: 0.0.1
-      deepmerge: 4.2.2
-      is-module: 1.0.0
-      resolve: 1.22.1
-      rollup: 2.79.1
-    dev: true
-
-  /@rollup/plugin-node-resolve/9.0.0_rollup@2.79.1:
-    resolution: {integrity: sha512-gPz+utFHLRrd41WMP13Jq5mqqzHL3OXrfj3/MkSyB6UBIcuNt9j60GCbarzMzdf1VHFpOxfQh/ez7wyadLMqkg==}
-    engines: {node: '>= 10.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0
-    dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
-      '@types/resolve': 1.17.1
-      builtin-modules: 3.3.0
       deepmerge: 4.2.2
       is-module: 1.0.0
       resolve: 1.22.1
@@ -2247,6 +2247,23 @@ packages:
       typescript: 4.8.3
     dev: true
 
+  /@rollup/plugin-typescript/8.5.0_vmpcm5aav5u37diqfc6pdubvhq:
+    resolution: {integrity: sha512-wMv1/scv0m/rXx21wD2IsBbJFba8wGF3ErJIr6IKRfRj49S85Lszbxb4DCo8iILpluTjk2GAAu9CoZt4G3ppgQ==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    peerDependenciesMeta:
+      tslib:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@3.0.0-7
+      resolve: 1.22.1
+      rollup: 3.0.0-7
+      typescript: 4.8.3
+    dev: true
+
   /@rollup/plugin-virtual/2.1.0_rollup@2.79.1:
     resolution: {integrity: sha512-CPPAtlKT53HFqC8jFHb/V5WErpU8Hrq2TyCR0A7kPQMlF2wNUf0o1xuAc+Qxj8NCZM0Z3Yvl+FbUXfJjVWqDwA==}
     engines: {node: '>=8.0.0'}
@@ -2289,6 +2306,18 @@ packages:
       estree-walker: 1.0.1
       picomatch: 2.3.1
       rollup: 2.79.1
+
+  /@rollup/pluginutils/3.1.0_rollup@3.0.0-7:
+    resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.3.1
+      rollup: 3.0.0-7
+    dev: true
 
   /@rollup/pluginutils/4.2.1:
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
@@ -7161,6 +7190,14 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
+
+  /rollup/3.0.0-7:
+    resolution: {integrity: sha512-Hq5hpq9IrR4YfGd4o4zDtsfZnkwoCpjrQ4ZQIZrVF4ryzW6FOgXKBm6N7vJfodIJ6v+51FsqsXD2bxW5wapiuA==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
 
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
