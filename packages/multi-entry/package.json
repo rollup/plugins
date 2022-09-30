@@ -13,10 +13,15 @@
   "author": "rollup",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/multi-entry/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "types": "./types/index.d.ts",
+    "import": "./dist/es/index.js",
+    "default": "./dist/cjs/index.js"
+  },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=14.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -33,6 +38,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
@@ -46,20 +52,22 @@
     "entries"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0 || ^2.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@rollup/plugin-virtual": "^2.0.3",
-    "matched": "^5.0.0"
+    "matched": "^5.0.1"
   },
   "devDependencies": {
-    "rollup": "^2.67.3"
+    "rollup": "^3.0.0-7"
   },
   "types": "./types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
