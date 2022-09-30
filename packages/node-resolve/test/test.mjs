@@ -1,16 +1,17 @@
 import { dirname, join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
-import babel from '@rollup/plugin-babel';
+import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
-
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import { nodeResolve } from '..';
+import { nodeResolve } from 'current-package';
 
-import { evaluateBundle, getCode, getImports, testBundle } from '../../../util/test';
+import { evaluateBundle, getCode, getImports, testBundle } from '../../../util/test.js';
 
-process.chdir(join(__dirname, 'fixtures'));
+const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
+process.chdir(join(DIRNAME, 'fixtures'));
 
 const failOnWarn = (t) => (warning) =>
   t.fail(`No warnings were expected, got:\n${warning.code}\n${warning.message}`);
@@ -312,10 +313,12 @@ test('ignores deep-import non-modules', async (t) => {
     ]
   });
   const imports = await getImports(bundle);
-
-  t.is(warnings.length, 1);
-  t.snapshot(warnings);
   t.deepEqual(imports, ['foo/deep']);
+
+  t.is(warnings.length, 1, 'number of warnings');
+  const [{ exporter, id }] = warnings;
+  t.is(exporter, 'foo/deep', 'exporter');
+  t.is(id.endsWith('deep-import-non-module.js'), true, 'id');
 });
 
 test('generates manual chunks', async (t) => {
@@ -323,15 +326,15 @@ test('generates manual chunks', async (t) => {
   const bundle = await rollup({
     input: 'manualchunks.js',
     onwarn: failOnWarn(t),
-    manualChunks: {
-      [chunkName]: ['simple']
-    },
     plugins: [nodeResolve()]
   });
 
   const { output } = await bundle.generate({
-    format: 'esm',
-    chunkFileNames: '[name]'
+    format: 'es',
+    chunkFileNames: '[name]',
+    manualChunks: {
+      [chunkName]: ['simple']
+    }
   });
 
   t.truthy(output.find(({ fileName }) => fileName === chunkName));
@@ -341,10 +344,9 @@ test('resolves dynamic imports', async (t) => {
   const bundle = await rollup({
     input: 'dynamic.js',
     onwarn: failOnWarn(t),
-    inlineDynamicImports: true,
     plugins: [nodeResolve()]
   });
-  const { module } = await testBundle(t, bundle);
+  const { module } = await testBundle(t, bundle, { options: { inlineDynamicImports: true } });
   const result = await module.exports;
   t.is(result.default, 42);
 });
@@ -357,7 +359,7 @@ test('can resolve imports with hash in path', async (t) => {
       nodeResolve(),
       {
         load(id) {
-          if (id === resolve(__dirname, 'fixtures', 'node_modules', 'test', '#', 'foo.js')) {
+          if (id === resolve(DIRNAME, 'fixtures', 'node_modules', 'test', '#', 'foo.js')) {
             return 'export default "resolved with hash"';
           }
           return null;
@@ -380,7 +382,7 @@ test('can resolve imports with search params', async (t) => {
         load(id) {
           if (
             id ===
-            resolve(__dirname, 'fixtures', 'node_modules', 'test', 'index.js?foo=bar&lorem=ipsum')
+            resolve(DIRNAME, 'fixtures', 'node_modules', 'test', 'index.js?foo=bar&lorem=ipsum')
           ) {
             return 'export default "resolved with search params"';
           }
@@ -404,13 +406,7 @@ test('can resolve imports with search params and hash', async (t) => {
         load(id) {
           if (
             id ===
-            resolve(
-              __dirname,
-              'fixtures',
-              'node_modules',
-              'test',
-              'index.js?foo=bar&lorem=ipsum#foo'
-            )
+            resolve(DIRNAME, 'fixtures', 'node_modules', 'test', 'index.js?foo=bar&lorem=ipsum#foo')
           ) {
             return 'export default "resolved with search params and hash"';
           }
@@ -499,7 +495,7 @@ test('passes on "isEntry" flag', async (t) => {
         custom: {
           'node-resolve': {
             resolved: {
-              id: join(__dirname, 'fixtures', 'entry', 'other.js'),
+              id: join(DIRNAME, 'fixtures', 'entry', 'other.js'),
               moduleSideEffects: null
             }
           }
@@ -514,7 +510,7 @@ test('passes on "isEntry" flag', async (t) => {
         custom: {
           'node-resolve': {
             resolved: {
-              id: join(__dirname, 'fixtures', 'entry', 'main.js'),
+              id: join(DIRNAME, 'fixtures', 'entry', 'main.js'),
               moduleSideEffects: null
             }
           }
@@ -530,7 +526,7 @@ test('passes on "isEntry" flag', async (t) => {
         custom: {
           'node-resolve': {
             resolved: {
-              id: join(__dirname, 'fixtures', 'entry', 'dep.js'),
+              id: join(DIRNAME, 'fixtures', 'entry', 'dep.js'),
               moduleSideEffects: null
             }
           }
@@ -573,7 +569,7 @@ test('passes on custom options', async (t) => {
           test: 42,
           'node-resolve': {
             resolved: {
-              id: join(__dirname, 'fixtures', 'entry', 'main.js'),
+              id: join(DIRNAME, 'fixtures', 'entry', 'main.js'),
               moduleSideEffects: null
             }
           }
@@ -589,7 +585,7 @@ test('passes on custom options', async (t) => {
         custom: {
           'node-resolve': {
             resolved: {
-              id: join(__dirname, 'fixtures', 'entry', 'other.js'),
+              id: join(DIRNAME, 'fixtures', 'entry', 'other.js'),
               moduleSideEffects: null
             }
           }
@@ -634,7 +630,7 @@ test('allow other plugins to take over resolution', async (t) => {
         name: 'change-resolution',
         resolveId(importee) {
           // Only resolve if the id has been pre-resolved by node-resolve
-          if (importee === join(__dirname, 'fixtures', 'entry', 'main.js')) {
+          if (importee === join(DIRNAME, 'fixtures', 'entry', 'main.js')) {
             return {
               id: join(dirname(importee), 'other.js'),
               meta: { 'change-resolution': 'changed' }
@@ -645,7 +641,7 @@ test('allow other plugins to take over resolution', async (t) => {
 
         load(id) {
           const info = this.getModuleInfo(id);
-          t.is(info.id, join(__dirname, 'fixtures', 'entry', 'other.js'));
+          t.is(info.id, join(DIRNAME, 'fixtures', 'entry', 'other.js'));
           t.deepEqual(info.meta, { 'change-resolution': 'changed' });
         }
       }

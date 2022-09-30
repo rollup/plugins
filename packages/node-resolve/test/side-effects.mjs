@@ -1,14 +1,16 @@
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 import test from 'ava';
 import { rollup } from 'rollup';
-
 import commonjs from '@rollup/plugin-commonjs';
 
-import { nodeResolve } from '..';
-import { getCode, testBundle } from '../../../util/test';
+import { nodeResolve } from 'current-package';
 
-process.chdir(join(__dirname, 'fixtures'));
+import { getCode, testBundle } from '../../../util/test.js';
+
+const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
+process.chdir(join(DIRNAME, 'fixtures'));
 
 const failOnWarn = (t) => (warning) =>
   t.fail(`No warnings were expected, got:\n${warning.code}\n${warning.message}`);

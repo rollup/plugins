@@ -5,12 +5,13 @@ import isBuiltinModule from 'is-builtin-module';
 import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
-import { version } from '../package.json';
+import { version, peerDependencies } from '../package.json';
 
 import { isDirCached, isFileCached, readCachedFile } from './cache';
 import handleDeprecatedOptions from './deprecated-options';
 import { fileExists, readFile, realpath } from './fs';
 import resolveImportSpecifiers from './resolveImportSpecifiers';
+import validateVersion from './rollup-version.js';
 import { getMainFields, getPackageName, normalizeInput } from './util';
 
 const ES6_BROWSER_EMPTY = '\0node-resolve:empty.js';
@@ -249,6 +250,7 @@ export function nodeResolve(opts = {}) {
     version,
 
     buildStart(buildOptions) {
+      validateVersion(this.meta.rollupVersion, peerDependencies.rollup);
       rollupOptions = buildOptions;
 
       for (const warning of warnings) {
