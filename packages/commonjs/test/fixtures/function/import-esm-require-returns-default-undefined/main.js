@@ -11,6 +11,6 @@ t.deepEqual(namedExports, { foo: 'foo' }, 'named exports');
 t.deepEqual(mixedExports, { foo: 'foo', default: 'bar' }, 'mixed exports');
 t.deepEqual(defaultExport, { default: 'bar' }, 'default export');
 t.deepEqual(noExports, {}, 'no exports');
-t.deepEqual(externalNamed, { foo: 'foo' }, 'external named');
+t.deepEqual(externalNamed, { foo: 'foo', default: { foo: 'foo' } }, 'external named');
 t.deepEqual(externalMixed, { foo: 'foo', default: 'bar' }, 'external mixed');
 t.deepEqual(externalDefault, { default: 'bar' }, 'external default');
