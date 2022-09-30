@@ -490,15 +490,15 @@ importers:
   packages/sucrase:
     specifiers:
       '@rollup/plugin-alias': ^3.1.4
-      '@rollup/pluginutils': ^4.1.1
-      rollup: ^2.67.3
-      sucrase: ^3.20.0
+      '@rollup/pluginutils': ^4.2.1
+      rollup: ^3.0.0-7
+      sucrase: ^3.27.0
     dependencies:
       '@rollup/pluginutils': 4.2.1
       sucrase: 3.27.0
     devDependencies:
-      '@rollup/plugin-alias': 3.1.9_rollup@2.79.1
-      rollup: 2.79.1
+      '@rollup/plugin-alias': 3.1.9_rollup@3.0.0-7
+      rollup: 3.0.0-7
 
   packages/typescript:
     specifiers:
@@ -1964,13 +1964,13 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
 
-  /@rollup/plugin-alias/3.1.9_rollup@2.79.1:
+  /@rollup/plugin-alias/3.1.9_rollup@3.0.0-7:
     resolution: {integrity: sha512-QI5fsEvm9bDzt32k39wpOwZhVzRcL5ydcffUHMyLVaVaLeC70I8TJZ17F1z1eMoLu4E/UOcH9BWVkKpIKdrfiw==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0
     dependencies:
-      rollup: 2.79.1
+      rollup: 3.0.0-7
       slash: 3.0.0
     dev: true
 
@@ -6741,6 +6741,14 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
+
+  /rollup/3.0.0-7:
+    resolution: {integrity: sha512-Hq5hpq9IrR4YfGd4o4zDtsfZnkwoCpjrQ4ZQIZrVF4ryzW6FOgXKBm6N7vJfodIJ6v+51FsqsXD2bxW5wapiuA==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
 
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
