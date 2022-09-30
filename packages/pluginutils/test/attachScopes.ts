@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import * as estree from 'estree';
 
 import test from 'ava';

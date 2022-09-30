@@ -1,4 +1,4 @@
-import { DataToEsm } from '../types';
+import type { DataToEsm } from '../types';
 
 import makeLegalIdentifier from './makeLegalIdentifier';
 

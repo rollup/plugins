@@ -13,7 +13,7 @@ A set of utility functions commonly used by 🍣 Rollup plugins.
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
+The plugin utils require an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v1.20.0+.
 
 ## Install
 

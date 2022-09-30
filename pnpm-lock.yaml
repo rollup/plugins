@@ -409,29 +409,29 @@ importers:
 
   packages/pluginutils:
     specifiers:
-      '@rollup/plugin-commonjs': ^14.0.0
-      '@rollup/plugin-node-resolve': ^8.4.0
-      '@rollup/plugin-typescript': ^5.0.2
-      '@types/estree': 0.0.45
-      '@types/node': ^14.0.26
-      '@types/picomatch': ^2.2.1
-      acorn: ^8.0.4
-      estree-walker: ^2.0.1
-      picomatch: ^2.2.2
-      rollup: ^2.67.3
-      typescript: ^4.1.2
+      '@rollup/plugin-commonjs': ^22.0.2
+      '@rollup/plugin-node-resolve': ^14.1.0
+      '@rollup/plugin-typescript': ^8.5.0
+      '@types/estree': 1.0.0
+      '@types/node': ^14.18.30
+      '@types/picomatch': ^2.3.0
+      acorn: ^8.8.0
+      estree-walker: ^2.0.2
+      picomatch: ^2.3.1
+      rollup: ^3.0.0-7
+      typescript: ^4.8.3
     dependencies:
       estree-walker: 2.0.2
       picomatch: 2.3.1
     devDependencies:
-      '@rollup/plugin-commonjs': 14.0.0_rollup@2.79.1
-      '@rollup/plugin-node-resolve': 8.4.0_rollup@2.79.1
-      '@rollup/plugin-typescript': 5.0.2_5q64ijqsuisqe52alrh6v6njki
-      '@types/estree': 0.0.45
+      '@rollup/plugin-commonjs': 22.0.2_rollup@3.0.0-7
+      '@rollup/plugin-node-resolve': 14.1.0_rollup@3.0.0-7
+      '@rollup/plugin-typescript': 8.5.0_vmpcm5aav5u37diqfc6pdubvhq
+      '@types/estree': 1.0.0
       '@types/node': 14.18.30
       '@types/picomatch': 2.3.0
       acorn: 8.8.0
-      rollup: 2.79.1
+      rollup: 3.0.0-7
       typescript: 4.8.3
 
   packages/replace:
@@ -2031,22 +2031,6 @@ packages:
       rollup: 2.79.1
     dev: true
 
-  /@rollup/plugin-commonjs/14.0.0_rollup@2.79.1:
-    resolution: {integrity: sha512-+PSmD9ePwTAeU106i9FRdc+Zb3XUWyW26mo5Atr2mk82hor8+nPwkztEjFo8/B1fJKfaQDg9aM2bzQkjhi7zOw==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      rollup: ^2.3.4
-    dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
-      commondir: 1.0.1
-      estree-walker: 1.0.1
-      glob: 7.2.3
-      is-reference: 1.2.1
-      magic-string: 0.25.9
-      resolve: 1.22.1
-      rollup: 2.79.1
-    dev: true
-
   /@rollup/plugin-commonjs/22.0.2_rollup@3.0.0-7:
     resolution: {integrity: sha512-//NdP6iIwPbMTcazYsiBMbJW7gfmpHom33u1beiIoHDEM0Q9clvtQB1T0efvMqHeKsGohiHo97BCPCkBXdscwg==}
     engines: {node: '>= 12.0.0'}
@@ -2341,10 +2325,6 @@ packages:
 
   /@types/estree/0.0.39:
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
-
-  /@types/estree/0.0.45:
-    resolution: {integrity: sha512-jnqIUKDUqJbDIUxm0Uj7bnlMnRm1T/eZ9N+AVMqhPgzrba2GhGG5o/jCTwmdPK709nEZsGoMzXEDUjcXHa3W0g==}
-    dev: true
 
   /@types/estree/1.0.0:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
