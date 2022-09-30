@@ -27,7 +27,7 @@ interface RollupMultiEntryOptions {
   entryFileName?: string;
   /**
    * The preserveModules option is to be used in conjunction with output.preserveModules ({@link https://rollupjs.org/guide/en/#outputpreservemodules}).
-   * If `true`, overrides the entryFileName to be output.entryFileNames.
+   * If `true`, overrides the `entryFileName` option to be output.entryFileNames.
    * If `false`, the plugin will respect the `entryFileName` option.
    * @default false
    */
