@@ -66,7 +66,7 @@ export default function dataUri(): Plugin {
         } catch (e: any) {
           const error: RollupError = {
             message: e.toString(),
-            parserError: e,
+            cause: e,
             plugin: '@rollup/plugin-data-uri',
             pluginCode: 'DU$JSON'
           };
