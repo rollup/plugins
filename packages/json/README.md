@@ -13,7 +13,7 @@
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v1.20.0+.
 
 ## Install
 
@@ -46,7 +46,9 @@ With an accompanying file `src/index.js`, the local `package.json` file would no
 
 ```js
 // src/index.js
-import pkg from './package.json';
+import { readFileSync } from 'fs';
+
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 console.log(`running version ${pkg.version}`);
 ```
 
