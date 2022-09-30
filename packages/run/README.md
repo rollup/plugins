@@ -13,6 +13,10 @@
 
 Using this plugin gives much faster results compared to what you would do with [nodemon](https://nodemon.io/).
 
+## Requirements
+
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v2.0.0+.
+
 ## Install
 
 Using npm:

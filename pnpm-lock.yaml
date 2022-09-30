@@ -457,19 +457,19 @@ importers:
 
   packages/run:
     specifiers:
-      '@rollup/plugin-typescript': ^5.0.2
-      '@types/node': 14.0.26
-      del: ^5.1.0
-      rollup: ^2.67.3
-      sinon: 9.0.2
-      typescript: ^4.1.2
+      '@rollup/plugin-typescript': ^8.5.0
+      '@types/node': 14.18.30
+      del: ^6.1.1
+      rollup: ^3.0.0-7
+      sinon: ^14.0.0
+      typescript: ^4.8.3
     dependencies:
-      '@types/node': 14.0.26
+      '@types/node': 14.18.30
     devDependencies:
-      '@rollup/plugin-typescript': 5.0.2_5q64ijqsuisqe52alrh6v6njki
-      del: 5.1.0
-      rollup: 2.79.1
-      sinon: 9.0.2
+      '@rollup/plugin-typescript': 8.5.0_vmpcm5aav5u37diqfc6pdubvhq
+      del: 6.1.1
+      rollup: 3.0.0-7
+      sinon: 14.0.1
       typescript: 4.8.3
 
   packages/strip:
@@ -2210,21 +2210,14 @@ packages:
       type-detect: 4.0.8
     dev: true
 
-  /@sinonjs/fake-timers/6.0.1:
-    resolution: {integrity: sha512-MZPUxrmFubI36XS1DI3qmI0YdN1gks62JtFZvxR67ljjSNCeK6U08Zx4msEWOXuofgqUt6zPHSi1H9fbjR/NRA==}
+  /@sinonjs/fake-timers/9.1.2:
+    resolution: {integrity: sha512-BPS4ynJW/o92PUR4wgriz2Ud5gpST5vz6GQfMixEDK0Z8ZCUv2M7SkBLykH56T++Xs+8ln9zTGbOvNGIe02/jw==}
     dependencies:
       '@sinonjs/commons': 1.8.3
     dev: true
 
-  /@sinonjs/formatio/5.0.1:
-    resolution: {integrity: sha512-KaiQ5pBf1MpS09MuA0kp6KBQt2JUOQycqVG1NZXvzeaXe5LGFqAKueIS0bw4w0P9r7KuBSVdUk5QjXsUdu2CxQ==}
-    dependencies:
-      '@sinonjs/commons': 1.8.3
-      '@sinonjs/samsam': 5.3.1
-    dev: true
-
-  /@sinonjs/samsam/5.3.1:
-    resolution: {integrity: sha512-1Hc0b1TtyfBu8ixF/tpfSHTVWKwCBLY4QJbkgnE7HcwyvT2xArDxb4K7dMgqRm3szI+LJbzmW/s4xxEhv6hwDg==}
+  /@sinonjs/samsam/6.1.1:
+    resolution: {integrity: sha512-cZ7rKJTLiE7u7Wi/v9Hc2fs3Ucc3jrWeMgPHbbTCeVAB2S0wOBbYlkJVeNSL04i7fdhT8wIbDq1zhC/PXTD2SA==}
     dependencies:
       '@sinonjs/commons': 1.8.3
       lodash.get: 4.4.2
@@ -2366,13 +2359,8 @@ packages:
     resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
     dev: true
 
-  /@types/node/14.0.26:
-    resolution: {integrity: sha512-W+fpe5s91FBGE0pEa0lnqGLL4USgpLgs4nokw16SrBBco/gQxuua7KnArSEOd5iaMqbbSHV10vUDkJYJJqpXKA==}
-    dev: false
-
   /@types/node/14.18.30:
     resolution: {integrity: sha512-8OEyg4oc/CqN5+LbInKNLA8MfbGzbC+k8lVPePXazuwEVrVeQ9gwMDX00HJwWbC7syc1FWRU6Mow0Lm+mibHAQ==}
-    dev: true
 
   /@types/node/18.7.21:
     resolution: {integrity: sha512-rLFzK5bhM0YPyCoTC8bolBjMk7bwnZ8qeZUBslBfjZQou2ssJdWslx9CZ8DGM+Dx7QXQiiTVZ/6QO6kwtHkZCA==}
@@ -3743,6 +3731,11 @@ packages:
 
   /diff/4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
+    engines: {node: '>=0.3.1'}
+    dev: true
+
+  /diff/5.1.0:
+    resolution: {integrity: sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==}
     engines: {node: '>=0.3.1'}
     dev: true
 
@@ -5604,11 +5597,11 @@ packages:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
     dev: true
 
-  /nise/4.1.0:
-    resolution: {integrity: sha512-eQMEmGN/8arp0xsvGoQ+B1qvSkR73B1nWSCh7nOt5neMCtwcQVYQGdzQMhcNscktTsWB54xnlSQFzOAPJD8nXA==}
+  /nise/5.1.1:
+    resolution: {integrity: sha512-yr5kW2THW1AkxVmCnKEh4nbYkJdB3I7LUkiUgOvEkOp414mc2UMaHMA7pjq1nYowhdoJZGwEKGaQVbxfpWj10A==}
     dependencies:
       '@sinonjs/commons': 1.8.3
-      '@sinonjs/fake-timers': 6.0.1
+      '@sinonjs/fake-timers': 9.1.2
       '@sinonjs/text-encoding': 0.7.2
       just-extend: 4.2.1
       path-to-regexp: 1.8.0
@@ -6867,15 +6860,14 @@ packages:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
     dev: true
 
-  /sinon/9.0.2:
-    resolution: {integrity: sha512-0uF8Q/QHkizNUmbK3LRFqx5cpTttEVXudywY9Uwzy8bTfZUhljZ7ARzSxnRHWYWtVTeh4Cw+tTb3iU21FQVO9A==}
+  /sinon/14.0.1:
+    resolution: {integrity: sha512-JhJ0jCiyBWVAHDS+YSjgEbDn7Wgz9iIjA1/RK+eseJN0vAAWIWiXBdrnb92ELPyjsfreCYntD1ORtLSfIrlvSQ==}
     dependencies:
       '@sinonjs/commons': 1.8.3
-      '@sinonjs/fake-timers': 6.0.1
-      '@sinonjs/formatio': 5.0.1
-      '@sinonjs/samsam': 5.3.1
-      diff: 4.0.2
-      nise: 4.1.0
+      '@sinonjs/fake-timers': 9.1.2
+      '@sinonjs/samsam': 6.1.1
+      diff: 5.1.0
+      nise: 5.1.1
       supports-color: 7.2.0
     dev: true
 
