@@ -10,7 +10,7 @@ delete global.fetch;
 const { SourceMapConsumer } = require('source-map');
 
 global.fetch = fetch;
-const replace = require('../dist/rollup-plugin-replace.cjs.js');
+const replace = require('..');
 
 const { getOutputFromGenerated } = require('./helpers/util');
 
