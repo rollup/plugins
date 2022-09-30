@@ -540,14 +540,14 @@ importers:
 
   packages/virtual:
     specifiers:
-      '@rollup/plugin-node-resolve': ^8.4.0
-      '@rollup/plugin-typescript': ^6.0.0
-      rollup: ^2.67.3
-      typescript: ^4.1.2
+      '@rollup/plugin-node-resolve': ^14.1.0
+      '@rollup/plugin-typescript': ^8.5.0
+      rollup: ^3.0.0-7
+      typescript: ^4.8.3
     devDependencies:
-      '@rollup/plugin-node-resolve': 8.4.0_rollup@2.79.1
-      '@rollup/plugin-typescript': 6.1.0_gypgyaqhine6mwjfvh7icfhviq
-      rollup: 2.79.1
+      '@rollup/plugin-node-resolve': 14.1.0_rollup@3.0.0-7
+      '@rollup/plugin-typescript': 8.5.0_wkkufgeabp7wfx7iyk42bruffi
+      rollup: 3.0.0-7
       typescript: 4.8.4
 
   packages/wasm:
@@ -2088,20 +2088,6 @@ packages:
 
   /@rollup/plugin-typescript/5.0.2_gypgyaqhine6mwjfvh7icfhviq:
     resolution: {integrity: sha512-CkS028Itwjqm1uLbFVfpJgtVtnNvZ+og/m6UlNRR5wOOnNTWPcVQzOu5xGdEX+WWJxdvWIqUq2uR/RBt2ZipWg==}
-    engines: {node: '>=8.0.0'}
-    peerDependencies:
-      rollup: ^2.14.0
-      tslib: '*'
-      typescript: '>=3.4.0'
-    dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
-      resolve: 1.22.1
-      rollup: 2.79.1
-      typescript: 4.8.4
-    dev: true
-
-  /@rollup/plugin-typescript/6.1.0_gypgyaqhine6mwjfvh7icfhviq:
-    resolution: {integrity: sha512-hJxaiE6WyNOsK+fZpbFh9CUijZYqPQuAOWO5khaGTUkM8DYNNyA2TDlgamecE+qLOG1G1+CwbWMAx3rbqpp6xQ==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rollup: ^2.14.0
