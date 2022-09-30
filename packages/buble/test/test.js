@@ -17,19 +17,17 @@ const getChunksFromGenerated = (generated) => {
 function getChunksFromBundle(bundle) {
   return bundle
     .generate({
-      format: 'esm'
+      format: 'es'
     })
     .then(getChunksFromGenerated);
 }
 
-test('transforms files', async (t) =>
-  rollup
-    .rollup({
-      input: 'fixtures/basic/main.js',
-      plugins: [buble()]
-    })
-    .then(getChunksFromBundle)
-    .then((generated) => {
-      t.is(generated.length, 1);
-      t.is(generated[0].code, 'function main () { return 42; }\n\nexport { main as default };\n');
-    }));
+test('transforms files', async (t) => {
+  const bundle = await rollup.rollup({
+    input: `${__dirname}/fixtures/basic/main.js`,
+    plugins: [buble()]
+  });
+  const generated = await getChunksFromBundle(bundle);
+  t.is(generated.length, 1);
+  t.is(generated[0].code, 'function main () { return 42; }\n\nexport { main as default };\n');
+});
