@@ -13,8 +13,16 @@
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/strip#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "types": "./types/index.d.ts",
+    "import": "./dist/es/index.js",
+    "default": "./dist/cjs/index.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -28,6 +36,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types"
   ],
   "keywords": [
@@ -37,22 +46,24 @@
     "javascript"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0 || ^2.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.1.0",
-    "estree-walker": "^2.0.1",
-    "magic-string": "^0.25.7"
+    "@rollup/pluginutils": "^4.2.1",
+    "estree-walker": "^2.0.2",
+    "magic-string": "^0.26.4"
   },
   "devDependencies": {
-    "acorn": "^7.3.1",
-    "rollup": "^2.67.3"
+    "acorn": "^8.8.0",
+    "rollup": "^3.0.0-7"
   },
   "types": "./types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",
