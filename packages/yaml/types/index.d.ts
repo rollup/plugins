@@ -23,14 +23,6 @@ interface RollupYamlOptions {
    */
   exclude?: FilterPattern;
   /**
-   * - If `true`, specifies that the data in the target YAML file(s) contain trusted data and
-   * should be loaded normally.
-   * - If `false`, data is assumed to be untrusted and will be loaded using
-   * [safety methods](https://github.com/nodeca/js-yaml#safeload-string---options-).
-   * @default true
-   */
-  safe?: boolean;
-  /**
    * A function which can optionally mutate parsed YAML.
    * The function should return the mutated `object`, or `undefined` which will make no changes to
    * the parsed YAML.
