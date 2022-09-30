@@ -1,4 +1,4 @@
-import { TargetEnv } from '../types';
+import type { TargetEnv } from '../types';
 
 export const HELPERS_ID = '\0wasmHelpers.js';
 

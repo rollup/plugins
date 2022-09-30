@@ -4,7 +4,7 @@ import { createHash } from 'crypto';
 
 import { Plugin } from 'rollup';
 
-import { RollupWasmOptions } from '../types';
+import type { RollupWasmOptions } from '../types';
 
 import { getHelpersModule, HELPERS_ID } from './helper';
 
