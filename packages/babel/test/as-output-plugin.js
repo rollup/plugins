@@ -2,7 +2,6 @@ import * as nodePath from 'path';
 
 import test from 'ava';
 import { rollup } from 'rollup';
-import { SourceMapConsumer } from 'source-map';
 
 import { getCode } from '../../../util/test';
 
@@ -130,7 +129,15 @@ test('generates sourcemap by default', async (t) => {
   });
 
   const target = 'log';
+
+  // source-map uses the presence of fetch to detect browser environments which
+  // breaks in Node 18
+  const { fetch } = global;
+  delete global.fetch;
+  const { SourceMapConsumer } = await import('source-map');
   const smc = await new SourceMapConsumer(map);
+  global.fetch = fetch;
+
   const loc = getLocation(code, code.indexOf(target));
   const original = smc.originalPositionFor(loc);
 

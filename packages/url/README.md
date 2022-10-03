@@ -57,14 +57,14 @@ console.log(`svg contents: ${svg}`);
 Type: `String` | `Array[...String]`<br>
 Default: `null`
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
 ### `include`
 
 Type: `String` | `Array[...String]`<br>
 Default: `['**/*.svg', '**/*.png', '**/*.jp(e)?g', '**/*.gif', '**/*.webp']`
 
-A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default .svg, .png, .jpg, .jpeg, .gif and .webp files are targeted.
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default .svg, .png, .jpg, .jpeg, .gif and .webp files are targeted.
 
 ### `limit`
 

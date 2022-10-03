@@ -43,7 +43,7 @@ jobs:
 
       - name: Install pnpm
         run: |
-          npm install pnpm@6 -g;
+          npm install pnpm@7 -g;
           echo node `pnpm -v`;
 
       - name: Set Git Config
@@ -57,16 +57,16 @@ jobs:
         run: pnpm install
 
       - name: Build Packages
-        run: pnpm build --recursive
+        run: pnpm --recursive build
 
       - name: Lint Monorepo
         run: pnpm lint
 
       - name: Run Tests
-        run: pnpm test --filter [HEAD^]
+        run: pnpm --filter [HEAD^] test
 
       - name: Release and Publish Packages
-        run: pnpm release --filter [HEAD^]
+        run: pnpm --filter [HEAD^] release
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

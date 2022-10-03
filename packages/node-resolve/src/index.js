@@ -44,7 +44,7 @@ export function nodeResolve(opts = {}) {
   const { warnings } = handleDeprecatedOptions(opts);
 
   const options = { ...defaults, ...opts };
-  const { extensions, jail, moduleDirectories, ignoreSideEffectsForRoot } = options;
+  const { extensions, jail, moduleDirectories, modulePaths, ignoreSideEffectsForRoot } = options;
   const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
   const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
   const packageInfoCache = new Map();
@@ -56,6 +56,12 @@ export function nodeResolve(opts = {}) {
   const rootDir = resolve(options.rootDir || process.cwd());
   let { dedupe } = options;
   let rollupOptions;
+
+  if (moduleDirectories.some((name) => name.includes('/'))) {
+    throw new Error(
+      '`moduleDirectories` option must only contain directory names. If you want to load modules from somewhere not supported by the default module resolution algorithm, see `modulePaths`.'
+    );
+  }
 
   if (typeof dedupe !== 'function') {
     dedupe = (importee) =>
@@ -82,7 +88,7 @@ export function nodeResolve(opts = {}) {
   const browserMapCache = new Map();
   let preserveSymlinks;
 
-  const doResolveId = async (context, importee, importer, custom) => {
+  const resolveLikeNode = async (context, importee, importer, custom) => {
     // strip query params from import
     const [importPath, params] = importee.split('?');
     const importSuffix = `${params ? `?${params}` : ''}`;
@@ -167,6 +173,7 @@ export function nodeResolve(opts = {}) {
       useBrowserOverrides,
       baseDir,
       moduleDirectories,
+      modulePaths,
       rootDir,
       ignoreSideEffectsForRoot
     });
@@ -257,39 +264,52 @@ export function nodeResolve(opts = {}) {
       isDirCached.clear();
     },
 
-    async resolveId(importee, importer, resolveOptions) {
-      if (importee === ES6_BROWSER_EMPTY) {
-        return importee;
-      }
-      // ignore IDs with null character, these belong to other plugins
-      if (/\0/.test(importee)) return null;
-
-      if (/\0/.test(importer)) {
-        importer = undefined;
-      }
-
-      const resolved = await doResolveId(this, importee, importer, resolveOptions.custom);
-      if (resolved) {
-        const resolvedResolved = await this.resolve(
-          resolved.id,
-          importer,
-          Object.assign({ skipSelf: true }, resolveOptions)
-        );
-        if (resolvedResolved) {
-          // Handle plugins that manually make the result external
-          if (resolvedResolved.external) {
-            return false;
-          }
-          // Allow other plugins to take over resolution. Rollup core will not
-          // change the id if it corresponds to an existing file
-          if (resolvedResolved.id !== resolved.id) {
-            return resolvedResolved;
-          }
-          // Pass on meta information added by other plugins
-          return { ...resolved, meta: resolvedResolved.meta };
+    resolveId: {
+      order: 'post',
+      async handler(importee, importer, resolveOptions) {
+        if (importee === ES6_BROWSER_EMPTY) {
+          return importee;
         }
+        // ignore IDs with null character, these belong to other plugins
+        if (/\0/.test(importee)) return null;
+
+        const { custom = {} } = resolveOptions;
+        const { 'node-resolve': { resolved: alreadyResolved } = {} } = custom;
+        if (alreadyResolved) {
+          return alreadyResolved;
+        }
+
+        if (/\0/.test(importer)) {
+          importer = undefined;
+        }
+
+        const resolved = await resolveLikeNode(this, importee, importer, custom);
+        if (resolved) {
+          // This way, plugins may attach additional meta information to the
+          // resolved id or make it external. We do not skip node-resolve here
+          // because another plugin might again use `this.resolve` in its
+          // `resolveId` hook, in which case we want to add the correct
+          // `moduleSideEffects` information.
+          const resolvedResolved = await this.resolve(resolved.id, importer, {
+            ...resolveOptions,
+            custom: { ...custom, 'node-resolve': { ...custom['node-resolve'], resolved } }
+          });
+          if (resolvedResolved) {
+            // Handle plugins that manually make the result external
+            if (resolvedResolved.external) {
+              return false;
+            }
+            // Allow other plugins to take over resolution. Rollup core will not
+            // change the id if it corresponds to an existing file
+            if (resolvedResolved.id !== resolved.id) {
+              return resolvedResolved;
+            }
+            // Pass on meta information added by other plugins
+            return { ...resolved, meta: resolvedResolved.meta };
+          }
+        }
+        return resolved;
       }
-      return resolved;
     },
 
     load(importee) {

@@ -52,6 +52,7 @@ function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
   }
   if (typeof obj === 'symbol') {
     const key = Symbol.keyFor(obj);
+    // eslint-disable-next-line no-undefined
     if (key !== undefined) return `Symbol.for(${stringify(key)})`;
   }
   if (typeof obj === 'bigint') return `${obj}n`;

@@ -25,6 +25,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     filterRoot,
     include,
     outputToFilesystem,
+    noForceEmit,
     transformers,
     tsconfig,
     tslib,
@@ -34,8 +35,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
 
-  const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions);
-  const filter = createFilter(include || ['*.ts+(|x)', '**/*.ts+(|x)'], exclude, {
+  const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
+  const filter = createFilter(include || '{,**/}*.(cts|mts|ts|tsx)', exclude, {
     resolve: filterRoot ?? parsedOptions.options.rootDir
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
@@ -106,10 +107,24 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       // Convert path from windows separators to posix separators
       const containingFile = normalizePath(importer);
 
-      const resolved = resolveModule(importee, containingFile);
+      // when using node16 or nodenext module resolution, we need to tell ts if
+      // we are resolving to a commonjs or esnext module
+      const mode =
+        typeof ts.getImpliedNodeFormatForFile === 'function'
+          ? ts.getImpliedNodeFormatForFile(
+              // @ts-expect-error
+              containingFile,
+              undefined, // eslint-disable-line no-undefined
+              { ...ts.sys, ...formatHost },
+              parsedOptions.options
+            )
+          : undefined; // eslint-disable-line no-undefined
+
+      // eslint-disable-next-line no-undefined
+      const resolved = resolveModule(importee, containingFile, undefined, mode);
 
       if (resolved) {
-        if (resolved.extension === '.d.ts') return null;
+        if (/\.d\.[cm]?ts/.test(resolved.extension)) return null;
         return path.normalize(resolved.resolvedFileName);
       }
 

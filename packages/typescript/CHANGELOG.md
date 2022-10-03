@@ -1,5 +1,21 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v8.5.0
+
+_2022-09-06_
+
+### Features
+
+- feat: support 4.7 nodenext (#1194)
+
+## v8.4.0
+
+_2022-08-23_
+
+### Features
+
+- feat: allow override of forced `noEmit` and `emitDeclarationOnly` compiler options (#1242)
+
 ## v8.3.4
 
 _2022-07-28_

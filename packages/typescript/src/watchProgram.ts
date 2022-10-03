@@ -54,7 +54,7 @@ function createDeferred(timeout?: number): Deferred {
   let resolve: DeferredResolve = () => {};
 
   if (timeout) {
-    promise = Promise.race<Promise<boolean>>([
+    promise = Promise.race<boolean | void>([
       new Promise((r) => setTimeout(r, timeout, true)),
       new Promise((r) => (resolve = r))
     ]);
@@ -175,8 +175,21 @@ function createWatchHost(
       return baseHost.afterProgramCreate!(program);
     },
     /** Add helper to deal with module resolution */
-    resolveModuleNames(moduleNames, containingFile) {
-      return moduleNames.map((moduleName) => resolveModule(moduleName, containingFile));
+    resolveModuleNames(
+      moduleNames,
+      containingFile,
+      _reusedNames,
+      redirectedReference,
+      _optionsOnlyWithNewerTsVersions,
+      containingSourceFile
+    ) {
+      return moduleNames.map((moduleName, i) => {
+        const mode = containingSourceFile
+          ? ts.getModeForResolutionAtIndex?.(containingSourceFile, i)
+          : undefined; // eslint-disable-line no-undefined
+
+        return resolveModule(moduleName, containingFile, redirectedReference, mode);
+      });
     }
   };
 }
