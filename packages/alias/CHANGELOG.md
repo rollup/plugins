@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v4.0.0
+
+_2022-10-07_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3, handle latest node-resolve [#1269](https://github.com/rollup/plugins/pull/1269)
+
 ## v3.1.9
 
 _2021-12-31_
