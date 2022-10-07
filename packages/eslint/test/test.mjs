@@ -1,10 +1,12 @@
 import fs from 'fs';
 
+import { createRequire } from 'module';
+
 import test from 'ava';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import { rollup } from 'rollup';
 
-import eslint from '../dist';
+import eslint from 'current-package';
 
 test('should lint files', async (t) => {
   let count = 0;
@@ -41,7 +43,7 @@ test('should ignore node_modules with exclude option', async (t) => {
     plugins: [
       nodeResolve({ jsnext: true }),
       eslint({
-        configFile: './test/fixtures/.eslintrc-babel',
+        overrideConfigFile: './test/fixtures/.eslintrc-babel',
         formatter: () => {
           count += 1;
         }
@@ -82,7 +84,7 @@ test('should fail with enabled throwOnWarning and throwOnError options', async (
         ]
       });
     },
-    { message: /Warnings or errors were found/ }
+    { message: /Found 1 warning and 1 error/ }
   );
 });
 
@@ -99,7 +101,7 @@ test('should fail with enabled throwOnError option', async (t) => {
         ]
       });
     },
-    { message: /Errors were found/ }
+    { message: /Found 1 error/ }
   );
 });
 
@@ -116,7 +118,7 @@ test('should fail with enabled throwOnWarning option', async (t) => {
         ]
       });
     },
-    { message: /Warnings were found/ }
+    { message: /Found 1 warning/ }
   );
 });
 
@@ -135,11 +137,16 @@ test('should not fail with throwOnError and throwOnWarning disabled', async (t) 
   t.pass();
 });
 
-test('should fail with not found formatter', (t) => {
-  t.throws(
-    () => {
-      eslint({
-        formatter: 'not-found-formatter'
+test('should fail with not found formatter', async (t) => {
+  await t.throwsAsync(
+    async () => {
+      await rollup({
+        input: './test/fixtures/use-strict.js',
+        plugins: [
+          eslint({
+            formatter: 'not-found-formatter'
+          })
+        ]
       });
     },
     { message: /There was a problem loading formatter/ }
@@ -180,4 +187,25 @@ test('should fix source code', async (t) => {
   );
 
   fs.unlinkSync('./test/fixtures/fixable-clone.js');
+});
+
+test('works with cjs plugin', async (t) => {
+  const require = createRequire(import.meta.url);
+  const eslintPluginCjs = require('current-package');
+  let count = 0;
+  await rollup({
+    input: './test/fixtures/undeclared.js',
+    plugins: [
+      eslintPluginCjs({
+        formatter: (results) => {
+          count += results[0].messages.length;
+          // eslint-disable-next-line prefer-destructuring
+          const { message } = results[0].messages[0];
+          t.is(message, "'x' is not defined.");
+        }
+      })
+    ]
+  });
+
+  t.is(count, 1);
 });
