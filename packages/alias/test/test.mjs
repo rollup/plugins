@@ -1,15 +1,14 @@
 import path, { posix } from 'path';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
 import test from 'ava';
 import { rollup } from 'rollup';
-
-// eslint-disable-next-line import/no-unresolved, import/extensions
 import nodeResolvePlugin from '@rollup/plugin-node-resolve';
 
-import alias from '../dist';
+import alias from 'current-package';
 
-const normalizePath = (pathToNormalize) => pathToNormalize;
-const DIRNAME = normalizePath(__dirname);
+const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 
 /**
  * Helper function to test configuration with Rollup
@@ -197,9 +196,7 @@ test('Windows absolute path aliasing', (t) =>
         importer: posix.resolve(DIRNAME, './fixtures/index.js')
       }
     ]
-  ).then((result) =>
-    t.deepEqual(result, [normalizePath('E:\\react\\node_modules\\fbjs\\lib\\warning')])
-  ));
+  ).then((result) => t.deepEqual(result, ['E:\\react\\node_modules\\fbjs\\lib\\warning'])));
 
 /**
  * Helper function to get moduleIDs from final Rollup bundle
@@ -211,7 +208,7 @@ const getModuleIdsFromBundle = (bundle) => {
     return Promise.resolve(bundle.modules.map((module) => module.id));
   }
   return bundle
-    .generate({ format: 'esm' })
+    .generate({ format: 'es' })
     .then((generated) => {
       if (generated.output) {
         return generated.output.length
@@ -564,4 +561,46 @@ test('CustomResolver plugin-like object with buildStart', (t) => {
       option: 1
     })
   );
+});
+
+test('Works as CJS plugin', async (t) => {
+  const require = createRequire(import.meta.url);
+  const aliasCjs = require('current-package');
+  const bundle = await rollup({
+    input: './test/fixtures/index.js',
+    plugins: [
+      aliasCjs({
+        entries: [
+          { find: 'fancyNumber', replacement: './aliasMe' },
+          {
+            find: './anotherFancyNumber',
+            replacement: './localAliasMe'
+          },
+          { find: 'numberFolder', replacement: './folder' },
+          {
+            find: './numberFolder',
+            replacement: './folder'
+          }
+        ]
+      })
+    ]
+  });
+  const moduleIds = await getModuleIdsFromBundle(bundle);
+  const normalizedIds = moduleIds.map((id) => path.resolve(id)).sort();
+  t.is(normalizedIds.length, 5);
+  [
+    '/fixtures/aliasMe.js',
+    '/fixtures/folder/anotherNumber.js',
+    '/fixtures/index.js',
+    '/fixtures/localAliasMe.js',
+    '/fixtures/nonAliased.js'
+  ]
+    .map((id) => path.normalize(id))
+    .forEach((expectedId, index) =>
+      t.is(
+        normalizedIds[index].endsWith(expectedId),
+        true,
+        `expected ${normalizedIds[index]} to end with ${expectedId}`
+      )
+    );
 });

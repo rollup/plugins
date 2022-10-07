@@ -1,12 +1,12 @@
 /* eslint-disable global-require, import/no-dynamic-require, no-console */
 
-import * as fs from 'fs';
-import * as path from 'path';
+const fs = require('fs');
+const path = require('path');
 
-import * as acorn from 'acorn';
-import test from 'ava';
+const acorn = require('acorn');
+const test = require('ava');
 
-import { commonjs } from './helpers/util';
+const { commonjs } = require('./helpers/util.js');
 
 process.chdir(__dirname);
 

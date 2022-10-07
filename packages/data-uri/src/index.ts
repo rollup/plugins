@@ -63,7 +63,7 @@ export default function dataUri(): Plugin {
         let json = '';
         try {
           json = JSON.parse(content);
-        } catch (e) {
+        } catch (e: any) {
           const error: RollupError = {
             message: e.toString(),
             parserError: e,

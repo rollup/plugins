@@ -6,7 +6,7 @@ const css = require('rollup-plugin-postcss');
 
 const { getCode } = require('../../../util/test');
 
-const html = require('../dist');
+const html = require('..');
 
 // const read = (file = 'index.html') => readFileSync(join('output/', file), 'utf-8');
 
@@ -56,7 +56,7 @@ test.serial('esm', async (t) => {
     input: 'batman.js',
     plugins: [html()]
   });
-  const code = await getCode(bundle, { dir: 'output', format: 'esm' }, true);
+  const code = await getCode(bundle, { dir: 'output', format: 'es' }, true);
   t.snapshot(code);
 });
 

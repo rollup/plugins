@@ -16,7 +16,7 @@ export default function buble(options: RollupBubleOptions = {}): Plugin {
 
       try {
         return transform(code, transformOptions);
-      } catch (e) {
+      } catch (e: any) {
         e.plugin = 'buble';
         if (!e.loc) e.loc = {};
         e.loc.file = id;

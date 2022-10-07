@@ -1,17 +1,20 @@
+import { createRequire } from 'module';
 import { sep, posix, join } from 'path';
+import { fileURLToPath } from 'url';
 
 import { rollup } from 'rollup';
 import globby from 'globby';
 import test from 'ava';
 import del from 'del';
 
-import { getCode } from '../../../util/test';
+import wasmPlugin from 'current-package';
 
-import wasm from '../';
+import { getCode } from '../../../util/test.js';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
-process.chdir(__dirname);
+const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
+process.chdir(DIRNAME);
 
 const outputFile = './output/bundle.js';
 const outputDir = './output/';
@@ -27,7 +30,7 @@ test('async compiling', async (t) => {
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasm()]
+    plugins: [wasmPlugin()]
   });
   await testBundle(t, bundle);
 });
@@ -38,7 +41,7 @@ test('fetching WASM from separate file', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/complex.js',
     plugins: [
-      wasm({
+      wasmPlugin({
         maxFileSize: 0
       })
     ]
@@ -49,9 +52,7 @@ test('fetching WASM from separate file', async (t) => {
 
   global.result = null;
   global.t = t;
-  // eslint-disable-next-line global-require, import/no-dynamic-require
-  require(outputFile);
-
+  await import(outputFile);
   await global.result;
   t.snapshot(await globby(glob));
   await del(outputDir);
@@ -62,7 +63,7 @@ test('complex module decoding', async (t) => {
 
   const bundle = await rollup({
     input: 'fixtures/complex.js',
-    plugins: [wasm()]
+    plugins: [wasmPlugin()]
   });
   await testBundle(t, bundle);
 });
@@ -73,7 +74,7 @@ test('sync compiling', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/sync.js',
     plugins: [
-      wasm({
+      wasmPlugin({
         sync: ['fixtures/sample.wasm']
       })
     ]
@@ -87,7 +88,7 @@ test('imports', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/imports.js',
     plugins: [
-      wasm({
+      wasmPlugin({
         sync: ['fixtures/imports.wasm']
       })
     ]
@@ -103,7 +104,7 @@ try {
 
     const bundle = await rollup({
       input: 'fixtures/worker.js',
-      plugins: [wasm()]
+      plugins: [wasmPlugin()]
     });
     const code = await getCode(bundle);
     const executeWorker = () => {
@@ -130,7 +131,7 @@ test('injectHelper', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/injectHelper.js',
     plugins: [
-      wasm({
+      wasmPlugin({
         sync: ['fixtures/sample.wasm']
       }),
       {
@@ -155,7 +156,7 @@ test('target environment auto', async (t) => {
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasm({ targetEnv: 'auto' })]
+    plugins: [wasmPlugin({ targetEnv: 'auto' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
@@ -169,7 +170,7 @@ test('target environment auto-inline', async (t) => {
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasm({ targetEnv: 'auto-inline' })]
+    plugins: [wasmPlugin({ targetEnv: 'auto-inline' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
@@ -184,7 +185,7 @@ test('target environment browser', async (t) => {
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasm({ targetEnv: 'browser' })]
+    plugins: [wasmPlugin({ targetEnv: 'browser' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
@@ -197,10 +198,21 @@ test('target environment node', async (t) => {
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasm({ targetEnv: 'node' })]
+    plugins: [wasmPlugin({ targetEnv: 'node' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
   t.true(code.includes(`require("`));
   t.true(!code.includes(`fetch`));
+});
+
+test('works as CJS plugin', async (t) => {
+  t.plan(2);
+  const require = createRequire(import.meta.url);
+  const wasmPluginCjs = require('current-package');
+  const bundle = await rollup({
+    input: 'fixtures/async.js',
+    plugins: [wasmPluginCjs()]
+  });
+  await testBundle(t, bundle);
 });
