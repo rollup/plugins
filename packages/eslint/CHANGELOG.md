@@ -1,5 +1,13 @@
 # @rollup/plugin-eslint ChangeLog
 
+## v8.0.3
+
+_2022-10-07_
+
+### Bugfixes
+
+- fix: Prepare eslint for rollup 3 and upgrade eslint to newest version [#1309](https://github.com/rollup/plugins/pull/1309)
+
 ## v8.0.2
 
 _2022-04-11_
