@@ -1,5 +1,13 @@
 # @rollup/plugin-auto-install ChangeLog
 
+## v3.0.0
+
+_2022-10-08_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1271](https://github.com/rollup/plugins/pull/1271)
+
 ## v2.2.0
 
 _2021-10-19_
