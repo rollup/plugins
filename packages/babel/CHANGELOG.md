@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v6.0.0
+
+_2022-10-08_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1303](https://github.com/rollup/plugins/pull/1303)
+
 ## v5.3.1
 
 _2022-02-22_
