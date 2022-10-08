@@ -1,5 +1,18 @@
 # @rollup/plugin-buble ChangeLog
 
+## v1.0.0
+
+_2022-10-08_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1305](https://github.com/rollup/plugins/pull/1305)
+
+### Updates
+
+- chore: upgrade TypeScript [#710](https://github.com/rollup/plugins/pull/710)
+- chore: update dependencies ([92d6c82](https://github.com/rollup/plugins/commit/92d6c8207db101fc82c6aeade0c49a2b9ee361e2))
+
 ## v0.21.3
 
 _2020-04-12_
