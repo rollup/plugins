@@ -1,5 +1,13 @@
 # @rollup/plugin-inject ChangeLog
 
+## v5.0.0
+
+_2022-10-09_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1292](https://github.com/rollup/plugins/pull/1292)
+
 ## v4.0.4
 
 _2021-12-28_
