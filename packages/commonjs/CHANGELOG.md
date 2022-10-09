@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.0
+
+_2022-10-09_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1300](https://github.com/rollup/plugins/pull/1300)
+
 ## v22.0.2
 
 _2022-08-05_
