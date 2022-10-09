@@ -12,10 +12,10 @@ module.exports = {
       {
         buildEnd() {
           assert.deepStrictEqual(
-            warnings.map(({ code, source }) => {
-              return { code, source };
+            warnings.map(({ code, exporter, ...rest }) => {
+              return { code, exporter };
             }),
-            [{ code: 'UNRESOLVED_IMPORT', source: 'path' }]
+            [{ code: 'UNRESOLVED_IMPORT', exporter: 'path' }]
           );
         }
       }

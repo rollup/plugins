@@ -10,5 +10,6 @@ t.deepEqual(dep, {
 });
 
 t.deepEqual(external, {
-  foo: 'foo'
+  foo: 'foo',
+  default: { foo: 'foo' }
 });

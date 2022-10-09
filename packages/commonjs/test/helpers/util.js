@@ -62,7 +62,12 @@ function runCodeSplitTest(codeMap, t, configContext = {}) {
 }
 
 async function getCodeMapFromBundle(bundle, options = {}) {
-  const generated = await bundle.generate({ exports: 'auto', format: 'cjs', ...options });
+  const generated = await bundle.generate({
+    interop: 'compat',
+    exports: 'auto',
+    format: 'cjs',
+    ...options
+  });
   const codeMap = {};
   for (const chunk of generated.output) {
     codeMap[chunk.fileName] = chunk.code;
