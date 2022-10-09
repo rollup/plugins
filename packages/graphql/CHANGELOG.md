@@ -1,5 +1,13 @@
 # @rollup/plugin-graphql ChangeLog
 
+## v2.0.0
+
+_2022-10-09_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1295](https://github.com/rollup/plugins/pull/1295)
+
 ## v1.0.0
 
 _2019-02-18_
