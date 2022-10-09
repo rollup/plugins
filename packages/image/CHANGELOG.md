@@ -1,5 +1,13 @@
 # @rollup/plugin-image ChangeLog
 
+## v3.0.0
+
+_2022-10-09_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1293](https://github.com/rollup/plugins/pull/1293)
+
 ## v2.1.1
 
 _2021-08-24_
