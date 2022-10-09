@@ -19,7 +19,7 @@ function importLocale(locale) {
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v10.0.0+) and Rollup v1.20.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v1.20.0+.
 
 ## Install
 
