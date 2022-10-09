@@ -13,8 +13,13 @@
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/dsv#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "import": "./dist/es/index.js",
+    "types": "./types/index.d.ts",
+    "default": "./dist/cjs/index.js"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -30,25 +35,32 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
   ],
+  "peerDependencies": {
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
+  },
   "dependencies": {
-    "@rollup/pluginutils": "^3.1.0",
-    "@types/d3-dsv": "~1.2.0",
-    "d3-dsv": "1.2.0",
-    "tosource": "^1.0.0"
+    "@rollup/pluginutils": "^4.2.1",
+    "@types/d3-dsv": "^3.0.0",
+    "d3-dsv": "2.0.0",
+    "tosource": "^2.0.0-alpha.3"
   },
   "devDependencies": {
-    "del-cli": "^3.0.1",
-    "rollup": "^2.67.3"
+    "del-cli": "^5.0.0",
+    "rollup": "^3.0.0-7"
   },
   "types": "./types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",

@@ -215,20 +215,20 @@ importers:
 
   packages/dsv:
     specifiers:
-      '@rollup/pluginutils': ^3.1.0
-      '@types/d3-dsv': ~1.2.0
-      d3-dsv: 1.2.0
-      del-cli: ^3.0.1
-      rollup: ^2.67.3
-      tosource: ^1.0.0
+      '@rollup/pluginutils': ^4.2.1
+      '@types/d3-dsv': ^3.0.0
+      d3-dsv: 2.0.0
+      del-cli: ^5.0.0
+      rollup: ^3.0.0-7
+      tosource: ^2.0.0-alpha.3
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
-      '@types/d3-dsv': 1.2.1
-      d3-dsv: 1.2.0
-      tosource: 1.0.0
+      '@rollup/pluginutils': 4.2.1
+      '@types/d3-dsv': 3.0.0
+      d3-dsv: 2.0.0
+      tosource: 2.0.0-alpha.3
     devDependencies:
-      del-cli: 3.0.1
-      rollup: 2.79.1
+      del-cli: 5.0.0
+      rollup: 3.0.0-7
 
   packages/dynamic-import-vars:
     specifiers:
@@ -2320,8 +2320,8 @@ packages:
       '@types/node': 18.7.21
     dev: true
 
-  /@types/d3-dsv/1.2.1:
-    resolution: {integrity: sha512-LLmJmjiqp/fTNEdij5bIwUJ6P6TVNk5hKM9/uk5RPO2YNgEu9XvKO0dJ7Iqd3psEdmZN1m7gB1bOsjr4HmO2BA==}
+  /@types/d3-dsv/3.0.0:
+    resolution: {integrity: sha512-o0/7RlMl9p5n6FQDptuJVMxDf/7EDEv2SYEO/CwdG2tr1hTfUVi0Iavkk2ax+VpaQ/1jVhpnj5rq1nj8vwhn2A==}
     dev: false
 
   /@types/eslint/8.4.6:
@@ -3704,8 +3704,8 @@ packages:
       type: 1.2.0
     dev: true
 
-  /d3-dsv/1.2.0:
-    resolution: {integrity: sha512-9yVlqvZcSOMhCYzniHE7EVUws7Fa1zgw+/EAV2BxJoG3ME19V6BQFBwI855XQDsxyOuG7NibqRMTtiF/Qup46g==}
+  /d3-dsv/2.0.0:
+    resolution: {integrity: sha512-E+Pn8UJYx9mViuIUkoc93gJGGYut6mSDKy2+XaPwccwkRGlR+LO97L2VCCRjQivTwLHkSnAJG7yo00BWY6QM+w==}
     hasBin: true
     dependencies:
       commander: 2.20.3
@@ -7515,6 +7515,11 @@ packages:
   /tosource/1.0.0:
     resolution: {integrity: sha512-N6g8eQ1eerw6Y1pBhdgkubWIiPFwXa2POSUrlL8jth5CyyEWNWzoGKRkO3CaO7Jx27hlJP54muB3btIAbx4MPg==}
     engines: {node: '>=0.4.0'}
+    dev: false
+
+  /tosource/2.0.0-alpha.3:
+    resolution: {integrity: sha512-KAB2lrSS48y91MzFPFuDg4hLbvDiyTjOVgaK7Erw+5AmZXNq4sFRVn8r6yxSLuNs15PaokrDRpS61ERY9uZOug==}
+    engines: {node: '>=10'}
     dev: false
 
   /trim-newlines/3.0.1:
