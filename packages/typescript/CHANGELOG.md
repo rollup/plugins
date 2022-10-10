@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v9.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1282](https://github.com/rollup/plugins/pull/1282)
+
 ## v8.5.0
 
 _2022-09-06_
