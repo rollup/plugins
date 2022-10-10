@@ -1,5 +1,13 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v4.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1302](https://github.com/rollup/plugins/pull/1302)
+
 ## v3.1.0
 
 _2021-07-26_
