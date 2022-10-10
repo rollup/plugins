@@ -2,12 +2,11 @@ import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 
 import { PluginContext } from 'rollup';
-import {
+import typescript from 'typescript';
+import type {
   Diagnostic,
   ExtendedConfigCacheEntry,
   MapLike,
-  ModuleKind,
-  ModuleResolutionKind,
   ParsedCommandLine,
   ProjectReference,
   TypeAcquisition,
@@ -28,6 +27,7 @@ import {
 } from './interfaces';
 import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
 
+const { ModuleKind, ModuleResolutionKind } = typescript;
 export interface TypeScriptConfig {
   autoSetSourceMap: boolean;
   options: CompilerOptions;

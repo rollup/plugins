@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'url';
+
 import resolve, { SyncOpts } from 'resolve';
 
 // const resolveIdAsync = (file: string, opts: AsyncOpts) =>
@@ -19,7 +21,8 @@ export const getTsLibPath = () => {
   try {
     // eslint-disable-next-line no-underscore-dangle
     return resolveId(process.env.__TSLIB_TEST_PATH__ || 'tslib/tslib.es6.js', {
-      basedir: __dirname
+      // @ts-ignore import.meta.url is allowed because the Rollup plugin injects the correct module format
+      basedir: fileURLToPath(new URL('.', import.meta.url))
     });
   } catch (_) {
     return null;

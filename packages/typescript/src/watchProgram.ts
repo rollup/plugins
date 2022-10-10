@@ -1,6 +1,5 @@
 import { PluginContext } from 'rollup';
-import { DiagnosticCategory } from 'typescript';
-
+import typescript from 'typescript';
 import type {
   Diagnostic,
   EmitAndSemanticDiagnosticsBuilderProgram,
@@ -17,6 +16,7 @@ import { DiagnosticsHost } from './diagnostics/host';
 import { Resolver } from './moduleResolution';
 import { mergeTransformers } from './customTransformers';
 
+const { DiagnosticCategory } = typescript;
 type BuilderProgram = EmitAndSemanticDiagnosticsBuilderProgram;
 
 // @see https://github.com/microsoft/TypeScript/blob/master/src/compiler/diagnosticMessages.json
