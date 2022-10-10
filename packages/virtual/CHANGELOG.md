@@ -1,5 +1,13 @@
 # @rollup/plugin-virtual ChangeLog
 
+## v3.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1280](https://github.com/rollup/plugins/pull/1280)
+
 ## v2.1.0
 
 _2022-02-22_
