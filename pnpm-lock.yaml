@@ -503,22 +503,20 @@ importers:
   packages/typescript:
     specifiers:
       '@rollup/plugin-buble': ^0.21.3
-      '@rollup/plugin-commonjs': ^11.1.0
-      '@rollup/plugin-typescript': ^5.0.2
-      '@rollup/pluginutils': ^3.1.0
-      '@types/node': ^10.0.0
+      '@rollup/plugin-commonjs': ^22.0.2
+      '@rollup/pluginutils': ^4.2.1
+      '@types/node': ^14.18.30
       buble: ^0.20.0
-      resolve: ^1.17.0
+      resolve: ^1.22.1
       rollup: ^2.67.3
-      typescript: ^4.7.3
+      typescript: ^4.8.3
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
+      '@rollup/pluginutils': 4.2.1
       resolve: 1.22.1
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@2.79.1
-      '@rollup/plugin-commonjs': 11.1.0_rollup@2.79.1
-      '@rollup/plugin-typescript': 5.0.2_gypgyaqhine6mwjfvh7icfhviq
-      '@types/node': 10.17.60
+      '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
+      '@types/node': 14.18.31
       buble: 0.20.0
       rollup: 2.79.1
       typescript: 4.8.4
@@ -2016,15 +2014,15 @@ packages:
       rollup: 3.0.0-7
     dev: true
 
-  /@rollup/plugin-commonjs/11.1.0_rollup@2.79.1:
-    resolution: {integrity: sha512-Ycr12N3ZPN96Fw2STurD21jMqzKwL9QuFhms3SD7KKRK7oaXUsBU9Zt0jL/rOPHiPYisI21/rXGO3jr9BnLHUA==}
-    engines: {node: '>= 8.0.0'}
+  /@rollup/plugin-commonjs/22.0.2_rollup@2.79.1:
+    resolution: {integrity: sha512-//NdP6iIwPbMTcazYsiBMbJW7gfmpHom33u1beiIoHDEM0Q9clvtQB1T0efvMqHeKsGohiHo97BCPCkBXdscwg==}
+    engines: {node: '>= 12.0.0'}
     peerDependencies:
-      rollup: ^1.20.0||^2.0.0
+      rollup: ^2.68.0
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.79.1
       commondir: 1.0.1
-      estree-walker: 1.0.1
+      estree-walker: 2.0.2
       glob: 7.2.3
       is-reference: 1.2.1
       magic-string: 0.25.9
@@ -2296,14 +2294,14 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.1
       '@types/keyv': 3.1.4
-      '@types/node': 14.18.30
+      '@types/node': 18.8.3
       '@types/responselike': 1.0.0
     dev: true
 
   /@types/conventional-commits-parser/3.0.2:
     resolution: {integrity: sha512-1kVPUHFaart1iGRFxKn8WNXYEDVAgMb+DLatgql2dGg9jTGf3bNxWtN//C/tDG3ckOLg4u7SSx+qcn8VjzI5zg==}
     dependencies:
-      '@types/node': 14.18.30
+      '@types/node': 18.8.3
     dev: true
 
   /@types/d3-dsv/3.0.0:
@@ -2345,7 +2343,7 @@ packages:
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 14.18.30
+      '@types/node': 18.8.3
     dev: true
 
   /@types/minimatch/5.1.2:
@@ -2354,10 +2352,6 @@ packages:
 
   /@types/minimist/1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
-    dev: true
-
-  /@types/node/10.17.60:
-    resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
     dev: true
 
   /@types/node/14.18.30:
@@ -2396,7 +2390,7 @@ packages:
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 14.18.30
+      '@types/node': 18.8.3
     dev: true
 
   /@types/semver/7.3.12:

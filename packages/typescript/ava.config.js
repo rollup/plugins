@@ -1,1 +1,0 @@
-../../shared/ava.config.js

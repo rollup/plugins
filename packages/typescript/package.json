@@ -13,10 +13,15 @@
   "author": "Oskar Segersvärd",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/typescript/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "types": "./types/index.d.ts",
+    "import": "./dist/es/index.js",
+    "default": "./dist/cjs/index.js"
+  },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -34,6 +39,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
@@ -45,27 +51,29 @@
     "es2015"
   ],
   "peerDependencies": {
-    "rollup": "^2.14.0",
+    "rollup": "^2.14.0||^3.0.0",
     "tslib": "*",
     "typescript": ">=3.7.0"
   },
   "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    },
     "tslib": {
       "optional": true
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.1.0",
-    "resolve": "^1.17.0"
+    "@rollup/pluginutils": "^4.2.1",
+    "resolve": "^1.22.1"
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.3",
-    "@rollup/plugin-commonjs": "^11.1.0",
-    "@rollup/plugin-typescript": "^5.0.2",
-    "@types/node": "^10.0.0",
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@types/node": "^14.18.30",
     "buble": "^0.20.0",
     "rollup": "^2.67.3",
-    "typescript": "^4.7.3"
+    "typescript": "^4.8.3"
   },
-  "types": "types/index.d.ts"
+  "types": "./types/index.d.ts"
 }
