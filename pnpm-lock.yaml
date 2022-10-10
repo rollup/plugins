@@ -374,24 +374,24 @@ importers:
 
   packages/node-resolve:
     specifiers:
-      '@babel/core': ^7.10.5
+      '@babel/core': ^7.19.1
       '@babel/plugin-transform-typescript': ^7.10.5
       '@rollup/plugin-babel': ^5.1.0
       '@rollup/plugin-commonjs': ^22.0.2
       '@rollup/plugin-json': ^4.1.0
-      '@rollup/pluginutils': ^3.1.0
-      '@types/resolve': 1.17.1
+      '@rollup/pluginutils': ^4.2.1
+      '@types/resolve': 1.20.2
       deepmerge: ^4.2.2
-      es5-ext: ^0.10.53
-      is-builtin-module: ^3.1.0
+      es5-ext: ^0.10.62
+      is-builtin-module: ^3.2.0
       is-module: ^1.0.0
-      resolve: ^1.19.0
-      rollup: ^2.78.1
-      source-map: ^0.7.3
+      resolve: ^1.22.1
+      rollup: ^3.0.0-7
+      source-map: ^0.7.4
       string-capitalize: ^1.0.1
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
-      '@types/resolve': 1.17.1
+      '@rollup/pluginutils': 4.2.1
+      '@types/resolve': 1.20.2
       deepmerge: 4.2.2
       is-builtin-module: 3.2.0
       is-module: 1.0.0
@@ -399,11 +399,11 @@ importers:
     devDependencies:
       '@babel/core': 7.19.1
       '@babel/plugin-transform-typescript': 7.19.1_@babel+core@7.19.1
-      '@rollup/plugin-babel': 5.3.1_r56fldxoyazzliugjcx2ns4pma
-      '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
-      '@rollup/plugin-json': 4.1.0_rollup@2.79.1
+      '@rollup/plugin-babel': 5.3.1_7nxlpq7csoud2kb557q5ujip64
+      '@rollup/plugin-commonjs': 22.0.2_rollup@3.0.0-7
+      '@rollup/plugin-json': 4.1.0_rollup@3.0.0-7
       es5-ext: 0.10.62
-      rollup: 2.79.1
+      rollup: 3.0.0-7
       source-map: 0.7.4
       string-capitalize: 1.0.1
 
@@ -1974,7 +1974,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /@rollup/plugin-babel/5.3.1_r56fldxoyazzliugjcx2ns4pma:
+  /@rollup/plugin-babel/5.3.1_7nxlpq7csoud2kb557q5ujip64:
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
@@ -1987,8 +1987,8 @@ packages:
     dependencies:
       '@babel/core': 7.19.1
       '@babel/helper-module-imports': 7.18.6
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
-      rollup: 2.79.1
+      '@rollup/pluginutils': 3.1.0_rollup@3.0.0-7
+      rollup: 3.0.0-7
     dev: true
 
   /@rollup/plugin-buble/0.21.3_rollup@2.79.1:
@@ -2047,29 +2047,20 @@ packages:
       rollup: 2.79.1
     dev: true
 
-  /@rollup/plugin-commonjs/22.0.2_rollup@2.79.1:
+  /@rollup/plugin-commonjs/22.0.2_rollup@3.0.0-7:
     resolution: {integrity: sha512-//NdP6iIwPbMTcazYsiBMbJW7gfmpHom33u1beiIoHDEM0Q9clvtQB1T0efvMqHeKsGohiHo97BCPCkBXdscwg==}
     engines: {node: '>= 12.0.0'}
     peerDependencies:
       rollup: ^2.68.0
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
+      '@rollup/pluginutils': 3.1.0_rollup@3.0.0-7
       commondir: 1.0.1
       estree-walker: 2.0.2
       glob: 7.2.3
       is-reference: 1.2.1
       magic-string: 0.25.9
       resolve: 1.22.1
-      rollup: 2.79.1
-    dev: true
-
-  /@rollup/plugin-json/4.1.0_rollup@2.79.1:
-    resolution: {integrity: sha512-yfLbTdNS6amI/2OpmbiBoW12vngr5NW2jCJVZSBEz+H5KfUJZ2M7sDjk0U6GOOdCWFVScShte29o9NezJ53TPw==}
-    peerDependencies:
-      rollup: ^1.20.0 || ^2.0.0
-    dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
-      rollup: 2.79.1
+      rollup: 3.0.0-7
     dev: true
 
   /@rollup/plugin-json/4.1.0_rollup@3.0.0-7:
@@ -2405,6 +2396,7 @@ packages:
 
   /@types/node/18.7.21:
     resolution: {integrity: sha512-rLFzK5bhM0YPyCoTC8bolBjMk7bwnZ8qeZUBslBfjZQou2ssJdWslx9CZ8DGM+Dx7QXQiiTVZ/6QO6kwtHkZCA==}
+    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -2422,6 +2414,11 @@ packages:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
       '@types/node': 18.7.21
+    dev: true
+
+  /@types/resolve/1.20.2:
+    resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
+    dev: false
 
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
