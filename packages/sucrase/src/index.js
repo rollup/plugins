@@ -1,10 +1,10 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-const { transform } = require('sucrase');
-const { createFilter } = require('@rollup/pluginutils');
+import { transform } from 'sucrase';
+import { createFilter } from '@rollup/pluginutils';
 
-module.exports = function sucrase(opts = {}) {
+export default function sucrase(opts = {}) {
   const filter = createFilter(opts.include, opts.exclude);
 
   return {
@@ -59,4 +59,4 @@ module.exports = function sucrase(opts = {}) {
       };
     }
   };
-};
+}
