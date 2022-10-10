@@ -1,5 +1,13 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v6.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1301](https://github.com/rollup/plugins/pull/1301)
+
 ## v5.2.0
 
 _2022-04-29_
