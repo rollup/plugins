@@ -364,13 +364,13 @@ importers:
   packages/multi-entry:
     specifiers:
       '@rollup/plugin-virtual': ^2.0.3
-      matched: ^5.0.0
-      rollup: ^2.67.3
+      matched: ^5.0.1
+      rollup: ^3.0.0-7
     dependencies:
-      '@rollup/plugin-virtual': 2.1.0_rollup@2.79.1
+      '@rollup/plugin-virtual': 2.1.0_rollup@3.0.0-7
       matched: 5.0.1
     devDependencies:
-      rollup: 2.79.1
+      rollup: 3.0.0-7
 
   packages/node-resolve:
     specifiers:
@@ -2173,13 +2173,13 @@ packages:
       typescript: 4.8.3
     dev: true
 
-  /@rollup/plugin-virtual/2.1.0_rollup@2.79.1:
+  /@rollup/plugin-virtual/2.1.0_rollup@3.0.0-7:
     resolution: {integrity: sha512-CPPAtlKT53HFqC8jFHb/V5WErpU8Hrq2TyCR0A7kPQMlF2wNUf0o1xuAc+Qxj8NCZM0Z3Yvl+FbUXfJjVWqDwA==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0
     dependencies:
-      rollup: 2.79.1
+      rollup: 3.0.0-7
     dev: false
 
   /@rollup/pluginutils/3.1.0:
@@ -6777,7 +6777,6 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
-    dev: true
 
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}

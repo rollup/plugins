@@ -1,11 +1,13 @@
 /* eslint-disable no-bitwise */
 
+import { createRequire } from 'module';
+
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import { getCode } from '../../../util/test';
+import multiEntry from 'current-package';
 
-import multiEntry from '../';
+import { getCode } from '../../../util/test.js';
 
 test('takes a single file as input', async (t) => {
   const bundle = await rollup({ input: 'test/fixtures/0.js', plugins: [multiEntry()] });
@@ -80,4 +82,12 @@ test('makes a bundle with entryFileName as the filename', async (t) => {
   });
   const [result] = await getCode(bundle, { format: 'cjs' }, true);
   t.is(result.fileName, 'testing.js');
+});
+
+test('works as CJS plugin', async (t) => {
+  const require = createRequire(import.meta.url);
+  const multiEntryPluginCjs = require('current-package');
+  const bundle = await rollup({ input: 'test/fixtures/0.js', plugins: [multiEntryPluginCjs()] });
+  const code = await getCode(bundle);
+  t.truthy(code.includes('exports.zero = zero;'));
 });
