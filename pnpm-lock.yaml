@@ -524,19 +524,19 @@ importers:
   packages/url:
     specifiers:
       '@rollup/pluginutils': ^4.2.1
-      del: ^5.1.0
-      globby: ^11.0.1
+      del: ^6.1.1
+      globby: ^11.1.0
       make-dir: ^3.1.0
-      mime: ^2.4.6
-      rollup: ^2.67.3
+      mime: ^3.0.0
+      rollup: ^3.0.0-7
     dependencies:
       '@rollup/pluginutils': 4.2.1
       make-dir: 3.1.0
-      mime: 2.6.0
+      mime: 3.0.0
     devDependencies:
-      del: 5.1.0
+      del: 6.1.1
       globby: 11.1.0
-      rollup: 2.79.1
+      rollup: 3.0.0-7
 
   packages/virtual:
     specifiers:
@@ -5494,9 +5494,9 @@ packages:
       braces: 3.0.2
       picomatch: 2.3.1
 
-  /mime/2.6.0:
-    resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
-    engines: {node: '>=4.0.0'}
+  /mime/3.0.0:
+    resolution: {integrity: sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==}
+    engines: {node: '>=10.0.0'}
     hasBin: true
     dev: false
 
@@ -6740,6 +6740,14 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
+
+  /rollup/3.0.0-7:
+    resolution: {integrity: sha512-Hq5hpq9IrR4YfGd4o4zDtsfZnkwoCpjrQ4ZQIZrVF4ryzW6FOgXKBm6N7vJfodIJ6v+51FsqsXD2bxW5wapiuA==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
 
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
