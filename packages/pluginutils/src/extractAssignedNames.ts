@@ -1,4 +1,4 @@
-import { ExtractAssignedNames } from '../types';
+import type { ExtractAssignedNames } from '../types';
 
 interface Extractors {
   [key: string]: (names: string[], param: any) => void;

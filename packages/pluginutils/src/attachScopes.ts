@@ -1,9 +1,8 @@
-// eslint-disable-next-line import/no-unresolved
 import * as estree from 'estree';
 
 import { walk } from 'estree-walker';
 
-import { AttachedScope, AttachScopes } from '../types';
+import type { AttachedScope, AttachScopes } from '../types';
 
 import extractAssignedNames from './extractAssignedNames';
 
