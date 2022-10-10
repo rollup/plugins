@@ -188,7 +188,7 @@ importers:
       estree-walker: 2.0.2
       glob: 8.0.3
       is-reference: 1.2.1
-      magic-string: 0.26.4
+      magic-string: 0.26.7
     devDependencies:
       '@rollup/plugin-json': 4.1.0_rollup@3.0.0-7
       '@rollup/plugin-node-resolve': 14.1.0_rollup@3.0.0-7
@@ -243,7 +243,7 @@ importers:
       '@rollup/pluginutils': 4.2.1
       estree-walker: 2.0.2
       fast-glob: 3.2.12
-      magic-string: 0.26.4
+      magic-string: 0.26.7
     devDependencies:
       acorn: 8.8.0
       prettier: 2.7.1
@@ -324,7 +324,7 @@ importers:
     dependencies:
       '@rollup/pluginutils': 4.2.1
       estree-walker: 2.0.2
-      magic-string: 0.26.4
+      magic-string: 0.26.7
     devDependencies:
       '@rollup/plugin-buble': 0.21.3_rollup@3.0.0-7
       del-cli: 5.0.0
@@ -336,16 +336,16 @@ importers:
   packages/json:
     specifiers:
       '@rollup/plugin-buble': ^0.21.0
-      '@rollup/plugin-node-resolve': ^8.4.0
-      '@rollup/pluginutils': ^3.0.8
-      rollup: ^2.67.3
-      source-map-support: ^0.5.19
+      '@rollup/plugin-node-resolve': ^14.1.0
+      '@rollup/pluginutils': ^4.2.1
+      rollup: ^3.0.0-7
+      source-map-support: ^0.5.21
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.79.1
+      '@rollup/pluginutils': 4.2.1
     devDependencies:
-      '@rollup/plugin-buble': 0.21.3_rollup@2.79.1
-      '@rollup/plugin-node-resolve': 8.4.0_rollup@2.79.1
-      rollup: 2.79.1
+      '@rollup/plugin-buble': 0.21.3_rollup@3.0.0-7
+      '@rollup/plugin-node-resolve': 14.1.0_rollup@3.0.0-7
+      rollup: 3.0.0-7
       source-map-support: 0.5.21
 
   packages/legacy:
@@ -5388,8 +5388,8 @@ packages:
     dependencies:
       sourcemap-codec: 1.4.8
 
-  /magic-string/0.26.4:
-    resolution: {integrity: sha512-e5uXtVJ22aEpK9u1+eQf0fSxHeqwyV19K+uGnlROCxUhzwRip9tBsaMViK/0vC3viyPd5Gtucp3UmEp/Q2cPTQ==}
+  /magic-string/0.26.7:
+    resolution: {integrity: sha512-hX9XH3ziStPoPhJxLq1syWuZMxbDvGNbVchfrdCtanC7D13888bMFow61x8axrx+GfHLtVeAx2kxL7tTGRl+Ow==}
     engines: {node: '>=12'}
     dependencies:
       sourcemap-codec: 1.4.8
