@@ -1,5 +1,13 @@
 # @rollup/plugin-strip ChangeLog
 
+## v3.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1284](https://github.com/rollup/plugins/pull/1284)
+
 ## v2.1.0
 
 _2021-07-26_
