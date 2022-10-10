@@ -1,5 +1,13 @@
 # @rollup/plugin-url ChangeLog
 
+## v8.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1281](https://github.com/rollup/plugins/pull/1281)
+
 ## v7.0.0
 
 _2022-04-29_
