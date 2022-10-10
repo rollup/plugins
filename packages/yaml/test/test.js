@@ -89,22 +89,6 @@ test('documentMode: multi', async (t) => {
   return testBundle(t, bundle);
 });
 
-test('documentMode: multi, safe', async (t) => {
-  const bundle = await rollup.rollup({
-    input: 'fixtures/multi/main.js',
-    plugins: [yaml({ documentMode: 'multi', safe: false })]
-  });
-  return testBundle(t, bundle);
-});
-
-test('converts yaml, safe', async (t) => {
-  const bundle = await rollup.rollup({
-    input: 'fixtures/basic/main.js',
-    plugins: [yaml({ safe: false })]
-  });
-  return testBundle(t, bundle);
-});
-
 test('bad documentMode', async (t) => {
   const exec = () =>
     rollup.rollup({

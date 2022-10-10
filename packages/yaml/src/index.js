@@ -4,21 +4,20 @@ import { createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
 
 const defaults = {
   documentMode: 'single',
-  safe: true,
   transform: null
 };
 const ext = /\.ya?ml$/;
 
 export default function yaml(opts = {}) {
   const options = Object.assign({}, defaults, opts);
-  const { documentMode, safe } = options;
+  const { documentMode } = options;
   const filter = createFilter(options.include, options.exclude);
   let loadMethod = null;
 
   if (documentMode === 'single') {
-    loadMethod = safe ? YAML.load : YAML.safeLoad;
+    loadMethod = YAML.load;
   } else if (documentMode === 'multi') {
-    loadMethod = safe ? YAML.loadAll : YAML.safeLoadAll;
+    loadMethod = YAML.loadAll;
   } else {
     this.error(
       `plugin-yaml → documentMode: '${documentMode}' is not a valid value. Please choose 'single' or 'multi'`
