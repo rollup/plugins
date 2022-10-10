@@ -7,7 +7,7 @@ const { readdirSync } = require('fs');
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const replace = require('../dist/rollup-plugin-replace.cjs.js');
+const replace = require('..');
 
 const { execute, getCodeFromBundle } = require('./helpers/util');
 
