@@ -999,8 +999,8 @@ test.serial('does it fail for filtering with incorrect rootDir in nested project
       plugins: [typescript({ tsconfig: 'tsconfig.json' })]
     })
   );
-  // Will throw parse error because it includes a typescript file outside CWD
-  t.is(error.code, 'PARSE_ERROR');
+  // It imports a typescript file outside CWD, hence will not get resolved
+  t.is(error.code, 'UNRESOLVED_IMPORT');
 });
 
 test.serial('does manually setting filterRoot resolve nested projects', async (t) => {
