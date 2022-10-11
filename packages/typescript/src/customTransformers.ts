@@ -1,7 +1,6 @@
-import { BuilderProgram, CustomTransformers, Program, TypeChecker } from 'typescript';
+import type { BuilderProgram, CustomTransformers, Program, TypeChecker } from 'typescript';
 
 import type { CustomTransformerFactories, TransformerStage, TransformerFactory } from '../types';
-
 /**
  * Merges all received custom transformer definitions into a single CustomTransformers object
  */

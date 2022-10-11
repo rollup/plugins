@@ -1,9 +1,10 @@
 import { PluginContext, RollupOptions } from 'rollup';
-import { ModuleKind } from 'typescript';
+import typescript from 'typescript';
 
 import { TypeScriptConfig } from './options/tsconfig';
 // import { resolveIdAsync } from './tslib';
 
+const { ModuleKind } = typescript;
 interface PreflightOptions {
   config: TypeScriptConfig;
   context: PluginContext;
