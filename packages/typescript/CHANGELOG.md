@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v9.0.1
+
+_2022-10-11_
+
+### Bugfixes
+
+- fix: fix ESM build [#1311](https://github.com/rollup/plugins/pull/1311)
+
 ## v9.0.0
 
 _2022-10-10_
