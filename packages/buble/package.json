@@ -61,7 +61,7 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.2.1",
+    "@rollup/pluginutils": "^5.0.1",
     "@types/buble": "^0.19.2",
     "buble": "^0.20.0"
   },

@@ -57,7 +57,7 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.2.1",
+    "@rollup/pluginutils": "^5.0.1",
     "js-yaml": "^4.1.0",
     "tosource": "^2.0.0-alpha.3"
   },

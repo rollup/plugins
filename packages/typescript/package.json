@@ -64,7 +64,7 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.2.1",
+    "@rollup/pluginutils": "^5.0.1",
     "resolve": "^1.22.1"
   },
   "devDependencies": {

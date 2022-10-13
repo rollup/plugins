@@ -63,7 +63,7 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.2.1",
+    "@rollup/pluginutils": "^5.0.1",
     "graphql-tag": "^2.12.6"
   },
   "devDependencies": {

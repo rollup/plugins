@@ -62,7 +62,7 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.2.1",
+    "@rollup/pluginutils": "^5.0.1",
     "sucrase": "^3.27.0"
   },
   "devDependencies": {
