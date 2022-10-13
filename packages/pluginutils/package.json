@@ -61,6 +61,7 @@
     }
   },
   "dependencies": {
+    "@types/estree": "^1.0.0",
     "estree-walker": "^2.0.2",
     "picomatch": "^2.3.1"
   },
@@ -68,7 +69,6 @@
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-node-resolve": "^14.1.0",
     "@rollup/plugin-typescript": "^8.5.0",
-    "@types/estree": "1.0.0",
     "@types/node": "^14.18.30",
     "@types/picomatch": "^2.3.0",
     "acorn": "^8.8.0",
