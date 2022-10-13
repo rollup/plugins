@@ -1,9 +1,9 @@
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const { testBundle } = require('../../../util/test');
+const graphql = require('current-package');
 
-const graphql = require('..');
+const { testBundle } = require('../../../util/test');
 
 require('source-map-support').install();
 
