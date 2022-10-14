@@ -159,10 +159,10 @@ async function ensureOutDirWhenCreatingDeclarationFiles(
   );
 
   t.true(
-    caughtError.message.includes(
+    caughtError!.message.includes(
       `'outDir' or 'declarationDir' must be specified to generate declaration files`
     ),
-    `Unexpected error message: ${caughtError.message}`
+    `Unexpected error message: ${caughtError!.message}`
   );
 }
 

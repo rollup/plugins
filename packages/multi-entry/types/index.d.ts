@@ -23,6 +23,7 @@ interface RollupMultiEntryOptions {
   /**
    * `entryFileName` changes the name of the generated entry file.
    * By default, it will override `outputOptions.entryFileNames` to be `'multi-entry.js'`.
+   * @default 'multi-entry.js'
    */
   entryFileName?: string;
   /**

@@ -140,7 +140,9 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
               if (isWrappedId(resolved.id, ES_IMPORT_SUFFIX)) {
                 return (
                   (await getTypeForImportedModule(
-                    (await this.load({ id: resolved.id })).meta.commonjs.resolved,
+                    (
+                      await this.load({ id: resolved.id })
+                    ).meta.commonjs.resolved,
                     this.load
                   )) !== IS_WRAPPED_COMMONJS
                 );
@@ -151,61 +153,56 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
       ).some((shouldTransform) => shouldTransform);
     },
     /* eslint-disable no-param-reassign */
-    resolveRequireSourcesAndUpdateMeta: (rollupContext) => async (
-      parentId,
-      isParentCommonJS,
-      parentMeta,
-      sources
-    ) => {
-      parentMeta.initialCommonJSType = isParentCommonJS;
-      parentMeta.requires = [];
-      parentMeta.isRequiredCommonJS = Object.create(null);
-      setInitialParentType(parentId, isParentCommonJS);
-      const currentlyResolvingForParent = currentlyResolving.get(parentId) || new Set();
-      currentlyResolving.set(parentId, currentlyResolvingForParent);
-      const requireTargets = await Promise.all(
-        sources.map(async ({ source, isConditional }) => {
-          // Never analyze or proxy internal modules
-          if (source.startsWith('\0')) {
-            return { id: source, allowProxy: false };
-          }
-          currentlyResolvingForParent.add(source);
-          const resolved =
-            (await rollupContext.resolve(source, parentId, {
-              custom: { 'node-resolve': { isRequire: true } }
-            })) || resolveExtensions(source, parentId, extensions);
-          currentlyResolvingForParent.delete(source);
-          if (!resolved) {
-            return { id: wrapId(source, EXTERNAL_SUFFIX), allowProxy: false };
-          }
-          const childId = resolved.id;
-          if (resolved.external) {
-            return { id: wrapId(childId, EXTERNAL_SUFFIX), allowProxy: false };
-          }
-          parentMeta.requires.push({ resolved, isConditional });
-          await analyzeRequiredModule(parentId, resolved, isConditional, rollupContext.load);
-          return { id: childId, allowProxy: true };
-        })
-      );
-      parentMeta.isCommonJS = getTypeForFullyAnalyzedModule(parentId);
-      fullyAnalyzedModules[parentId] = true;
-      return requireTargets.map(({ id: dependencyId, allowProxy }, index) => {
-        // eslint-disable-next-line no-multi-assign
-        const isCommonJS = (parentMeta.isRequiredCommonJS[
-          dependencyId
-        ] = getTypeForFullyAnalyzedModule(dependencyId));
-        fullyAnalyzedModules[dependencyId] = true;
-        return {
-          source: sources[index].source,
-          id: allowProxy
-            ? isCommonJS === IS_WRAPPED_COMMONJS
-              ? wrapId(dependencyId, WRAPPED_SUFFIX)
-              : wrapId(dependencyId, PROXY_SUFFIX)
-            : dependencyId,
-          isCommonJS
-        };
-      });
-    },
+    resolveRequireSourcesAndUpdateMeta:
+      (rollupContext) => async (parentId, isParentCommonJS, parentMeta, sources) => {
+        parentMeta.initialCommonJSType = isParentCommonJS;
+        parentMeta.requires = [];
+        parentMeta.isRequiredCommonJS = Object.create(null);
+        setInitialParentType(parentId, isParentCommonJS);
+        const currentlyResolvingForParent = currentlyResolving.get(parentId) || new Set();
+        currentlyResolving.set(parentId, currentlyResolvingForParent);
+        const requireTargets = await Promise.all(
+          sources.map(async ({ source, isConditional }) => {
+            // Never analyze or proxy internal modules
+            if (source.startsWith('\0')) {
+              return { id: source, allowProxy: false };
+            }
+            currentlyResolvingForParent.add(source);
+            const resolved =
+              (await rollupContext.resolve(source, parentId, {
+                custom: { 'node-resolve': { isRequire: true } }
+              })) || resolveExtensions(source, parentId, extensions);
+            currentlyResolvingForParent.delete(source);
+            if (!resolved) {
+              return { id: wrapId(source, EXTERNAL_SUFFIX), allowProxy: false };
+            }
+            const childId = resolved.id;
+            if (resolved.external) {
+              return { id: wrapId(childId, EXTERNAL_SUFFIX), allowProxy: false };
+            }
+            parentMeta.requires.push({ resolved, isConditional });
+            await analyzeRequiredModule(parentId, resolved, isConditional, rollupContext.load);
+            return { id: childId, allowProxy: true };
+          })
+        );
+        parentMeta.isCommonJS = getTypeForFullyAnalyzedModule(parentId);
+        fullyAnalyzedModules[parentId] = true;
+        return requireTargets.map(({ id: dependencyId, allowProxy }, index) => {
+          // eslint-disable-next-line no-multi-assign
+          const isCommonJS = (parentMeta.isRequiredCommonJS[dependencyId] =
+            getTypeForFullyAnalyzedModule(dependencyId));
+          fullyAnalyzedModules[dependencyId] = true;
+          return {
+            source: sources[index].source,
+            id: allowProxy
+              ? isCommonJS === IS_WRAPPED_COMMONJS
+                ? wrapId(dependencyId, WRAPPED_SUFFIX)
+                : wrapId(dependencyId, PROXY_SUFFIX)
+              : dependencyId,
+            isCommonJS
+          };
+        });
+      },
     isCurrentlyResolving(source, parentId) {
       const currentlyResolvingForParent = currentlyResolving.get(parentId);
       return currentlyResolvingForParent && currentlyResolvingForParent.has(source);
