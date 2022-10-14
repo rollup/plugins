@@ -48,7 +48,7 @@ test('generates named exports', async (t) => {
     plugins: [json()]
   });
 
-  const { code, result } = await testBundle(t, bundle, { exports: {} });
+  const { code, result } = await testBundle(t, bundle, { inject: { exports: {} } });
 
   t.is(result.version, '1.33.7');
   t.is(code.indexOf('this-should-be-excluded'), -1, 'should exclude unused properties');

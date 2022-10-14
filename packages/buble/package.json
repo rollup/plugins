@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-buble",
-  "version": "0.21.3",
+  "version": "1.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -13,10 +13,15 @@
   "author": "Rich Harris <richard.a.harris@gmail.com>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/buble/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/rollup-plugin-buble.cjs.js",
-  "module": "dist/rollup-plugin-buble.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "import": "./dist/es/index.js",
+    "types": "./types/index.d.ts",
+    "default": "./dist/cjs/index.js"
+  },
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">=14.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -34,6 +39,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
@@ -47,31 +53,28 @@
     "modules"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.1.0",
+    "@rollup/pluginutils": "^4.2.1",
     "@types/buble": "^0.19.2",
     "buble": "^0.20.0"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^5.0.2",
-    "del-cli": "^3.0.1",
-    "rollup": "^2.67.3",
-    "source-map": "^0.7.3",
-    "typescript": "^4.1.2"
+    "@rollup/plugin-typescript": "^8.5.0",
+    "del-cli": "^5.0.0",
+    "rollup": "^3.0.0-7",
+    "source-map": "^0.7.4",
+    "typescript": "^4.8.3"
   },
-  "types": "types/index.d.ts",
+  "types": "./types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/output/**",

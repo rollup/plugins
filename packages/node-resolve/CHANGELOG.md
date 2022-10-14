@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1288](https://github.com/rollup/plugins/pull/1288)
+
 ## v14.1.0
 
 _2022-09-12_

@@ -1,5 +1,21 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.0.1
+
+_2022-10-13_
+
+### Bugfixes
+
+- fix: Move `@types/estree` to dependencies (fixes #1315) [#1320](https://github.com/rollup/plugins/pull/1320)
+
+## v5.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1287](https://github.com/rollup/plugins/pull/1287)
+
 ## v4.2.1
 
 _2022-04-13_

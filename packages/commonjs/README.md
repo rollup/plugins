@@ -13,7 +13,7 @@
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v12.0.0+) and Rollup v2.68.0+. If you are using [`@rollup/plugin-node-resolve`](https://github.com/rollup/plugins/tree/master/packages/node-resolve), it should be v13.0.6+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v2.68.0+. If you are using [`@rollup/plugin-node-resolve`](https://github.com/rollup/plugins/tree/master/packages/node-resolve), it should be v13.0.6+.
 
 ## Install
 

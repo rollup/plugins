@@ -1,5 +1,17 @@
 # @rollup/plugin-json ChangeLog
 
+## v5.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1291](https://github.com/rollup/plugins/pull/1291)
+
+### Updates
+
+- chore: update dependencies ([678125b](https://github.com/rollup/plugins/commit/678125b5396bd3e8193c39d7d90e33d3f76cf7d8))
+
 ## v4.1.0
 
 _2020-06-05_

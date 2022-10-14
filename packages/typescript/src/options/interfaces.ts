@@ -1,8 +1,8 @@
 import type { CompilerOptions } from 'typescript';
 
-import { PartialCompilerOptions } from '../../types';
+import type { PartialCompilerOptions } from '../../types';
 
-export { EnumCompilerOptions, JsonCompilerOptions } from '../../types';
+export type { EnumCompilerOptions, JsonCompilerOptions } from '../../types';
 export { PartialCompilerOptions };
 
 /** Typescript compiler options */

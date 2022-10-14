@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-html",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -13,10 +13,15 @@
   "author": "Andrew Powell <andrew@shellscape.org>",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/html#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "import": "./dist/es/index.js",
+    "types": "./types/index.d.ts",
+    "default": "./dist/cjs/index.js"
+  },
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">=14.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -33,6 +38,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
@@ -44,19 +50,23 @@
     "template"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^6.1.0",
-    "rollup": "^2.67.3",
-    "rollup-plugin-postcss": "^3.1.8",
-    "typescript": "^4.1.2"
+    "@rollup/plugin-typescript": "^8.5.0",
+    "postcss": "^8.4.16",
+    "rollup": "^3.0.0-7",
+    "rollup-plugin-postcss": "^4.0.2",
+    "typescript": "^4.8.3"
   },
-  "types": "types/index.d.ts",
+  "types": "./types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",

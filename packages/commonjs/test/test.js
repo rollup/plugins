@@ -1,24 +1,22 @@
 /* eslint-disable line-comment-position, no-new-func, no-undefined */
-import os from 'os';
 
-import * as path from 'path';
+const os = require('os');
+const path = require('path');
 
-import nodeResolve from '@rollup/plugin-node-resolve';
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const test = require('ava');
+const { getLocator } = require('locate-character');
+const { rollup } = require('rollup');
+const { install } = require('source-map-support');
 
-import test from 'ava';
-import { getLocator } from 'locate-character';
+const { testBundle } = require('../../../util/test');
 
-import { rollup } from 'rollup';
-import { install } from 'source-map-support';
+const { peerDependencies } = require('../package.json');
 
-import { testBundle } from '../../../util/test';
-import { peerDependencies } from '../package.json';
-
-import { commonjs, executeBundle, getCodeFromBundle } from './helpers/util';
+const { commonjs, executeBundle, getCodeFromBundle } = require('./helpers/util.js');
 
 install();
-
-process.chdir(__dirname);
+test.beforeEach(() => process.chdir(__dirname));
 
 const loader = (modules) => {
   return {
@@ -225,8 +223,7 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
 
   // ensure we resolve starting from a directory with
   // symlinks in node_modules.
-
-  process.chdir('fixtures/samples/symlinked-node-modules');
+  process.chdir(path.join(__dirname, 'fixtures/samples/symlinked-node-modules'));
 
   return t.notThrowsAsync(
     rollup({

@@ -2,16 +2,11 @@ import { extname } from 'path';
 
 import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
 
-import { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
+import type { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
 
 const getFiles = (bundle: OutputBundle): RollupHtmlTemplateOptions['files'] => {
-  const files = Object.values(bundle).filter(
-    (file) =>
-      file.type === 'chunk' ||
-      (typeof file.type === 'string' ? file.type === 'asset' : file.isAsset)
-  );
   const result = {} as ReturnType<typeof getFiles>;
-  for (const file of files) {
+  for (const file of Object.values(bundle)) {
     const { fileName } = file;
     const extension = extname(fileName).substring(1);
 

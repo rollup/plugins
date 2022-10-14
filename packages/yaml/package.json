@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-yaml",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -13,10 +13,15 @@
   "author": "rollup",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/yaml/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "types": "./types/index.d.ts",
+    "import": "./dist/es/index.js",
+    "default": "./dist/cjs/index.js"
+  },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=14.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -33,6 +38,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
@@ -43,24 +49,27 @@
     "yaml"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0 || ^2.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^3.1.0",
-    "js-yaml": "^3.14.0",
-    "tosource": "^1.0.0"
+    "@rollup/pluginutils": "^4.2.1",
+    "js-yaml": "^4.1.0",
+    "tosource": "^2.0.0-alpha.3"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^8.4.0",
-    "del-cli": "^3.0.1",
-    "rollup": "^2.67.3",
-    "source-map-support": "^0.5.19"
+    "@rollup/plugin-node-resolve": "^14.1.0",
+    "del-cli": "^5.0.0",
+    "rollup": "^3.0.0-7",
+    "source-map-support": "^0.5.21"
   },
   "types": "./types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/helpers/**",

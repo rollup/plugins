@@ -1,11 +1,11 @@
 import * as babel from '@babel/core';
 import { createFilter } from '@rollup/pluginutils';
 
-import { BUNDLED, HELPERS } from './constants';
-import bundledHelpersPlugin from './bundledHelpersPlugin';
-import preflightCheck from './preflightCheck';
-import transformCode from './transformCode';
-import { addBabelPlugin, escapeRegExpCharacters, warnOnce, stripQuery } from './utils';
+import { BUNDLED, HELPERS } from './constants.js';
+import bundledHelpersPlugin from './bundledHelpersPlugin.js';
+import preflightCheck from './preflightCheck.js';
+import transformCode from './transformCode.js';
+import { addBabelPlugin, escapeRegExpCharacters, warnOnce, stripQuery } from './utils.js';
 
 const unpackOptions = ({
   extensions = babel.DEFAULT_EXTENSIONS,

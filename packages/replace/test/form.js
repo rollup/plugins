@@ -6,7 +6,7 @@ const { readdirSync, readFileSync } = require('fs');
 
 const test = require('ava');
 
-const replace = require('../dist/rollup-plugin-replace.cjs.js');
+const replace = require('..');
 
 const transformContext = {};
 

@@ -2,7 +2,7 @@ import { resolve, posix, isAbsolute } from 'path';
 
 import pm from 'picomatch';
 
-import { CreateFilter } from '../types';
+import type { CreateFilter } from '../types';
 
 import ensureArray from './utils/ensureArray';
 import normalizePath from './normalizePath';

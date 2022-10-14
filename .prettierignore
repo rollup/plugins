@@ -5,4 +5,5 @@ packages/json/test/fixtures/garbage/*
 packages/yaml/test/fixtures/**/*
 **/dist/
 **/fixtures/
+**/snapshots/
 pnpm-lock.yaml

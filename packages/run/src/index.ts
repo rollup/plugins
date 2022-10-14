@@ -3,7 +3,7 @@ import { resolve, join, dirname } from 'path';
 
 import { Plugin, RenderedChunk } from 'rollup';
 
-import { RollupRunOptions } from '../types';
+import type { RollupRunOptions } from '../types';
 
 export default function run(opts: RollupRunOptions = {}): Plugin {
   let input: string;

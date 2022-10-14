@@ -5,7 +5,7 @@ const { join } = require('path');
 const test = require('ava');
 const { rollup } = require('rollup');
 
-const replace = require('../dist/rollup-plugin-replace.cjs.js');
+const replace = require('..');
 
 const { getOutputFromGenerated } = require('./helpers/util');
 
@@ -63,7 +63,7 @@ test('can be configured with output plugins', async (t) => {
     })
   );
 
-  t.is(code.trim(), 'log("environment", "production");');
+  t.is(code.trim(), 'log("environment", "production");\n//# sourceMappingURL=main.js.map');
   t.truthy(map);
 });
 

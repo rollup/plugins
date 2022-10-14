@@ -1,4 +1,4 @@
-import { RollupLogProps } from 'rollup';
+import { RollupWarning } from 'rollup';
 import type { Diagnostic, FormatDiagnosticsHost } from 'typescript';
 
 /**
@@ -13,7 +13,7 @@ export default function diagnosticToWarning(
   const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
 
   // Build a Rollup warning object from the diagnostics object.
-  const warning: RollupLogProps = {
+  const warning: RollupWarning = {
     pluginCode,
     message: `@rollup/plugin-typescript ${pluginCode}: ${message}`
   };

@@ -2,7 +2,7 @@ import { transform } from 'buble';
 import { Plugin } from 'rollup';
 import { createFilter } from '@rollup/pluginutils';
 
-import { RollupBubleOptions } from '../types';
+import type { RollupBubleOptions } from '../types';
 
 export default function buble(options: RollupBubleOptions = {}): Plugin {
   const filter = createFilter(options.include, options.exclude);
@@ -16,7 +16,7 @@ export default function buble(options: RollupBubleOptions = {}): Plugin {
 
       try {
         return transform(code, transformOptions);
-      } catch (e) {
+      } catch (e: any) {
         e.plugin = 'buble';
         if (!e.loc) e.loc = {};
         e.loc.file = id;

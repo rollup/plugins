@@ -5,7 +5,7 @@ import { createFilter } from '@rollup/pluginutils';
 import { Plugin, RollupOptions, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
-import { RollupTypescriptOptions } from '../types';
+import type { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
 import createModuleResolver from './moduleResolution';

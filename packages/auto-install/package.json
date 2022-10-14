@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-auto-install",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -13,8 +13,16 @@
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/auto-install/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "import": "./dist/es/index.js",
+    "types": "./types/index.d.ts",
+    "default": "./dist/cjs/index.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
@@ -31,6 +39,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
@@ -44,25 +53,24 @@
     "modules"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^8.4.0",
-    "@rollup/plugin-typescript": "^5.0.2",
-    "del": "^5.1.0",
+    "@rollup/plugin-node-resolve": "^14.1.0",
+    "@rollup/plugin-typescript": "^8.5.0",
+    "del": "^6.1.1",
     "node-noop": "^1.0.0",
-    "rollup": "^2.67.3",
-    "typescript": "^4.1.2"
+    "rollup": "^3.0.0-7",
+    "typescript": "^4.8.3"
   },
-  "types": "types/index.d.ts",
+  "types": "./types/index.d.ts",
   "ava": {
-    "babel": true,
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/output/**",

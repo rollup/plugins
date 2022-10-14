@@ -1,5 +1,17 @@
 # @rollup/plugin-html ChangeLog
 
+## v1.0.0
+
+_2022-10-09_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1294](https://github.com/rollup/plugins/pull/1294)
+
+### Bugfixes
+
+- fix: function signature of html updated [#975](https://github.com/rollup/plugins/pull/975)
+
 ## v0.2.3
 
 _2021-02-14_

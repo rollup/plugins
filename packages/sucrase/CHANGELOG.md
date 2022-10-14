@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v5.0.0
+
+_2022-10-10_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1283](https://github.com/rollup/plugins/pull/1283)
+
 ## v4.0.4
 
 _2022-05-14_

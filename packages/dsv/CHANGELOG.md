@@ -1,5 +1,13 @@
 # @rollup/plugin-dsv ChangeLog
 
+## v3.0.0
+
+_2022-10-09_
+
+### Breaking Changes
+
+- fix: prepare for Rollup 3 [#1298](https://github.com/rollup/plugins/pull/1298)
+
 ## v2.0.3
 
 _2021-12-28_

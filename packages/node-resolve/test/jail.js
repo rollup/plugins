@@ -22,10 +22,12 @@ test('mark module outside the jail as external', async (t) => {
     ]
   });
   const imports = await getImports(bundle);
-
-  t.snapshot(warnings);
-  t.is(warnings.length, 1);
   t.deepEqual(imports, ['string/uppercase.js']);
+
+  t.is(warnings.length, 1, 'number of warnings');
+  const [{ exporter, id }] = warnings;
+  t.is(exporter, 'string/uppercase.js', 'exporter');
+  t.is(id.endsWith('jail.js'), true, 'id');
 });
 
 test('bundle module defined inside the jail', async (t) => {

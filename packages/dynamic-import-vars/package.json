@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-dynamic-import-vars",
-  "version": "1.4.4",
+  "version": "2.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -13,10 +13,15 @@
   "author": "LarsDenBakker",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.js",
+  "exports": {
+    "import": "./dist/es/index.js",
+    "types": "./types/index.d.ts",
+    "default": "./dist/cjs/index.js"
+  },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">=14.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -32,6 +37,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "types",
     "README.md",
     "LICENSE"
@@ -48,25 +54,27 @@
     "interpolation"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.1.2",
-    "estree-walker": "^2.0.1",
-    "fast-glob": "^3.2.7",
-    "magic-string": "^0.25.7"
+    "@rollup/pluginutils": "^4.2.1",
+    "estree-walker": "^2.0.2",
+    "fast-glob": "^3.2.12",
+    "magic-string": "^0.26.4"
   },
   "devDependencies": {
-    "acorn": "^7.3.1",
-    "acorn-dynamic-import": "^4.0.0",
-    "prettier": "^2.0.5",
-    "rollup": "^2.67.3"
+    "acorn": "^8.8.0",
+    "prettier": "^2.7.1",
+    "rollup": "^3.0.0-7"
   },
   "types": "./types/index.d.ts",
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
+    "workerThreads": false,
     "files": [
       "!**/fixtures/**",
       "!**/snapshots/**"

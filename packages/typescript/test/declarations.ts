@@ -1,4 +1,5 @@
-import test, { ExecutionContext } from 'ava';
+import test from 'ava';
+import type { ExecutionContext } from 'ava';
 import { rollup } from 'rollup';
 
 import typescript from '..';
@@ -22,7 +23,7 @@ test.serial('supports creating declaration files', async (t) => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+  const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
   const declaration = output[1].source as string;
 
   t.deepEqual(
@@ -46,7 +47,7 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+  const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
   const declaration = output[1].source as string;
 
   t.deepEqual(
@@ -70,7 +71,7 @@ test.serial('supports creating declarations with non-default rootDir', async (t)
   });
   const output = await getCode(
     bundle,
-    { format: 'esm', dir: 'fixtures/declaration-root-dir/lib' },
+    { format: 'es', dir: 'fixtures/declaration-root-dir/lib' },
     true
   );
 
@@ -96,7 +97,7 @@ test.serial('supports creating declaration files for interface only source file'
 
   const output = await getCode(
     bundle,
-    { format: 'esm', dir: 'fixtures/export-interface-only/dist' },
+    { format: 'es', dir: 'fixtures/export-interface-only/dist' },
     true
   );
   const declaration = output[1].source as string;
@@ -128,7 +129,7 @@ test.serial('supports creating declaration files in declarationDir', async (t) =
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true);
+  const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
   const declaration = output[1].source as string;
 
   t.deepEqual(
@@ -154,7 +155,7 @@ async function ensureOutDirWhenCreatingDeclarationFiles(
     onwarn
   });
   const caughtError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
+    getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true)
   );
 
   t.true(

@@ -14,7 +14,7 @@ const { fakeTypescript, forceRemove, waitForWatcherEvent } = require('./helpers'
 
 test.beforeEach(() => process.chdir(__dirname));
 
-const outputOptions = { format: 'esm' };
+const outputOptions = { format: 'es' };
 
 test.serial('runs code through typescript', async (t) => {
   const bundle = await rollup({
@@ -67,7 +67,7 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
   });
 
   const wrongDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
+    getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true)
   );
   t.true(
     wrongDirError.message.includes(
@@ -91,7 +91,7 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
   });
 
   const wrongDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'esm', dir: 'fixtures/basic/dist' }, true)
+    getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true)
   );
   t.true(
     wrongDirError.message.includes(
@@ -149,7 +149,7 @@ test.serial('supports emitting types also for single file output', async (t) => 
     }
   });
   // generate a single output bundle, in which case, declaration files were not correctly emitted
-  const output = await getCode(bundle, { format: 'esm', file: 'dist/main.js' }, true);
+  const output = await getCode(bundle, { format: 'es', file: 'dist/main.js' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -164,7 +164,7 @@ test.serial('relative paths in tsconfig.json are resolved relative to the file',
     plugins: [typescript({ tsconfig: 'fixtures/relative-dir/tsconfig.json' })],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/relative-dir/dist' }, true);
+  const output = await getCode(bundle, { format: 'es', dir: 'fixtures/relative-dir/dist' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -579,7 +579,7 @@ test.serial('should not emit null sourceContent', async (t) => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', sourcemap: true }, true);
+  const output = await getCode(bundle, { format: 'es', sourcemap: true }, true);
   const sourcemap = output[0].map;
   // eslint-disable-next-line no-undefined
   t.false(sourcemap.sourcesContent.includes(undefined));
@@ -631,11 +631,10 @@ test.serial('supports dynamic imports', async (t) => {
   const code = await getCode(
     await rollup({
       input: 'fixtures/dynamic-imports/main.ts',
-      inlineDynamicImports: true,
       plugins: [typescript({ tsconfig: 'fixtures/dynamic-imports/tsconfig.json' })],
       onwarn
     }),
-    outputOptions
+    { ...outputOptions, inlineDynamicImports: true }
   );
   t.true(code.includes("console.log('dynamic')"));
 });
@@ -683,7 +682,7 @@ test.serial('supports incremental build', async (t) => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: './' }, true);
+  const output = await getCode(bundle, { format: 'es', dir: './' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -699,7 +698,7 @@ test.serial('supports incremental rebuild', async (t) => {
     plugins: [typescript()],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: 'dist' }, true);
+  const output = await getCode(bundle, { format: 'es', dir: 'dist' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -721,7 +720,7 @@ test.serial('supports incremental build for single file output', async (t) => {
       warnings.push(warning);
     }
   });
-  const output = await getCode(bundle, { format: 'esm', file: 'main.js' }, true);
+  const output = await getCode(bundle, { format: 'es', file: 'main.js' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -742,7 +741,7 @@ test.serial('does not output to filesystem when outputToFilesystem is false', as
     plugins: [typescript({ outputToFilesystem: false })],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', file: 'main.js' }, true);
+  const output = await getCode(bundle, { format: 'es', file: 'main.js' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -765,7 +764,7 @@ test.serial('warn about outputToFilesystem default', async (t) => {
       warnings.push(warning);
     }
   });
-  const output = await getCode(bundle, { format: 'esm', file: 'main.js' }, true);
+  const output = await getCode(bundle, { format: 'es', file: 'main.js' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -788,7 +787,7 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
     onwarn
   });
 
-  const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+  const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
   t.deepEqual(
     firstRun.map((out) => out.fileName),
     ['main.js', '.tsbuildinfo']
@@ -799,7 +798,7 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
     plugins: [typescript()],
     onwarn
   });
-  const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+  const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
   t.deepEqual(
     secondRun.map((out) => out.fileName),
     ['main.js', '.tsbuildinfo']
@@ -830,7 +829,7 @@ test.serial(
       onwarn
     });
 
-    const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+    const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
     t.deepEqual(
       firstRun.map((out) => out.fileName),
       ['main.js', '.tsbuildinfo']
@@ -842,7 +841,7 @@ test.serial(
       plugins: [typescript()],
       onwarn
     });
-    const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+    const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
     t.deepEqual(
       secondRun.map((out) => out.fileName),
       // .tsbuildinfo should not be emitted
@@ -878,7 +877,7 @@ test.serial(
       onwarn
     });
 
-    const firstRun = await getCode(firstBundle, { format: 'esm', dir: 'dist' }, true);
+    const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
     t.deepEqual(
       firstRun.map((out) => out.fileName),
       ['main.js']
@@ -892,7 +891,7 @@ test.serial(
       plugins: [typescript({ tsBuildInfoFile: './.tsbuildinfo' })],
       onwarn
     });
-    const secondRun = await getCode(secondBundle, { format: 'esm', dir: 'dist' }, true);
+    const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
     t.deepEqual(
       secondRun.map((out) => out.fileName),
       ['main.js']
@@ -933,7 +932,7 @@ test.serial('warns if sourceMap is set in Typescript but not Rollup', async (t) 
       warnings.push(warning);
     }
   });
-  await getCode(bundle, { format: 'esm' });
+  await getCode(bundle, { format: 'es' });
 
   t.is(warnings.length, 1);
   t.true(
@@ -951,7 +950,7 @@ test.serial('warns if sourceMap is set in Rollup but not Typescript', async (t) 
       warnings.push(warning);
     }
   });
-  await getCode(bundle, { format: 'esm', sourcemap: true });
+  await getCode(bundle, { format: 'es', sourcemap: true });
 
   t.is(warnings.length, 1);
   t.true(
@@ -973,7 +972,7 @@ test.serial('normalizes resolved ids to avoid duplicate output on windows', asyn
     ]
   });
 
-  const files = await getCode(bundle, { format: 'esm' }, true);
+  const files = await getCode(bundle, { format: 'es' }, true);
 
   t.is(files.length, 2);
   t.true(files[1].fileName.includes('two.js'), files[1].fileName);
@@ -987,7 +986,7 @@ test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
     plugins: [typescript({ tsconfig: 'tsconfig.json' })]
   });
 
-  const files = await getCode(bundle, { format: 'esm' }, true);
+  const files = await getCode(bundle, { format: 'es' }, true);
   // Compiles with no errors
   t.is(files.length, 1);
 });
@@ -1010,7 +1009,7 @@ test.serial('does manually setting filterRoot resolve nested projects', async (t
     input: 'main.ts',
     plugins: [typescript({ tsconfig: 'tsconfig.json', filterRoot: '../../' })]
   });
-  const files = await getCode(bundle, { format: 'esm' }, true);
+  const files = await getCode(bundle, { format: 'es' }, true);
   t.is(files.length, 1);
 });
 
@@ -1023,7 +1022,7 @@ test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript
       warnings.push(warning);
     }
   });
-  await getCode(bundle, { format: 'esm', sourcemap: true });
+  await getCode(bundle, { format: 'es', sourcemap: true });
 
   t.is(warnings.length, 0);
 });
@@ -1207,7 +1206,7 @@ test.serial('works when code is in src directory', async (t) => {
     output: [
       {
         dir: 'fixtures/src-dir/dist',
-        format: 'esm'
+        format: 'es'
       }
     ],
     plugins: [
@@ -1217,7 +1216,7 @@ test.serial('works when code is in src directory', async (t) => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/src-dir/dist' }, true);
+  const output = await getCode(bundle, { format: 'es', dir: 'fixtures/src-dir/dist' }, true);
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -1263,7 +1262,7 @@ test.serial('noForceEmit option defers to tsconfig.json for emitDeclarationOnly'
   // generate a single output bundle, in which case, declaration files were not correctly emitted
   const output = await getCode(
     bundle,
-    { format: 'esm', file: 'fixtures/noForceEmit/emitDeclarationOnly/dist/main.js' },
+    { format: 'es', file: 'fixtures/noForceEmit/emitDeclarationOnly/dist/main.js' },
     true
   );
 
@@ -1293,7 +1292,7 @@ test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) =
   // generate a single output bundle, in which case, declaration files were not correctly emitted
   const output = await getCode(
     bundle,
-    { format: 'esm', file: 'fixtures/noForceEmit/noEmit/dist/main.js' },
+    { format: 'es', file: 'fixtures/noForceEmit/noEmit/dist/main.js' },
     true
   );
 
