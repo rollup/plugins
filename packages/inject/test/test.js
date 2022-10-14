@@ -70,6 +70,18 @@ test('handles shorthand properties', (t) => {
   compare(t, 'shorthand', { Promise: ['es6-promise', 'Promise'] });
 });
 
+test('handles shorthand properties (as assignment)', (t) => {
+  compare(t, 'shorthand-assignment', { Promise: ['es6-promise', 'Promise'] });
+});
+
+test('handles shorthand properties in function', (t) => {
+  compare(t, 'shorthand-func', { Promise: ['es6-promise', 'Promise'] });
+});
+
+test('handles shorthand properties in function (as fallback value)', (t) => {
+  compare(t, 'shorthand-func-fallback', { Promise: ['es6-promise', 'Promise'] });
+});
+
 test('handles redundant keys', (t) => {
   compare(t, 'redundant-keys', {
     Buffer: 'Buffer',

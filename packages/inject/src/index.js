@@ -167,7 +167,7 @@ export default function inject(options) {
 
           // special case – shorthand properties. because node.key === node.value,
           // we can't differentiate once we've descended into the node
-          if (node.type === 'Property' && node.shorthand) {
+          if (node.type === 'Property' && node.shorthand && node.value.type === 'Identifier') {
             const { name } = node.key;
             handleReference(node, name, name);
             this.skip();
