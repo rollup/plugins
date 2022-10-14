@@ -95,11 +95,9 @@ test('works as CJS plugin', async (t) => {
 test('maintains filename when preserveModules = true', async (t) => {
   const bundle = await rollup({
     input: 'test/fixtures/{0,1}.js',
-    plugins: [multiEntry({ preserveModules: true, entryFileName: 'testing.js' })],
-    output: {
-      preserveModules: true
-    }
+    plugins: [multiEntry({ preserveModules: true, entryFileName: 'testing.js' })]
   });
+
   const files = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
 
   const nonVirtualFiles = files.filter(({ fileName }) => !fileName.startsWith('_virtual/'));
@@ -113,16 +111,16 @@ test('maintains filename when preserveModules = true', async (t) => {
 test('makes a bundle with entryFileName as the output.entryFileName when preserveModules = true and entryName is not set', async (t) => {
   const bundle = await rollup({
     input: 'test/fixtures/{0,1}.js',
-    plugins: [multiEntry({ preserveModules: true })],
-    output: {
-      preserveModules: true,
-      entryFileNames: 'outputEntryFileName.js'
-    }
+    plugins: [multiEntry({ preserveModules: true })]
   });
 
   const files = await getCode(
     bundle,
-    { format: 'cjs', preserveModules: true, entryFileNames: 'outputEntryFileName.js' },
+    {
+      format: 'cjs',
+      preserveModules: true,
+      entryFileNames: (c) => `${c.name}.js`
+    },
     true
   );
 
@@ -130,6 +128,6 @@ test('makes a bundle with entryFileName as the output.entryFileName when preserv
 
   t.is(nonVirtualFiles.length, 2);
 
-  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'outputEntryFileName.js'));
-  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'outputEntryFileName2.js'));
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === '0.js'));
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === '1.js'));
 });
