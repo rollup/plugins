@@ -100,7 +100,7 @@ test('maintains filename when preserveModules = true', async (t) => {
 
   const files = await getCode(bundle, { format: 'cjs', preserveModules: true }, true);
 
-  const nonVirtualFiles = files.filter(({ fileName }) => !fileName.startsWith('_virtual/'));
+  const nonVirtualFiles = files.filter(({ fileName }) => !fileName.includes('_virtual/'));
 
   t.is(nonVirtualFiles.length, 2);
 
@@ -124,7 +124,7 @@ test('makes a bundle with entryFileName as the output.entryFileName when preserv
     true
   );
 
-  const nonVirtualFiles = files.filter(({ fileName }) => !fileName.startsWith('_virtual/'));
+  const nonVirtualFiles = files.filter(({ fileName }) => !fileName.includes('_virtual/'));
 
   t.is(nonVirtualFiles.length, 2);
 
