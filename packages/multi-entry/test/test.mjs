@@ -119,7 +119,7 @@ test('makes a bundle with entryFileName as the output.entryFileName when preserv
     {
       format: 'cjs',
       preserveModules: true,
-      entryFileNames: (c) => `${c.name}.js`
+      entryFileNames: (c) => `entry-${c.name}.js`
     },
     true
   );
@@ -128,6 +128,6 @@ test('makes a bundle with entryFileName as the output.entryFileName when preserv
 
   t.is(nonVirtualFiles.length, 2);
 
-  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === '0.js'));
-  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === '1.js'));
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-0.js'));
+  t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-1.js'));
 });
