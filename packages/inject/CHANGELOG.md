@@ -1,5 +1,13 @@
 # @rollup/plugin-inject ChangeLog
 
+## v5.0.1
+
+_2022-10-15_
+
+### Bugfixes
+
+- fix: detect references inside object destructuring [#1241](https://github.com/rollup/plugins/pull/1241)
+
 ## v5.0.0
 
 _2022-10-09_
