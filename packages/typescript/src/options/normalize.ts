@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { resolve } from 'path';
 
-import { CompilerOptions, PartialCompilerOptions } from './interfaces';
+import type { CompilerOptions, PartialCompilerOptions } from './interfaces';
 
 export const DIRECTORY_PROPS = ['outDir', 'declarationDir'] as const;
 

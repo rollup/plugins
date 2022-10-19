@@ -1,7 +1,7 @@
-import { PluginContext } from 'rollup';
+import type { PluginContext } from 'rollup';
 import type { Diagnostic, DiagnosticReporter } from 'typescript';
 
-import { DiagnosticsHost } from './host';
+import type { DiagnosticsHost } from './host';
 import diagnosticToWarning from './toWarning';
 
 // `Cannot compile modules into 'es6' when targeting 'ES5' or lower.`

@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 
-import { PluginContext } from 'rollup';
+import type { PluginContext } from 'rollup';
 import typescript from 'typescript';
 import type {
   Diagnostic,
@@ -17,13 +17,11 @@ import type {
 import type { RollupTypescriptOptions } from '../../types';
 import diagnosticToWarning from '../diagnostics/toWarning';
 
+import type { CompilerOptions, EnumCompilerOptions, PartialCompilerOptions } from './interfaces';
 import {
-  CompilerOptions,
   DEFAULT_COMPILER_OPTIONS,
-  EnumCompilerOptions,
   FORCED_COMPILER_OPTIONS,
-  OVERRIDABLE_EMIT_COMPILER_OPTIONS,
-  PartialCompilerOptions
+  OVERRIDABLE_EMIT_COMPILER_OPTIONS
 } from './interfaces';
 import { normalizeCompilerOptions, makePathsAbsolute } from './normalize';
 

@@ -1,4 +1,4 @@
-import { RollupOptions } from 'rollup';
+import type { RollupOptions } from 'rollup';
 
 import dynamicImportVars, { dynamicImportToGlob } from '../src';
 

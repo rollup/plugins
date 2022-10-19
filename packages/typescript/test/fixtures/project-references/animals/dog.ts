@@ -1,4 +1,4 @@
-import Animal from '.';
+import type Animal from '.';
 
 import { makeRandomName } from '../core/utilities';
 

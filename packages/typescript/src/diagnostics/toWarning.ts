@@ -1,4 +1,4 @@
-import { RollupWarning } from 'rollup';
+import type { RollupWarning } from 'rollup';
 import type { Diagnostic, FormatDiagnosticsHost } from 'typescript';
 
 /**

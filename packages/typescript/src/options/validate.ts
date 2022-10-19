@@ -1,8 +1,8 @@
 import { relative } from 'path';
 
-import { OutputOptions, PluginContext } from 'rollup';
+import type { OutputOptions, PluginContext } from 'rollup';
 
-import { CompilerOptions } from './interfaces';
+import type { CompilerOptions } from './interfaces';
 import { DIRECTORY_PROPS } from './normalize';
 
 /**

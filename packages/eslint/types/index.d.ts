@@ -1,6 +1,6 @@
-import { Plugin } from 'rollup';
-import { CLIEngine, ESLint } from 'eslint';
-import { CreateFilter } from '@rollup/pluginutils';
+import type { Plugin } from 'rollup';
+import type { CLIEngine, ESLint } from 'eslint';
+import type { CreateFilter } from '@rollup/pluginutils';
 
 export interface RollupEslintOptions extends ESLint.Options {
   /**

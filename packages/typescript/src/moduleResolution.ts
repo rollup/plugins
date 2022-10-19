@@ -5,7 +5,7 @@ import type {
   ModuleKind
 } from 'typescript';
 
-import { DiagnosticsHost } from './diagnostics/host';
+import type { DiagnosticsHost } from './diagnostics/host';
 
 type ModuleResolverHost = Partial<ModuleResolutionHost> & DiagnosticsHost;
 

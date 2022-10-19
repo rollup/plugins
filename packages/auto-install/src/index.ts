@@ -4,7 +4,7 @@ import mod from 'module';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 
 import type { RollupAutoInstallOptions } from '../types';
 

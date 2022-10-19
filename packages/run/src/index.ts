@@ -1,7 +1,8 @@
-import { ChildProcess, fork } from 'child_process';
+import type { ChildProcess } from 'child_process';
+import { fork } from 'child_process';
 import { resolve, join, dirname } from 'path';
 
-import { Plugin, RenderedChunk } from 'rollup';
+import type { Plugin, RenderedChunk } from 'rollup';
 
 import type { RollupRunOptions } from '../types';
 

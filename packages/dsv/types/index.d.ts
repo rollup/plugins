@@ -1,6 +1,6 @@
-import { DSVRowString } from 'd3-dsv';
-import { FilterPattern } from '@rollup/pluginutils';
-import { Plugin } from 'rollup';
+import type { DSVRowString } from 'd3-dsv';
+import type { FilterPattern } from '@rollup/pluginutils';
+import type { Plugin } from 'rollup';
 
 interface RollupDsvOptions {
   /**

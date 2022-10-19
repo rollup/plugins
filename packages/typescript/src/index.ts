@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 
-import { Plugin, RollupOptions, SourceDescription } from 'rollup';
+import type { Plugin, RollupOptions, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
 import type { RollupTypescriptOptions } from '../types';

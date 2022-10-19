@@ -1,4 +1,4 @@
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 
 import type { ResolvedAlias, ResolverFunction, ResolverObject, RollupAliasOptions } from '../types';
 

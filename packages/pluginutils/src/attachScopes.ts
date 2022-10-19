@@ -1,4 +1,4 @@
-import * as estree from 'estree';
+import type * as estree from 'estree';
 
 import { walk } from 'estree-walker';
 

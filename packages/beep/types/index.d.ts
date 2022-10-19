@@ -1,4 +1,4 @@
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 
 /**
  * 🍣 A Rollup plugin that beeps when a build ends with errors.

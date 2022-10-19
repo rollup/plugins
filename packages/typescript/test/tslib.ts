@@ -1,7 +1,8 @@
 import { platform } from 'os';
 
 import test from 'ava';
-import { rollup, RollupError } from 'rollup';
+import type { RollupError } from 'rollup';
+import { rollup } from 'rollup';
 
 import typescript from '..';
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
-import { FilterPattern } from '@rollup/pluginutils';
-import { Plugin } from 'rollup';
-import {
+import type { FilterPattern } from '@rollup/pluginutils';
+import type { Plugin } from 'rollup';
+import type {
   CompilerOptions,
   CompilerOptionsValue,
   CustomTransformers,

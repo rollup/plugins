@@ -1,5 +1,5 @@
-import { FilterPattern } from '@rollup/pluginutils';
-import { Plugin } from 'rollup';
+import type { FilterPattern } from '@rollup/pluginutils';
+import type { Plugin } from 'rollup';
 
 interface RollupUrlOptions {
   // Note: the @default tag below uses the zero-width character joiner "‍" to escape the "*/"
