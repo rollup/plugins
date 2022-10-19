@@ -1,3 +1,4 @@
+import type typescript from 'typescript';
 import type { CompilerOptions, FormatDiagnosticsHost } from 'typescript';
 
 export interface DiagnosticsHost extends FormatDiagnosticsHost {
@@ -12,7 +13,7 @@ export interface DiagnosticsHost extends FormatDiagnosticsHost {
  * @see https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
  */
 export default function createFormattingHost(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   compilerOptions: CompilerOptions
 ): DiagnosticsHost {
   return {

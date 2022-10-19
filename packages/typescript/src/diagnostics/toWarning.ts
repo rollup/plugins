@@ -1,3 +1,4 @@
+import type typescript from 'typescript';
 import type { RollupWarning } from 'rollup';
 import type { Diagnostic, FormatDiagnosticsHost } from 'typescript';
 
@@ -5,7 +6,7 @@ import type { Diagnostic, FormatDiagnosticsHost } from 'typescript';
  * Converts a Typescript type error into an equivalent Rollup warning object.
  */
 export default function diagnosticToWarning(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   host: FormatDiagnosticsHost | null,
   diagnostic: Diagnostic
 ) {

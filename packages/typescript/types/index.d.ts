@@ -1,4 +1,6 @@
 /* eslint-disable no-use-before-define */
+import type _typescript from 'typescript';
+
 import type { FilterPattern } from '@rollup/pluginutils';
 import type { Plugin } from 'rollup';
 import type {
@@ -65,7 +67,7 @@ export interface RollupTypescriptPluginOptions {
   /**
    * Overrides TypeScript used for transpilation
    */
-  typescript?: typeof import('typescript');
+  typescript?: typeof _typescript;
   /**
    * Overrides the injected TypeScript helpers with a custom version.
    */

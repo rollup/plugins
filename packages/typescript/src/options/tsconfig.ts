@@ -49,7 +49,7 @@ function makeForcedCompilerOptions(noForceEmit: boolean) {
  * If `false` is passed, then a null path is returned.
  * @returns The absolute path, or null if the file does not exist.
  */
-function getTsConfigPath(ts: typeof import('typescript'), relativePath?: string | false) {
+function getTsConfigPath(ts: typeof typescript, relativePath?: string | false) {
   if (relativePath === false) return null;
 
   // Resolve path to file. `tsConfigOption` defaults to 'tsconfig.json'.
@@ -73,7 +73,7 @@ function getTsConfigPath(ts: typeof import('typescript'), relativePath?: string 
  * @param explicitPath If true, the path was set by the plugin user.
  * If false, the path was computed automatically.
  */
-function readTsConfigFile(ts: typeof import('typescript'), tsConfigPath: string) {
+function readTsConfigFile(ts: typeof typescript, tsConfigPath: string) {
   const { config, error } = ts.readConfigFile(tsConfigPath, (path) => readFileSync(path, 'utf8'));
   if (error) {
     throw Object.assign(Error(), diagnosticToWarning(ts, null, error));
@@ -121,7 +121,7 @@ function setModuleResolutionKind(parsedConfig: ParsedCommandLine): ParsedCommand
   };
 }
 
-const configCache = new Map() as import('typescript').Map<ExtendedConfigCacheEntry>;
+const configCache = new Map() as typescript.Map<ExtendedConfigCacheEntry>;
 
 /**
  * Parse the Typescript config to use with the plugin.
@@ -135,7 +135,7 @@ const configCache = new Map() as import('typescript').Map<ExtendedConfigCacheEnt
  * - `errors`: Any errors from parsing the config file.
  */
 export function parseTypescriptConfig(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   tsconfig: RollupTypescriptOptions['tsconfig'],
   compilerOptions: PartialCompilerOptions,
   noForceEmit: boolean
@@ -207,7 +207,7 @@ export function parseTypescriptConfig(
  * display all of them as warnings then emit an error.
  */
 export function emitParsedOptionsErrors(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   parsedOptions: ParsedCommandLine
 ) {

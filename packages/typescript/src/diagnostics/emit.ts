@@ -1,4 +1,5 @@
 import type { PluginContext } from 'rollup';
+import type typescript from 'typescript';
 import type { Diagnostic, DiagnosticReporter } from 'typescript';
 
 import type { DiagnosticsHost } from './host';
@@ -11,7 +12,7 @@ const CANNOT_COMPILE_ESM = 1204;
  * Emit a Rollup warning or error for a Typescript type error.
  */
 export function emitDiagnostic(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   host: DiagnosticsHost,
   diagnostic: Diagnostic
@@ -32,7 +33,7 @@ export function emitDiagnostic(
 }
 
 export function buildDiagnosticReporter(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   host: DiagnosticsHost
 ): DiagnosticReporter {
@@ -45,7 +46,7 @@ export function buildDiagnosticReporter(
  * For each type error reported by Typescript, emit a Rollup warning or error.
  */
 export function emitDiagnostics(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   host: DiagnosticsHost,
   diagnostics: readonly Diagnostic[] | undefined

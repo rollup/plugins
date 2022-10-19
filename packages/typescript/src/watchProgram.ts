@@ -132,7 +132,7 @@ export class WatchProgramHelper {
  * @see https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
  */
 function createWatchHost(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   {
     formatHost,
@@ -195,7 +195,7 @@ function createWatchHost(
 }
 
 export default function createWatchProgram(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   options: CreateProgramOptions
 ) {

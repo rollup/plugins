@@ -2,6 +2,8 @@ import * as path from 'path';
 
 import { promises as fs } from 'fs';
 
+import type typescript from 'typescript';
+
 import type { OutputOptions, PluginContext, SourceDescription } from 'rollup';
 import type { ParsedCommandLine } from 'typescript';
 
@@ -55,7 +57,7 @@ export function getEmittedFile(
  * containing files emitted by the Typescript compiler.
  */
 export default function findTypescriptOutput(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   parsedOptions: ParsedCommandLine,
   id: string,
   emittedFiles: ReadonlyMap<string, string>,
