@@ -251,21 +251,21 @@ importers:
 
   packages/eslint:
     specifiers:
-      '@rollup/plugin-node-resolve': ^14.1.0
-      '@rollup/plugin-typescript': ^8.5.0
-      '@rollup/pluginutils': ^4.2.1
+      '@rollup/plugin-node-resolve': ^15.0.0
+      '@rollup/plugin-typescript': ^9.0.1
+      '@rollup/pluginutils': ^5.0.1
       '@types/eslint': ^8.4.6
       eslint: ^8.24.0
-      rollup: ^3.0.0-7
+      rollup: ^3.2.3
       typescript: ^4.8.3
     dependencies:
-      '@rollup/pluginutils': 4.2.1
+      '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       eslint: 8.25.0
     devDependencies:
-      '@rollup/plugin-node-resolve': 14.1.0_rollup@3.0.0-7
-      '@rollup/plugin-typescript': 8.5.0_wkkufgeabp7wfx7iyk42bruffi
+      '@rollup/plugin-node-resolve': 15.0.0_rollup@3.2.3
+      '@rollup/plugin-typescript': 9.0.1_655ssj4e7sdqlljrreeiqtltve
       '@types/eslint': 8.4.6
-      rollup: 3.0.0-7
+      rollup: 3.2.3
       typescript: 4.8.4
 
   packages/graphql:
