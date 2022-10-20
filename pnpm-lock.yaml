@@ -138,10 +138,10 @@ importers:
 
   packages/beep:
     specifiers:
-      rollup: ^3.0.0-7
+      rollup: ^3.2.3
       strip-ansi: ^7.0.1
     devDependencies:
-      rollup: 3.0.0-7
+      rollup: 3.2.3
       strip-ansi: 7.0.1
 
   packages/buble:
