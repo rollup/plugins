@@ -62,8 +62,8 @@
     "mini-svg-data-uri": "^1.4.4"
   },
   "devDependencies": {
-    "@rollup/plugin-buble": "^0.21.3",
-    "rollup": "^3.0.0-7"
+    "@rollup/plugin-buble": "^1.0.0",
+    "rollup": "^3.2.3"
   },
   "types": "./types/index.d.ts",
   "ava": {

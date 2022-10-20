@@ -64,8 +64,8 @@
     "@rollup/pluginutils": "^5.0.1"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^8.5.0",
-    "rollup": "^3.0.0-7",
+    "@rollup/plugin-typescript": "^9.0.1",
+    "rollup": "^3.2.3",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts",

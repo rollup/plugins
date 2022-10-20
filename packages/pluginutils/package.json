@@ -66,13 +66,13 @@
     "picomatch": "^2.3.1"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^22.0.2",
-    "@rollup/plugin-node-resolve": "^14.1.0",
-    "@rollup/plugin-typescript": "^8.5.0",
+    "@rollup/plugin-commonjs": "^23.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^9.0.1",
     "@types/node": "^14.18.30",
     "@types/picomatch": "^2.3.0",
     "acorn": "^8.8.0",
-    "rollup": "^3.0.0-7",
+    "rollup": "^3.2.3",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts",

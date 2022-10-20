@@ -68,11 +68,11 @@
     "resolve": "^1.22.1"
   },
   "devDependencies": {
-    "@rollup/plugin-buble": "^0.21.3",
-    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-buble": "^1.0.0",
+    "@rollup/plugin-commonjs": "^23.0.0",
     "@types/node": "^14.18.30",
     "buble": "^0.20.0",
-    "rollup": "^2.67.3",
+    "rollup": "^3.2.3",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts"

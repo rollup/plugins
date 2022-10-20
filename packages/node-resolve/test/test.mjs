@@ -486,12 +486,13 @@ test('passes on "isEntry" flag', async (t) => {
     ]
   });
   t.deepEqual(resolveOptions, [
-    ['other.js', 'main.js', { custom: {}, isEntry: true }],
-    ['main.js', void 0, { custom: {}, isEntry: true }],
+    ['other.js', 'main.js', { assertions: {}, custom: {}, isEntry: true }],
+    ['main.js', void 0, { assertions: {}, custom: {}, isEntry: true }],
     [
       'other.js',
       'main.js',
       {
+        assertions: {},
         custom: {
           'node-resolve': {
             resolved: {
@@ -507,6 +508,7 @@ test('passes on "isEntry" flag', async (t) => {
       'main.js',
       void 0,
       {
+        assertions: {},
         custom: {
           'node-resolve': {
             resolved: {
@@ -518,11 +520,12 @@ test('passes on "isEntry" flag', async (t) => {
         isEntry: true
       }
     ],
-    ['dep.js', 'main.js', { custom: {}, isEntry: false }],
+    ['dep.js', 'main.js', { assertions: {}, custom: {}, isEntry: false }],
     [
       'dep.js',
       'main.js',
       {
+        assertions: {},
         custom: {
           'node-resolve': {
             resolved: {
@@ -560,11 +563,12 @@ test('passes on custom options', async (t) => {
     ]
   });
   t.deepEqual(resolveOptions, [
-    ['main.js', void 0, { custom: { test: 42 }, isEntry: false }],
+    ['main.js', void 0, { assertions: {}, custom: { test: 42 }, isEntry: false }],
     [
       'main.js',
       void 0,
       {
+        assertions: {},
         custom: {
           test: 42,
           'node-resolve': {
@@ -577,11 +581,12 @@ test('passes on custom options', async (t) => {
         isEntry: false
       }
     ],
-    ['other.js', void 0, { custom: {}, isEntry: true }],
+    ['other.js', void 0, { assertions: {}, custom: {}, isEntry: true }],
     [
       'other.js',
       void 0,
       {
+        assertions: {},
         custom: {
           'node-resolve': {
             resolved: {
