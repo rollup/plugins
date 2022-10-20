@@ -87,13 +87,10 @@ test("allows transform-runtime to be used with `useESModules: false` (the defaul
     `'use strict';
 
 var _createClass = require("@babel/runtime/helpers/createClass");
-
 var _classCallCheck = require("@babel/runtime/helpers/classCallCheck");
-
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
 });
-
 module.exports = Foo;
 `
   );
@@ -112,11 +109,9 @@ test("allows transform-runtime to be used with `useESModules: true` and `format:
     code,
     `import _createClass from "@babel/runtime/helpers/esm/createClass";
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
-
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
 });
-
 export { Foo as default };
 `
   );
@@ -227,14 +222,13 @@ test('transforms all chunks in a code-splitting setup', async (t) => {
   t.deepEqual(
     output.map(({ code }) => code),
     [
-      `import('./dep-0fdca0d5.js').then(function (result) {
+      `import('./dep-20aaf50b.js').then(function (result) {
   return console.log(result);
 });
 `,
       `var dep = function dep() {
   return 42;
 };
-
 export { dep as default };
 `
     ]
@@ -269,7 +263,6 @@ console.log(getResult(value));
       `var getResult = function getResult(value) {
   return value + 1;
 };
-
 export { getResult as default };
 `
     ]
