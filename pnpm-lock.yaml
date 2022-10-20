@@ -270,18 +270,18 @@ importers:
 
   packages/graphql:
     specifiers:
-      '@rollup/plugin-buble': ^0.21.3
-      '@rollup/pluginutils': ^4.2.1
+      '@rollup/plugin-buble': ^1.0.0
+      '@rollup/pluginutils': ^5.0.1
       graphql: ^16.6.0
       graphql-tag: ^2.12.6
-      rollup: ^3.0.0-7
+      rollup: ^3.2.3
     dependencies:
-      '@rollup/pluginutils': 4.2.1
+      '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       graphql-tag: 2.12.6_graphql@16.6.0
     devDependencies:
-      '@rollup/plugin-buble': 0.21.3_rollup@3.0.0-7
+      '@rollup/plugin-buble': 1.0.0_rollup@3.2.3
       graphql: 16.6.0
-      rollup: 3.0.0-7
+      rollup: 3.2.3
 
   packages/html:
     specifiers:
@@ -2012,6 +2012,21 @@ packages:
       '@types/buble': 0.19.2
       buble: 0.20.0
       rollup: 3.0.0-7
+    dev: true
+
+  /@rollup/plugin-buble/1.0.0_rollup@3.2.3:
+    resolution: {integrity: sha512-VDbhsNtC4cXZ20+hhilL0hzUskrTZWhF9PTabCOuye1NK5Ht8LZzpM1Q0S/yo0kMArjrFnIb2P4N8d3uEKuxnA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      '@types/buble': 0.19.2
+      buble: 0.20.0
+      rollup: 3.2.3
     dev: true
 
   /@rollup/plugin-commonjs/22.0.2_rollup@2.79.1:
