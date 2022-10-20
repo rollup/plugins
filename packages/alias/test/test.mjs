@@ -455,7 +455,7 @@ test('Forwards isEntry and custom options to a custom resolver', (t) => {
       {
         source: 'nonEntry',
         importer: '/src/importer.js',
-        options: { isEntry: false, custom: { test: 42 } }
+        options: { assertions: {}, isEntry: false, custom: { test: 42 } }
       }
     ]
   ).then((result) => {
@@ -464,6 +464,7 @@ test('Forwards isEntry and custom options to a custom resolver', (t) => {
         'entry-point',
         '/src/importer.js',
         {
+          assertions: {},
           custom: void 0,
           isEntry: true
         }
@@ -472,6 +473,7 @@ test('Forwards isEntry and custom options to a custom resolver', (t) => {
         'non-entry-point',
         '/src/importer.js',
         {
+          assertions: {},
           custom: { test: 42 },
           isEntry: false
         }
@@ -512,6 +514,7 @@ test('Forwards isEntry and custom options to other plugins', (t) => {
         'entry-point',
         '/src/importer.js',
         {
+          assertions: {},
           custom: void 0,
           isEntry: true
         }
@@ -520,6 +523,7 @@ test('Forwards isEntry and custom options to other plugins', (t) => {
         'non-entry-point',
         '/src/importer.js',
         {
+          assertions: {},
           custom: { test: 42 },
           isEntry: false
         }
