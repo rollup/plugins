@@ -1,5 +1,9 @@
 # @rollup/plugin-beep ChangeLog
 
+## v1.0.1
+
+_Skipped for repo rebase_
+
 ## v1.0.0
 
 _2022-10-08_

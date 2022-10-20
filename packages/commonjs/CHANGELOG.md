@@ -1,5 +1,9 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.1
+
+_Skipped for repo rebase_
+
 ## v23.0.0
 
 _2022-10-09_

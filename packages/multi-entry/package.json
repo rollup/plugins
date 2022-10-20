@@ -60,11 +60,11 @@
     }
   },
   "dependencies": {
-    "@rollup/plugin-virtual": "^2.0.3",
+    "@rollup/plugin-virtual": "^3.0.0",
     "matched": "^5.0.1"
   },
   "devDependencies": {
-    "rollup": "^3.0.0-7"
+    "rollup": "^3.2.3"
   },
   "types": "./types/index.d.ts",
   "ava": {

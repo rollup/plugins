@@ -1,5 +1,9 @@
 # @rollup/plugin-babel ChangeLog
 
+## v6.0.1
+
+_Skipped for repo rebase_
+
 ## v6.0.0
 
 _2022-10-08_

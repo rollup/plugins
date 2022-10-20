@@ -1,5 +1,9 @@
 # @rollup/plugin-auto-install ChangeLog
 
+## v3.0.1
+
+_Skipped for repo rebase_
+
 ## v3.0.0
 
 _2022-10-08_

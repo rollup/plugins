@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-beep",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publishConfig": {
     "access": "public"
   },
@@ -45,7 +45,7 @@
     }
   },
   "devDependencies": {
-    "rollup": "^3.0.0-7",
+    "rollup": "^3.2.3",
     "strip-ansi": "^7.0.1"
   },
   "types": "types/index.d.ts",

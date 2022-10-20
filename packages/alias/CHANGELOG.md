@@ -1,5 +1,9 @@
 # @rollup/plugin-alias ChangeLog
 
+## v4.0.1
+
+_Skipped for repo rebase_
+
 ## v4.0.0
 
 _2022-10-07_
