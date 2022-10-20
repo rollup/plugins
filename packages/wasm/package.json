@@ -65,7 +65,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^9.0.1",
     "del-cli": "^5.0.0",
-    "rollup": "^3.2.3",
+    "rollup": "^3.2.2",
     "source-map": "^0.7.4",
     "typescript": "^4.8.3"
   },

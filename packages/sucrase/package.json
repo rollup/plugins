@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^4.0.0",
-    "rollup": "^3.2.3"
+    "rollup": "^3.2.2"
   },
   "types": "./types/index.d.ts",
   "ava": {

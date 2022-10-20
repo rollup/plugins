@@ -65,7 +65,7 @@
     "@rollup/plugin-typescript": "^9.0.1",
     "del": "^6.1.1",
     "node-noop": "^1.0.0",
-    "rollup": "^3.2.3",
+    "rollup": "^3.2.2",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts",

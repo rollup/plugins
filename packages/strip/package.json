@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "acorn": "^8.8.0",
-    "rollup": "^3.2.3"
+    "rollup": "^3.2.2"
   },
   "types": "./types/index.d.ts",
   "ava": {

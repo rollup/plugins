@@ -45,7 +45,7 @@
     }
   },
   "devDependencies": {
-    "rollup": "^3.2.3",
+    "rollup": "^3.2.2",
     "strip-ansi": "^7.0.1"
   },
   "types": "types/index.d.ts",
