@@ -1153,7 +1153,9 @@ test('supports custom transformers', async (t) => {
   );
 });
 
-test.serial('picks up on newly included typescript files in watch mode', async (t) => {
+// This test randomly fails with a segfault directly at the first "await waitForWatcherEvent" before any event occurred.
+// Skipping it until we can figure out what the cause is.
+test.serial.skip('picks up on newly included typescript files in watch mode', async (t) => {
   const dirName = path.join('fixtures', 'watch');
 
   // clean up artefacts from earlier builds
