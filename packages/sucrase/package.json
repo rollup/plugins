@@ -62,12 +62,12 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.2.1",
+    "@rollup/pluginutils": "^5.0.1",
     "sucrase": "^3.27.0"
   },
   "devDependencies": {
-    "@rollup/plugin-alias": "^3.1.4",
-    "rollup": "^3.0.0-7"
+    "@rollup/plugin-alias": "^4.0.0",
+    "rollup": "^3.2.3"
   },
   "types": "./types/index.d.ts",
   "ava": {

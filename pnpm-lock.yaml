@@ -489,16 +489,16 @@ importers:
 
   packages/sucrase:
     specifiers:
-      '@rollup/plugin-alias': ^3.1.4
-      '@rollup/pluginutils': ^4.2.1
-      rollup: ^3.0.0-7
+      '@rollup/plugin-alias': ^4.0.0
+      '@rollup/pluginutils': ^5.0.1
+      rollup: ^3.2.3
       sucrase: ^3.27.0
     dependencies:
-      '@rollup/pluginutils': 4.2.1
+      '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       sucrase: 3.28.0
     devDependencies:
-      '@rollup/plugin-alias': 3.1.9_rollup@3.0.0-7
-      rollup: 3.0.0-7
+      '@rollup/plugin-alias': 4.0.0_rollup@3.2.3
+      rollup: 3.2.3
 
   packages/typescript:
     specifiers:
@@ -1963,14 +1963,17 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
 
-  /@rollup/plugin-alias/3.1.9_rollup@3.0.0-7:
-    resolution: {integrity: sha512-QI5fsEvm9bDzt32k39wpOwZhVzRcL5ydcffUHMyLVaVaLeC70I8TJZ17F1z1eMoLu4E/UOcH9BWVkKpIKdrfiw==}
-    engines: {node: '>=8.0.0'}
+  /@rollup/plugin-alias/4.0.0_rollup@3.2.3:
+    resolution: {integrity: sha512-fGRWzM2F6wXnzAqn4Db8SdB/2Ree0u2XOQaaTy9mhqA35NmUzJXevMBUcpZywPF2MIUUAw+SKfWogKxFSPh+Qw==}
+    engines: {node: '>=14.0.0'}
     peerDependencies:
-      rollup: ^1.20.0||^2.0.0
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
     dependencies:
-      rollup: 3.0.0-7
-      slash: 3.0.0
+      rollup: 3.2.3
+      slash: 4.0.0
     dev: true
 
   /@rollup/plugin-babel/6.0.0_t2lseskayu4pmjc4spb5q7neyq:
