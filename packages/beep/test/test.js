@@ -8,7 +8,7 @@ test('pass', async (t) => {
   const { stderr } = await execa('rollup', args, options);
   const { default: strip } = await import('strip-ansi');
 
-  t.snapshot(strip(stderr.replace(/\d+ms/, '<time>ms')));
+  t.snapshot(strip(stderr.replace(/\d+ms|[\d.]+s/, '<time>ms')));
 });
 
 test('error', async (t) => {
