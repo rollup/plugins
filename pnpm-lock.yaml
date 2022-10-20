@@ -232,22 +232,22 @@ importers:
 
   packages/dynamic-import-vars:
     specifiers:
-      '@rollup/pluginutils': ^4.2.1
+      '@rollup/pluginutils': ^5.0.1
       acorn: ^8.8.0
       estree-walker: ^2.0.2
       fast-glob: ^3.2.12
       magic-string: ^0.26.4
       prettier: ^2.7.1
-      rollup: ^3.0.0-7
+      rollup: ^3.2.3
     dependencies:
-      '@rollup/pluginutils': 4.2.1
+      '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       estree-walker: 2.0.2
       fast-glob: 3.2.12
       magic-string: 0.26.7
     devDependencies:
       acorn: 8.8.0
       prettier: 2.7.1
-      rollup: 3.0.0-7
+      rollup: 3.2.3
 
   packages/eslint:
     specifiers:
