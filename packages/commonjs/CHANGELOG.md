@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.1
+
+_2022-10-20_
+
+### Bugfixes
+
+- fix: Update Rollup dependencies ([3b4d9ec](https://github.com/rollup/plugins/commit/3b4d9ec7fb6d50065ad6a63de15e8decd4d56a57))
+
 ## v23.0.0
 
 _2022-10-09_
