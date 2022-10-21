@@ -1,24 +1,24 @@
+import { NormalizedOutputOptions, RenderedChunk } from 'rollup';
 import { minify, MinifyOptions } from 'terser';
 
 export default function terser(options?: MinifyOptions) {
   return {
-    name: "terser",
+    name: 'terser',
 
-    async renderChunk(code, chunk, outputOptions) {
-      const defaultOptions : MinifyOptions = {
-        sourceMap: outputOptions.sourcemap === true ||
-          typeof outputOptions.sourcemap === "string",
+    async renderChunk(code: string, chunk: RenderedChunk, outputOptions: NormalizedOutputOptions) {
+      const defaultOptions: MinifyOptions = {
+        sourceMap: outputOptions.sourcemap === true || typeof outputOptions.sourcemap === 'string'
       };
 
-      if (outputOptions.format === "es" || outputOptions.format === "esm") {
+      if (outputOptions.format === 'es') {
         defaultOptions.module = true;
       }
 
-      if (outputOptions.format === "cjs") {
+      if (outputOptions.format === 'cjs') {
         defaultOptions.toplevel = true;
       }
 
-      return await minify(code, {...defaultOptions, ...(options || {})});
-    },
+      return minify(code, { ...defaultOptions, ...(options || {}) });
+    }
   };
 }
