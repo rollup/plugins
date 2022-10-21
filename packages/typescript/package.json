@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-typescript",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "publishConfig": {
     "access": "public"
   },

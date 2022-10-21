@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v9.0.2
+
+_2022-10-21_
+
+### Updates
+
+- chore: update rollup dependencies ([3038271](https://github.com/rollup/plugins/commit/303827191ede6b2e4eade96c6968ed16a587683f))
+
 ## v9.0.1
 
 _2022-10-11_
