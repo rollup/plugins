@@ -8,11 +8,7 @@ const config: RollupOptions = {
     file: 'bundle.js',
     format: 'iife'
   },
-  plugins: [
-    terser({
-
-    })
-  ]
+  plugins: [terser({})]
 };
 
 export default config;

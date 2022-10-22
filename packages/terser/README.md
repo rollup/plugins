@@ -36,9 +36,7 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [
-    terser()
-  ]
+  plugins: [terser()]
 };
 ```
 
