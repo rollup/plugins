@@ -80,6 +80,13 @@ Default: `'multi-entry.js'`
 
 `entryFileName` changes the name of the generated entry file. By default, it will override `outputOptions.entryFileNames` to be `'multi-entry.js'`.
 
+### `preserveModules`
+
+Type: `Boolean`<br>
+Default: `false`
+
+`preserveModules` is to be used in conjunction with [`output.preserveModules`](https://rollupjs.org/guide/en/#outputpreservemodules). If `true`, overrides the `entryFileName` option to be output.entryFileNames. If `false`, the plugin will respect the `entryFileName` option.
+
 ## Supported Input Types
 
 This plugin extends Rollup's `input` option to support multiple new value types, in addition to a `String` specifying a path to a file.

@@ -53,7 +53,7 @@ export default function multiEntry(conf = {}) {
     outputOptions(options) {
       return {
         ...options,
-        entryFileNames: config.entryFileName
+        entryFileNames: config.preserveModules ? options.entryFileNames : config.entryFileName
       };
     },
 
