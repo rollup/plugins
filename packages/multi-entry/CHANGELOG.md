@@ -1,5 +1,13 @@
 # @rollup/plugin-multi-entry ChangeLog
 
+## v6.0.0
+
+_2022-10-24_
+
+### Breaking Changes
+
+- feat: add preserveModules option [#1237](https://github.com/rollup/plugins/pull/1237)
+
 ## v5.0.1
 
 _2022-10-21_
