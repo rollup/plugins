@@ -153,7 +153,7 @@ test.serial('supports emitting types also for single file output', async (t) => 
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', 'main.d.ts']
+    ['main.js', 'dist/main.d.ts']
   );
   t.is(warnings.length, 0);
 });
