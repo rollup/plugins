@@ -1,4 +1,4 @@
-
+// eslint-disable-next-line no-undef
 window.a = 5;
 
 /* @preserve this comment */
@@ -7,6 +7,7 @@ window.a = 5;
 
 // and this one too
 
+// eslint-disable-next-line no-undef
 if (window.a < 3) {
   console.log(4);
 }

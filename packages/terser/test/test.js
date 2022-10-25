@@ -131,23 +131,6 @@ test.serial('throw error on terser fail with multiple outputs', async (t) => {
   }
 });
 
-test.serial('works with code splitting', async (t) => {
-  const bundle = await rollup({
-    input: ['test/fixtures/chunk-1.js', 'test/fixtures/chunk-2.js'],
-    plugins: [terser()]
-  });
-  const { output } = await bundle.generate({ format: 'esm' });
-  const newOutput = {};
-  output.forEach((out) => {
-    // TODO rewrite with object rest after node 6 dropping
-    const value = Object.assign({}, out);
-    delete value.modules;
-    delete value.facadeModuleId;
-    newOutput[out.fileName] = value;
-  });
-  t.snapshot(newOutput);
-});
-
 test.serial('allow to pass not string values to worker', async (t) => {
   const bundle = await rollup({
     input: 'test/fixtures/unminified.js',
