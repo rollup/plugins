@@ -19,7 +19,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 ## Plugins Found Here
 
 |                                                     |                                                                                           |
-|-----------------------------------------------------|-------------------------------------------------------------------------------------------|
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | [alias](packages/alias)                             | Define and resolve aliases for bundle dependencies                                        |
 | [auto-install](packages/auto-install)               | Automatically install dependencies that are imported by a bundle                          |
 | [babel](packages/babel)                             | Compile your files with Babel                                                             |

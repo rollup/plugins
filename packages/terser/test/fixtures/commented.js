@@ -1,4 +1,4 @@
-"use strict";
+
 window.a = 5;
 
 /* @preserve this comment */
