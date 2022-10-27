@@ -1,5 +1,13 @@
 # @rollup/plugin-graphql ChangeLog
 
+## v2.0.2
+
+_2022-10-27_
+
+### Bugfixes
+
+- fix: fix ESM build [#1318](https://github.com/rollup/plugins/pull/1318)
+
 ## v2.0.1
 
 _2022-10-21_
