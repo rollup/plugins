@@ -1,5 +1,5 @@
 import { createFilter } from '@rollup/pluginutils';
-import loader from 'graphql-tag/loader';
+import loader from 'graphql-tag/loader.js';
 
 import { toESModules } from './toESModules';
 

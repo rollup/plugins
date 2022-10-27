@@ -105,12 +105,6 @@ importers:
       rollup: 3.2.3
       typescript: 4.8.4
 
-  packages/auto-install/test/fixtures/pnpm-bare:
-    specifiers:
-      node-noop: ^1.0.0
-    dependencies:
-      node-noop: 1.0.0
-
   packages/babel:
     specifiers:
       '@babel/core': ^7.19.1
@@ -5512,6 +5506,7 @@ packages:
 
   /node-noop/1.0.0:
     resolution: {integrity: sha512-1lpWqKwZ9yUosQfW1uy3jm6St4ZbmeDKKGmdzwzedbyBI4LgHtGyL1ofDdqiSomgaYaSERi+qWtj64huJQjl7g==}
+    dev: true
 
   /node-preload/0.2.1:
     resolution: {integrity: sha512-RM5oyBy45cLEoHqCeh+MNuFAxO0vTFBLskvQbOKnEE7YTTSN4tbN8QWDIPQ6L+WvKsB/qLEGpYe2ZZ9d4W9OIQ==}
