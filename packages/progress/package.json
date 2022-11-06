@@ -1,0 +1,78 @@
+{
+  "name": "@rollup/plugin-progress",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Rollup Progress Plugin",
+  "license": "MIT",
+  "repository": {
+    "url": "rollup/plugins",
+    "directory": "packages/progress"
+  },
+  "author": "JayFate <37610029@qq.com>",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/progress/#readme",
+  "bugs": "https://github.com/rollup/plugins/issues",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "exports": {
+    "types": "./types/index.d.ts",
+    "import": "./dist/es/index.js",
+    "default": "./dist/cjs/index.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "ci:coverage": "pnpm test:coverage",
+    "ci:lint": "pnpm build && pnpm lint",
+    "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
+    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
+    "prebuild": "del-cli dist",
+    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prerelease": "pnpm build",
+    "pretest": "pnpm build",
+    "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:ts": "tsc types/index.d.ts --noEmit"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.map",
+    "src",
+    "types",
+    "README.md"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "terser",
+    "minify",
+    "npm",
+    "modules"
+  ],
+  "peerDependencies": {
+    "rollup": "^2.x || ^3.x"
+  },
+  "peerDependenciesMeta": {
+    "rollup": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "fs-extra": "^10.1.0",
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^29.2.2",
+    "@types/node": "^18.11.9",
+    "jest": "^29.2.2",
+    "jest-environment-jsdom": "^29.2.2",
+    "ts-jest": "^29.0.3",
+    "typescript": "^4.8.3"
+  },
+  "types": "./types/index.d.ts"
+}
