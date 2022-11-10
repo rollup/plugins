@@ -1,3 +1,4 @@
+import process from 'process';
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 
 import serializeJavascript from 'serialize-javascript';
@@ -37,7 +38,7 @@ export async function callWorker(filePath: string, context: WorkerContext) {
     worker.on('error', reject);
 
     worker.on('exit', (code) => {
-      if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
+      if (code !== 0) reject(new Error(`Minify worker stopped with exit code ${code}`));
     });
   });
 }
@@ -47,17 +48,21 @@ export async function runWorker() {
     return;
   }
 
-  // eslint-disable-next-line no-eval
-  const eval2 = eval;
+  try {
+    // eslint-disable-next-line no-eval
+    const eval2 = eval;
 
-  const options = eval2(`(${workerData.options})`);
+    const options = eval2(`(${workerData.options})`);
 
-  const result = await minify(workerData.code, options);
+    const result = await minify(workerData.code, options);
 
-  const output: WorkerOutput = {
-    code: result.code || workerData.code,
-    nameCache: options.nameCache
-  };
+    const output: WorkerOutput = {
+      code: result.code || workerData.code,
+      nameCache: options.nameCache
+    };
 
-  parentPort.postMessage(output);
+    parentPort.postMessage(output);
+  } catch (e) {
+    process.exit(1);
+  }
 }
