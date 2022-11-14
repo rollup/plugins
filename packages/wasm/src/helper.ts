@@ -10,9 +10,9 @@ return new Promise((resolve, reject) => {
   fs.readFile(path.resolve(__dirname, filepath), (error, buffer) => {
     if (error != null) {
       reject(error)
+    } else {
+      resolve(_instantiateOrCompile(buffer, imports, false))
     }
-
-    resolve(_instantiateOrCompile(buffer, imports, false))
   });
 });
 `;
