@@ -445,6 +445,15 @@ test('prefers to set name using directory for index files', async (t) => {
   t.not(code.indexOf('var nonIndex'), -1, 'contains nonIndex');
 });
 
+test('correctly wraps the default export from a CommonJS module when it is a class', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/es-module-with-class-as-default-export/main.js',
+    plugins: [commonjs()]
+  });
+  const result = await executeBundle(bundle, t);
+  t.is(result.error, undefined);
+});
+
 test('does not warn even if the ES module does not export "default"', async (t) => {
   const warns = [];
   await rollup({
