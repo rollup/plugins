@@ -1,7 +1,7 @@
 import { runWorker } from './worker';
 import terser from './module';
 
-Promise.resolve().then(() => runWorker());
+runWorker();
 
 export * from './type';
 
