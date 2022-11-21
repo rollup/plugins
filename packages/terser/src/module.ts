@@ -2,9 +2,14 @@ import { NormalizedOutputOptions, RenderedChunk } from 'rollup';
 import { hasOwnProperty, isObject, merge } from 'smob';
 
 import { Options } from './type';
-import { callWorker } from './worker';
+import { WorkerPool } from './worker-pool';
 
 export default function terser(options: Options = {}) {
+  const workerPool = new WorkerPool({
+    filePath: __filename,
+    maxWorkers: options.maxWorkers
+  });
+
   return {
     name: 'terser',
 
@@ -22,7 +27,7 @@ export default function terser(options: Options = {}) {
       }
 
       try {
-        const { code: result, nameCache } = await callWorker(__filename, {
+        const { code: result, nameCache } = await workerPool.addAsync({
           code,
           options: merge({}, options || {}, defaultOptions)
         });
