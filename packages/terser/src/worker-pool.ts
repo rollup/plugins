@@ -101,8 +101,6 @@ export class WorkerPool extends EventEmitter {
     });
 
     worker.on('message', (data) => {
-      this.workers -= 1;
-
       callCallback(null, data);
     });
 
