@@ -9,7 +9,7 @@
 
 # @rollup/plugin-terser
 
-🍣 A Rollup plugin to generate a minified output bundle wiht terser.
+🍣 A Rollup plugin to generate a minified bundle with terser.
 
 ## Requirements
 
