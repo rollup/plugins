@@ -47,8 +47,14 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 The plugin accepts a terser [Options](https://github.com/terser/terser#minify-options) object as input parameter,
 to modify the default behaviour.
 
-Besides, the terser options, it is also possible to pass the option `maxWorkers`,
-which allows to control how many workers can run at the same time.
+In addition to the `terser` options, it is also possible to provide the following options:
+
+### `maxWorkers`
+
+Type: `Number`<br>
+Default: `undefined`
+
+Instructs the plugin to use a specific amount of cpu threads.
 
 ```typescript
 import terser from '@rollup/plugin-terser';
@@ -72,9 +78,3 @@ export default {
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
 
 [LICENSE (MIT)](/LICENSE)
-
-## Credits
-
-The original terser plugin was developed by [TrySound](https://github.com/TrySound) but is not
-maintained anymore.
-The current implementation is developed and maintained by [tada5hi](https://github.com/tada5hi).
