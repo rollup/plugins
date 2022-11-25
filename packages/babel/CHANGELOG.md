@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v6.0.3
+
+_2022-11-25_
+
+### Updates
+
+- docs: small typo in babel plugin readme [#1355](https://github.com/rollup/plugins/pull/1355)
+
 ## v6.0.2
 
 _2022-10-21_
