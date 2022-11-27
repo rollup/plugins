@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'url';
 
-import resolve, { SyncOpts } from 'resolve';
+import type { SyncOpts } from 'resolve';
+import resolve from 'resolve';
 
 // const resolveIdAsync = (file: string, opts: AsyncOpts) =>
 //   new Promise<string>((fulfil, reject) =>

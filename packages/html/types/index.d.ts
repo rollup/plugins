@@ -1,4 +1,4 @@
-import { Plugin, OutputChunk, OutputAsset, OutputBundle } from 'rollup';
+import type { Plugin, OutputChunk, OutputAsset, OutputBundle } from 'rollup';
 
 export interface RollupHtmlTemplateOptions {
   title: string;

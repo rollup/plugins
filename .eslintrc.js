@@ -9,7 +9,8 @@ module.exports = {
     'sort-keys': 'off',
     'typescript-sort-keys/interface': 'off',
     'import/extensions': 'off',
-    'import/no-unresolved': 'off'
+    'import/no-unresolved': 'off',
+    '@typescript-eslint/consistent-type-imports': 'error'
   },
   overrides: [
     {

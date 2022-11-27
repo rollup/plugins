@@ -1,6 +1,6 @@
 import { relative, resolve, sep } from 'path';
 
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 import { createFilter } from '@rollup/pluginutils';
 import { ESLint } from 'eslint';
 

@@ -1,6 +1,6 @@
-import { FilterPattern } from '@rollup/pluginutils';
-import { TransformOptions } from 'buble';
-import { Plugin } from 'rollup';
+import type { FilterPattern } from '@rollup/pluginutils';
+import type { TransformOptions } from 'buble';
+import type { Plugin } from 'rollup';
 
 export interface RollupBubleOptions extends TransformOptions {
   /**

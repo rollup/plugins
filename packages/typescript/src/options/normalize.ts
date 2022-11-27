@@ -1,7 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { resolve } from 'path';
 
-import { CompilerOptions, PartialCompilerOptions } from './interfaces';
+import type typescript from 'typescript';
+
+import type { CompilerOptions, PartialCompilerOptions } from './interfaces';
 
 export const DIRECTORY_PROPS = ['outDir', 'declarationDir'] as const;
 
@@ -25,10 +27,7 @@ export function makePathsAbsolute(compilerOptions: PartialCompilerOptions, relat
  * @param compilerOptions Compiler options to _mutate_.
  * @returns True if the source map compiler option was not initially set.
  */
-export function normalizeCompilerOptions(
-  ts: typeof import('typescript'),
-  compilerOptions: CompilerOptions
-) {
+export function normalizeCompilerOptions(ts: typeof typescript, compilerOptions: CompilerOptions) {
   let autoSetSourceMap = false;
   if (compilerOptions.inlineSourceMap) {
     // Force separate source map files for Rollup to work with.

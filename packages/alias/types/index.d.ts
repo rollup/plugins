@@ -1,4 +1,4 @@
-import { Plugin, PluginHooks } from 'rollup';
+import type { Plugin, PluginHooks } from 'rollup';
 
 type MapToFunction<T> = T extends Function ? T : never;
 

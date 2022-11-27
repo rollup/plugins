@@ -1,4 +1,4 @@
-import { BaseNode } from 'estree';
+import type { BaseNode } from 'estree';
 
 export interface AttachedScope {
   parent?: AttachedScope;
