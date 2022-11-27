@@ -1,5 +1,6 @@
-import { NormalizedOutputOptions, RenderedChunk } from 'rollup';
-import { minify, MinifyOptions } from 'terser';
+import type { NormalizedOutputOptions, RenderedChunk } from 'rollup';
+import type { MinifyOptions } from 'terser';
+import { minify } from 'terser';
 
 export default function terser(options?: MinifyOptions) {
   return {
