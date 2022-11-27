@@ -1,5 +1,13 @@
 # @rollup/plugin-json ChangeLog
 
+## v5.0.2
+
+_2022-11-27_
+
+### Updates
+
+- docs: correct minimatch to picomatch [#1332](https://github.com/rollup/plugins/pull/1332)
+
 ## v5.0.1
 
 _2022-10-21_
