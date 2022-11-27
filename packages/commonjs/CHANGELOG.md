@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.3
+
+_2022-11-27_
+
+### Bugfixes
+
+- fix: correctly wrap a default class export from cjs module [#1350](https://github.com/rollup/plugins/pull/1350)
+
 ## v23.0.2
 
 _2022-10-21_
