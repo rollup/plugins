@@ -58,6 +58,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       if (this.meta.watchMode !== true) {
         // eslint-disable-next-line
         program?.close();
+        program = null;
       }
       if (!program) {
         program = createWatchProgram(ts, this, {
