@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v10.0.0
+
+_2022-11-27_
+
+### Breaking Changes
+
+- fix: incorrect declarations directory ([a5c90d1](https://github.com/rollup/plugins/commit/a5c90d1032390f9f6160d95c42171aa3014b3d6b))
+
 ## v9.0.2
 
 _2022-10-21_

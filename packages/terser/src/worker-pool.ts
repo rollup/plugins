@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 
 import serializeJavascript from 'serialize-javascript';
 
-import {
+import type {
   WorkerCallback,
   WorkerContext,
   WorkerOutput,

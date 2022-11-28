@@ -1,7 +1,7 @@
-import { PluginContext, RollupOptions } from 'rollup';
+import type { PluginContext, RollupOptions } from 'rollup';
 import typescript from 'typescript';
 
-import { TypeScriptConfig } from './options/tsconfig';
+import type { TypeScriptConfig } from './options/tsconfig';
 // import { resolveIdAsync } from './tslib';
 
 const { ModuleKind } = typescript;

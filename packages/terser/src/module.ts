@@ -1,7 +1,7 @@
-import { NormalizedOutputOptions, RenderedChunk } from 'rollup';
+import type { NormalizedOutputOptions, RenderedChunk } from 'rollup';
 import { hasOwnProperty, isObject, merge } from 'smob';
 
-import { Options } from './type';
+import type { Options } from './type';
 import { WorkerPool } from './worker-pool';
 
 export default function terser(options: Options = {}) {

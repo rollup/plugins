@@ -1,4 +1,4 @@
-import { MinifyOptions } from 'terser';
+import type { MinifyOptions } from 'terser';
 
 export interface Options extends MinifyOptions {
   nameCache?: Record<string, any>;

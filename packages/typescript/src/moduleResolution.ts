@@ -1,3 +1,4 @@
+import type typescript from 'typescript';
 import type {
   ModuleResolutionHost,
   ResolvedModuleFull,
@@ -5,7 +6,7 @@ import type {
   ModuleKind
 } from 'typescript';
 
-import { DiagnosticsHost } from './diagnostics/host';
+import type { DiagnosticsHost } from './diagnostics/host';
 
 type ModuleResolverHost = Partial<ModuleResolutionHost> & DiagnosticsHost;
 
@@ -22,7 +23,7 @@ export type Resolver = (
  * with methods for sanitizing filenames and getting compiler options.
  */
 export default function createModuleResolver(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   host: ModuleResolverHost
 ): Resolver {
   const compilerOptions = host.getCompilationSettings();

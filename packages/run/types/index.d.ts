@@ -1,6 +1,6 @@
-import { ForkOptions } from 'child_process';
+import type { ForkOptions } from 'child_process';
 
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 
 export interface RollupRunOptions extends ForkOptions {
   args?: readonly string[];

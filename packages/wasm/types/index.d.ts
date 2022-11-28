@@ -1,4 +1,4 @@
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 
 /**
  * - `"auto"` will determine the environment at runtime and invoke the correct methods accordingly

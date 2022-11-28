@@ -1,6 +1,6 @@
-import { Plugin, PluginContext, TransformPluginContext } from 'rollup';
-import { FilterPattern, CreateFilter } from '@rollup/pluginutils';
-import * as babelCore from '@babel/core';
+import type { Plugin, PluginContext, TransformPluginContext } from 'rollup';
+import type { FilterPattern, CreateFilter } from '@rollup/pluginutils';
+import type * as babelCore from '@babel/core';
 
 export interface RollupBabelInputPluginOptions
   extends Omit<babelCore.TransformOptions, 'include' | 'exclude'> {

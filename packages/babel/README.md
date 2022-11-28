@@ -198,7 +198,7 @@ export default {
 };
 ```
 
-The `include`, `exclude` and `extensions` options are ignored when the when using `getBabelOutputPlugin` and `createBabelOutputPluginFactory` will produce warnings, and there are a few more points to note that users should be aware of.
+The `include`, `exclude` and `extensions` options are ignored when using `getBabelOutputPlugin` and `createBabelOutputPluginFactory` will produce warnings, and there are a few more points to note that users should be aware of.
 
 You can also run the plugin twice on the code, once when processing the input files to transpile special syntax to JavaScript and once on the output to transpile to a lower compatibility target:
 

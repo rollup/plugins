@@ -1,5 +1,5 @@
 import { transform } from 'buble';
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 import { createFilter } from '@rollup/pluginutils';
 
 import type { RollupBubleOptions } from '../types';

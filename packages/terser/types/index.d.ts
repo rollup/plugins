@@ -1,5 +1,5 @@
-import { Plugin } from 'rollup';
-import { MinifyOptions } from 'terser';
+import type { Plugin } from 'rollup';
+import type { MinifyOptions } from 'terser';
 
 /**
  * A Rollup plugin to generate a minified output bundle.

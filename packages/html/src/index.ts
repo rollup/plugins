@@ -1,6 +1,6 @@
 import { extname } from 'path';
 
-import { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
+import type { Plugin, NormalizedOutputOptions, OutputBundle, EmittedAsset } from 'rollup';
 
 import type { RollupHtmlOptions, RollupHtmlTemplateOptions } from '../types';
 

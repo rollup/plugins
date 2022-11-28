@@ -1,4 +1,5 @@
 /** eslint-disable @typescript-eslint/no-unused-vars */
+import type { RollupOptions } from 'rollup';
 
 import babelPlugin, {
   babel,
@@ -8,7 +9,7 @@ import babelPlugin, {
   createBabelOutputPluginFactory
 } from '../types';
 
-const rollupConfig: import('rollup').RollupOptions = {
+const rollupConfig: RollupOptions = {
   input: 'main.js',
   output: {
     file: 'bundle.js',

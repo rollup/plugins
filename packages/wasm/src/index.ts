@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { createHash } from 'crypto';
 
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
 
 import type { RollupWasmOptions } from '../types';
 

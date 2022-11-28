@@ -5,7 +5,7 @@ import { hasOwnProperty, isObject } from 'smob';
 
 import { minify } from 'terser';
 
-import { WorkerContextSerialized, WorkerOutput } from './type';
+import type { WorkerContextSerialized, WorkerOutput } from './type';
 
 /**
  * Duck typing worker context.

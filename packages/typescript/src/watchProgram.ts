@@ -1,4 +1,4 @@
-import { PluginContext } from 'rollup';
+import type { PluginContext } from 'rollup';
 import typescript from 'typescript';
 import type {
   Diagnostic,
@@ -12,8 +12,8 @@ import type {
 import type { CustomTransformerFactories } from '../types';
 
 import { buildDiagnosticReporter } from './diagnostics/emit';
-import { DiagnosticsHost } from './diagnostics/host';
-import { Resolver } from './moduleResolution';
+import type { DiagnosticsHost } from './diagnostics/host';
+import type { Resolver } from './moduleResolution';
 import { mergeTransformers } from './customTransformers';
 
 const { DiagnosticCategory } = typescript;
@@ -132,7 +132,7 @@ export class WatchProgramHelper {
  * @see https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
  */
 function createWatchHost(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   {
     formatHost,
@@ -195,7 +195,7 @@ function createWatchHost(
 }
 
 export default function createWatchProgram(
-  ts: typeof import('typescript'),
+  ts: typeof typescript,
   context: PluginContext,
   options: CreateProgramOptions
 ) {
