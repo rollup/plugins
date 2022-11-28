@@ -730,6 +730,44 @@ test.serial('supports incremental build for single file output', async (t) => {
   t.is(warnings.length, 0);
 });
 
+test.serial('supports consecutive rebuilds when watchMode is false', async (t) => {
+  process.chdir('fixtures/incremental-watch-off');
+
+  // IMPORTANT: The issue only happens if it's the same instance of rollup/plugin-typescript
+  // Hence, generating one instance and using it twice below.
+  const tsPlugin = typescript({ outputToFilesystem: true });
+
+  const firstBundle = await rollup({
+    input: 'main.ts',
+    plugins: [tsPlugin],
+    onwarn
+  });
+
+  const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
+  const firstRunCode = firstRun[0].code;
+
+  try {
+    // Mutating the source file
+    fs.appendFileSync('main.ts', '\nexport const REBUILD_WITH_WATCH_OFF = 1;');
+
+    const secondBundle = await rollup({
+      input: 'main.ts',
+      plugins: [tsPlugin],
+      onwarn
+    });
+    const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
+    const secondRunCode = secondRun[0].code;
+
+    t.notDeepEqual(firstRunCode, secondRunCode);
+  } finally {
+    fs.copyFile('original.txt', 'main.ts', (err) => {
+      if (err) {
+        t.fail(err);
+      }
+    });
+  }
+});
+
 test.serial('does not output to filesystem when outputToFilesystem is false', async (t) => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
