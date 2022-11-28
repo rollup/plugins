@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v10.0.1
+
+_2022-11-28_
+
+### Bugfixes
+
+- fix: emit assets when watchMode is false. fixes #1354 ([5c88274](https://github.com/rollup/plugins/commit/5c882743475a4480cb82e42253de9290b7329511))
+
 ## v10.0.0
 
 _2022-11-27_
