@@ -66,7 +66,7 @@ export function getEsImportProxy(id, defaultIsModuleExports) {
     `import { __require as ${requireModule} } from ${JSON.stringify(id)};\n` +
     `var ${exportsName} = ${requireModule}();\n` +
     `export { ${exportsName} as __moduleExports };`;
-  if (defaultIsModuleExports) {
+  if (defaultIsModuleExports === true) {
     code += `\nexport { ${exportsName} as default };`;
   } else {
     code += `export default /*@__PURE__*/getDefaultExportFromCjs(${exportsName});`;
