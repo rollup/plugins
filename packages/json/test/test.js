@@ -81,11 +81,11 @@ test('handles garbage', async (t) => {
     onwarn: (warning) => warns.push(warning)
   }).catch(() => {});
 
-  const [{ message, id, position, plugin }] = warns;
+  const [{ message, id, cause, plugin }] = warns;
 
   t.is(warns.length, 1);
   t.is(plugin, 'json');
-  t.is(position, 1);
+  t.true(cause instanceof SyntaxError);
   t.is(message, 'Could not parse JSON file');
   t.regex(id, /(.*)bad.json$/);
 });

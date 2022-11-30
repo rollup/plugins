@@ -24,8 +24,7 @@ export default function json(options = {}) {
         };
       } catch (err) {
         const message = 'Could not parse JSON file';
-        const position = parseInt(/[\d]/.exec(err.message)[0], 10);
-        this.warn({ message, id, position });
+        this.warn({ message, id, cause: err });
         return null;
       }
     }
