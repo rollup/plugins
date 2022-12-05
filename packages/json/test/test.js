@@ -73,21 +73,18 @@ test('handles JSON objects with no valid keys (#19)', async (t) => {
 });
 
 test('handles garbage', async (t) => {
-  const warns = [];
-
-  await rollup({
-    input: 'fixtures/garbage/main.js',
-    plugins: [json()],
-    onwarn: (warning) => warns.push(warning)
-  }).catch(() => {});
-
-  const [{ message, id, cause, plugin }] = warns;
-
-  t.is(warns.length, 1);
-  t.is(plugin, 'json');
-  t.true(cause instanceof SyntaxError);
-  t.is(message, 'Could not parse JSON file');
-  t.regex(id, /(.*)bad.json$/);
+  const err = await t.throwsAsync(
+    rollup({
+      input: 'fixtures/garbage/main.js',
+      plugins: [json()]
+    })
+  );
+  t.is(err.code, 'PLUGIN_ERROR');
+  t.is(err.plugin, 'json');
+  t.is(err.message, 'Could not parse JSON file');
+  t.is(err.name, 'RollupError');
+  t.is(err.cause.name, 'SyntaxError');
+  t.regex(err.id, /(.*)bad.json$/);
 });
 
 test('does not generate an AST', async (t) => {

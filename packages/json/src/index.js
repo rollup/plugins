@@ -24,7 +24,7 @@ export default function json(options = {}) {
         };
       } catch (err) {
         const message = 'Could not parse JSON file';
-        this.warn({ message, id, cause: err });
+        this.error({ message, id, cause: err });
         return null;
       }
     }
