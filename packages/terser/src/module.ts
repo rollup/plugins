@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'url';
+
 import type { NormalizedOutputOptions, RenderedChunk } from 'rollup';
 import { hasOwnProperty, isObject, merge } from 'smob';
 
@@ -5,8 +7,25 @@ import type { Options } from './type';
 import { WorkerPool } from './worker-pool';
 
 export default function terser(options: Options = {}) {
+  let filePath: string | undefined;
+
+  if (typeof __filename !== 'undefined') {
+    filePath = __filename;
+  } else {
+    // @ts-ignore
+    // eslint-disable-next-line no-lonely-if
+    if (typeof import.meta !== 'undefined') {
+      // @ts-ignore
+      filePath = fileURLToPath(import.meta.url);
+    }
+  }
+
+  if (typeof filePath === 'undefined') {
+    throw new Error('File path could not be determined.');
+  }
+
   const workerPool = new WorkerPool({
-    filePath: __filename,
+    filePath,
     maxWorkers: options.maxWorkers
   });
 
