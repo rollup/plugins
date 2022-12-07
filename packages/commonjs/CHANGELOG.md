@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.4
+
+_2022-12-07_
+
+### Bugfixes
+
+- fix: declaration tag @default for ignoreTryCatch + fix some typos [#1370](https://github.com/rollup/plugins/pull/1370)
+
 ## v23.0.3
 
 _2022-11-27_
