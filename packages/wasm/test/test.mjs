@@ -206,6 +206,23 @@ test('target environment node', async (t) => {
   t.true(!code.includes(`fetch`));
 });
 
+test('filename override', async (t) => {
+  t.plan(1);
+
+  const bundle = await rollup({
+    input: 'fixtures/async.js',
+    plugins: [
+      wasmPlugin({ maxFileSize: 0, targetEnv: 'node', fileName: 'start-[name]-suffix[extname]' })
+    ]
+  });
+
+  await bundle.write({ format: 'cjs', file: 'override/bundle.js' });
+  const glob = join('override', `start-sample-suffix.wasm`).split(sep).join(posix.sep);
+  await import(outputFile);
+  t.snapshot(await globby(glob));
+  await del('override');
+});
+
 test('works as CJS plugin', async (t) => {
   t.plan(2);
   const require = createRequire(import.meta.url);

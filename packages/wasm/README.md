@@ -62,6 +62,17 @@ The maximum file size for inline files. If a file exceeds this limit, it will be
 
 Files specified in `sync` to load synchronously are always inlined, regardless of size.
 
+### `fileName`
+
+Type: `String`<br>
+Default: `'[hash][extname]'`
+
+This option can be used to rename the emitted Wasm files. It accepts the following string replacements:
+
+- `[hash]` - The hash value of the file's contents
+- `[name]` - The name of the imported file (without its file extension)
+- `[extname]` - The extension of the imported file (including the leading `.`)
+
 ### `publicPath`
 
 Type: `String`<br>

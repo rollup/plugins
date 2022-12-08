@@ -9,7 +9,13 @@ import type { RollupWasmOptions } from '../types';
 import { getHelpersModule, HELPERS_ID } from './helper';
 
 export function wasm(options: RollupWasmOptions = {}): Plugin {
-  const { sync = [], maxFileSize = 14 * 1024, publicPath = '', targetEnv = 'auto' } = options;
+  const {
+    sync = [],
+    maxFileSize = 14 * 1024,
+    publicPath = '',
+    targetEnv = 'auto',
+    fileName = '[hash][extname]'
+  } = options;
 
   const syncFiles = sync.map((x) => path.resolve(x));
   const copies = Object.create(null);
@@ -42,14 +48,20 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
           if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
             const hash = createHash('sha1').update(buffer).digest('hex').substr(0, 16);
+            const ext = path.extname(id);
+            const name = path.basename(id, ext);
 
-            const filename = `${hash}.wasm`;
-            const publicFilepath = `${publicPath}${filename}`;
+            const outputFileName = fileName
+              .replace(/\[hash\]/g, hash)
+              .replace(/\[extname\]/g, ext)
+              .replace(/\[name\]/g, name);
+
+            const publicFilepath = `${publicPath}${outputFileName}`;
 
             // only copy if the file is not marked `sync`, `sync` files are always inlined
             if (syncFiles.indexOf(id) === -1) {
               copies[id] = {
-                filename,
+                filename: outputFileName,
                 publicFilepath,
                 buffer
               };
