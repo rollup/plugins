@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'url';
+
 import type { NormalizedOutputOptions, RenderedChunk } from 'rollup';
 import { hasOwnProperty, isObject, merge } from 'smob';
 
@@ -6,7 +8,7 @@ import { WorkerPool } from './worker-pool';
 
 export default function terser(options: Options = {}) {
   const workerPool = new WorkerPool({
-    filePath: __filename,
+    filePath: fileURLToPath(import.meta.url),
     maxWorkers: options.maxWorkers
   });
 

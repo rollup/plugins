@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "include": ["src/**/*", "types/**/*"],
   "compilerOptions": {
+    "module": "ES2020",
     "noUnusedParameters": false
   }
 }
