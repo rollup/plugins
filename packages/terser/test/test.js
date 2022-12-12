@@ -107,7 +107,7 @@ test.serial('throw error on terser fail', async (t) => {
     await bundle.generate({ format: 'esm' });
     t.falsy(true);
   } catch (error) {
-    t.is(error.toString(), 'SyntaxError: Name expected');
+    t.is(error.toString(), 'Error: Minify worker stopped with exit code 1');
   }
 });
 
@@ -127,7 +127,7 @@ test.serial('throw error on terser fail with multiple outputs', async (t) => {
     await Promise.all([bundle.generate({ format: 'cjs' }), bundle.generate({ format: 'esm' })]);
     t.falsy(true);
   } catch (error) {
-    t.is(error.toString(), 'SyntaxError: Name expected');
+    t.is(error.toString(), 'Error: Minify worker stopped with exit code 1');
   }
 });
 
