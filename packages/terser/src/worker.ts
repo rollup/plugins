@@ -42,6 +42,7 @@ export async function runWorker() {
 
     parentPort.postMessage(output);
   } catch (e) {
+    console.error(e);
     process.exit(1);
   }
 }
