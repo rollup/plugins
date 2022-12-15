@@ -1346,3 +1346,27 @@ test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) =
   const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
   t.is(output[0].code, originalCode);
 });
+
+test.serial('incorrect file case still compiles', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/caseTest/Main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/caseTest/tsconfig.json', target: 'es5' })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  // generate a single output bundle, in which case, declaration files were not correctly emitted
+  const output = await getCode(
+    bundle,
+    { format: 'es', file: 'fixtures/caseTest/dist/Main.js' },
+    true
+  );
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    // no `main.d.ts`, main.js is passed through
+    ['Main.js']
+  );
+  t.is(warnings.length, 0);
+});
