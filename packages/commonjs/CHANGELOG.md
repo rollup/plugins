@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.5
+
+_2022-12-15_
+
+### Bugfixes
+
+- fix: resolve export exports not found [#1363](https://github.com/rollup/plugins/pull/1363)
+
 ## v23.0.4
 
 _2022-12-07_
