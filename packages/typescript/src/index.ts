@@ -159,13 +159,16 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
             (parsedOptions.options.declaration
               ? parsedOptions.options.declarationDir || parsedOptions.options.outDir
               : null);
-          const cwd = normalizePath(process.cwd());
+          const outputDir = normalizePath(
+            outputOptions.dir ||
+              (outputOptions.file ? path.dirname(outputOptions.file) : process.cwd())
+          );
           if (
             parsedOptions.options.declaration &&
             parsedOptions.options.declarationDir &&
-            baseDir?.startsWith(cwd)
+            baseDir?.startsWith(outputDir)
           ) {
-            const declarationDir = baseDir.slice(cwd.length + 1);
+            const declarationDir = baseDir.slice(outputDir.length + 1);
             baseDir = baseDir.slice(0, -1 * declarationDir.length);
           }
           if (!baseDir && tsconfig) {

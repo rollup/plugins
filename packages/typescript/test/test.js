@@ -6,7 +6,7 @@ const test = require('ava');
 const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
-const { evaluateBundle, getCode, onwarn } = require('../../../util/test');
+const { evaluateBundle, getCode, getFiles, onwarn } = require('../../../util/test');
 
 const typescript = require('..');
 
@@ -139,39 +139,66 @@ test.serial('supports emitting types also for single file output', async (t) => 
   // as that would have the side effect that the tsconfig's path would be used as fallback path for
   // the here unspecified outputOptions.dir, in which case the original issue wouldn't show.
   process.chdir('fixtures/basic');
+  const outputOpts = { format: 'es', file: 'dist/main.js' };
 
   const warnings = [];
   const bundle = await rollup({
     input: 'main.ts',
+    output: outputOpts,
     plugins: [typescript({ declaration: true, declarationDir: 'dist' })],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
   // generate a single output bundle, in which case, declaration files were not correctly emitted
-  const output = await getCode(bundle, { format: 'es', file: 'dist/main.js' }, true);
+  const output = await getFiles(bundle, outputOpts);
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', 'dist/main.d.ts']
+    ['dist/main.js', 'dist/main.d.ts']
+  );
+  t.is(warnings.length, 0);
+});
+
+test.serial('supports emitting declarations in correct directory for output.file', async (t) => {
+  // Ensure even when no `output.dir` is configured, declarations are emitted to configured `declarationDir`
+  process.chdir('fixtures/basic');
+  const outputOpts = { format: 'es', file: 'dist/main.esm.js' };
+
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'main.ts',
+    output: outputOpts,
+    plugins: [typescript({ declaration: true, declarationDir: 'dist' })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  const output = await getFiles(bundle, outputOpts);
+
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['dist/main.esm.js', 'dist/main.d.ts']
   );
   t.is(warnings.length, 0);
 });
 
 test.serial('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
+  const outputOpts = { format: 'es', dir: 'fixtures/relative-dir/dist' };
   const bundle = await rollup({
     input: 'fixtures/relative-dir/main.ts',
+    output: outputOpts,
     plugins: [typescript({ tsconfig: 'fixtures/relative-dir/tsconfig.json' })],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'es', dir: 'fixtures/relative-dir/dist' }, true);
+  const output = await getFiles(bundle, outputOpts);
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', 'main.d.ts']
+    ['fixtures/relative-dir/dist/main.js', 'fixtures/relative-dir/dist/main.d.ts']
   );
 
-  t.true(output[1].source.includes('declare const answer = 42;'), output[1].source);
+  t.true(output[1].content.includes('declare const answer = 42;'), output[1].content);
 });
 
 test.serial('throws for unsupported module types', async (t) => {
