@@ -69,7 +69,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
             if (parsedOptions.options.composite || parsedOptions.options.incremental) {
               tsCache.cacheCode(fileName, data);
             }
-            emittedFiles.set(fileName, data);
+            emittedFiles.set(fileName.toLowerCase(), data);
           },
           status(diagnostic) {
             watchProgramHelper.handleStatus(diagnostic);
@@ -143,7 +143,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         parsedOptions.fileNames.push(fileName);
       }
 
-      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles, tsCache);
+      const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
 
       return output.code != null ? (output as SourceDescription) : null;
     },

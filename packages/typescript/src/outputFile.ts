@@ -41,8 +41,8 @@ export function getEmittedFile(
 ): string | undefined {
   let code: string | undefined;
   if (fileName) {
-    if (emittedFiles.has(fileName)) {
-      code = emittedFiles.get(fileName);
+    if (emittedFiles.has(fileName.toLowerCase())) {
+      code = emittedFiles.get(fileName.toLowerCase());
     } else {
       code = tsCache.getCached(fileName);
     }
