@@ -1,3 +1,6 @@
+const path = require('path');
+const process = require('process');
+
 /**
  * @param {import('rollup').RollupBuild} bundle
  * @param {import('rollup').OutputOptions} [outputOptions]
@@ -7,11 +10,35 @@ const getCode = async (bundle, outputOptions, allFiles = false) => {
 
   if (allFiles) {
     return output.map(({ code, fileName, source, map }) => {
-      return { code, fileName, source, map };
+      return {
+        code,
+        fileName,
+        source,
+        map
+      };
     });
   }
   const [{ code }] = output;
   return code;
+};
+
+/**
+ * @param {import('rollup').RollupBuild} bundle
+ * @param {import('rollup').OutputOptions} [outputOptions]
+ */
+const getFiles = async (bundle, outputOptions) => {
+  if (!outputOptions.dir && !outputOptions.file)
+    throw new Error('You must specify "output.file" or "output.dir" for the build.');
+
+  const { output } = await bundle.generate(outputOptions || { format: 'cjs', exports: 'auto' });
+
+  return output.map(({ code, fileName, source }) => {
+    const absPath = path.resolve(outputOptions.dir || path.dirname(outputOptions.file), fileName);
+    return {
+      fileName: path.relative(process.cwd(), absPath).split(path.sep).join('/'),
+      content: code || source
+    };
+  });
 };
 
 const getImports = async (bundle) => {
@@ -70,6 +97,7 @@ const evaluateBundle = async (bundle) => {
 module.exports = {
   evaluateBundle,
   getCode,
+  getFiles,
   getImports,
   getResolvedModules,
   onwarn,
