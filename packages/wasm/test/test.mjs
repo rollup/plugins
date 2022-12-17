@@ -1,6 +1,7 @@
 import { createRequire } from 'module';
 import { sep, posix, join } from 'path';
 import { fileURLToPath } from 'url';
+import { Worker } from 'worker_threads';
 
 import { rollup } from 'rollup';
 import globby from 'globby';
@@ -96,32 +97,26 @@ test('imports', async (t) => {
   await testBundle(t, bundle);
 });
 
-try {
-  // eslint-disable-next-line global-require
-  const { Worker } = require('worker_threads');
-  test('worker', async (t) => {
-    t.plan(2);
+test('worker', async (t) => {
+  t.plan(2);
 
-    const bundle = await rollup({
-      input: 'fixtures/worker.js',
-      plugins: [wasmPlugin()]
-    });
-    const code = await getCode(bundle);
-    const executeWorker = () => {
-      const worker = new Worker(code, { eval: true });
-      return new Promise((resolve, reject) => {
-        worker.on('error', (err) => reject(err));
-        worker.on('exit', (exitCode) => resolve(exitCode));
-      });
-    };
-    await t.notThrowsAsync(async () => {
-      const result = await executeWorker();
-      t.true(result === 0);
-    });
+  const bundle = await rollup({
+    input: 'fixtures/worker.js',
+    plugins: [wasmPlugin()]
   });
-} catch (err) {
-  // worker threads aren't fully supported in Node versions before 11.7.0
-}
+  const code = await getCode(bundle);
+  const executeWorker = () => {
+    const worker = new Worker(code, { eval: true });
+    return new Promise((resolve, reject) => {
+      worker.on('error', (err) => reject(err));
+      worker.on('exit', (exitCode) => resolve(exitCode));
+    });
+  };
+  await t.notThrowsAsync(async () => {
+    const result = await executeWorker();
+    t.true(result === 0);
+  });
+});
 
 test('injectHelper', async (t) => {
   t.plan(4);
@@ -233,3 +228,29 @@ test('works as CJS plugin', async (t) => {
   });
   await testBundle(t, bundle);
 });
+
+// uncaught exception will cause test failures on this node version.
+if (!process.version.startsWith('v14')) {
+  test('avoid uncaught exception on file read', async (t) => {
+    t.plan(2);
+
+    const bundle = await rollup({
+      input: 'fixtures/complex.js',
+      plugins: [wasmPlugin({ maxFileSize: 0, targetEnv: 'node' })]
+    });
+
+    const raw = await getCode(bundle);
+    const code = raw.replace('.wasm', '-does-not-exist.wasm');
+
+    const executeWorker = () => {
+      const worker = new Worker(`let result; ${code}`, { eval: true });
+      return new Promise((resolve, reject) => {
+        worker.on('error', (err) => reject(err));
+        worker.on('exit', (exitCode) => resolve(exitCode));
+      });
+    };
+
+    const err = await t.throwsAsync(() => executeWorker());
+    t.regex(err.message, /no such file or directory/);
+  });
+}
