@@ -1,5 +1,13 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v6.1.0
+
+_2022-12-17_
+
+### Features
+
+- feat: add wasm fileName customization [#1372](https://github.com/rollup/plugins/pull/1372)
+
 ## v6.0.1
 
 _2022-10-21_
