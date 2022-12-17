@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.6
+
+_2022-12-17_
+
+### Bugfixes
+
+- fix: update magic-string [#1373](https://github.com/rollup/plugins/pull/1373)
+
 ## v23.0.5
 
 _2022-12-15_
