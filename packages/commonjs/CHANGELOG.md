@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.7
+
+_2022-12-17_
+
+### Bugfixes
+
+- fix: produce code which works when \_\_esModule is already defined [#1379](https://github.com/rollup/plugins/pull/1379)
+
 ## v23.0.6
 
 _2022-12-17_
