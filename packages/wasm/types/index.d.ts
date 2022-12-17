@@ -20,6 +20,10 @@ export interface RollupWasmOptions {
    */
   maxFileSize?: Number;
   /**
+   * String used to rename the emitted Wasm files.
+   */
+  fileName?: string;
+  /**
    * A string which will be added in front of filenames when they are not inlined but are copied.
    */
   publicPath?: string;
