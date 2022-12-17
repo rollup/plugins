@@ -1,5 +1,13 @@
 # @rollup/plugin-inject ChangeLog
 
+## v5.0.3
+
+_2022-12-17_
+
+### Bugfixes
+
+- fix: update magic-string [#1373](https://github.com/rollup/plugins/pull/1373)
+
 ## v5.0.2
 
 _2022-10-21_
