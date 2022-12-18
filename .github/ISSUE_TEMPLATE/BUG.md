@@ -29,11 +29,11 @@ about: Something went awry and you'd like to tell us about it.
   🚨 Issues WITHOUT a valid reproduction WILL BE CLOSED!
 
   Please provide one by:
-  1. Using the REPL.it plugin reproduction template at https://repl.it/@rollup/rollup-plugin-repro
-  2. Provide a minimal repository link (Read https://gist.github.com/Rich-Harris/88c5fc2ac6dc941b22e7996af05d70ff for instructions).
+  1. Using the StackBlitz reproduction template at https://stackblitz.com/fork/rollup-repro
+  2. Using the REPL.it plugin reproduction template at https://repl.it/@rollup/rollup-plugin-repro
+  3. Provide a minimal repository link (Read https://gist.github.com/Rich-Harris/88c5fc2ac6dc941b22e7996af05d70ff for instructions).
      Please use NPM for installing dependencies!
      These may take more time to triage than the other options.
-  3. Using the Rollup REPL at https://rollupjs.org/repl/
 
   ⚠️ ZIP Files are unsafe and maintainers will NOT download them.
 -->
