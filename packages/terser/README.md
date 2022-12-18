@@ -9,11 +9,11 @@
 
 # @rollup/plugin-terser
 
-🍣 A Rollup plugin to generate a minified output bundle.
+🍣 A Rollup plugin to generate a minified bundle with terser.
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v1.20.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v2.0+.
 
 ## Install
 
@@ -27,7 +27,7 @@ npm install @rollup/plugin-terser --save-dev
 
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
-```js
+```typescript
 import terser from '@rollup/plugin-terser';
 
 export default {
@@ -47,13 +47,34 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 The plugin accepts a terser [Options](https://github.com/terser/terser#minify-options) object as input parameter,
 to modify the default behaviour.
 
+In addition to the `terser` options, it is also possible to provide the following options:
+
+### `maxWorkers`
+
+Type: `Number`<br>
+Default: `undefined`
+
+Instructs the plugin to use a specific amount of cpu threads.
+
+```typescript
+import terser from '@rollup/plugin-terser';
+
+export default {
+  input: 'src/index.js',
+  output: {
+    dir: 'output',
+    format: 'cjs'
+  },
+  plugins: [
+    terser({
+      maxWorkers: 4
+    })
+  ]
+};
+```
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
 
 [LICENSE (MIT)](/LICENSE)
-
-## Credits
-
-This package was originally developed by [https://github.com/TrySound](TrySound) but is not
-maintained anymore.

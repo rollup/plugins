@@ -1,5 +1,13 @@
 # @rollup/plugin-json ChangeLog
 
+## v6.0.0
+
+_2022-12-17_
+
+### Breaking Changes
+
+- fix: log more robustly when JSON parsing fails [#1361](https://github.com/rollup/plugins/pull/1361)
+
 ## v5.0.2
 
 _2022-11-27_

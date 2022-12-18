@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-commonjs",
-  "version": "23.0.3",
+  "version": "23.0.7",
   "publishConfig": {
     "access": "public"
   },
@@ -35,7 +35,7 @@
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
-    "test": "ava",
+    "test": "ava --update-snapshots",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
@@ -67,7 +67,7 @@
     "estree-walker": "^2.0.2",
     "glob": "^8.0.3",
     "is-reference": "1.2.1",
-    "magic-string": "^0.26.4"
+    "magic-string": "^0.27.0"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^5.0.0",

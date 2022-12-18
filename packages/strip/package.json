@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-strip",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "publishConfig": {
     "access": "public"
   },
@@ -56,7 +56,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^5.0.1",
     "estree-walker": "^2.0.2",
-    "magic-string": "^0.26.4"
+    "magic-string": "^0.27.0"
   },
   "devDependencies": {
     "acorn": "^8.8.0",

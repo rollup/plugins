@@ -1,5 +1,21 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v6.1.1
+
+_2022-12-17_
+
+### Bugfixes
+
+- fix: rejecting with error on node.js file read [#1346](https://github.com/rollup/plugins/pull/1346)
+
+## v6.1.0
+
+_2022-12-17_
+
+### Features
+
+- feat: add wasm fileName customization [#1372](https://github.com/rollup/plugins/pull/1372)
+
 ## v6.0.1
 
 _2022-10-21_

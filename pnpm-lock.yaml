@@ -171,7 +171,7 @@ importers:
       glob: ^8.0.3
       is-reference: 1.2.1
       locate-character: ^2.0.5
-      magic-string: ^0.26.4
+      magic-string: ^0.27.0
       require-relative: ^0.8.7
       rollup: 3.0.0-7
       shx: ^0.3.4
@@ -184,7 +184,7 @@ importers:
       estree-walker: 2.0.2
       glob: 8.0.3
       is-reference: 1.2.1
-      magic-string: 0.26.7
+      magic-string: 0.27.0
     devDependencies:
       '@rollup/plugin-json': 5.0.0_rollup@3.0.0-7
       '@rollup/plugin-node-resolve': 15.0.0_rollup@3.0.0-7
@@ -232,14 +232,14 @@ importers:
       acorn: ^8.8.0
       estree-walker: ^2.0.2
       fast-glob: ^3.2.12
-      magic-string: ^0.26.4
+      magic-string: ^0.27.0
       prettier: ^2.7.1
       rollup: ^3.2.3
     dependencies:
       '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       estree-walker: 2.0.2
       fast-glob: 3.2.12
-      magic-string: 0.26.7
+      magic-string: 0.27.0
     devDependencies:
       acorn: 8.8.0
       prettier: 2.7.1
@@ -313,14 +313,14 @@ importers:
       del-cli: ^5.0.0
       estree-walker: ^2.0.2
       locate-character: ^2.0.5
-      magic-string: ^0.26.4
+      magic-string: ^0.27.0
       rollup: ^3.2.3
       source-map: ^0.7.4
       typescript: ^4.8.3
     dependencies:
       '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       estree-walker: 2.0.2
-      magic-string: 0.26.7
+      magic-string: 0.27.0
     devDependencies:
       '@rollup/plugin-buble': 1.0.0_rollup@3.2.3
       del-cli: 5.0.0
@@ -436,13 +436,13 @@ importers:
       '@rollup/pluginutils': ^5.0.1
       del-cli: ^5.0.0
       locate-character: ^2.0.5
-      magic-string: ^0.26.4
+      magic-string: ^0.27.0
       rollup: ^3.2.3
       source-map: ^0.7.4
       typescript: ^4.8.3
     dependencies:
       '@rollup/pluginutils': 5.0.1_rollup@3.2.3
-      magic-string: 0.26.7
+      magic-string: 0.27.0
     devDependencies:
       '@rollup/plugin-buble': 1.0.0_rollup@3.2.3
       del-cli: 5.0.0
@@ -473,12 +473,12 @@ importers:
       '@rollup/pluginutils': ^5.0.1
       acorn: ^8.8.0
       estree-walker: ^2.0.2
-      magic-string: ^0.26.4
+      magic-string: ^0.27.0
       rollup: ^3.2.3
     dependencies:
       '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       estree-walker: 2.0.2
-      magic-string: 0.26.7
+      magic-string: 0.27.0
     devDependencies:
       acorn: 8.8.0
       rollup: 3.2.3
@@ -498,12 +498,18 @@ importers:
 
   packages/terser:
     specifiers:
+      '@types/serialize-javascript': ^5.0.2
       rollup: ^3.0.0-7
+      serialize-javascript: ^6.0.0
+      smob: ^0.0.6
       terser: ^5.15.1
       typescript: ^4.8.3
     dependencies:
+      serialize-javascript: 6.0.0
+      smob: 0.0.6
       terser: 5.15.1
     devDependencies:
+      '@types/serialize-javascript': 5.0.2
       rollup: 3.0.0-7
       typescript: 4.8.4
 
@@ -2366,6 +2372,10 @@ packages:
 
   /@types/semver/7.3.12:
     resolution: {integrity: sha512-WwA1MW0++RfXmCr12xeYOOC5baSC9mSb0ZqCquFzKhcoF4TvHu5MKOuXsncgZcpVFhB1pXd5hZmM0ryAoCp12A==}
+    dev: true
+
+  /@types/serialize-javascript/5.0.2:
+    resolution: {integrity: sha512-BRLlwZzRoZukGaBtcUxkLsZsQfWZpvog6MZk3PWQO9Q6pXmXFzjU5iGzZ+943evp6tkkbN98N1Z31KT0UG1yRw==}
     dev: true
 
   /@types/source-map-support/0.5.6:
@@ -5289,6 +5299,14 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       sourcemap-codec: 1.4.8
+    dev: true
+
+  /magic-string/0.27.0:
+    resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.14
+    dev: false
 
   /make-dir/2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
@@ -6389,6 +6407,12 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /randombytes/2.1.0:
+    resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
+    dependencies:
+      safe-buffer: 5.2.1
+    dev: false
+
   /read-pkg-up/7.0.1:
     resolution: {integrity: sha512-zK0TB7Xd6JpCLmlLmufqykGE+/TlOePD6qKClNW7hHDKFh/J7/7gCWGR7joEQEW1bKq3a3yUZSObOoWLFQ4ohg==}
     engines: {node: '>=8'}
@@ -6689,7 +6713,6 @@ packages:
 
   /safe-buffer/5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
-    dev: true
 
   /safe-identifier/0.4.2:
     resolution: {integrity: sha512-6pNbSMW6OhAi9j+N8V+U715yBQsaWJ7eyEUaOrawX+isg5ZxhUlV1NipNtgaKHmFGiABwt+ZF04Ii+3Xjkg+8w==}
@@ -6734,6 +6757,12 @@ packages:
     dependencies:
       type-fest: 0.13.1
     dev: true
+
+  /serialize-javascript/6.0.0:
+    resolution: {integrity: sha512-Qr3TosvguFt8ePWqsvRfrKyQXIiW+nGbYpy8XK24NQHE83caxWt+mIymTT19DGFbNWNLfEwsrkSmN64lVWB9ag==}
+    dependencies:
+      randombytes: 2.1.0
+    dev: false
 
   /set-blocking/2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
@@ -6824,6 +6853,10 @@ packages:
       ansi-styles: 6.1.1
       is-fullwidth-code-point: 4.0.0
     dev: true
+
+  /smob/0.0.6:
+    resolution: {integrity: sha512-V21+XeNni+tTyiST1MHsa84AQhT1aFZipzPpOFAVB8DkHzwJyjjAmt9bgwnuZiZWnIbMo2duE29wybxv/7HWUw==}
+    dev: false
 
   /sort-keys/2.0.0:
     resolution: {integrity: sha512-/dPCrG1s3ePpWm6yBbxZq5Be1dXGLyLn9Z791chDC3NFrpkVbWGzkBwPN1knaciexFXgRJ7hzdnwZ4stHSDmjg==}

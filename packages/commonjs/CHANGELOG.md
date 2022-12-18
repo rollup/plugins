@@ -1,5 +1,37 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v23.0.7
+
+_2022-12-17_
+
+### Bugfixes
+
+- fix: produce code which works when \_\_esModule is already defined [#1379](https://github.com/rollup/plugins/pull/1379)
+
+## v23.0.6
+
+_2022-12-17_
+
+### Bugfixes
+
+- fix: update magic-string [#1373](https://github.com/rollup/plugins/pull/1373)
+
+## v23.0.5
+
+_2022-12-15_
+
+### Bugfixes
+
+- fix: resolve export exports not found [#1363](https://github.com/rollup/plugins/pull/1363)
+
+## v23.0.4
+
+_2022-12-07_
+
+### Bugfixes
+
+- fix: declaration tag @default for ignoreTryCatch + fix some typos [#1370](https://github.com/rollup/plugins/pull/1370)
+
 ## v23.0.3
 
 _2022-11-27_
