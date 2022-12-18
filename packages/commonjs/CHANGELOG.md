@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v24.0.0
+
+_2022-12-18_
+
+### Breaking Changes
+
+- fix: check if defaultIsModuleExports is auto for getDefaultExportFromCjs [#1358](https://github.com/rollup/plugins/pull/1358)
+
 ## v23.0.7
 
 _2022-12-17_
