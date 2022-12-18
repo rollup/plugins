@@ -35,7 +35,7 @@
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
-    "test": "ava --update-snapshots",
+    "test": "ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
