@@ -143,7 +143,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         parsedOptions.fileNames.push(fileName);
       }
 
-      const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
+      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles, tsCache);
 
       return output.code != null ? (output as SourceDescription) : null;
     },
