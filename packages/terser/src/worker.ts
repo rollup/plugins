@@ -40,6 +40,10 @@ export async function runWorker() {
       nameCache: options.nameCache
     };
 
+    if (isObject(result.map)) {
+      output.sourceMap = result.map;
+    }
+
     parentPort.postMessage(output);
   } catch (e) {
     process.exit(1);

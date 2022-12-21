@@ -31,7 +31,11 @@ export default function terser(input: Options = {}) {
       }
 
       try {
-        const { code: result, nameCache } = await workerPool.addAsync({
+        const {
+          code: result,
+          nameCache,
+          sourceMap
+        } = await workerPool.addAsync({
           code,
           options: merge({}, options || {}, defaultOptions)
         });
@@ -67,6 +71,12 @@ export default function terser(input: Options = {}) {
           options.nameCache.props = props;
         }
 
+        if ((!!defaultOptions.sourceMap || !!options.sourceMap) && isObject(sourceMap)) {
+          return {
+            code: result,
+            map: sourceMap
+          };
+        }
         return result;
       } catch (e) {
         return Promise.reject(e);
