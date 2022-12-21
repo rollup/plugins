@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v0.2.1
+
+_2022-12-21_
+
+### Bugfixes
+
+- fix: \_\_filename not defined [#1367](https://github.com/rollup/plugins/pull/1367)
+
 ## v0.2.0
 
 _2022-12-05_
