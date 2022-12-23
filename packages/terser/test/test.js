@@ -15,6 +15,21 @@ test.serial('minify', async (t) => {
   t.falsy(output.map);
 });
 
+test.serial('minify with source map', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/unminified.js',
+    plugins: [terser()]
+  });
+  const result = await bundle.generate({ format: 'cjs', sourcemap: true });
+  t.is(result.output.length, 2);
+  const [output] = result.output;
+
+  t.truthy(output.map);
+  t.is(output.map.version, 3);
+  t.is(output.map.file, 'unminified.js');
+  t.truthy(output.map.names);
+});
+
 test.serial('minify via terser options', async (t) => {
   const bundle = await rollup({
     input: 'test/fixtures/empty.js',

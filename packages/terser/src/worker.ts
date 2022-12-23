@@ -40,6 +40,10 @@ export async function runWorker() {
       nameCache: options.nameCache
     };
 
+    if (typeof result.map === 'string') {
+      output.sourceMap = JSON.parse(result.map);
+    }
+
     if (isObject(result.map)) {
       output.sourceMap = result.map;
     }
