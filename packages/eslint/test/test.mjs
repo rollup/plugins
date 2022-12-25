@@ -166,6 +166,19 @@ test('should not fail with found formatter', async (t) => {
   t.pass();
 });
 
+test('should not fail with asynchronous formatter function', async (t) => {
+  await rollup({
+    input: './test/fixtures/use-strict.js',
+    plugins: [
+      eslint({
+        formatter: async () => 'json'
+      })
+    ]
+  });
+
+  t.pass();
+});
+
 test('should fix source code', async (t) => {
   fs.writeFileSync(
     './test/fixtures/fixable-clone.js',
