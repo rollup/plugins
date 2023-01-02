@@ -27,7 +27,7 @@ test.serial('minify with source map', async (t) => {
   t.truthy(output.map);
   t.is(output.map.version, 3);
   t.is(output.map.file, 'unminified.js');
-  t.truthy(output.map.names);
+  t.deepEqual(output.map.names, ['window', 'a', 'console', 'log']);
 });
 
 test.serial('minify via terser options', async (t) => {
