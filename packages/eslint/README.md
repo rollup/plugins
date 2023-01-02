@@ -67,6 +67,8 @@ Default: `stylish`
 
 Custom error formatter, the name of a built-in formatter, or the path to a custom formatter.
 
+When the type is a function, the function should return `String` or `Promise<String>`.
+
 ### include
 
 Type: `String | String[]`<br>
