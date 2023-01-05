@@ -49,7 +49,7 @@ When used together with the node-resolve plugin
 ### `strictRequires`
 
 Type: `"auto" | boolean | "debug" | string[]`<br>
-Default: `"auto"`
+Default: `true`
 
 By default, this plugin will try to hoist `require` statements as imports to the top of each file. While this works well for many code bases and allows for very efficient ESM output, it does not perfectly capture CommonJS semantics as the initialisation order of required modules will be different. The resultant side effects can include log statements being emitted in a different order, and some code that is dependent on the initialisation order of polyfills in require statements may not work. But it is especially problematic when there are circular `require` calls between CommonJS modules as those often rely on the lazy execution of nested `require` calls.
 
