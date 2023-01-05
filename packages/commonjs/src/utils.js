@@ -43,13 +43,13 @@ export function capitalize(name) {
 
 export function getStrictRequiresFilter({ strictRequires }) {
   switch (strictRequires) {
-    case 'auto':
-    case 'debug':
-    case true:
-      return { strictRequiresFilter: () => true, detectCyclesAndConditional: false };
-    // eslint-disable-next-line no-undefined
     case undefined:
     case null:
+    case true:
+      return { strictRequiresFilter: () => true, detectCyclesAndConditional: false };
+      // eslint-disable-next-line no-undefined
+    case 'auto':
+    case 'debug':
       return { strictRequiresFilter: () => false, detectCyclesAndConditional: true };
     case false:
       return { strictRequiresFilter: () => false, detectCyclesAndConditional: false };
