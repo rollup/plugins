@@ -1,5 +1,8 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v24.0.1
+- change default value of strictRequires from "auto" to safest option: true. [#1393](https://github.com/rollup/plugins/pull/1393)
+
 ## v24.0.0
 
 _2022-12-18_
