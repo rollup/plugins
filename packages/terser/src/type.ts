@@ -20,6 +20,7 @@ export interface WorkerContextSerialized {
 export interface WorkerOutput {
   code: string;
   nameCache?: Options['nameCache'];
+  sourceMap?: Record<string, any>;
 }
 
 export interface WorkerPoolOptions {
