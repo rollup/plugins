@@ -126,6 +126,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       if (resolved) {
         if (/\.d\.[cm]?ts/.test(resolved.extension)) return null;
+        if (!filter(resolved.resolvedFileName)) return null;
         return path.normalize(resolved.resolvedFileName);
       }
 
