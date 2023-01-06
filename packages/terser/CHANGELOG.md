@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v0.3.0
+
+_2023-01-06_
+
+### Features
+
+- feat: emit source map [#1383](https://github.com/rollup/plugins/pull/1383)
+
 ## v0.2.1
 
 _2022-12-21_
