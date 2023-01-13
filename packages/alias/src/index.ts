@@ -81,9 +81,6 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
       );
     },
     resolveId(importee, importer, resolveOptions) {
-      if (!importer) {
-        return null;
-      }
       // First match is supposed to be the correct one
       const matchedEntry = entries.find((entry) => matches(entry.find, importee));
       if (!matchedEntry) {
