@@ -62,7 +62,7 @@ If true, will auto fix source code.
 
 ### formatter
 
-Type: `Function | String`<br>
+Type: `Function<String> | Function<Promise<String>> | String`<br>
 Default: `stylish`
 
 Custom error formatter, the name of a built-in formatter, or the path to a custom formatter.

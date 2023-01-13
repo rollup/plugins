@@ -1,5 +1,5 @@
 import type { Plugin } from 'rollup';
-import type { CLIEngine, ESLint } from 'eslint';
+import type { ESLint } from 'eslint';
 import type { CreateFilter } from '@rollup/pluginutils';
 
 export interface RollupEslintOptions extends ESLint.Options {
@@ -37,7 +37,7 @@ export interface RollupEslintOptions extends ESLint.Options {
    * Custom error formatter or the name of a built-in formatter.
    * @default stylish
    */
-  formatter?: CLIEngine.Formatter | string;
+  formatter?: Awaited<ReturnType<ESLint['loadFormatter']>>['format'] | string;
 }
 
 /**
