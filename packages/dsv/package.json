@@ -16,8 +16,8 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
   "exports": {
-    "import": "./dist/es/index.js",
     "types": "./types/index.d.ts",
+    "import": "./dist/es/index.js",
     "default": "./dist/cjs/index.js"
   },
   "scripts": {
