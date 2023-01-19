@@ -52,7 +52,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       const dir = outputOptions.dir || dirname(outputOptions.file!);
       const entryFileName = Object.keys(bundle).find((fileName) => {
         const chunk = bundle[fileName] as RenderedChunk;
-        return chunk.isEntry && chunk.facadeModuleId === input;
+        return chunk.isEntry && chunk.facadeModuleId.replace(/\?.*$/, '') === input;
       });
 
       if (entryFileName) {
