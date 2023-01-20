@@ -1,5 +1,13 @@
 # @rollup/plugin-dsv ChangeLog
 
+## v3.0.2
+
+_2023-01-20_
+
+### Bugfixes
+
+- fix: types should come first in exports [#1403](https://github.com/rollup/plugins/pull/1403)
+
 ## v3.0.1
 
 _2022-10-21_
