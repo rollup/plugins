@@ -1,5 +1,13 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v6.1.2
+
+_2023-01-20_
+
+### Updates
+
+- docs: Update README with more explicit details [#1405](https://github.com/rollup/plugins/pull/1405)
+
 ## v6.1.1
 
 _2022-12-17_

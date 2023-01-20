@@ -151,7 +151,7 @@ const options = {
     mem: memory
   },
   imports: {
-    log: arg => console.log(arg)
+    log: (arg) => console.log(arg)
   }
 };
 
@@ -162,7 +162,7 @@ sample(options).then(({ instance }) => {
 
 Because this example passes in `imports`, the `instance` becomes an instance of [`WebAssembly.Instance`](https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/Instance) and gives the WebAssembly code access to the imports and memory from JavaScript.
 
-__Note: Just passing in memory will result in a `WebAssembly.Module` as `instance`; it's only `imports` that triggers the creation of `WebAssembly.Instance`.
+\_\_Note: Just passing in memory will result in a `WebAssembly.Module` as `instance`; it's only `imports` that triggers the creation of `WebAssembly.Instance`.
 
 ### Using with wasm-bindgen and wasm-pack
 
