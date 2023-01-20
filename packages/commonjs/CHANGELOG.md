@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v24.0.1
+
+_2023-01-20_
+
+### Bugfixes
+
+- fix: types should come first in exports [#1403](https://github.com/rollup/plugins/pull/1403)
+
 ## v24.0.0
 
 _2022-12-18_
