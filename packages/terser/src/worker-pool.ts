@@ -53,6 +53,10 @@ export class WorkerPool extends EventEmitter {
     });
   }
 
+  get numWorkers(): number {
+    return this.workers.length;
+  }
+
   addAsync(context: WorkerContext): Promise<WorkerOutput> {
     return new Promise((resolve, reject) => {
       this.runTask(context, (err, output) => {
@@ -105,7 +109,7 @@ export class WorkerPool extends EventEmitter {
   private runTask(context: WorkerContext, cb: WorkerCallback) {
     if (this.freeWorkers.length === 0) {
       this.tasks.push({ context, cb });
-      if (this.workers.length < this.maxInstances) {
+      if (this.numWorkers < this.maxInstances) {
         this.addNewWorker();
       }
       return;

@@ -11,6 +11,7 @@ export default function terser(input: Options = {}) {
 
   let workerPool: WorkerPool | null;
   let numOfChunks = 0;
+  let numOfWorkersUsed = 0;
 
   return {
     name: 'terser',
@@ -90,10 +91,15 @@ export default function terser(input: Options = {}) {
       } finally {
         numOfChunks -= 1;
         if (numOfChunks === 0) {
+          numOfWorkersUsed = workerPool.numWorkers;
           workerPool.close();
           workerPool = null;
         }
       }
+    },
+
+    get numOfWorkersUsed() {
+      return numOfWorkersUsed;
     }
   };
 }
