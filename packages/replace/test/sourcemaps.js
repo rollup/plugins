@@ -113,7 +113,7 @@ test('does not generate sourcemaps if disabled in plugin', async (t) => {
     onwarn(warning) {
       t.is(
         warning.message,
-        "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+        "Sourcemap is likely to be incorrect: a plugin (rollup:replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },
@@ -140,7 +140,7 @@ test('does not generate sourcemaps if disabled in plugin (camelcase)', async (t)
     onwarn(warning) {
       t.is(
         warning.message,
-        "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+        "Sourcemap is likely to be incorrect: a plugin (rollup:replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },

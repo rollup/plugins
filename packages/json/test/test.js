@@ -80,7 +80,7 @@ test('handles garbage', async (t) => {
     })
   );
   t.is(err.code, 'PLUGIN_ERROR');
-  t.is(err.plugin, 'json');
+  t.is(err.plugin, 'rollup:json');
   t.is(err.message, 'Could not parse JSON file');
   t.is(err.name, 'RollupError');
   t.is(err.cause.name, 'SyntaxError');

@@ -15,7 +15,7 @@ module.exports = {
         buildStart({ plugins }) {
           assert.deepStrictEqual(
             plugins.map((plugin) => plugin.name),
-            ['commonjs--resolver', 'before-node', 'node-resolve', 'after-node', 'commonjs']
+            ['rollup:commonjs:resolver', 'before-node', 'node-resolve', 'after-node', 'rollup:commonjs']
           );
         }
       },

@@ -17,7 +17,7 @@ const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
  * @returns {Promise<unknown>}
  */
 function resolveWithRollup(plugins, tests) {
-  if (!plugins.find((p) => p.name === 'alias')) {
+  if (!plugins.find((p) => p.name === 'rollup:alias')) {
     throw new Error('`plugins` should include the alias plugin.');
   }
   return new Promise((resolve, reject) => {
