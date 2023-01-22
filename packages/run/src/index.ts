@@ -17,7 +17,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
   delete (forkOptions as RollupRunOptions).allowRestarts;
 
   return {
-    name: 'run',
+    name: 'rollup:run',
 
     buildStart(options) {
       let inputs = options.input;

@@ -14,7 +14,7 @@ export default function virtual(modules: RollupVirtualOptions): Plugin {
   });
 
   return {
-    name: 'virtual',
+    name: 'rollup:virtual',
 
     resolveId(id, importer) {
       if (id in modules) return PREFIX + id;

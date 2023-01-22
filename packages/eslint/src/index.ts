@@ -33,7 +33,7 @@ export default function eslint(options = {} as RollupEslintOptions): Plugin {
   const filter = createFilter(include, exclude);
 
   return {
-    name: 'eslint',
+    name: 'rollup:eslint',
     async transform(_, id: string) {
       const file = normalizePath(id);
       if (!filter(id) || (await eslintInstance.isPathIgnored(file))) {

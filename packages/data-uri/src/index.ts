@@ -14,7 +14,7 @@ export default function dataUri(): Plugin {
   const resolved: { [key: string]: { mime: string | null; content: string | null } } = {};
 
   return {
-    name: 'dataUri',
+    name: 'rollup:data-uri',
 
     resolveId(id) {
       if (resolved[id]) {

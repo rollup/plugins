@@ -91,7 +91,7 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
   );
 
   return {
-    name: 'html',
+    name: 'rollup:html',
 
     async generateBundle(output: NormalizedOutputOptions, bundle: OutputBundle) {
       if (!supportedFormats.includes(output.format) && !opts.template) {

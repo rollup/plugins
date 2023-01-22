@@ -47,7 +47,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   let program: Watch<unknown> | null = null;
 
   return {
-    name: 'typescript',
+    name: 'rollup:typescript',
 
     buildStart(rollupOptions: RollupOptions) {
       emitParsedOptionsErrors(ts, this, parsedOptions);

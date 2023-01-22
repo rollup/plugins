@@ -65,13 +65,13 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
   if (entries.length === 0) {
     return {
-      name: 'alias',
+      name: 'rollup:alias',
       resolveId: () => null
     };
   }
 
   return {
-    name: 'alias',
+    name: 'rollup:alias',
     async buildStart(inputOptions) {
       await Promise.all(
         [...(Array.isArray(options.entries) ? options.entries : []), options].map(

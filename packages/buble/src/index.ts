@@ -9,7 +9,7 @@ export default function buble(options: RollupBubleOptions = {}): Plugin {
   const transformOptions = { ...options, transforms: { ...options.transforms, modules: false } };
 
   return {
-    name: 'buble',
+    name: 'rollup:buble',
 
     transform(code, id) {
       if (!filter(id)) return null;
@@ -17,7 +17,7 @@ export default function buble(options: RollupBubleOptions = {}): Plugin {
       try {
         return transform(code, transformOptions);
       } catch (e: any) {
-        e.plugin = 'buble';
+        e.plugin = 'rollup:buble';
         if (!e.loc) e.loc = {};
         e.loc.file = id;
         e.frame = e.snippet;

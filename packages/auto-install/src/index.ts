@@ -45,7 +45,7 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
   const cmd = options.commands[manager];
 
   return {
-    name: 'auto-install',
+    name: 'rollup:auto-install',
 
     async resolveId(importee, importer) {
       // entry module

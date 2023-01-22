@@ -15,7 +15,7 @@ export default function terser(input: Options = {}) {
   });
 
   return {
-    name: 'terser',
+    name: 'rollup:terser',
 
     async renderChunk(code: string, chunk: RenderedChunk, outputOptions: NormalizedOutputOptions) {
       const defaultOptions: Options = {

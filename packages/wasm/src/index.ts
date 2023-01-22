@@ -21,7 +21,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
   const copies = Object.create(null);
 
   return {
-    name: 'wasm',
+    name: 'rollup:wasm',
 
     resolveId(id) {
       if (id === HELPERS_ID) {
