@@ -16,7 +16,7 @@ import type {
 const taskInfo = Symbol('taskInfo');
 const freeWorker = Symbol('freeWorker');
 
-type WorkerWithTaskInfo = Worker & { [taskInfo]?: null | WorkerPoolTaskInfo };
+type WorkerWithTaskInfo = Worker & { [taskInfo]?: undefined | WorkerPoolTaskInfo };
 
 class WorkerPoolTaskInfo extends AsyncResource {
   constructor(private callback: WorkerCallback) {
@@ -85,8 +85,8 @@ export class WorkerPool extends EventEmitter {
     const worker: WorkerWithTaskInfo = new Worker(this.filePath);
 
     worker.on('message', (result) => {
-      worker[taskInfo]!.done(null, result);
-      worker[taskInfo] = null;
+      worker[taskInfo]?.done(null, result);
+      worker[taskInfo] = undefined;
       this.freeWorkers.push(worker);
       this.emit(freeWorker);
     });
@@ -115,11 +115,13 @@ export class WorkerPool extends EventEmitter {
       return;
     }
 
-    const worker = this.freeWorkers.pop()!;
-    worker[taskInfo] = new WorkerPoolTaskInfo(cb);
-    worker.postMessage({
-      code: context.code,
-      options: serializeJavascript(context.options)
-    });
+    const worker = this.freeWorkers.pop();
+    if (worker) {
+      worker[taskInfo] = new WorkerPoolTaskInfo(cb);
+      worker.postMessage({
+        code: context.code,
+        options: serializeJavascript(context.options)
+      });
+    }
   }
 }

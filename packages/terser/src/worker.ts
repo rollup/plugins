@@ -51,6 +51,6 @@ export function runWorker() {
       output.sourceMap = result.map;
     }
 
-    parentPort!.postMessage(output);
+    parentPort?.postMessage(output);
   });
 }

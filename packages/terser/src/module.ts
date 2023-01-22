@@ -9,7 +9,7 @@ import { WorkerPool } from './worker-pool';
 export default function terser(input: Options = {}) {
   const { maxWorkers, ...options } = input;
 
-  let workerPool: WorkerPool | null;
+  let workerPool: WorkerPool | undefined;
   let numOfChunks = 0;
   let numOfWorkersUsed = 0;
 
@@ -93,7 +93,7 @@ export default function terser(input: Options = {}) {
         if (numOfChunks === 0) {
           numOfWorkersUsed = workerPool.numWorkers;
           workerPool.close();
-          workerPool = null;
+          workerPool = undefined;
         }
       }
     },
