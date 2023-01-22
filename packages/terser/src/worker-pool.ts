@@ -16,7 +16,7 @@ import type {
 const taskInfo = Symbol('taskInfo');
 const freeWorker = Symbol('freeWorker');
 
-type WorkerWithTaskInfo = Worker & { [taskInfo]?: undefined | WorkerPoolTaskInfo };
+type WorkerWithTaskInfo = Worker & { [taskInfo]?: WorkerPoolTaskInfo | null };
 
 class WorkerPoolTaskInfo extends AsyncResource {
   constructor(private callback: WorkerCallback) {
@@ -86,7 +86,7 @@ export class WorkerPool extends EventEmitter {
 
     worker.on('message', (result) => {
       worker[taskInfo]?.done(null, result);
-      worker[taskInfo] = undefined;
+      worker[taskInfo] = null;
       this.freeWorkers.push(worker);
       this.emit(freeWorker);
     });
