@@ -82,7 +82,7 @@ export default function inject(options) {
   const sourceMap = options.sourceMap !== false && options.sourcemap !== false;
 
   return {
-    name: 'inject',
+    name: 'rollup:inject',
 
     transform(code, id) {
       if (!filter(id)) return null;

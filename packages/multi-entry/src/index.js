@@ -38,7 +38,7 @@ export default function multiEntry(conf = {}) {
   let virtualisedEntry;
 
   return {
-    name: 'multi-entry',
+    name: 'rollup:multi-entry',
 
     options(options) {
       if (options.input !== config.entryFileName) {

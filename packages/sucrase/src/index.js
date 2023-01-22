@@ -8,7 +8,7 @@ export default function sucrase(opts = {}) {
   const filter = createFilter(opts.include, opts.exclude);
 
   return {
-    name: 'sucrase',
+    name: 'rollup:sucrase',
 
     // eslint-disable-next-line consistent-return
     resolveId(importee, importer) {

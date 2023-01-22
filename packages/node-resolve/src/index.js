@@ -245,7 +245,7 @@ export function nodeResolve(opts = {}) {
   };
 
   return {
-    name: 'node-resolve',
+    name: 'rollup:node-resolve',
 
     version,
 

@@ -12,7 +12,7 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
   const filter = createFilter(include, exclude);
 
   return {
-    name: 'rollup-plugin-dynamic-import-variables',
+    name: 'rollup:dynamic-import-vars',
 
     transform(code, id) {
       if (!filter(id)) {

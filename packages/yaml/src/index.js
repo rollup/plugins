@@ -25,7 +25,7 @@ export default function yaml(opts = {}) {
   }
 
   return {
-    name: 'yaml',
+    name: 'rollup:yaml',
 
     transform(content, id) {
       if (!ext.test(id)) return null;

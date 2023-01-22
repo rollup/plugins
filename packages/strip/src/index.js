@@ -57,7 +57,7 @@ export default function strip(options = {}) {
   const UNCHANGED = null;
 
   return {
-    name: 'strip',
+    name: 'rollup:strip',
 
     transform(code, id) {
       if (!filter(id) || !firstPassFilter(code)) {

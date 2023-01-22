@@ -33,7 +33,7 @@ import validateVersion from './rollup-version';
 import transformCommonjs from './transform-commonjs';
 import { getName, getStrictRequiresFilter, normalizePathSlashes } from './utils';
 
-const PLUGIN_NAME = 'commonjs';
+const PLUGIN_NAME = 'rollup:commonjs';
 
 export default function commonjs(options = {}) {
   const {
@@ -192,7 +192,7 @@ export default function commonjs(options = {}) {
         ? [rawOptions.plugins]
         : [];
       plugins.unshift({
-        name: 'commonjs--resolver',
+        name: 'rollup:commonjs:resolver',
         resolveId
       });
       return { ...rawOptions, plugins };

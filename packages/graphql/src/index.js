@@ -10,7 +10,7 @@ export default function graphql({ include, exclude } = {}) {
   const filterExt = /\.(graphqls?|gql)$/i;
 
   return {
-    name: 'graphql',
+    name: 'rollup:graphql',
     transform(source, id) {
       if (!filter(id)) return null;
       if (!filterExt.test(id)) return null;

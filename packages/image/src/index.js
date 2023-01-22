@@ -38,7 +38,7 @@ export default function image(opts = {}) {
   const filter = createFilter(options.include, options.exclude);
 
   return {
-    name: 'image',
+    name: 'rollup:image',
 
     load(id) {
       if (!filter(id)) {

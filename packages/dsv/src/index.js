@@ -10,7 +10,7 @@ export default function dsv(options = {}) {
   const filter = createFilter(options.include, options.exclude);
 
   return {
-    name: 'dsv',
+    name: 'rollup:dsv',
 
     transform(code, id) {
       if (!filter(id)) return null;

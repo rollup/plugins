@@ -115,7 +115,7 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
     let filter;
     let skipPreflightCheck;
     return {
-      name: 'babel',
+      name: 'rollup:babel',
 
       options() {
         // todo: remove options hook and hoist declarations when version checks are removed
@@ -210,7 +210,7 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
     );
 
     return {
-      name: 'babel',
+      name: 'rollup:babel',
 
       renderStart(outputOptions) {
         const { extensions, include, exclude, allowAllFormats } = pluginOptionsWithOverrides;

@@ -11,7 +11,7 @@ export default function legacy(options) {
   });
 
   return {
-    name: 'legacy',
+    name: 'rollup:legacy',
 
     transform(content, id) {
       const normalizedId = normalizePath(id);

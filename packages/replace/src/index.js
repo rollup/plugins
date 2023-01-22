@@ -81,7 +81,7 @@ export default function replace(options = {}) {
   );
 
   return {
-    name: 'replace',
+    name: 'rollup:replace',
 
     buildStart() {
       if (![true, false].includes(preventAssignment)) {

@@ -5,7 +5,7 @@ export default function json(options = {}) {
   const indent = 'indent' in options ? options.indent : '\t';
 
   return {
-    name: 'json',
+    name: 'rollup:json',
 
     // eslint-disable-next-line no-shadow
     transform(code, id) {

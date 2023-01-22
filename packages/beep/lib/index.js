@@ -5,7 +5,7 @@ const defaults = {
 const beep = (opts) => {
   const options = Object.assign({}, defaults, opts);
   return {
-    name: 'beep',
+    name: 'rollup:beep',
     buildEnd(err) {
       if (err && options.errors) {
         process.stderr.write('\x07');
