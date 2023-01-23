@@ -42,7 +42,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [run](packages/run)                                 | Run your bundles in Node once they're built                                               |
 | [strip](packages/strip)                             | Remove debugger statements and functions like assert.equal and console.log from your code |
 | [sucrase](packages/sucrase)                         | Compile TypeScript, Flow, JSX, etc with Sucrase                                           |
-| [terser](packages/swc)                              | Transpile TypeScript/JavaScript with the speedy-web-compiler                              |
+| [swc](packages/swc)                                 | Transpile TypeScript/JavaScript with the speedy-web-compiler                              |
 | [terser](packages/terser)                           | Generate a minified output bundle with terser                                             |
 | [typescript](packages/typescript)                   | Integration between Rollup and Typescript                                                 |
 | [url](packages/url)                                 | Import files as data-URIs or ES Modules                                                   |
