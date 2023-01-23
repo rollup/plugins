@@ -9,15 +9,23 @@ import { WorkerPool } from './worker-pool';
 export default function terser(input: Options = {}) {
   const { maxWorkers, ...options } = input;
 
-  const workerPool = new WorkerPool({
-    filePath: fileURLToPath(import.meta.url),
-    maxWorkers
-  });
+  let workerPool: WorkerPool | null | undefined;
+  let numOfChunks = 0;
+  let numOfWorkersUsed = 0;
 
   return {
     name: 'terser',
 
     async renderChunk(code: string, chunk: RenderedChunk, outputOptions: NormalizedOutputOptions) {
+      if (!workerPool) {
+        workerPool = new WorkerPool({
+          filePath: fileURLToPath(import.meta.url),
+          maxWorkers
+        });
+      }
+
+      numOfChunks += 1;
+
       const defaultOptions: Options = {
         sourceMap: outputOptions.sourcemap === true || typeof outputOptions.sourcemap === 'string'
       };
@@ -80,7 +88,18 @@ export default function terser(input: Options = {}) {
         return result;
       } catch (e) {
         return Promise.reject(e);
+      } finally {
+        numOfChunks -= 1;
+        if (numOfChunks === 0) {
+          numOfWorkersUsed = workerPool.numWorkers;
+          workerPool.close();
+          workerPool = null;
+        }
       }
+    },
+
+    get numOfWorkersUsed() {
+      return numOfWorkersUsed;
     }
   };
 }
