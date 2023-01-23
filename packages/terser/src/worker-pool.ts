@@ -76,7 +76,8 @@ export class WorkerPool extends EventEmitter {
   }
 
   close() {
-    for (const worker of this.workers) {
+    for (let i = 0; i < this.workers.length; i++) {
+      const worker = this.workers[i];
       worker.terminate();
     }
   }
