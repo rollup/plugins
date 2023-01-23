@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v0.4.0
+
+_2023-01-23_
+
+### Features
+
+- feat: Update WorkerPool to reuse Workers [#1409](https://github.com/rollup/plugins/pull/1409)
+
 ## v0.3.0
 
 _2023-01-06_
