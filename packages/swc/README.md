@@ -12,7 +12,7 @@
 🍣 A Rollup plugin to transpile TypeScript/JavaScript with the speedy-web-compiler (swc).
 
 The plugin makes it possible to avoid the usage of `@rollup/plugin-babel` and `@rollup/plugin-typescript`.
-It is also blazingly fast 🔥 ( between 20 - 70 times faster than babel depending on how many cpu cores are used).
+It is also blazingly fast 🔥 ( between 20 - 70 times faster than Babel depending on how many cpu cores are used).
 
 ## Requirements
 
