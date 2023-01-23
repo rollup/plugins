@@ -1,7 +1,7 @@
 import { Plugin } from 'rollup';
 import { transform } from '@swc/core';
 import { merge } from 'smob';
-import { Options } from './type';
+import type { Options } from './type';
 
 export function swc(input: Options = {}): Plugin {
   const options: Options = merge(
