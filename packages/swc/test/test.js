@@ -1,0 +1,71 @@
+const test = require('ava');
+const { rollup } = require('rollup');
+
+const swc = require('../');
+
+test.serial('cjs output for default export', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/export-default.js',
+    plugins: [swc()]
+  });
+  const result = await bundle.generate({ format: 'cjs' });
+  t.is(result.output.length, 1);
+  const [output] = result.output;
+  t.is(output.code, "'use strict';\nvar exportDefault = 5;\nmodule.exports = exportDefault;\n");
+});
+
+test.serial('esm output for default export', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/export-default.js',
+    plugins: [swc()]
+  });
+  const result = await bundle.generate({ format: 'esm' });
+  t.is(result.output.length, 1);
+  const [output] = result.output;
+  t.is(output.code, 'var exportDefault = 5;\nexport { exportDefault as default };\n');
+});
+
+test.serial('cjs output for export', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/export.js',
+    plugins: [swc()]
+  });
+  const result = await bundle.generate({ format: 'cjs' });
+  t.is(result.output.length, 1);
+  const [output] = result.output;
+  t.is(output.code, "'use strict';\nconst foo = 'bar';\nexports.foo = foo;\n");
+});
+
+test.serial('esm output for export', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/export.js',
+    plugins: [swc()]
+  });
+  const result = await bundle.generate({ format: 'esm' });
+  t.is(result.output.length, 1);
+  const [output] = result.output;
+  t.is(output.code, "const foo = 'bar';\nexport { foo };\n");
+});
+
+test.serial('work with source map', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/unminified.js',
+    plugins: [swc()]
+  });
+  const result = await bundle.generate({ format: 'cjs', sourcemap: true });
+
+  t.is(result.output.length, 2);
+
+  const [file, sourceMap] = result.output;
+
+  t.is(file.fileName, 'unminified.js');
+  t.is(file.type, 'chunk');
+  t.is(file.name, 'unminified');
+  t.is(file.type, 'chunk');
+  t.is(file.map.version, 3);
+  t.is(file.map.file, 'unminified.js');
+  t.deepEqual(file.map.names, ['window', 'a', 'console', 'log']);
+
+  t.is(sourceMap.fileName, 'unminified.js.map');
+  t.is(sourceMap.type, 'asset');
+});
