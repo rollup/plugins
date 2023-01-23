@@ -1,4 +1,4 @@
-import { OutputOptions, Plugin } from 'rollup';
+import { Plugin } from 'rollup';
 import { transform } from '@swc/core';
 import { merge } from 'smob';
 import { Options } from './type';
