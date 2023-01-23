@@ -5,18 +5,16 @@ import { EventEmitter } from 'events';
 
 import serializeJavascript from 'serialize-javascript';
 
+import { freeWorker, taskInfo } from './constants';
+
 import type {
   WorkerCallback,
   WorkerContext,
   WorkerOutput,
   WorkerPoolOptions,
-  WorkerPoolTask
+  WorkerPoolTask,
+  WorkerWithTaskInfo
 } from './type';
-
-const taskInfo = Symbol('taskInfo');
-const freeWorker = Symbol('freeWorker');
-
-type WorkerWithTaskInfo = Worker & { [taskInfo]?: WorkerPoolTaskInfo | null };
 
 class WorkerPoolTaskInfo extends AsyncResource {
   constructor(private callback: WorkerCallback) {
