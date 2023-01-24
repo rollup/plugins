@@ -50,6 +50,11 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 The plugin accepts a swc [Options](https://swc.rs/docs/configuration/swcrc) object as input parameter,
 to modify the default behaviour.
 
+## Alternatives
+
+Alternative transpiler/transformer, which are also officially offered, are [Babel](https://www.npmjs.com/package/@rollup/plugin-babel) and [Sucrase](https://www.npmjs.com/package/@rollup/plugin-sucrase).
+Both Babel and Sucrase are written in JavaScript, whereas the core of Swc is written in Rust. In addition, Sucrase transforms code to ES6+, whereas babel and SWC also support ES3 upwards.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
