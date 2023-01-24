@@ -24,7 +24,9 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build:types": "tsc  -p tsconfig.json --emitDeclarationOnly",
+    "build:js": "rollup -c",
+    "build": "rimraf dist && npm run build:types && npm run build:js",
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
@@ -41,7 +43,6 @@
     "dist",
     "!dist/**/*.map",
     "src",
-    "types",
     "README.md"
   ],
   "keywords": [
