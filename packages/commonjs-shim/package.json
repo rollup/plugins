@@ -16,7 +16,7 @@
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "exports": {
-    "types": "./dist/index.d.ts",
+    "types": "./types/index.d.ts",
     "import": "./dist/es/index.js",
     "default": "./dist/cjs/index.js"
   },
@@ -24,9 +24,7 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "build:types": "tsc  -p tsconfig.json --emitDeclarationOnly",
-    "build:js": "rollup -c",
-    "build": "rimraf dist && npm run build:types && npm run build:js",
+    "build": "rollup -c",
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
@@ -43,6 +41,7 @@
     "dist",
     "!dist/**/*.map",
     "src",
+    "types",
     "README.md"
   ],
   "keywords": [

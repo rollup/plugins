@@ -1,6 +1,6 @@
 import type { RollupOptions } from 'rollup';
 
-import commonjsShim from '../src';
+import commonjsShim from '../types/index';
 
 const config: RollupOptions = {
   input: 'main.js',

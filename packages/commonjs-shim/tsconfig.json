@@ -4,9 +4,6 @@
   "compilerOptions": {
     "noUnusedParameters": false,
     "module": "ESNext",
-    "lib": ["ESNext"],
-    "declarationDir": "dist",
-    "declaration": true,
-    "noEmit": false
+    "lib": ["ESNext"]
   }
 }
