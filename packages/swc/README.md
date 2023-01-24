@@ -47,8 +47,16 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
-The plugin accepts a swc [Options](https://swc.rs/docs/configuration/swcrc) object as input parameter,
-to modify the default behaviour.
+The plugin accepts an object as input parameter to modify the default behaviour.
+This object has an `swc` property to provide library specific [Options](https://swc.rs/docs/configuration/swcrc).
+
+```typescript
+import type { Options as SWCOptions } from '@swc/core';
+
+declare type Options = {
+  swc?: SWCOptions;
+};
+```
 
 ## Alternatives
 
