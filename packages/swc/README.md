@@ -12,7 +12,7 @@
 🍣 A Rollup plugin to transpile TypeScript/JavaScript with the speedy-web-compiler (swc).
 
 The plugin makes it possible to avoid the usage of `@rollup/plugin-babel` and `@rollup/plugin-typescript`.
-It is also blazingly fast 🔥 ( between 20 - 70 times faster than Babel depending on how many cpu cores are used).
+It is also blazingly fast 🔥 (between 20 - 70 times faster than Babel depending on how many cpu cores are used).
 
 ## Requirements
 
@@ -61,7 +61,7 @@ declare type Options = {
 ## Alternatives
 
 Alternative transpiler/transformer, which are also officially offered, are [Babel](https://www.npmjs.com/package/@rollup/plugin-babel) and [Sucrase](https://www.npmjs.com/package/@rollup/plugin-sucrase).
-Both Babel and Sucrase are written in JavaScript, whereas the core of Swc is written in Rust. In addition, Sucrase transforms code to ES6+, whereas babel and SWC also support ES3 upwards.
+Both Babel and Sucrase are written in JavaScript, whereas the core of SWC is written in Rust. In addition, Sucrase transforms code to ES6+, whereas babel and SWC also support ES3 upwards.
 
 ## Meta
 
