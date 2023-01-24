@@ -25,17 +25,11 @@ export function swc(input: Options = {}): Plugin {
 
   return {
     name: 'swc',
-    renderChunk(code, chunk, outputOptions) {
-      const chunkOptions = merge({}, options);
-
-      if (outputOptions.sourcemap === 'inline') {
-        chunkOptions.sourceMaps = 'inline';
-      }
-      if (typeof outputOptions.sourcemap === 'boolean') {
-        chunkOptions.sourceMaps = outputOptions.sourcemap;
-      }
-
-      return transform(code, chunkOptions);
+    transform(code) {
+      return transform(code, {
+        ...options,
+        sourceMaps: true
+      });
     }
   };
 }

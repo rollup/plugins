@@ -11,7 +11,7 @@ test.serial('cjs output for default export', async (t) => {
   const result = await bundle.generate({ format: 'cjs' });
   t.is(result.output.length, 1);
   const [output] = result.output;
-  t.is(output.code, "'use strict';\nvar exportDefault = 5;\nmodule.exports = exportDefault;\n");
+  t.is(output.code, "'use strict';\n\nvar exportDefault = 5;\n\nmodule.exports = exportDefault;\n");
 });
 
 test.serial('esm output for default export', async (t) => {
@@ -22,7 +22,7 @@ test.serial('esm output for default export', async (t) => {
   const result = await bundle.generate({ format: 'esm' });
   t.is(result.output.length, 1);
   const [output] = result.output;
-  t.is(output.code, 'var exportDefault = 5;\nexport { exportDefault as default };\n');
+  t.is(output.code, 'var exportDefault = 5;\n\nexport { exportDefault as default };\n');
 });
 
 test.serial('cjs output for export', async (t) => {
@@ -33,7 +33,7 @@ test.serial('cjs output for export', async (t) => {
   const result = await bundle.generate({ format: 'cjs' });
   t.is(result.output.length, 1);
   const [output] = result.output;
-  t.is(output.code, "'use strict';\nconst foo = 'bar';\nexports.foo = foo;\n");
+  t.is(output.code, "'use strict';\n\nconst foo = 'bar';\n\nexports.foo = foo;\n");
 });
 
 test.serial('esm output for export', async (t) => {
@@ -44,7 +44,7 @@ test.serial('esm output for export', async (t) => {
   const result = await bundle.generate({ format: 'esm' });
   t.is(result.output.length, 1);
   const [output] = result.output;
-  t.is(output.code, "const foo = 'bar';\nexport { foo };\n");
+  t.is(output.code, "const foo = 'bar';\n\nexport { foo };\n");
 });
 
 test.serial('work with source map', async (t) => {
