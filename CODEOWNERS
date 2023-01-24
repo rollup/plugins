@@ -1,6 +1,7 @@
 * @shellscape
 
 /packages/babel/ @Andarist
+/packages/commonjs-shim/ @tada5hi
 /packages/image/ @tjenkinson
 /packages/node-resolve/ @tjenkinson
 /packages/terser/ @tada5hi
