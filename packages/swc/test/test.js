@@ -44,7 +44,6 @@ test.serial('cjs output for ts export', async (t) => {
   const result = await bundle.generate({ format: 'cjs' });
   t.is(result.output.length, 1);
   const [output] = result.output;
-  console.log(output.code);
   t.is(
     output.code,
     "'use strict';\n\nfunction add(a, b) {\n    return a + b;\n}\n\nexports.add = add;\n"
