@@ -1,8 +1,8 @@
 import MagicString from 'magic-string';
 
 // Shim __dirname, __filename and require
-import { CJSShim, CJSyntaxRe, ESM_STATIC_IMPORT_RE } from './constants';
-import type { Output } from './type';
+import { ESMShim, CJSyntaxRegex, ESMStaticImportRegex } from './constants';
+import type { Output } from './types';
 
 export function matchAll(regex: RegExp, input: string, addition: Record<string, any>) {
   const matches = [];
@@ -18,15 +18,15 @@ export function matchAll(regex: RegExp, input: string, addition: Record<string, 
   return matches;
 }
 
-export function transformCJSToESMSyntax(code: string): Output | null {
-  if (code.includes(CJSShim) || !CJSyntaxRe.test(code)) {
+export function provideCJSSyntax(code: string): Output | null {
+  if (code.includes(ESMShim) || !CJSyntaxRegex.test(code)) {
     return null;
   }
 
-  const lastESMImport = matchAll(ESM_STATIC_IMPORT_RE, code, { type: 'static' }).pop();
+  const lastESMImport = matchAll(ESMStaticImportRegex, code, { type: 'static' }).pop();
   const indexToAppend = lastESMImport ? lastESMImport.end : 0;
   const s = new MagicString(code);
-  s.appendRight(indexToAppend, CJSShim);
+  s.appendRight(indexToAppend, ESMShim);
 
   return {
     code: s.toString(),

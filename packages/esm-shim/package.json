@@ -1,5 +1,5 @@
 {
-  "name": "@rollup/plugin-commonjs-shim",
+  "name": "@rollup/plugin-esm-shim",
   "version": "0.0.0",
   "publishConfig": {
     "access": "public"
@@ -8,10 +8,10 @@
   "license": "MIT",
   "repository": {
     "url": "rollup/plugins",
-    "directory": "packages/commonjs-shim"
+    "directory": "packages/esm-shim"
   },
   "author": "Peter Placzek <peter.placzek1996@gmail.com>",
-  "homepage": "https://github.com/rollup/plugins/tree/master/packages/commonjs-shim#readme",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/esm-shim#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -47,7 +47,7 @@
   "keywords": [
     "rollup",
     "plugin",
-    "commonjs-shim",
+    "esm-shim",
     "npm",
     "modules"
   ],

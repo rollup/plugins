@@ -1,15 +1,21 @@
-[npm]: https://img.shields.io/npm/v/@rollup/plugin-commonjs-shim
-[npm-url]: https://www.npmjs.com/package/@rollup/plugin-commonjs-shim
-[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-commonjs-shim
-[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-commonjs-shim
+[npm]: https://img.shields.io/npm/v/@rollup/plugin-esm-shim
+[npm-url]: https://www.npmjs.com/package/@rollup/plugin-esm-shim
+[size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-esm-shim
+[size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-esm-shim
 
 [![npm][npm]][npm-url]
 [![size][size]][size-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
-# @rollup/plugin-commonjs-shim
+# @rollup/plugin-esm-shim
 
-🍣 A Rollup plugin to replace CJS syntax like `__filename`, `__dirname`, ... for esm output bundles.
+🍣 A Rollup plugin to replace CJS global variables within esm output bundles.
+
+The list of global variables that are shimmed are:
+
+- `__filename`: This variable corresponds to the file path of the generated bundle file.
+- `__dirname`: This variable corresponds to the folder path of the created bundle file.
+- `require`: Corresponds to a function to import modules in a synchronous way.
 
 ## Requirements
 
@@ -20,7 +26,7 @@ This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v
 Using npm:
 
 ```console
-npm install @rollup/plugin-commonjs-shim --save-dev
+npm install @rollup/plugin-esm-shim --save-dev
 ```
 
 ## Usage
@@ -28,7 +34,7 @@ npm install @rollup/plugin-commonjs-shim --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```typescript
-import commonjsShim from '@rollup/plugin-commonjs-shim';
+import esmShim from '@rollup/plugin-esm-shim';
 
 export default {
   input: 'src/index.js',
@@ -36,7 +42,7 @@ export default {
     dir: 'output',
     format: 'cjs'
   },
-  plugins: [commonjsShim()]
+  plugins: [esmShim()]
 };
 ```
 

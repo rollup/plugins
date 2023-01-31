@@ -1,14 +1,14 @@
-export const CJSyntaxRe = /__filename|__dirname|require\(|require\.resolve\(/;
+export const CJSyntaxRegex = /__filename|__dirname|require\(|require\.resolve\(/;
 
-export const CJSShim = `
-// -- CommonJS Shims --
+export const ESMShim = `
+// -- Shims --
 import cjsUrl from 'url';
 import cjsPath from 'path';
-import cjsMod from 'module';
+import cjsModule from 'module';
 const __filename = cjsUrl.fileURLToPath(import.meta.url);
 const __dirname = cjsPath.dirname(__filename);
-const require = cjsMod.createRequire(import.meta.url);
+const require = cjsModule.createRequire(import.meta.url);
 `;
 
-export const ESM_STATIC_IMPORT_RE =
+export const ESMStaticImportRegex =
   /(?<=\s|^|;)import\s*([\s"']*(?<imports>[\w\t\n\r $*,/{}]+)from\s*)?["']\s*(?<specifier>(?<="\s*)[^"]*[^\s"](?=\s*")|(?<='\s*)[^']*[^\s'](?=\s*'))\s*["'][\s;]*/gm;
