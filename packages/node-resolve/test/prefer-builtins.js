@@ -69,6 +69,24 @@ test('true allows preferring a builtin to a local module of the same name', asyn
   t.deepEqual(imports, ['events']);
 });
 
+test('true prefers a local module to a builtin of the same name when imported with a trailing slash', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'prefer-local.js',
+    onwarn: (warning) => warnings.push(warning),
+    plugins: [
+      nodeResolve({
+        preferBuiltins: true
+      })
+    ]
+  });
+
+  const imports = await getImports(bundle);
+
+  t.is(warnings.length, 0);
+  t.deepEqual(imports, []);
+});
+
 test('false allows resolving a local module with the same name as a builtin module', async (t) => {
   const warnings = [];
   const bundle = await rollup({
