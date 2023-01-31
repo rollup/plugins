@@ -16,7 +16,7 @@ It is also blazingly fast 🔥 (between 20 - 70 times faster than Babel dependin
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v10.0.0+) and Rollup v2.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v10.0.0+) and Rollup v3.0+.
 
 ## Install
 
