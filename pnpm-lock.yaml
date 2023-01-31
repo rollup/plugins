@@ -196,17 +196,6 @@ importers:
       source-map-support: 0.5.21
       typescript: 4.8.4
 
-  packages/commonjs-shim:
-    specifiers:
-      magic-string: ^0.27.0
-      rollup: ^3.0.0-7
-      typescript: ^4.8.3
-    dependencies:
-      magic-string: 0.27.0
-    devDependencies:
-      rollup: 3.2.3
-      typescript: 4.8.4
-
   packages/data-uri:
     specifiers:
       '@rollup/plugin-typescript': ^9.0.1
@@ -272,6 +261,17 @@ importers:
       '@rollup/plugin-node-resolve': 15.0.0_rollup@3.2.3
       '@rollup/plugin-typescript': 9.0.1_655ssj4e7sdqlljrreeiqtltve
       '@types/eslint': 8.4.6
+      rollup: 3.2.3
+      typescript: 4.8.4
+
+  packages/esm-shim:
+    specifiers:
+      magic-string: ^0.27.0
+      rollup: ^3.0.0-7
+      typescript: ^4.8.3
+    dependencies:
+      magic-string: 0.27.0
+    devDependencies:
       rollup: 3.2.3
       typescript: 4.8.4
 
