@@ -206,6 +206,19 @@ test('can use star pattern in exports field', async (t) => {
   t.deepEqual(module.exports, { a: 'A', b: 'B', c: 'C' });
 });
 
+test('can use star pattern appearing inbetween in exports field', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-star-inbetween.js',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, { a: 'A', b: 'B', c: 'C' });
+});
+
 test('the most specific star pattern matches', async (t) => {
   const bundle = await rollup({
     input: 'exports-star-specificity.js',
