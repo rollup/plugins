@@ -59,7 +59,7 @@ Specifies the location on disk of the target `package.json` file. If the file do
 Type: `String`<br>
 Default: `see below`
 
-Specifies the package manager to use; `npm` or `yarn`. If not specified, the plugin will default to `yarn` if `yarn.lock` exists, or `npm` otherwise.
+Specifies the package manager to use; `npm` or `yarn` or `pnpm`. If not specified, the plugin will default to `yarn` if `yarn.lock` exists, or `pnpm` if `pnpm-lock.yaml` exists, or `npm` otherwise.
 
 ## Credits
 
