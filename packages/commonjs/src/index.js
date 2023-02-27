@@ -251,7 +251,8 @@ var ${module} = {
   get exports(){ return ${moduleExports}; },
   set exports(v){ ${moduleExports} = v; },
 };
-export {${module} as __module, ${moduleExports} as exports}`,
+export {${module} as __module, ${module} as __exports}`,
+          syntheticNamedExports: '__module',
           meta: { commonjs: { isCommonJS: false } }
         };
       }
