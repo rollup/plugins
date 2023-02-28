@@ -243,15 +243,10 @@ export default function commonjs(options = {}) {
       }
 
       if (isWrappedId(id, MODULE_SUFFIX)) {
-        const module = getName(unwrapId(id, MODULE_SUFFIX));
-        const moduleExports = `${module}Exports`;
+        const name = getName(unwrapId(id, MODULE_SUFFIX));
         return {
-          code: `var ${moduleExports} = {};
-var ${module} = {
-  get exports(){ return ${moduleExports}; },
-  set exports(v){ ${moduleExports} = v; },
-};
-export {${module} as __module, ${moduleExports} as exports}`,
+          code: `var ${name} = {exports: {}}; export {${name} as __module}`,
+          syntheticNamedExports: '__module',
           meta: { commonjs: { isCommonJS: false } }
         };
       }
