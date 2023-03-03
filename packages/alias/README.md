@@ -50,7 +50,7 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 ```js
 import alias from '@rollup/plugin-alias';
 
-module.exports = {
+export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
