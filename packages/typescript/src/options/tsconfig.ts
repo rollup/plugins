@@ -105,6 +105,7 @@ function containsEnumOptions(
  */
 function setModuleResolutionKind(parsedConfig: ParsedCommandLine): ParsedCommandLine {
   const moduleKind = parsedConfig.options.module;
+  // Fallback if `parsedConfig.options.moduleResolution` is not set
   const moduleResolution =
     moduleKind === ModuleKind.Node16
       ? ModuleResolutionKind.Node16
@@ -115,8 +116,8 @@ function setModuleResolutionKind(parsedConfig: ParsedCommandLine): ParsedCommand
   return {
     ...parsedConfig,
     options: {
-      ...parsedConfig.options,
-      moduleResolution
+      moduleResolution,
+      ...parsedConfig.options
     }
   };
 }
