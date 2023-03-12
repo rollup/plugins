@@ -154,6 +154,15 @@ export function nodeResolve(opts = {}) {
         }
       }
     }
+    // TypeScript files may import '.mjs' or '.cjs' to refer to either '.mts' or '.cts'
+    for (const [ext, tsExt] of [
+      ['.mjs', '.mts'],
+      ['.cjs', '.cts']
+    ]) {
+      if (importee.endsWith(ext) && extensions.includes(tsExt)) {
+        importSpecifierList.push(importee.replace(/\.([mc])js$/, '.$1ts'));
+      }
+    }
 
     const warn = (...args) => context.warn(...args);
     const isRequire = custom && custom['node-resolve'] && custom['node-resolve'].isRequire;
