@@ -60,11 +60,16 @@ export function getKeypath(node) {
 
 export const KEY_COMPILED_ESM = '__esModule';
 
-export function isDefineCompiledEsm(node) {
+export function getDefineCompiledEsmType(node) {
+  const definedPropertyWithExports = getDefinePropertyCallName(node, 'exports');
   const definedProperty =
-    getDefinePropertyCallName(node, 'exports') || getDefinePropertyCallName(node, 'module.exports');
+    definedPropertyWithExports || getDefinePropertyCallName(node, 'module.exports');
   if (definedProperty && definedProperty.key === KEY_COMPILED_ESM) {
-    return isTruthy(definedProperty.value);
+    return isTruthy(definedProperty.value)
+      ? definedPropertyWithExports
+        ? 'exports'
+        : 'module'
+      : false;
   }
   return false;
 }

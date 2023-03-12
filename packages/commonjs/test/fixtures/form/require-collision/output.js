@@ -1,5 +1,5 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
-import { __exports as input } from "\u0000fixtures/form/require-collision/input.js?commonjs-exports"
+import { __exports as input } from "\u0000fixtures/form/require-collision/input.js?commonjs-exports";
 import require$$1 from "\u0000CWD/fixtures/form/require-collision/foo.js?commonjs-proxy";
 
 (function() {

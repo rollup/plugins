@@ -1,5 +1,5 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
-import { __exports as input } from "\u0000fixtures/form/ignore-ids-function/input.js?commonjs-exports"
+import { __exports as input } from "\u0000fixtures/form/ignore-ids-function/input.js?commonjs-exports";
 import require$$0 from "\u0000CWD/fixtures/form/ignore-ids-function/bar.js?commonjs-proxy";
 
 var foo = require( 'foo' );

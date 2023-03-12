@@ -4,5 +4,5 @@ var input = async function () {
 	// TODO
 };
 
-export default input;
+export default /*@__PURE__*/commonjsHelpers.getDefaultExportFromCjs(input);
 export { input as __moduleExports };
