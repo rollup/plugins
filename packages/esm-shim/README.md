@@ -53,3 +53,5 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
 
 [LICENSE (MIT)](/LICENSE)
+
+Portions of this code were used with permission from [unbuild](https://github.com/unjs/unbuild). [unbuild LICENSE](./unbuild.LICENSE)
