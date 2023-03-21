@@ -4,9 +4,24 @@ import MagicString from 'magic-string';
 import { ESMShim, CJSyntaxRegex, ESMStaticImportRegex } from './constants';
 import type { Output } from './types';
 
+function matchAllPolyfill(input: string, pattern: string | RegExp): RegExpMatchArray[] {
+  const regex = new RegExp(pattern, 'g');
+  const output: RegExpMatchArray[] = [];
+
+  const result = input.match(regex);
+  if (!result) {
+    return [];
+  }
+
+  for (let i = 0; i < result.length; i++) {
+    output.push(result[i].match(new RegExp(pattern)) || []);
+  }
+  return output;
+}
+
 export function matchAll(regex: RegExp, input: string, addition: Record<string, any>) {
   const matches = [];
-  for (const match of input.matchAll(regex)) {
+  for (const match of matchAllPolyfill(input, regex)) {
     matches.push({
       ...addition,
       ...match.groups,
