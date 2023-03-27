@@ -13,7 +13,12 @@ const { testBundle } = require('../../../util/test');
 
 const { peerDependencies } = require('../package.json');
 
-const { commonjs, executeBundle, getCodeFromBundle } = require('./helpers/util.js');
+const {
+  commonjs,
+  executeBundle,
+  getCodeFromBundle,
+  normalizePathSlashes
+} = require('./helpers/util.js');
 
 install();
 test.beforeEach(() => process.chdir(__dirname));
@@ -716,8 +721,13 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
 
   const cwd = process.cwd();
   const id = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/main.js');
-  const dynamicRequireRoot = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/nested');
-  const minimalDynamicRequireRoot = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root');
+  const dynamicRequireRoot = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/nested')
+  );
+  const minimalDynamicRequireRoot = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root')
+  );
+
   t.like(error, {
     message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
     pluginCode: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
