@@ -106,7 +106,7 @@ importers:
       node-noop: ^1.0.0
     dependencies:
       node-noop: 1.0.0
-
+  
   packages/babel:
     specifiers:
       '@babel/core': ^7.19.1
@@ -396,7 +396,7 @@ importers:
       '@types/resolve': 1.20.2
       deepmerge: ^4.2.2
       es5-ext: ^0.10.62
-      is-builtin-module: ^3.2.0
+      is-builtin-module: ^3.2.1
       is-module: ^1.0.0
       resolve: ^1.22.1
       rollup: ^3.2.3
@@ -406,7 +406,7 @@ importers:
       '@rollup/pluginutils': 5.0.1_rollup@3.2.3
       '@types/resolve': 1.20.2
       deepmerge: 4.2.2
-      is-builtin-module: 3.2.0
+      is-builtin-module: 3.2.1
       is-module: 1.0.0
       resolve: 1.22.1
     devDependencies:
@@ -4904,6 +4904,14 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       builtin-modules: 3.3.0
+    dev: true
+
+  /is-builtin-module/3.2.1:
+    resolution: {integrity: sha512-BSLE3HnV2syZ0FK0iMA/yUGplUeMmNz4AW5fnTunbCIqZi4vG3WjJT9FHMy5D69xmAYBHXQhJdALdpwVxV501A==}
+    engines: {node: '>=6'}
+    dependencies:
+      builtin-modules: 3.3.0
+    dev: false
 
   /is-callable/1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
@@ -5671,6 +5679,7 @@ packages:
 
   /node-noop/1.0.0:
     resolution: {integrity: sha512-1lpWqKwZ9yUosQfW1uy3jm6St4ZbmeDKKGmdzwzedbyBI4LgHtGyL1ofDdqiSomgaYaSERi+qWtj64huJQjl7g==}
+    dev: true
 
   /node-preload/0.2.1:
     resolution: {integrity: sha512-RM5oyBy45cLEoHqCeh+MNuFAxO0vTFBLskvQbOKnEE7YTTSN4tbN8QWDIPQ6L+WvKsB/qLEGpYe2ZZ9d4W9OIQ==}
