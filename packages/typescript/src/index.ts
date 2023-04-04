@@ -154,24 +154,30 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
         output.declarations.forEach((id) => {
           const code = getEmittedFile(id, emittedFiles, tsCache);
-          let baseDir =
-            outputOptions.dir ||
-            (parsedOptions.options.declaration
-              ? parsedOptions.options.declarationDir || parsedOptions.options.outDir
-              : null);
-          const cwd = normalizePath(process.cwd());
-          if (
-            parsedOptions.options.declaration &&
-            parsedOptions.options.declarationDir &&
-            baseDir?.startsWith(cwd)
-          ) {
-            const declarationDir = baseDir.slice(cwd.length + 1);
-            baseDir = baseDir.slice(0, -1 * declarationDir.length);
+          if (!code || !parsedOptions.options.declaration) {
+            return;
           }
-          if (!baseDir && tsconfig) {
-            baseDir = tsconfig.substring(0, tsconfig.lastIndexOf('/'));
+
+          let baseDir: string | undefined;
+          if (outputOptions.dir) {
+            baseDir = outputOptions.dir;
+          } else if (outputOptions.file) {
+            // find common path of output.file and configured declation output
+            const outputDir = path.dirname(outputOptions.file);
+            const configured = path.resolve(
+              parsedOptions.options.declarationDir ||
+                parsedOptions.options.outDir ||
+                tsconfig ||
+                process.cwd()
+            );
+            const backwards = path
+              .relative(outputDir, configured)
+              .split(path.sep)
+              .filter((v) => v === '..')
+              .join(path.sep);
+            baseDir = path.normalize(`${outputDir}/${backwards}`);
           }
-          if (!code || !baseDir) return;
+          if (!baseDir) return;
 
           this.emitFile({
             type: 'asset',

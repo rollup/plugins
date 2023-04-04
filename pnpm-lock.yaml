@@ -549,6 +549,7 @@ importers:
       '@rollup/plugin-commonjs': ^23.0.0
       '@rollup/pluginutils': ^5.0.1
       '@types/node': ^14.18.30
+      '@types/resolve': ^1.20.2
       buble: ^0.20.0
       resolve: ^1.22.1
       rollup: ^3.2.3
@@ -560,6 +561,7 @@ importers:
       '@rollup/plugin-buble': 1.0.0_rollup@3.2.3
       '@rollup/plugin-commonjs': 23.0.0_rollup@3.2.3
       '@types/node': 14.18.31
+      '@types/resolve': 1.20.2
       buble: 0.20.0
       rollup: 3.2.3
       typescript: 4.8.4

@@ -71,6 +71,7 @@
     "@rollup/plugin-buble": "^1.0.0",
     "@rollup/plugin-commonjs": "^23.0.0",
     "@types/node": "^14.18.30",
+    "@types/resolve": "^1.20.2",
     "buble": "^0.20.0",
     "rollup": "^3.2.3",
     "typescript": "^4.8.3"

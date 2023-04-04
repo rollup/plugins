@@ -15,6 +15,16 @@ interface GetCode {
 
 export const getCode: GetCode;
 
+export function getFiles(
+  bundle: RollupBuild,
+  outputOptions?: OutputOptions
+): Promise<
+  {
+    fileName: string;
+    content: any;
+  }[]
+>;
+
 export function evaluateBundle(bundle: RollupBuild): Promise<Pick<NodeModule, 'exports'>>;
 
 export function getImports(bundle: RollupBuild): Promise<string[]>;
