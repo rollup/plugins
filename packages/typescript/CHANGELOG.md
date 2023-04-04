@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v11.1.0
+
+_2023-04-04_
+
+### Features
+
+- feat: write declaration files in configured directory for `output.file` [#1378](https://github.com/rollup/plugins/pull/1378)
+
 ## v11.0.0
 
 _2023-01-06_
