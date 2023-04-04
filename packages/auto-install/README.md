@@ -56,10 +56,14 @@ Specifies the location on disk of the target `package.json` file. If the file do
 
 ### `manager`
 
-Type: `String`<br>
-Default: `see below`
+Type: `'pnpm'|'yarn'|'npm'`<br>
+Default: determined at runtime
 
-Specifies the package manager to use; `npm` or `yarn` or `pnpm`. If not specified, the plugin will default to `yarn` if `yarn.lock` exists, or `pnpm` if `pnpm-lock.yaml` exists, or `npm` otherwise.
+Specifies the package manager to use. If not specified:
+
+- `'pnpm'` if `pnpm-lock.yaml` exists
+- `'yarn'` if `yarn.lock` exists
+- `'npm'` otherwise
 
 ## Credits
 
