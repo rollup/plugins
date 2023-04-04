@@ -1,20 +1,20 @@
 {
-  "name": "@rollup/plugin-alias",
-  "version": "5.0.0",
+  "name": "@rollup/plugin-esm-shim",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Define and resolve aliases for bundle dependencies",
+  "description": "Generate minified bundle",
   "license": "MIT",
   "repository": {
     "url": "rollup/plugins",
-    "directory": "packages/alias"
+    "directory": "packages/esm-shim"
   },
-  "author": "Johannes Stein",
-  "homepage": "https://github.com/rollup/plugins/tree/master/packages/alias#readme",
+  "author": "Peter Placzek <peter.placzek1996@gmail.com>",
+  "homepage": "https://github.com/rollup/plugins/tree/master/packages/esm-shim#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/es/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
   "exports": {
     "types": "./types/index.d.ts",
     "import": "./dist/es/index.js",
@@ -28,30 +28,31 @@
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm test -- --verbose",
+    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
     "test": "ava",
-    "test:ts": "tsc --noEmit"
+    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
     "dist",
     "!dist/**/*.map",
+    "src",
     "types",
-    "README.md",
-    "LICENSE"
+    "README.md"
   ],
   "keywords": [
     "rollup",
     "plugin",
-    "resolve",
-    "alias"
+    "esm-shim",
+    "npm",
+    "modules"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+    "rollup": "^2.x || ^3.x"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -59,23 +60,11 @@
     }
   },
   "dependencies": {
-    "slash": "^4.0.0"
+    "magic-string": "^0.27.0"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.0.0",
-    "@rollup/plugin-typescript": "^9.0.1",
-    "del-cli": "^5.0.0",
-    "rollup": "^3.2.3",
+    "rollup": "^3.0.0-7",
     "typescript": "^4.8.3"
   },
-  "types": "./types/index.d.ts",
-  "ava": {
-    "files": [
-      "!**/fixtures/**",
-      "!**/output/**",
-      "!**/helpers/**",
-      "!**/recipes/**",
-      "!**/types.ts"
-    ]
-  }
+  "types": "./types/index.d.ts"
 }

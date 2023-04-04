@@ -30,6 +30,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [dsv](packages/dsv)                                 | Convert .csv and .tsv files into JavaScript modules with d3-dsv                           |
 | [dynamic-import-vars](packages/dynamic-import-vars) | Resolving dynamic imports that contain variables.                                         |
 | [eslint](packages/eslint)                           | Verify entry point and all imported files with ESLint                                     |
+| [esm-shim](packages/esm-shim)                       | Replace cjs syntax for esm output bundles                                                 |
 | [graphql](packages/graphql)                         | Convert .gql/.graphql files to ES6 modules                                                |
 | [html](packages/html)                               | Create HTML files to serve Rollup bundles                                                 |
 | [image](packages/image)                             | Import JPG, PNG, GIF, SVG, and WebP files                                                 |
@@ -42,6 +43,7 @@ This repository houses plugins that Rollup considers critical to every day use o
 | [run](packages/run)                                 | Run your bundles in Node once they're built                                               |
 | [strip](packages/strip)                             | Remove debugger statements and functions like assert.equal and console.log from your code |
 | [sucrase](packages/sucrase)                         | Compile TypeScript, Flow, JSX, etc with Sucrase                                           |
+| [swc](packages/swc)                                 | Transpile TypeScript/JavaScript with the speedy-web-compiler                              |
 | [terser](packages/terser)                           | Generate a minified output bundle with terser                                             |
 | [typescript](packages/typescript)                   | Integration between Rollup and Typescript                                                 |
 | [url](packages/url)                                 | Import files as data-URIs or ES Modules                                                   |

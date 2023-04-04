@@ -1,5 +1,21 @@
 # @rollup/plugin-alias ChangeLog
 
+## v5.0.0
+
+_2023-04-04_
+
+### Breaking Changes
+
+- feat: resolve entry id [#1402](https://github.com/rollup/plugins/pull/1402)
+
+## v4.0.4
+
+_2023-04-04_
+
+### Updates
+
+- docs: fix README esm error [#1451](https://github.com/rollup/plugins/pull/1451)
+
 ## v4.0.3
 
 _2023-01-20_
