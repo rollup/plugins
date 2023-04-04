@@ -163,14 +163,14 @@ test('Will not confuse modules with similar names', (t) =>
     ]
   ).then((result) => t.deepEqual(result, [null, null, null])));
 
-test('Leaves entry file untouched if matches alias', (t) =>
+test('Alias entry file', (t) =>
   resolveAliasWithRollup(
     {
       entries: [{ find: 'abacaxi', replacement: './abacaxi' }]
     },
     // eslint-disable-next-line no-undefined
     [{ source: 'abacaxi/entry.js' }]
-  ).then((result) => t.deepEqual(result, [null])));
+  ).then((result) => t.deepEqual(result, ['./abacaxi/entry.js'])));
 
 test('i/am/a/file', (t) =>
   resolveAliasWithRollup(
