@@ -1,6 +1,7 @@
 * @shellscape
 
 /packages/babel/ @Andarist
+/packages/esm-shim/ @tada5hi
 /packages/image/ @tjenkinson
 /packages/node-resolve/ @tjenkinson
 /packages/swc/ @tada5hi
