@@ -3,4 +3,5 @@
 /packages/babel/ @Andarist
 /packages/image/ @tjenkinson
 /packages/node-resolve/ @tjenkinson
+/packages/swc/ @tada5hi
 /packages/terser/ @tada5hi
