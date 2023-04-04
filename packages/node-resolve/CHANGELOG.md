@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.0.2
+
+_2023-04-04_
+
+### Bugfixes
+
+- fix: bump is-builtin-module version, imports with a trailing slash [#1424](https://github.com/rollup/plugins/pull/1424)
+
 ## v15.0.1
 
 _2022-10-21_
