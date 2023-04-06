@@ -147,7 +147,7 @@ export default function commonjs(options = {}) {
         this.error(
           {
             code: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
-            id,
+            normalizedId,
             dynamicRequireRoot,
             message: `"${normalizedId}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${normalizedRequireRoot}". You should set dynamicRequireRoot to "${dirname(
               normalizedId

@@ -720,7 +720,9 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
   }
 
   const cwd = process.cwd();
-  const id = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/main.js');
+  const id = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/main.js')
+  );
   const dynamicRequireRoot = normalizePathSlashes(
     path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/nested')
   );
