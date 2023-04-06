@@ -759,6 +759,31 @@ test('does not throw when a dynamic require uses different slashes than dynamicR
   t.is(error, null);
 });
 
+// On Windows, avoid a false error about a module not being in the dynamic require root due to
+// incoherent slashes/backslashes in the paths.
+if (os.platform() === 'win32') {
+  test('correctly asserts dynamicRequireRoot on Windows', async (t) => {
+    let error = null;
+    try {
+      await rollup({
+        input: 'fixtures/samples/dynamic-require-outside-root/main.js',
+        plugins: [
+          commonjs({
+            dynamicRequireRoot: 'fixtures/samples/dynamic-require-outside-root',
+            dynamicRequireTargets: [
+              'fixtures/samples/dynamic-require-outside-root/nested/target.js'
+            ]
+          })
+        ]
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    t.is(error, null);
+  });
+}
+
 test('does not transform typeof exports for mixed modules', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/mixed-module-typeof-exports/main.js',
