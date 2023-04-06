@@ -112,6 +112,7 @@ export default function commonjs(options = {}) {
   let requireResolver;
 
   function transformAndCheckExports(code, id) {
+    const normalizedId = normalizePathSlashes(id);
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
       this.parse,
       code,
@@ -127,7 +128,7 @@ export default function commonjs(options = {}) {
     }
 
     if (
-      !dynamicRequireModules.has(normalizePathSlashes(id)) &&
+      !dynamicRequireModules.has(normalizedId) &&
       (!(hasCjsKeywords(code, ignoreGlobal) || requireResolver.isRequiredId(id)) ||
         (isEsModule && !options.transformMixedEsModules))
     ) {
@@ -136,11 +137,9 @@ export default function commonjs(options = {}) {
     }
 
     const needsRequireWrapper =
-      !isEsModule &&
-      (dynamicRequireModules.has(normalizePathSlashes(id)) || strictRequiresFilter(id));
+      !isEsModule && (dynamicRequireModules.has(normalizedId) || strictRequiresFilter(id));
 
     const checkDynamicRequire = (position) => {
-      const normalizedId = normalizePathSlashes(id);
       const normalizedRequireRoot = normalizePathSlashes(dynamicRequireRoot);
 
       if (normalizedId.indexOf(normalizedRequireRoot) !== 0) {
