@@ -738,6 +738,40 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
   });
 });
 
+test('does not mistakely says that a dynamic require is outside of dynamicRequireRoot when `path` uses backslashes', async (t) => {
+  const plugin = commonjs({
+    dynamicRequireRoot: 'fixtures/samples/dynamic-require-outside-root/nested',
+    dynamicRequireTargets: ['fixtures/samples/dynamic-require-outside-root/nested/target.js']
+  });
+
+  let error = null;
+  const cwd = process.cwd();
+  const id = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/main.js')
+  );
+  const dynamicRequireRoot = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/nested')
+  );
+  const minimalDynamicRequireRoot = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root')
+  );
+
+  const code = (await import('fixtures/samples/dynamic-require-outside-root/main.js')).default;
+
+  try {
+    plugin.transform(code, id.replace('/', '\\'));
+  } catch (e) {
+    error = e;
+  }
+
+  t.like(error, {
+    message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
+    pluginCode: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
+    id,
+    dynamicRequireRoot
+  });
+});
+
 test('does not transform typeof exports for mixed modules', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/mixed-module-typeof-exports/main.js',
