@@ -43,8 +43,20 @@ export function provideCJSSyntax(code: string): Output | null {
   const s = new MagicString(code);
   s.appendRight(indexToAppend, ESMShim);
 
+  const sourceMap = s.generateMap();
+  const sourcesContent: string[] = [];
+  for (let i = 0; i < sourceMap.sourcesContent.length; i++) {
+    const content = sourceMap.sources[i];
+    if (typeof content === 'string') {
+      sourcesContent.push(content);
+    }
+  }
+
   return {
     code: s.toString(),
-    map: s.generateMap()
+    map: {
+      ...sourceMap,
+      sourcesContent
+    }
   };
 }
