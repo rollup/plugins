@@ -190,7 +190,7 @@ Unlike with the `emscripten` example, you'll need to import the methods you want
 
 ### Synchronous Modules
 
-JavaScript runtimes allow small modules (< 4KB) to be compiled synchronously. If you'd like to specify some files to be compiled synchronously, you can do so in your `rollup.config.js` filecan be compiled synchronously by specifying them in the configuration.
+JavaScript runtimes allow small modules (< 4KB) to be compiled synchronously. If you'd like to specify some files to be compiled synchronously, you can do so in your `rollup.config.js` file.
 
 ```js
 import { wasm } from '@rollup/plugin-wasm';
