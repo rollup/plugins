@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v0.4.1
+
+_2023-04-09_
+
+### Bugfixes
+
+- fix: expose extended terser options interface [#1477](https://github.com/rollup/plugins/pull/1477)
+
 ## v0.4.0
 
 _2023-01-23_
