@@ -4,5 +4,5 @@ var input = (function foo () {
   return function fooChild() {};
 }());
 
-export default input;
+export default /*@__PURE__*/commonjsHelpers.getDefaultExportFromCjs(input);
 export { input as __moduleExports };

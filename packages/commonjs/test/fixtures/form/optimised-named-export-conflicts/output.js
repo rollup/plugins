@@ -1,5 +1,5 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
-import { __exports as input } from "\u0000fixtures/form/optimised-named-export-conflicts/input.js?commonjs-exports"
+import { __exports as input } from "\u0000fixtures/form/optimised-named-export-conflicts/input.js?commonjs-exports";
 
 var foo = 1;
 var bar = 2;

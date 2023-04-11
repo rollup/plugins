@@ -7,19 +7,22 @@ export function wrapCode(magicString, uses, moduleName, exportsName, indentExclu
   }
   if (uses.exports) {
     args.push('exports');
-    passedArgs.push(exportsName);
+    passedArgs.push(uses.module ? `${moduleName}.exports` : exportsName);
   }
   magicString
     .trim()
     .indent('\t', { exclude: indentExclusionRanges })
     .prepend(`(function (${args.join(', ')}) {\n`)
-    .append(`\n} (${passedArgs.join(', ')}));`);
+    // For some reason, this line is only indented correctly when using a
+    // require-wrapper if we have this leading space
+    .append(` \n} (${passedArgs.join(', ')}));`);
 }
 
 export function rewriteExportsAndGetExportsBlock(
   magicString,
   moduleName,
   exportsName,
+  exportedExportsName,
   wrapped,
   moduleExportsAssignments,
   firstTopLevelModuleExportsAssignment,
@@ -30,7 +33,6 @@ export function rewriteExportsAndGetExportsBlock(
   code,
   HELPERS_NAME,
   exportMode,
-  detectWrappedDefault,
   defaultIsModuleExports,
   usesRequireWrapper,
   requireName
@@ -58,17 +60,20 @@ export function rewriteExportsAndGetExportsBlock(
       exportDeclarations,
       moduleExportsAssignments,
       firstTopLevelModuleExportsAssignment,
-      exportsName
+      exportsName,
+      defaultIsModuleExports,
+      HELPERS_NAME
     );
   } else {
-    exports.push(`${exportsName} as __moduleExports`);
+    if (exportMode === 'module') {
+      exportDeclarations.push(`var ${exportedExportsName} = ${moduleName}.exports`);
+      exports.push(`${exportedExportsName} as __moduleExports`);
+    } else {
+      exports.push(`${exportsName} as __moduleExports`);
+    }
     if (wrapped) {
-      getExportsWhenWrapping(
-        exportDeclarations,
-        exportsName,
-        detectWrappedDefault,
-        HELPERS_NAME,
-        defaultIsModuleExports
+      exportDeclarations.push(
+        getDefaultExportDeclaration(exportedExportsName, defaultIsModuleExports, HELPERS_NAME)
       );
     } else {
       getExports(
@@ -81,17 +86,19 @@ export function rewriteExportsAndGetExportsBlock(
         topLevelAssignments,
         moduleName,
         exportsName,
+        exportedExportsName,
         defineCompiledEsmExpressions,
         HELPERS_NAME,
-        defaultIsModuleExports
+        defaultIsModuleExports,
+        exportMode
       );
     }
   }
   if (exports.length) {
-    exportDeclarations.push(`export { ${exports.join(', ')} };`);
+    exportDeclarations.push(`export { ${exports.join(', ')} }`);
   }
 
-  return `\n\n${exportDeclarations.join('\n')}`;
+  return `\n\n${exportDeclarations.join(';\n')};`;
 }
 
 function getExportsWhenUsingRequireWrapper(
@@ -106,35 +113,32 @@ function getExportsWhenUsingRequireWrapper(
   requireName,
   defineCompiledEsmExpressions
 ) {
-  if (!wrapped) {
-    if (exportMode === 'replace') {
-      for (const { left } of moduleExportsAssignments) {
-        magicString.overwrite(left.start, left.end, exportsName);
-      }
-    } else {
-      // Collect and rewrite module.exports assignments
-      for (const { left } of moduleExportsAssignments) {
-        magicString.overwrite(left.start, left.end, `${moduleName}.exports`);
-      }
-      // Collect and rewrite named exports
-      for (const [exportName, { nodes }] of exportsAssignmentsByName) {
-        for (const node of nodes) {
-          magicString.overwrite(node.start, node.left.end, `${exportsName}.${exportName}`);
-        }
-      }
-      // Collect and rewrite exports.__esModule assignments
-      for (const expression of defineCompiledEsmExpressions) {
-        const moduleExportsExpression =
-          expression.type === 'CallExpression' ? expression.arguments[0] : expression.left.object;
+  exports.push(`${requireName} as __require`);
+  if (wrapped) return;
+  if (exportMode === 'replace') {
+    rewriteModuleExportsAssignments(magicString, moduleExportsAssignments, exportsName);
+  } else {
+    rewriteModuleExportsAssignments(magicString, moduleExportsAssignments, `${moduleName}.exports`);
+    // Collect and rewrite named exports
+    for (const [exportName, { nodes }] of exportsAssignmentsByName) {
+      for (const { node, type } of nodes) {
         magicString.overwrite(
-          moduleExportsExpression.start,
-          moduleExportsExpression.end,
-          exportsName
+          node.start,
+          node.left.end,
+          `${
+            exportMode === 'module' && type === 'module' ? `${moduleName}.exports` : exportsName
+          }.${exportName}`
         );
       }
     }
+    replaceDefineCompiledEsmExpressionsAndGetIfRestorable(
+      defineCompiledEsmExpressions,
+      magicString,
+      exportMode,
+      moduleName,
+      exportsName
+    );
   }
-  exports.push(`${requireName} as __require`);
 }
 
 function getExportsForReplacedModuleExports(
@@ -143,32 +147,28 @@ function getExportsForReplacedModuleExports(
   exportDeclarations,
   moduleExportsAssignments,
   firstTopLevelModuleExportsAssignment,
-  exportsName
+  exportsName,
+  defaultIsModuleExports,
+  HELPERS_NAME
 ) {
   for (const { left } of moduleExportsAssignments) {
     magicString.overwrite(left.start, left.end, exportsName);
   }
   magicString.prependRight(firstTopLevelModuleExportsAssignment.left.start, 'var ');
   exports.push(`${exportsName} as __moduleExports`);
-  exportDeclarations.push(`export default ${exportsName};`);
+  exportDeclarations.push(
+    getDefaultExportDeclaration(exportsName, defaultIsModuleExports, HELPERS_NAME)
+  );
 }
 
-function getExportsWhenWrapping(
-  exportDeclarations,
-  exportsName,
-  detectWrappedDefault,
-  HELPERS_NAME,
-  defaultIsModuleExports
-) {
-  exportDeclarations.push(
-    `export default ${
-      detectWrappedDefault && defaultIsModuleExports === 'auto'
-        ? `/*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName})`
-        : defaultIsModuleExports === false
-        ? `${exportsName}.default`
-        : exportsName
-    };`
-  );
+function getDefaultExportDeclaration(exportedExportsName, defaultIsModuleExports, HELPERS_NAME) {
+  return `export default ${
+    defaultIsModuleExports === true
+      ? exportedExportsName
+      : defaultIsModuleExports === false
+      ? `${exportedExportsName}.default`
+      : `/*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportedExportsName})`
+  }`;
 }
 
 function getExports(
@@ -181,9 +181,11 @@ function getExports(
   topLevelAssignments,
   moduleName,
   exportsName,
+  exportedExportsName,
   defineCompiledEsmExpressions,
   HELPERS_NAME,
-  defaultIsModuleExports
+  defaultIsModuleExports,
+  exportMode
 ) {
   let deconflictedDefaultExportName;
   // Collect and rewrite module.exports assignments
@@ -195,8 +197,10 @@ function getExports(
   for (const [exportName, { nodes }] of exportsAssignmentsByName) {
     const deconflicted = deconflictedExportNames[exportName];
     let needsDeclaration = true;
-    for (const node of nodes) {
-      let replacement = `${deconflicted} = ${exportsName}.${exportName}`;
+    for (const { node, type } of nodes) {
+      let replacement = `${deconflicted} = ${
+        exportMode === 'module' && type === 'module' ? `${moduleName}.exports` : exportsName
+      }.${exportName}`;
       if (needsDeclaration && topLevelAssignments.has(node)) {
         replacement = `var ${replacement}`;
         needsDeclaration = false;
@@ -214,22 +218,58 @@ function getExports(
     }
   }
 
-  // Collect and rewrite exports.__esModule assignments
-  let isRestorableCompiledEsm = false;
-  for (const expression of defineCompiledEsmExpressions) {
-    isRestorableCompiledEsm = true;
-    const moduleExportsExpression =
-      expression.type === 'CallExpression' ? expression.arguments[0] : expression.left.object;
-    magicString.overwrite(moduleExportsExpression.start, moduleExportsExpression.end, exportsName);
-  }
+  const isRestorableCompiledEsm = replaceDefineCompiledEsmExpressionsAndGetIfRestorable(
+    defineCompiledEsmExpressions,
+    magicString,
+    exportMode,
+    moduleName,
+    exportsName
+  );
 
-  if (!isRestorableCompiledEsm || defaultIsModuleExports === true) {
-    exports.push(`${exportsName} as default`);
-  } else if (moduleExportsAssignments.length === 0 || defaultIsModuleExports === false) {
-    exports.push(`${deconflictedDefaultExportName || exportsName} as default`);
+  if (
+    defaultIsModuleExports === false ||
+    (defaultIsModuleExports === 'auto' &&
+      isRestorableCompiledEsm &&
+      moduleExportsAssignments.length === 0)
+  ) {
+    // If there is no deconflictedDefaultExportName, then we use the namespace as
+    // fallback because there can be no "default" property on the namespace
+    exports.push(`${deconflictedDefaultExportName || exportedExportsName} as default`);
+  } else if (
+    defaultIsModuleExports === true ||
+    (!isRestorableCompiledEsm && moduleExportsAssignments.length === 0)
+  ) {
+    exports.push(`${exportedExportsName} as default`);
   } else {
     exportDeclarations.push(
-      `export default /*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportsName});`
+      getDefaultExportDeclaration(exportedExportsName, defaultIsModuleExports, HELPERS_NAME)
     );
   }
+}
+
+function rewriteModuleExportsAssignments(magicString, moduleExportsAssignments, exportsName) {
+  for (const { left } of moduleExportsAssignments) {
+    magicString.overwrite(left.start, left.end, exportsName);
+  }
+}
+
+function replaceDefineCompiledEsmExpressionsAndGetIfRestorable(
+  defineCompiledEsmExpressions,
+  magicString,
+  exportMode,
+  moduleName,
+  exportsName
+) {
+  let isRestorableCompiledEsm = false;
+  for (const { node, type } of defineCompiledEsmExpressions) {
+    isRestorableCompiledEsm = true;
+    const moduleExportsExpression =
+      node.type === 'CallExpression' ? node.arguments[0] : node.left.object;
+    magicString.overwrite(
+      moduleExportsExpression.start,
+      moduleExportsExpression.end,
+      exportMode === 'module' && type === 'module' ? `${moduleName}.exports` : exportsName
+    );
+  }
+  return isRestorableCompiledEsm;
 }

@@ -98,19 +98,18 @@ export function getRequireHandlers() {
     commonjsMeta
   ) {
     const imports = [];
-    imports.push(`import * as ${helpersName} from "${HELPERS_ID}";`);
+    imports.push(`import * as ${helpersName} from "${HELPERS_ID}"`);
     if (dynamicRequireName) {
       imports.push(
         `import { ${
           isDynamicRequireModulesEnabled ? CREATE_COMMONJS_REQUIRE_EXPORT : COMMONJS_REQUIRE_EXPORT
-        } as ${dynamicRequireName} } from "${DYNAMIC_MODULES_ID}";`
+        } as ${dynamicRequireName} } from "${DYNAMIC_MODULES_ID}"`
       );
     }
     if (exportMode === 'module') {
       imports.push(
-        `import { __module as ${moduleName}, exports as ${exportsName} } from ${JSON.stringify(
-          wrapId(id, MODULE_SUFFIX)
-        )}`
+        `import { __module as ${moduleName} } from ${JSON.stringify(wrapId(id, MODULE_SUFFIX))}`,
+        `var ${exportsName} = ${moduleName}.exports`
       );
     } else if (exportMode === 'exports') {
       imports.push(
@@ -136,7 +135,7 @@ export function getRequireHandlers() {
       getIgnoreTryCatchRequireStatementMode,
       magicString
     );
-    return imports.length ? `${imports.join('\n')}\n\n` : '';
+    return imports.length ? `${imports.join(';\n')};\n\n` : '';
   }
 
   return {
@@ -196,9 +195,9 @@ function processRequireExpressions(
     }
     if (needsImport) {
       if (isCommonJS === IS_WRAPPED_COMMONJS) {
-        imports.push(`import { __require as ${name} } from ${JSON.stringify(resolvedId)};`);
+        imports.push(`import { __require as ${name} } from ${JSON.stringify(resolvedId)}`);
       } else {
-        imports.push(`import ${usesRequired ? `${name} from ` : ''}${JSON.stringify(resolvedId)};`);
+        imports.push(`import ${usesRequired ? `${name} from ` : ''}${JSON.stringify(resolvedId)}`);
       }
     }
   }

@@ -24,13 +24,16 @@ export async function getStaticRequireProxy(id, requireReturnsDefault, loadModul
   } = await loadModule({ id });
   if (!commonjsMeta) {
     return getUnknownRequireProxy(id, requireReturnsDefault);
-  } else if (commonjsMeta.isCommonJS) {
+  }
+  if (commonjsMeta.isCommonJS) {
     return `export { __moduleExports as default } from ${JSON.stringify(id)};`;
-  } else if (!requireReturnsDefault) {
+  }
+  if (!requireReturnsDefault) {
     return `import { getAugmentedNamespace } from "${HELPERS_ID}"; import * as ${name} from ${JSON.stringify(
       id
     )}; export default /*@__PURE__*/getAugmentedNamespace(${name});`;
-  } else if (
+  }
+  if (
     requireReturnsDefault !== true &&
     (requireReturnsDefault === 'namespace' ||
       !commonjsMeta.hasDefaultExport ||

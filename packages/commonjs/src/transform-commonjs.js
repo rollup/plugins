@@ -8,8 +8,7 @@ import MagicString from 'magic-string';
 
 import {
   getKeypath,
-  hasDefineEsmProperty,
-  isDefineCompiledEsm,
+  getDefineCompiledEsmType,
   isFalsy,
   isReference,
   isShorthandProperty,
@@ -35,6 +34,14 @@ const exportsPattern = /^(?:module\.)?exports(?:\.([a-zA-Z_$][a-zA-Z_$0-9]*))?$/
 
 const functionType = /^(?:FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/;
 
+// There are three different types of CommonJS modules, described by their
+// "exportMode":
+// - exports: Only assignments to (module.)exports properties
+// - replace: A single assignment to module.exports itself
+// - module: Anything else
+// Special cases:
+// - usesRequireWrapper
+// - isWrapped
 export default async function transformCommonjs(
   parse,
   code,
@@ -71,7 +78,6 @@ export default async function transformCommonjs(
   let programDepth = 0;
   let currentTryBlockEnd = null;
   let shouldWrap = false;
-  let reexports = false;
 
   const globals = new Set();
   // A conditionalNode is a node for which execution is not guaranteed. If such a node is a require
@@ -145,31 +151,20 @@ export default async function transformCommonjs(
               } else if (!firstTopLevelModuleExportsAssignment) {
                 firstTopLevelModuleExportsAssignment = node;
               }
-
-              if (defaultIsModuleExports === false) {
-                shouldWrap = true;
-              } else if (defaultIsModuleExports === 'auto') {
-                if (node.right.type === 'ObjectExpression') {
-                  if (hasDefineEsmProperty(node.right)) {
-                    shouldWrap = true;
-                  }
-                } else if (isRequireExpression(node.right, scope)) {
-                  shouldWrap = true;
-                  reexports = true;
-                }
-              }
             } else if (exportName === KEY_COMPILED_ESM) {
               if (programDepth > 3) {
                 shouldWrap = true;
               } else {
-                topLevelDefineCompiledEsmExpressions.push(node);
+                // The "type" is either "module" or "exports" to discern
+                // assignments to module.exports vs exports if needed
+                topLevelDefineCompiledEsmExpressions.push({ node, type: flattened.name });
               }
             } else {
               const exportsAssignments = exportsAssignmentsByName.get(exportName) || {
                 nodes: [],
                 scopes: new Set()
               };
-              exportsAssignments.nodes.push(node);
+              exportsAssignments.nodes.push({ node, type: flattened.name });
               exportsAssignments.scopes.add(scope);
               exportsAccessScopes.add(scope);
               exportsAssignmentsByName.set(exportName, exportsAssignments);
@@ -186,11 +181,12 @@ export default async function transformCommonjs(
           }
           return;
         case 'CallExpression': {
-          if (isDefineCompiledEsm(node)) {
+          const defineCompiledEsmType = getDefineCompiledEsmType(node);
+          if (defineCompiledEsmType) {
             if (programDepth === 3 && parent.type === 'ExpressionStatement') {
               // skip special handling for [module.]exports until we know we render this
               skippedNodes.add(node.arguments[0]);
-              topLevelDefineCompiledEsmExpressions.push(node);
+              topLevelDefineCompiledEsmExpressions.push({ node, type: defineCompiledEsmType });
             } else {
               shouldWrap = true;
             }
@@ -208,6 +204,7 @@ export default async function transformCommonjs(
             uses.require = true;
             const requireNode = node.callee.object;
             replacedDynamicRequires.push(requireNode);
+            skippedNodes.add(node.callee);
             return;
           }
 
@@ -450,11 +447,6 @@ export default async function transformCommonjs(
 
   // We cannot wrap ES/mixed modules
   shouldWrap = !isEsModule && (shouldWrap || (uses.exports && moduleExportsAssignments.length > 0));
-  const detectWrappedDefault =
-    shouldWrap &&
-    (reexports ||
-      topLevelDefineCompiledEsmExpressions.length > 0 ||
-      code.indexOf('__esModule') >= 0);
 
   if (
     !(
@@ -492,6 +484,9 @@ export default async function transformCommonjs(
     ? 'exports'
     : 'module';
 
+  const exportedExportsName =
+    exportMode === 'module' ? deconflict([], globals, `${nameBase}Exports`) : exportsName;
+
   const importBlock = await rewriteRequireExpressionsAndGetImportBlock(
     magicString,
     topLevelDeclarations,
@@ -516,6 +511,7 @@ export default async function transformCommonjs(
         magicString,
         moduleName,
         exportsName,
+        exportedExportsName,
         shouldWrap,
         moduleExportsAssignments,
         firstTopLevelModuleExportsAssignment,
@@ -526,7 +522,6 @@ export default async function transformCommonjs(
         code,
         helpersName,
         exportMode,
-        detectWrappedDefault,
         defaultIsModuleExports,
         usesRequireWrapper,
         requireName
@@ -540,15 +535,16 @@ export default async function transformCommonjs(
     magicString.trim().indent('\t', {
       exclude: indentExclusionRanges
     });
+    const exported = exportMode === 'module' ? `${moduleName}.exports` : exportsName;
     magicString.prepend(
       `var ${isRequiredName};
 
 function ${requireName} () {
-\tif (${isRequiredName}) return ${exportsName};
+\tif (${isRequiredName}) return ${exported};
 \t${isRequiredName} = 1;
 `
     ).append(`
-\treturn ${exportsName};
+\treturn ${exported};
 }`);
     if (exportMode === 'replace') {
       magicString.prepend(`var ${exportsName};\n`);

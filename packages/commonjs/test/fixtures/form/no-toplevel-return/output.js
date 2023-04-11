@@ -14,5 +14,5 @@ function baz () {
 
 var input = 42;
 
-export default input;
+export default /*@__PURE__*/commonjsHelpers.getDefaultExportFromCjs(input);
 export { input as __moduleExports };
