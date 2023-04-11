@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v24.1.0
+
+_2023-04-11_
+
+### Features
+
+- feat: Do not use getters for module.exports [#1455](https://github.com/rollup/plugins/pull/1455)
+
 ## v24.0.1
 
 _2023-01-20_
