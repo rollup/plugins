@@ -1,8 +1,10 @@
-import { isMainThread, parentPort } from 'worker_threads';
+import { isMainThread, parentPort, workerData } from 'worker_threads';
 
 import { hasOwnProperty, isObject } from 'smob';
 
 import { minify } from 'terser';
+
+import { workerPoolWorkerFlag } from './constants';
 
 import type { WorkerContextSerialized, WorkerOutput } from './type';
 
@@ -22,7 +24,7 @@ function isWorkerContextSerialized(input: unknown): input is WorkerContextSerial
 }
 
 export function runWorker() {
-  if (isMainThread || !parentPort) {
+  if (isMainThread || !parentPort || workerData !== workerPoolWorkerFlag) {
     return;
   }
 
