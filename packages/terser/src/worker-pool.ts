@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 
 import serializeJavascript from 'serialize-javascript';
 
-import { freeWorker, workerPoolWorkerFlag, taskInfo } from './constants';
+import { freeWorker, taskInfo, workerPoolWorkerFlag } from './constants';
 
 import type {
   WorkerCallback,
