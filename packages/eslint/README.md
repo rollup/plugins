@@ -51,7 +51,7 @@ You can also use eslint configuration in the form of a `.eslintrc.*` file in you
 Type: `String | String[]`<br>
 Default: `node_modules/**`
 
-A single [`picomatch`](https://github.com/micromatch/picomatch) pattern or an array of patterns controlling which files this plugin should explicitly include. Gets forwarded to the [`createFilter`](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter) method of `@rollup/pluginutils`.
+A single [`picomatch`](https://github.com/micromatch/picomatch) pattern or an array of patterns controlling which files this plugin should explicitly exclude. Gets forwarded to the [`createFilter`](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter) method of `@rollup/pluginutils`.
 
 ### fix
 
