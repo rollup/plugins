@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.0
+
+_2023-05-12_
+
+### Breaking Changes
+
+- fix: dynamic require root check was broken in some cases [#1461](https://github.com/rollup/plugins/pull/1461)
+
 ## v24.1.0
 
 _2023-04-11_
