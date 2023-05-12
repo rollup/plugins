@@ -1,5 +1,13 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v6.1.3
+
+_2023-05-12_
+
+### Updates
+
+- docs: Fix typo in README [#1473](https://github.com/rollup/plugins/pull/1473)
+
 ## v6.1.2
 
 _2023-01-20_
