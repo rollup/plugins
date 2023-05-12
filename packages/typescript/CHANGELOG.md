@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v11.1.1
+
+_2023-05-12_
+
+### Bugfixes
+
+- fix: Allow for using `compilerOptions.moduleResolution` [#1453](https://github.com/rollup/plugins/pull/1453)
+
 ## v11.1.0
 
 _2023-04-04_
