@@ -4,13 +4,13 @@ import { createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
 
 const defaults = {
   documentMode: 'single',
-  transform: null
+  transform: null,
+  extensions: ['.yaml', '.yml']
 };
-const ext = /\.ya?ml$/;
 
 export default function yaml(opts = {}) {
   const options = Object.assign({}, defaults, opts);
-  const { documentMode } = options;
+  const { documentMode, extensions } = options;
   const filter = createFilter(options.include, options.exclude);
   let loadMethod = null;
 
@@ -28,7 +28,7 @@ export default function yaml(opts = {}) {
     name: 'yaml',
 
     transform(content, id) {
-      if (!ext.test(id)) return null;
+      if (!extensions.some((ext) => id.toLowerCase().endsWith(ext))) return null;
       if (!filter(id)) return null;
 
       let data = loadMethod(content);
