@@ -28,7 +28,7 @@ export default function yaml(opts = {}) {
     name: 'yaml',
 
     transform(content, id) {
-      if (!extensions.some(ext => id.toLowerCase().endsWith(ext))) return null;
+      if (!extensions.some((ext) => id.toLowerCase().endsWith(ext))) return null;
       if (!filter(id)) return null;
 
       let data = loadMethod(content);
