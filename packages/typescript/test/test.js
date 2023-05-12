@@ -1294,6 +1294,26 @@ test.serial('works when code is in src directory', async (t) => {
 test.serial('correctly resolves types in a nodenext module', async (t) => {
   const warnings = [];
   const bundle = await rollup({
+    input: 'fixtures/nodenext-module/index.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/nodenext-module/tsconfig.json'
+      })
+    ],
+    onwarn({ toString, ...warning }) {
+      warnings.push(warning);
+    }
+  });
+  const code = await getCode(bundle, outputOptions);
+
+  t.true(code.includes('const bar = foo'), code);
+  t.is(warnings.length, 1);
+  t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
+});
+
+test.serial('correctly resolves types with nodenext moduleResolution', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
     input: 'fixtures/nodenext-resolution/index.ts',
     plugins: [
       typescript({
@@ -1306,7 +1326,7 @@ test.serial('correctly resolves types in a nodenext module', async (t) => {
   });
   const code = await getCode(bundle, outputOptions);
 
-  t.true(code.includes('const bar = foo'), code);
+  t.true(code.includes('var bar = foo'), code);
   t.is(warnings.length, 1);
   t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
 });
