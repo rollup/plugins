@@ -1,5 +1,13 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v4.1.0
+
+_2023-05-12_
+
+### Features
+
+- feat: support specifying custom file extensions [#1445](https://github.com/rollup/plugins/pull/1445)
+
 ## v4.0.1
 
 _2022-10-21_
