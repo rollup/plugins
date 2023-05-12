@@ -1,5 +1,13 @@
 # @rollup/plugin-eslint ChangeLog
 
+## v9.0.4
+
+_2023-05-12_
+
+### Updates
+
+- docs: typo in readme [#1486](https://github.com/rollup/plugins/pull/1486)
+
 ## v9.0.3
 
 _2023-01-20_

@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-eslint",
-  "version": "9.0.3",
+  "version": "9.0.4",
   "publishConfig": {
     "access": "public"
   },
