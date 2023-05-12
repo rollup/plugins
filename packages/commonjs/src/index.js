@@ -112,6 +112,7 @@ export default function commonjs(options = {}) {
   let requireResolver;
 
   function transformAndCheckExports(code, id) {
+    const normalizedId = normalizePathSlashes(id);
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
       this.parse,
       code,
@@ -127,7 +128,7 @@ export default function commonjs(options = {}) {
     }
 
     if (
-      !dynamicRequireModules.has(normalizePathSlashes(id)) &&
+      !dynamicRequireModules.has(normalizedId) &&
       (!(hasCjsKeywords(code, ignoreGlobal) || requireResolver.isRequiredId(id)) ||
         (isEsModule && !options.transformMixedEsModules))
     ) {
@@ -136,18 +137,19 @@ export default function commonjs(options = {}) {
     }
 
     const needsRequireWrapper =
-      !isEsModule &&
-      (dynamicRequireModules.has(normalizePathSlashes(id)) || strictRequiresFilter(id));
+      !isEsModule && (dynamicRequireModules.has(normalizedId) || strictRequiresFilter(id));
 
     const checkDynamicRequire = (position) => {
-      if (id.indexOf(dynamicRequireRoot) !== 0) {
+      const normalizedRequireRoot = normalizePathSlashes(dynamicRequireRoot);
+
+      if (normalizedId.indexOf(normalizedRequireRoot) !== 0) {
         this.error(
           {
             code: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
-            id,
+            normalizedId,
             dynamicRequireRoot,
-            message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${dirname(
-              id
+            message: `"${normalizedId}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${normalizedRequireRoot}". You should set dynamicRequireRoot to "${dirname(
+              normalizedId
             )}" or one of its parent directories.`
           },
           position

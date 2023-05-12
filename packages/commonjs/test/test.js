@@ -13,7 +13,12 @@ const { testBundle } = require('../../../util/test');
 
 const { peerDependencies } = require('../package.json');
 
-const { commonjs, executeBundle, getCodeFromBundle } = require('./helpers/util.js');
+const {
+  commonjs,
+  executeBundle,
+  getCodeFromBundle,
+  normalizePathSlashes
+} = require('./helpers/util.js');
 
 install();
 test.beforeEach(() => process.chdir(__dirname));
@@ -715,9 +720,16 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
   }
 
   const cwd = process.cwd();
-  const id = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/main.js');
-  const dynamicRequireRoot = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/nested');
-  const minimalDynamicRequireRoot = path.join(cwd, 'fixtures/samples/dynamic-require-outside-root');
+  const id = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/main.js')
+  );
+  const dynamicRequireRoot = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root/nested')
+  );
+  const minimalDynamicRequireRoot = normalizePathSlashes(
+    path.join(cwd, 'fixtures/samples/dynamic-require-outside-root')
+  );
+
   t.like(error, {
     message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
     pluginCode: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
@@ -725,6 +737,52 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
     dynamicRequireRoot
   });
 });
+
+test('does not throw when a dynamic require uses different slashes than dynamicRequireRoot', async (t) => {
+  let error = null;
+  try {
+    await rollup({
+      input: 'fixtures/samples/dynamic-require-outside-root/main.js',
+      plugins: [
+        commonjs({
+          dynamicRequireRoot: 'fixtures\\samples\\dynamic-require-outside-root',
+          dynamicRequireTargets: [
+            'fixtures\\samples\\dynamic-require-outside-root\\nested\\target.js'
+          ]
+        })
+      ]
+    });
+  } catch (err) {
+    error = err;
+  }
+
+  t.is(error, null);
+});
+
+// On Windows, avoid a false error about a module not being in the dynamic require root due to
+// incoherent slashes/backslashes in the paths.
+if (os.platform() === 'win32') {
+  test('correctly asserts dynamicRequireRoot on Windows', async (t) => {
+    let error = null;
+    try {
+      await rollup({
+        input: 'fixtures/samples/dynamic-require-outside-root/main.js',
+        plugins: [
+          commonjs({
+            dynamicRequireRoot: 'fixtures/samples/dynamic-require-outside-root',
+            dynamicRequireTargets: [
+              'fixtures/samples/dynamic-require-outside-root/nested/target.js'
+            ]
+          })
+        ]
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    t.is(error, null);
+  });
+}
 
 test('does not transform typeof exports for mixed modules', async (t) => {
   const bundle = await rollup({

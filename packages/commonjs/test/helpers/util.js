@@ -7,6 +7,10 @@ function commonjs(options) {
   return commonjsPlugin(options);
 }
 
+function normalizePathSlashes(path) {
+  return path.replace(/\\/g, '/');
+}
+
 function requireWithContext(code, context) {
   const module = { exports: {} };
   const contextWithExports = { ...context, module, exports: module.exports };
@@ -90,5 +94,6 @@ module.exports = {
   executeBundle,
   getCodeFromBundle,
   getCodeMapFromBundle,
+  normalizePathSlashes,
   runCodeSplitTest
 };
