@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 
 import serializeJavascript from 'serialize-javascript';
 
-import { freeWorker, taskInfo } from './constants';
+import { freeWorker, taskInfo, workerPoolWorkerFlag } from './constants';
 
 import type {
   WorkerCallback,
@@ -81,7 +81,9 @@ export class WorkerPool extends EventEmitter {
   }
 
   private addNewWorker() {
-    const worker: WorkerWithTaskInfo = new Worker(this.filePath);
+    const worker: WorkerWithTaskInfo = new Worker(this.filePath, {
+      workerData: workerPoolWorkerFlag
+    });
 
     worker.on('message', (result) => {
       worker[taskInfo]?.done(null, result);
