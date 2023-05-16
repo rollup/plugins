@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v0.4.2
+
+_2023-05-16_
+
+### Bugfixes
+
+- fix: don't assume code is running in worker created by the worker pool [#1483](https://github.com/rollup/plugins/pull/1483)
+
 ## v0.4.1
 
 _2023-04-09_
