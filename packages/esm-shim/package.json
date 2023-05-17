@@ -60,7 +60,7 @@
     }
   },
   "dependencies": {
-    "magic-string": "^0.27.0"
+    "magic-string": "^0.30.0"
   },
   "devDependencies": {
     "rollup": "^3.0.0-7",
