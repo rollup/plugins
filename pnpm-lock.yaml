@@ -266,11 +266,11 @@ importers:
 
   packages/esm-shim:
     specifiers:
-      magic-string: ^0.27.0
+      magic-string: ^0.30.0
       rollup: ^3.0.0-7
       typescript: ^4.8.3
     dependencies:
-      magic-string: 0.27.0
+      magic-string: 0.30.0
     devDependencies:
       rollup: 3.2.3
       typescript: 4.8.4
@@ -5449,6 +5449,13 @@ packages:
 
   /magic-string/0.27.0:
     resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.14
+    dev: false
+
+  /magic-string/0.30.0:
+    resolution: {integrity: sha512-LA+31JYDJLs82r2ScLrlz1GjSgu66ZV518eyWT+S8VhyQn/JL0u9MeBOvQMGYiPk1DBiSN9DDMOcXvigJZaViQ==}
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.14
