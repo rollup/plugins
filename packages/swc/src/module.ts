@@ -6,23 +6,20 @@ import { merge } from 'smob';
 import type { Options } from './type';
 
 export function swc(input: Options = {}): Plugin {
-  const swcOptions: SWCOptions = merge(
-    {
-      jsc: {
-        target: 'es2020',
-        parser: {
-          syntax: 'typescript',
-          decorators: true
-        },
-        transform: {
-          decoratorMetadata: true,
-          legacyDecorator: true
-        },
-        loose: true
-      }
-    },
-    input.swc || {}
-  );
+  const swcOptions: SWCOptions = merge({}, input.swc || {}, {
+    jsc: {
+      target: 'es2020',
+      parser: {
+        syntax: 'typescript',
+        decorators: true
+      },
+      transform: {
+        decoratorMetadata: true,
+        legacyDecorator: true
+      },
+      loose: true
+    }
+  });
 
   return {
     name: 'swc',
