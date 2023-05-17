@@ -524,14 +524,14 @@ importers:
     specifiers:
       '@types/serialize-javascript': ^5.0.2
       rollup: ^3.0.0-7
-      serialize-javascript: ^6.0.0
-      smob: ^0.0.6
-      terser: ^5.15.1
+      serialize-javascript: ^6.0.1
+      smob: ^1.0.0
+      terser: ^5.17.4
       typescript: ^4.8.3
     dependencies:
-      serialize-javascript: 6.0.0
-      smob: 0.0.6
-      terser: 5.15.1
+      serialize-javascript: 6.0.1
+      smob: 1.0.0
+      terser: 5.17.4
     devDependencies:
       '@types/serialize-javascript': 5.0.2
       rollup: 3.0.0-7
@@ -6907,8 +6907,8 @@ packages:
       type-fest: 0.13.1
     dev: true
 
-  /serialize-javascript/6.0.0:
-    resolution: {integrity: sha512-Qr3TosvguFt8ePWqsvRfrKyQXIiW+nGbYpy8XK24NQHE83caxWt+mIymTT19DGFbNWNLfEwsrkSmN64lVWB9ag==}
+  /serialize-javascript/6.0.1:
+    resolution: {integrity: sha512-owoXEFjWRllis8/M1Q+Cw5k8ZH40e3zhp/ovX+Xr/vi1qj6QesbyXXViFbpNvWvPNAD62SutwEXavefrLJWj7w==}
     dependencies:
       randombytes: 2.1.0
     dev: false
@@ -7005,6 +7005,10 @@ packages:
 
   /smob/0.0.6:
     resolution: {integrity: sha512-V21+XeNni+tTyiST1MHsa84AQhT1aFZipzPpOFAVB8DkHzwJyjjAmt9bgwnuZiZWnIbMo2duE29wybxv/7HWUw==}
+    dev: false
+
+  /smob/1.0.0:
+    resolution: {integrity: sha512-fnePEPpgGjAdBDk0nV7L9jcStbbcUsKS5TC+RYambCSU9Dm1k2rqDivdg5LBRVWF/NXe0Rq8yfnKKQI08kSXIg==}
     dev: false
 
   /sort-keys/2.0.0:
@@ -7286,8 +7290,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /terser/5.15.1:
-    resolution: {integrity: sha512-K1faMUvpm/FBxjBXud0LWVAGxmvoPbZbfTCYbSgaaYQaIXI3/TdI7a7ZGA73Zrou6Q8Zmz3oeUTsp/dj+ag2Xw==}
+  /terser/5.17.4:
+    resolution: {integrity: sha512-jcEKZw6UPrgugz/0Tuk/PVyLAPfMBJf5clnGueo45wTweoV8yh7Q7PEkhkJ5uuUbC7zAxEcG3tqNr1bstkQ8nw==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:

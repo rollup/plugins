@@ -61,9 +61,9 @@
     }
   },
   "dependencies": {
-    "serialize-javascript": "^6.0.0",
-    "smob": "^0.0.6",
-    "terser": "^5.15.1"
+    "serialize-javascript": "^6.0.1",
+    "smob": "^1.0.0",
+    "terser": "^5.17.4"
   },
   "devDependencies": {
     "@types/serialize-javascript": "^5.0.2",
