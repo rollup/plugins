@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v0.4.3
+
+_2023-05-17_
+
+### Bugfixes
+
+- fix: bump dependencies [#1501](https://github.com/rollup/plugins/pull/1501)
+
 ## v0.4.2
 
 _2023-05-16_
