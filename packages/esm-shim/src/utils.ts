@@ -50,7 +50,7 @@ export function provideCJSSyntax(code: string): Output | null {
   if (Array.isArray(sourceMap.sourcesContent)) {
     sourcesContent = [];
     for (let i = 0; i < sourceMap.sourcesContent.length; i++) {
-      const content = sourceMap.sources[i];
+      const content = sourceMap.sourcesContent[i];
       if (typeof content === 'string') {
         sourcesContent.push(content);
       }
