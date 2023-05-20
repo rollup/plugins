@@ -185,3 +185,22 @@ test('throws an error on failure', async (t) => {
   }
   t.is(thrown, true);
 });
+
+test('dynamic imports assertions', async (t) => {
+  const bundle = await rollup({
+    input: 'fixture-assert.js',
+    plugins: [dynamicImportVars()]
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+  const expectedFiles = [
+    require.resolve('./fixtures/fixture-assert.js'),
+    require.resolve('./fixtures/module-dir-a/module-a-1.js'),
+    require.resolve('./fixtures/module-dir-a/module-a-2.js')
+  ];
+
+  t.deepEqual(
+    expectedFiles,
+    output.map((o) => o.facadeModuleId)
+  );
+  t.snapshot(output[0].code);
+});

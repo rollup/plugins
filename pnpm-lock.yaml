@@ -230,6 +230,7 @@ importers:
     specifiers:
       '@rollup/pluginutils': ^5.0.1
       acorn: ^8.8.0
+      astring: ^1.8.5
       estree-walker: ^2.0.2
       fast-glob: ^3.2.12
       magic-string: ^0.27.0
@@ -237,6 +238,7 @@ importers:
       rollup: ^3.2.3
     dependencies:
       '@rollup/pluginutils': 5.0.1_rollup@3.2.3
+      astring: 1.8.5
       estree-walker: 2.0.2
       fast-glob: 3.2.12
       magic-string: 0.27.0
@@ -3000,6 +3002,11 @@ packages:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
     dev: true
+
+  /astring/1.8.5:
+    resolution: {integrity: sha512-TuBbdn7jWVzf8dmFGTaRpW8qgANtWLi1qJLnkfGO5uVf6jf9f/F4B1H35tnOI+qVYZo3p3i8WZlbZOuPAE0wEA==}
+    hasBin: true
+    dev: false
 
   /ava/4.3.3:
     resolution: {integrity: sha512-9Egq/d9R74ExrWohHeqUlexjDbgZJX5jA1Wq4KCTqc3wIfpGEK79zVy4rBtofJ9YKIxs4PzhJ8BgbW5PlAYe6w==}
@@ -7014,10 +7021,6 @@ packages:
       ansi-styles: 6.1.1
       is-fullwidth-code-point: 4.0.0
     dev: true
-
-  /smob/0.0.6:
-    resolution: {integrity: sha512-V21+XeNni+tTyiST1MHsa84AQhT1aFZipzPpOFAVB8DkHzwJyjjAmt9bgwnuZiZWnIbMo2duE29wybxv/7HWUw==}
-    dev: false
 
   /smob/1.0.0:
     resolution: {integrity: sha512-fnePEPpgGjAdBDk0nV7L9jcStbbcUsKS5TC+RYambCSU9Dm1k2rqDivdg5LBRVWF/NXe0Rq8yfnKKQI08kSXIg==}
