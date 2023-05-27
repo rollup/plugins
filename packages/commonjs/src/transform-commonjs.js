@@ -76,6 +76,7 @@ export default async function transformCommonjs(
   let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
+  let classBodyDepth = 0;
   let currentTryBlockEnd = null;
   let shouldWrap = false;
 
@@ -258,6 +259,9 @@ export default async function transformCommonjs(
           }
           return;
         }
+        case 'ClassBody':
+          classBodyDepth += 1;
+          return;
         case 'ConditionalExpression':
         case 'IfStatement':
           // skip dead branches
@@ -354,7 +358,7 @@ export default async function transformCommonjs(
           return;
         case 'ThisExpression':
           // rewrite top-level `this` as `commonjsHelpers.commonjsGlobal`
-          if (lexicalDepth === 0) {
+          if (lexicalDepth === 0 && !classBodyDepth) {
             uses.global = true;
             if (!ignoreGlobal) {
               replacedGlobal.push(node);
@@ -405,6 +409,7 @@ export default async function transformCommonjs(
       programDepth -= 1;
       if (node.scope) scope = scope.parent;
       if (functionType.test(node.type)) lexicalDepth -= 1;
+      if (node.type === 'ClassBody') classBodyDepth -= 1;
     }
   });
 
