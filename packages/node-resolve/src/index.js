@@ -146,11 +146,18 @@ export function nodeResolve(opts = {}) {
       importSpecifierList.push(`./${importee}`);
     }
 
-    // TypeScript files may import '.js' to refer to either '.ts' or '.tsx'
-    if (importer && importee.endsWith('.js')) {
-      for (const ext of ['.ts', '.tsx']) {
-        if (importer.endsWith(ext) && extensions.includes(ext)) {
-          importSpecifierList.push(importee.replace(/.js$/, ext));
+    // TypeScript files may import '.mjs' or '.cjs' to refer to either '.mts' or '.cts'.
+    // They may also import .js to refer to either .ts or .tsx, and .jsx to refer to .tsx.
+    if (importer && /\.(ts|mts|cts|tsx)$/.test(importer)) {
+      for (const [importeeExt, resolvedExt] of [
+        ['.js', '.ts'],
+        ['.js', '.tsx'],
+        ['.jsx', '.tsx'],
+        ['.mjs', '.mts'],
+        ['.cjs', '.cts']
+      ]) {
+        if (importee.endsWith(importeeExt) && extensions.includes(resolvedExt)) {
+          importSpecifierList.push(importee.slice(0, -importeeExt.length) + resolvedExt);
         }
       }
     }
