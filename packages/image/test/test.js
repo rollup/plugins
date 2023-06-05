@@ -50,3 +50,12 @@ test('imports an svg for dom, encodes for url', async (t) => {
 
   t.snapshot(await getCode(bundle));
 });
+
+test('imports an svg, exports source', async (t) => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/svg.js',
+    plugins: [image({ sourceSvg: true })]
+  });
+
+  t.snapshot(await getCode(bundle));
+});

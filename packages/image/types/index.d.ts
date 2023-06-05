@@ -29,6 +29,11 @@ interface RollupImageOptions {
    * @default false
    */
   dom?: boolean;
+  /**
+   * If `true`, the plugin will export raw svg content instead of transforming the content as a Base64
+   * representation of the image. This mode replicates Webpacks `raw-loader` behaviour.
+   */
+  sourceSvg?: boolean;
 }
 
 export default function image(options?: RollupImageOptions): Plugin;
