@@ -140,15 +140,15 @@ export default function commonjs(options = {}) {
       !isEsModule && (dynamicRequireModules.has(normalizedId) || strictRequiresFilter(id));
 
     const checkDynamicRequire = (position) => {
-      const normalizedRequireRoot = normalizePathSlashes(dynamicRequireRoot);
+      const normalizedDynamicRequireRoot = normalizePathSlashes(dynamicRequireRoot);
 
-      if (normalizedId.indexOf(normalizedRequireRoot) !== 0) {
+      if (normalizedId.indexOf(normalizedDynamicRequireRoot) !== 0) {
         this.error(
           {
             code: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
             normalizedId,
-            dynamicRequireRoot,
-            message: `"${normalizedId}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${normalizedRequireRoot}". You should set dynamicRequireRoot to "${dirname(
+            normalizedDynamicRequireRoot,
+            message: `"${normalizedId}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${normalizedDynamicRequireRoot}". You should set dynamicRequireRoot to "${dirname(
               normalizedId
             )}" or one of its parent directories.`
           },
