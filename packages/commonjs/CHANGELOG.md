@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.1
+
+_2023-06-10_
+
+### Bugfixes
+
+- fix: change dynamicRequireRoot to normalizedDynamicRequireRoot && tweak related tests [#1508](https://github.com/rollup/plugins/pull/1508)
+
 ## v25.0.0
 
 _2023-05-12_
