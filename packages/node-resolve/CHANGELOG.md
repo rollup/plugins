@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.1.0
+
+_2023-05-30_
+
+### Features
+
+- feat: Resolve js/jsx/mjs/cjs imports from TypeScript files [#1498](https://github.com/rollup/plugins/pull/1498)
+
 ## v15.0.2
 
 _2023-04-04_

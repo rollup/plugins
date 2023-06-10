@@ -733,8 +733,8 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
   t.like(error, {
     message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
     pluginCode: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
-    id,
-    dynamicRequireRoot
+    normalizedId: id,
+    normalizedDynamicRequireRoot: dynamicRequireRoot
   });
 });
 

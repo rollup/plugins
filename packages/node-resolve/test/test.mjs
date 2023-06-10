@@ -168,6 +168,82 @@ test('supports JS extensions in TS when referring to TS imports', async (t) => {
   t.is(module.exports, 'It works!');
 });
 
+test('supports JS extensions in TS when referring to TSX imports', async (t) => {
+  const bundle = await rollup({
+    input: 'tsx-import-js-extension/import-tsx-with-js-extension.ts',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.ts', '.tsx']
+      }),
+      babel({
+        babelHelpers: 'bundled',
+        plugins: ['@babel/plugin-transform-typescript'],
+        extensions: ['.js', '.ts', '.tsx']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
+test('supports JSX extensions in TS when referring to TSX imports', async (t) => {
+  const bundle = await rollup({
+    input: 'tsx-import-jsx-extension/import-tsx-with-jsx-extension.ts',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.ts', '.tsx']
+      }),
+      babel({
+        babelHelpers: 'bundled',
+        plugins: ['@babel/plugin-transform-typescript'],
+        extensions: ['.js', '.ts', '.tsx']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
+test('supports MJS extensions in TS when referring to MTS imports', async (t) => {
+  const bundle = await rollup({
+    input: 'ts-import-mjs-extension/import-ts-with-mjs-extension.ts',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.ts', '.mjs', '.mts']
+      }),
+      babel({
+        babelHelpers: 'bundled',
+        plugins: ['@babel/plugin-transform-typescript'],
+        extensions: ['.js', '.ts', '.mjs', '.mts']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
+test('supports CJS extensions in TS when referring to CTS imports', async (t) => {
+  const bundle = await rollup({
+    input: 'ts-import-cjs-extension/import-ts-with-cjs-extension.ts',
+    onwarn: failOnWarn(t),
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.ts', '.cjs', '.cts']
+      }),
+      babel({
+        babelHelpers: 'bundled',
+        plugins: ['@babel/plugin-transform-typescript'],
+        extensions: ['.js', '.ts', '.cjs', '.cts']
+      })
+    ]
+  });
+  const { module } = await testBundle(t, bundle);
+  t.is(module.exports, 'It works!');
+});
+
 test('supports JS extensions in TS actually importing JS with export map', async (t) => {
   const bundle = await rollup({
     input: 'ts-import-js-extension-for-js-file-export-map/import-js-with-js-extension.ts',
