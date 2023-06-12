@@ -241,6 +241,18 @@ Default: `[]`
 
 Declaration files are automatically included if they are listed in the `files` field in your `tsconfig.json` file. Source files in these fields are ignored as Rollup's configuration is used instead.
 
+#### Sourcemaps
+To generate sourcemaps, you need to add `sourcemap: true` to the `output` property of the rollup config:
+```js
+{
+  // ...
+  output: {
+    // ...
+    sourcemap: true,
+  }
+}
+```
+
 #### Ignored options
 
 These compiler options are ignored by Rollup:
