@@ -42,7 +42,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
   const formatHost = createFormattingHost(ts, parsedOptions.options);
-  const resolveModule = createModuleResolver(ts, formatHost);
+  const resolveModule = createModuleResolver(ts, formatHost, filter);
 
   let program: Watch<unknown> | null = null;
 
