@@ -1,5 +1,13 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v4.1.1
+
+_2023-06-19_
+
+### Bugfixes
+
+- fix: Add extensions?: string[] to RollupYamlOptions types [#1506](https://github.com/rollup/plugins/pull/1506)
+
 ## v4.1.0
 
 _2023-05-12_
