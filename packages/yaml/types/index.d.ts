@@ -37,6 +37,13 @@ interface RollupYamlOptions {
    * @default 'single'
    */
   documentMode?: 'single' | 'multi';
+
+  /**
+   * File extensions to process. Useful if you have files that contain YAML but do not have a
+   * `.yaml` or `.yml` extension.
+   * @default ['.yaml', '.yml']
+   */
+  extensions?: string[];
 }
 
 /**

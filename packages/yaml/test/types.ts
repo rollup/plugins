@@ -19,7 +19,8 @@ const config: RollupOptions = {
         }
 
         return data;
-      }
+      },
+      extensions: ['.yaml', '.yml', '.cff']
     })
   ]
 };
