@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.2
+
+_2023-06-19_
+
+### Bugfixes
+
+- fix: add classBodyDepth flag [#1507](https://github.com/rollup/plugins/pull/1507)
+
 ## v25.0.1
 
 _2023-06-10_
