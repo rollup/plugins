@@ -1393,3 +1393,12 @@ test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) =
   const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
   t.is(output[0].code, originalCode);
 });
+
+test.serial('compiled external library', async (t) => {
+  const input = 'fixtures/external-library-import/main.ts';
+  await rollup({
+    input,
+    plugins: [typescript({ tsconfig: 'fixtures/external-library-import/tsconfig.json' })]
+  });
+  t.pass();
+});
