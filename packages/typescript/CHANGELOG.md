@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v11.1.2
+
+_2023-06-28_
+
+### Bugfixes
+
+- fix: change the value of isExternalLibraryImport to false if the resolvedModule should be compiled [#1521](https://github.com/rollup/plugins/pull/1521)
+
 ## v11.1.1
 
 _2023-05-12_
