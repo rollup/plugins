@@ -196,12 +196,13 @@ export default async function transformCommonjs(
 
           // Transform require.resolve
           if (
-            isDynamicRequireModulesEnabled &&
             node.callee.object &&
             isRequire(node.callee.object, scope) &&
             node.callee.property.name === 'resolve'
           ) {
-            checkDynamicRequire(node.start);
+            if (isDynamicRequireModulesEnabled) {
+              checkDynamicRequire(node.start);
+            }
             uses.require = true;
             const requireNode = node.callee.object;
             replacedDynamicRequires.push(requireNode);

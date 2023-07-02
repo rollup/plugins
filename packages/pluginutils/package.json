@@ -33,7 +33,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm test -- --verbose",
     "prebuild": "del-cli dist",
-    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prepare": "node -e \"fs.existsSync('./dist') || process.exit(1)\" || pnpm build",
     "prerelease": "pnpm build",
     "pretest": "pnpm build --sourcemap",
     "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",

@@ -61,7 +61,7 @@ export function getDynamicRequireModules(patterns, dynamicRequireRoot) {
   };
 }
 
-const FAILED_REQUIRE_ERROR = `throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');`;
+const FAILED_REQUIRE_ERROR = `throw new Error('Could not dynamically require/require.resolve "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');`;
 
 export const COMMONJS_REQUIRE_EXPORT = 'commonjsRequire';
 export const CREATE_COMMONJS_REQUIRE_EXPORT = 'createCommonjsRequire';
@@ -73,9 +73,12 @@ export function getDynamicModuleRegistry(
   ignoreDynamicRequires
 ) {
   if (!isDynamicRequireModulesEnabled) {
-    return `export function ${COMMONJS_REQUIRE_EXPORT}(path) {
+    return `function ${COMMONJS_REQUIRE_EXPORT}(path) {
 	${FAILED_REQUIRE_ERROR}
-}`;
+}
+${COMMONJS_REQUIRE_EXPORT}.resolve = ${COMMONJS_REQUIRE_EXPORT};
+export {${COMMONJS_REQUIRE_EXPORT}};
+`;
   }
   const dynamicModuleImports = [...dynamicRequireModules.values()]
     .map(
@@ -116,7 +119,7 @@ export function ${CREATE_COMMONJS_REQUIRE_EXPORT}(originalModuleDir) {
 		if (resolvedPath !== null) {
 			return resolvedPath;
 		}
-		return require.resolve(path);
+		${ignoreDynamicRequires ? 'return require.resolve(path);' : FAILED_REQUIRE_ERROR}
 	}
 	return handleRequire;
 }

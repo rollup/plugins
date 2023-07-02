@@ -31,7 +31,7 @@
     "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "lint:graphql": "prettier --write \"test/fixtures/**/*.graphql\"",
     "prebuild": "del-cli dist && pnpm lint:graphql",
-    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prepare": "node -e \"fs.existsSync('./dist') || process.exit(1)\" || pnpm build",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
