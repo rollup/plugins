@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.0.4
+
+_2023-07-08_
+
+### Updates
+
+- docs: typo [#1527](https://github.com/rollup/plugins/pull/1527)
+
 ## v2.0.3
 
 _2023-01-20_
