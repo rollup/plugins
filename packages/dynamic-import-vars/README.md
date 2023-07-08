@@ -95,7 +95,7 @@ Some example patterns and the glob they produce:
 ```
 
 ```js
-'./locales/' + locale + foo + bar '.js' -> './locales/*.js'
+'./locales/' + locale + foo + bar + '.js' -> './locales/*.js'
 ```
 
 ```js
