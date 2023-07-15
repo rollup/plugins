@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.3
+
+_2023-07-15_
+
+### Bugfixes
+
+- fix: preserve `this` reference in the child class [#1537](https://github.com/rollup/plugins/pull/1537)
+
 ## v25.0.2
 
 _2023-06-19_
