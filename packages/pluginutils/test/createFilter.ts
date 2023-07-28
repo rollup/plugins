@@ -134,6 +134,20 @@ test('does not add current working directory when pattern is an absolute path', 
   t.falsy(filter(resolve('..', 'c')));
 });
 
+test('does not add current working directory when pattern starts with character **', (t) => {
+  const filter = createFilter(['**/*']);
+
+  t.truthy(filter(resolve('a')));
+  t.truthy(filter(resolve('..', '..', 'a')));
+});
+
+test('add current working directory when pattern starts with one *', (t) => {
+  const filter = createFilter([`*`]);
+
+  t.truthy(filter(resolve('a')));
+  t.falsy(filter(resolve('..', '..', 'a')));
+});
+
 test('normalizes path when pattern is an absolute path', (t) => {
   const filterPosix = createFilter([`${resolve('.')}/*`]);
   const filterWin = createFilter([`${resolve('.')}\\*`]);
@@ -160,10 +174,4 @@ test('normalizes path when pattern has resolution base', (t) => {
 
   t.truthy(filterPosix(resolve('test/a')));
   t.truthy(filterWin(resolve('test/a')));
-});
-
-test('does not add current working directory when pattern starts with a glob', (t) => {
-  const filter = createFilter(['**/*']);
-  t.truthy(filter(resolve('a')));
-  t.truthy(filter(resolve('..', '..', 'a')));
 });

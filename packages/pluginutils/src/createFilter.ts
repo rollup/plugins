@@ -8,7 +8,7 @@ import ensureArray from './utils/ensureArray';
 import normalizePath from './normalizePath';
 
 function getMatcherString(id: string, resolutionBase: string | false | null | undefined) {
-  if (resolutionBase === false || isAbsolute(id) || id.startsWith('*')) {
+  if (resolutionBase === false || isAbsolute(id) || id.startsWith('**')) {
     return normalizePath(id);
   }
 
