@@ -36,6 +36,19 @@ test('handles export map with fallback', async (t) => {
   t.is(module.exports, 'MAIN MAPPED');
 });
 
+test('handles export map with pattern and extensions', async (t) => {
+  const bundle = await rollup({
+    input: 'exports-pattern-extension.js',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.is(module.exports.foo, 'foo');
+});
+
 test('handles export map with top level mappings', async (t) => {
   const bundle = await rollup({
     input: 'exports-top-level-mappings.js',

@@ -175,6 +175,31 @@ rootDir: path.join(process.cwd(), '..')
 
 If you use the `sideEffects` property in the package.json, by default this is respected for files in the root package. Set to `true` to ignore the `sideEffects` configuration for the root package.
 
+### `allowExportsFolderMapping`
+
+Older Node versions supported exports mappings of folders like
+
+```json
+{
+  "exports": {
+    "./foo/": "./dist/foo/"
+  }
+}
+```
+
+This was deprecated with Node 14 and removed in Node 17, instead it is recommended to use exports patterns like
+
+```json
+{
+  "exports": {
+    "./foo/*": "./dist/foo/*"
+  }
+}
+```
+
+But for backwards compatibility this behavior is still supported by enabling the `allowExportsFolderMapping` (defaults to `true`).
+The default value might change in a futur major release.
+
 ## Preserving symlinks
 
 This plugin honours the rollup [`preserveSymlinks`](https://rollupjs.org/guide/en/#preservesymlinks) option.

@@ -37,7 +37,9 @@ const defaults = {
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: [],
   moduleDirectories: ['node_modules'],
-  ignoreSideEffectsForRoot: false
+  ignoreSideEffectsForRoot: false,
+  // TODO: set to false in next major release or remove
+  allowExportsFolderMapping: true
 };
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
@@ -183,7 +185,8 @@ export function nodeResolve(opts = {}) {
       moduleDirectories,
       modulePaths,
       rootDir,
-      ignoreSideEffectsForRoot
+      ignoreSideEffectsForRoot,
+      allowExportsFolderMapping: options.allowExportsFolderMapping
     });
 
     const importeeIsBuiltin = isBuiltinModule(importee);

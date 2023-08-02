@@ -96,6 +96,14 @@ export interface RollupNodeResolveOptions {
    * @default process.cwd()
    */
   rootDir?: string;
+
+  /**
+   * Allow folder mappings in package exports (trailing /)
+   * This was deprecated in Node 14 and removed with Node 17, see DEP0148.
+   * So this option might be changed to default to `false` in a future release.
+   * @default true
+   */
+  allowExportsFolderMapping?: boolean;
 }
 
 /**

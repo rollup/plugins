@@ -8,7 +8,7 @@ export const realpath = promisify(fs.realpath);
 export { realpathSync } from 'fs';
 export const stat = promisify(fs.stat);
 
-export async function fileExists(filePath) {
+export async function fileExists(filePath: fs.PathLike) {
   try {
     const res = await stat(filePath);
     return res.isFile();
@@ -17,6 +17,6 @@ export async function fileExists(filePath) {
   }
 }
 
-export async function resolveSymlink(path) {
+export async function resolveSymlink(path: fs.PathLike) {
   return (await fileExists(path)) ? realpath(path) : path;
 }
