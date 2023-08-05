@@ -140,7 +140,8 @@ test.serial(
 
     t.deepEqual(
       output.map((out) => out.fileName),
-      ['main.js', 'types/custom-types.d.ts', 'types/main.d.ts']
+      // 'types/should-not-be-emitted-types.d.ts' should not be emitted because 'main.ts' does not import/export from it.
+      ['main.js', 'types/should-be-emitted-types.d.ts', 'types/main.d.ts']
     );
 
     t.true(declaration.includes('export declare type MyNumber = number;'), declaration);

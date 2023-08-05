@@ -1,1 +1,1 @@
-export { MyNumber } from './custom-types';
+export { MyNumber } from './should-be-emitted-types';
