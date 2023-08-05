@@ -117,6 +117,36 @@ test.serial('supports creating declaration files for interface only source file'
   t.true(declaration.includes('//# sourceMappingURL=interface.d.ts.map'), declaration);
 });
 
+test.serial(
+  'supports creating declaration files for type-only source files that are implicitly included',
+  async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/implicitly-included-type-only-file/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/implicitly-included-type-only-file/tsconfig.json',
+          declarationDir: 'fixtures/implicitly-included-type-only-file/dist/types',
+          declaration: true
+        }),
+        onwarn
+      ]
+    });
+    const output = await getCode(
+      bundle,
+      { format: 'es', dir: 'fixtures/implicitly-included-type-only-file/dist' },
+      true
+    );
+    const declaration = output[1].source as string;
+
+    t.deepEqual(
+      output.map((out) => out.fileName),
+      ['main.js', 'types/main.d.ts', 'types/custom-types.d.ts']
+    );
+
+    t.true(declaration.includes('export type MyNumber = number;'), declaration);
+  }
+);
+
 test.serial('supports creating declaration files in declarationDir', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
