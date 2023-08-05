@@ -48,11 +48,11 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
     onwarn
   });
   const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
-  const declaration = output[1].source as string;
+  const declaration = output[2].source as string;
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', 'types/main.d.ts', 'types/main.d.ts.map']
+    ['main.js', 'types/main.d.ts.map', 'types/main.d.ts']
   );
 
   t.true(declaration.includes('declare const answer = 42;'), declaration);
@@ -100,16 +100,16 @@ test.serial('supports creating declaration files for interface only source file'
     { format: 'es', dir: 'fixtures/export-interface-only/dist' },
     true
   );
-  const declaration = output[1].source as string;
+  const declaration = output[2].source as string;
 
   t.deepEqual(
     output.map((out) => out.fileName),
     [
       'main.js',
-      'types/interface.d.ts',
       'types/interface.d.ts.map',
-      'types/main.d.ts',
-      'types/main.d.ts.map'
+      'types/interface.d.ts',
+      'types/main.d.ts.map',
+      'types/main.d.ts'
     ]
   );
 
@@ -140,10 +140,10 @@ test.serial(
 
     t.deepEqual(
       output.map((out) => out.fileName),
-      ['main.js', 'types/main.d.ts', 'types/custom-types.d.ts']
+      ['main.js', 'types/custom-types.d.ts', 'types/main.d.ts']
     );
 
-    t.true(declaration.includes('export type MyNumber = number;'), declaration);
+    t.true(declaration.includes('export declare type MyNumber = number;'), declaration);
   }
 );
 
