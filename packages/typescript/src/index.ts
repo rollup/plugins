@@ -12,7 +12,13 @@ import createModuleResolver from './moduleResolution';
 import { getPluginOptions } from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
 import { validatePaths, validateSourceMap } from './options/validate';
-import findTypescriptOutput, { getEmittedFile, normalizePath, emitFile } from './outputFile';
+import findTypescriptOutput, {
+  getEmittedFile,
+  normalizePath,
+  emitFile,
+  isDeclarationOutputFile,
+  isMapOutputFile
+} from './outputFile';
 import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
@@ -150,40 +156,41 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     async generateBundle(outputOptions) {
-      parsedOptions.fileNames.forEach((fileName) => {
-        const output = findTypescriptOutput(ts, parsedOptions, fileName, emittedFiles, tsCache);
-        output.declarations.forEach((id) => {
-          const code = getEmittedFile(id, emittedFiles, tsCache);
-          if (!code || !parsedOptions.options.declaration) {
-            return;
-          }
+      const declarationAndMapFiles = [...emittedFiles.keys()].filter(
+        (fileName) => isDeclarationOutputFile(fileName) || isMapOutputFile(fileName)
+      );
 
-          let baseDir: string | undefined;
-          if (outputOptions.dir) {
-            baseDir = outputOptions.dir;
-          } else if (outputOptions.file) {
-            // find common path of output.file and configured declation output
-            const outputDir = path.dirname(outputOptions.file);
-            const configured = path.resolve(
-              parsedOptions.options.declarationDir ||
-                parsedOptions.options.outDir ||
-                tsconfig ||
-                process.cwd()
-            );
-            const backwards = path
-              .relative(outputDir, configured)
-              .split(path.sep)
-              .filter((v) => v === '..')
-              .join(path.sep);
-            baseDir = path.normalize(`${outputDir}/${backwards}`);
-          }
-          if (!baseDir) return;
+      declarationAndMapFiles.forEach((id) => {
+        const code = getEmittedFile(id, emittedFiles, tsCache);
+        if (!code || !parsedOptions.options.declaration) {
+          return;
+        }
 
-          this.emitFile({
-            type: 'asset',
-            fileName: normalizePath(path.relative(baseDir, id)),
-            source: code
-          });
+        let baseDir: string | undefined;
+        if (outputOptions.dir) {
+          baseDir = outputOptions.dir;
+        } else if (outputOptions.file) {
+          // find common path of output.file and configured declation output
+          const outputDir = path.dirname(outputOptions.file);
+          const configured = path.resolve(
+            parsedOptions.options.declarationDir ||
+              parsedOptions.options.outDir ||
+              tsconfig ||
+              process.cwd()
+          );
+          const backwards = path
+            .relative(outputDir, configured)
+            .split(path.sep)
+            .filter((v) => v === '..')
+            .join(path.sep);
+          baseDir = path.normalize(`${outputDir}/${backwards}`);
+        }
+        if (!baseDir) return;
+
+        this.emitFile({
+          type: 'asset',
+          fileName: normalizePath(path.relative(baseDir, id)),
+          source: code
         });
       });
 
