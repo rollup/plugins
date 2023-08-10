@@ -538,7 +538,7 @@ test('marks a module as external if the resolved version is external', async (t)
   });
 });
 
-test('passes on "isEntry" flag', async (t) => {
+test('passes on "isEntry" flag and original importee', async (t) => {
   const resolveOptions = [];
   await rollup({
     input: 'entry/main.js',
@@ -561,6 +561,7 @@ test('passes on "isEntry" flag', async (t) => {
       }
     ]
   });
+  
   t.deepEqual(resolveOptions, [
     ['other.js', 'main.js', { assertions: {}, custom: {}, isEntry: true }],
     ['main.js', void 0, { assertions: {}, custom: {}, isEntry: true }],
@@ -574,7 +575,8 @@ test('passes on "isEntry" flag', async (t) => {
             resolved: {
               id: join(DIRNAME, 'fixtures', 'entry', 'other.js'),
               moduleSideEffects: null
-            }
+            },
+            importee: './other.js'
           }
         },
         isEntry: true
@@ -590,7 +592,8 @@ test('passes on "isEntry" flag', async (t) => {
             resolved: {
               id: join(DIRNAME, 'fixtures', 'entry', 'main.js'),
               moduleSideEffects: null
-            }
+            },
+            importee: 'entry/main.js'
           }
         },
         isEntry: true
@@ -607,7 +610,8 @@ test('passes on "isEntry" flag', async (t) => {
             resolved: {
               id: join(DIRNAME, 'fixtures', 'entry', 'dep.js'),
               moduleSideEffects: null
-            }
+            },
+            importee: './dep.js'
           }
         },
         isEntry: false
@@ -651,7 +655,8 @@ test('passes on custom options', async (t) => {
             resolved: {
               id: join(DIRNAME, 'fixtures', 'entry', 'main.js'),
               moduleSideEffects: null
-            }
+            },
+            importee: 'entry/main.js',
           }
         },
         isEntry: false
@@ -668,7 +673,8 @@ test('passes on custom options', async (t) => {
             resolved: {
               id: join(DIRNAME, 'fixtures', 'entry', 'other.js'),
               moduleSideEffects: null
-            }
+            },
+            importee: 'entry/other.js',
           }
         },
         isEntry: true
