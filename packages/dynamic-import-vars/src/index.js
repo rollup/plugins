@@ -3,6 +3,7 @@ import path from 'path';
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 import fastGlob from 'fast-glob';
+import { generate } from 'astring';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -31,6 +32,14 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
           }
           dynamicImportIndex += 1;
 
+          let importArg;
+          if (node.arguments && node.arguments.length > 0) {
+            // stringify the argument node, without indents, removing newlines and using single quote strings
+            importArg = generate(node.arguments[0], { indent: '' })
+              .replace(/\n/g, '')
+              .replace(/"/g, "'");
+          }
+
           try {
             // see if this is a variable dynamic import, and generate a glob expression
             const glob = dynamicImportToGlob(node.source, code.substring(node.start, node.end));
@@ -53,7 +62,9 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
             ms.prepend(
               `function __variableDynamicImportRuntime${dynamicImportIndex}__(path) {
   switch (path) {
-${paths.map((p) => `    case '${p}': return import('${p}');`).join('\n')}
+${paths
+  .map((p) => `    case '${p}': return import('${p}'${importArg ? `, ${importArg}` : ''});`)
+  .join('\n')}
 ${`    default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -61,6 +72,7 @@ ${`    default: return new Promise(function(resolve, reject) {
     })\n`}   }
  }\n\n`
             );
+
             // call the runtime function instead of doing a dynamic import, the import specifier will
             // be evaluated at runtime and the correct import will be returned by the injected function
             ms.overwrite(

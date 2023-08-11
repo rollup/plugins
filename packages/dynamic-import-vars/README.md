@@ -145,6 +145,20 @@ function importLocale(locale) {
 }
 ```
 
+## Import Assertions
+
+This plugin will keep your import assertions inside dynamic import statements intact.
+
+```js
+// Refer to rollup-plugin-import-css https://github.com/jleeson/rollup-plugin-import-css
+function importLocale(sheet) {
+  return import(`./styles/${sheet}.css`, { assert: { type: 'css' } });
+}
+```
+
+This is important e.g. in the context of [rollup-plugin-import-css](https://github.com/jleeson/rollup-plugin-import-css) dealing with CSS imports,
+due to there still being an assertion, it will resolve the CSS import to a CSSStyleSheet, similar to native browser behavior.
+
 ## Limitations
 
 To know what to inject in the rollup bundle, we have to be able to do some static analysis on the code and make some assumptions about the possible imports. For example, if you use just a variable you could in theory import anything from your entire file system.
