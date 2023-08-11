@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.0.5
+
+_2023-08-11_
+
+### Bugfixes
+
+- fix: keep dynamic import assert arg intact [#1504](https://github.com/rollup/plugins/pull/1504)
+
 ## v2.0.4
 
 _2023-07-08_
