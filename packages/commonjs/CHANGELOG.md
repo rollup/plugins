@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.4
+
+_2023-08-11_
+
+### Updates
+
+- docs: update docs [#1545](https://github.com/rollup/plugins/pull/1545)
+
 ## v25.0.3
 
 _2023-07-15_
