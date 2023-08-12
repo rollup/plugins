@@ -561,7 +561,7 @@ test('passes on "isEntry" flag and original importee', async (t) => {
       }
     ]
   });
-  
+
   t.deepEqual(resolveOptions, [
     ['other.js', 'main.js', { assertions: {}, custom: {}, isEntry: true }],
     ['main.js', void 0, { assertions: {}, custom: {}, isEntry: true }],
@@ -656,7 +656,7 @@ test('passes on custom options', async (t) => {
               id: join(DIRNAME, 'fixtures', 'entry', 'main.js'),
               moduleSideEffects: null
             },
-            importee: 'entry/main.js',
+            importee: 'entry/main.js'
           }
         },
         isEntry: false
@@ -674,7 +674,7 @@ test('passes on custom options', async (t) => {
               id: join(DIRNAME, 'fixtures', 'entry', 'other.js'),
               moduleSideEffects: null
             },
-            importee: 'entry/other.js',
+            importee: 'entry/other.js'
           }
         },
         isEntry: true
