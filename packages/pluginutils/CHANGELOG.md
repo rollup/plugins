@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.0.3
+
+_2023-08-13_
+
+### Bugfixes
+
+- fix: add current working dirctory when pattern starts with one \* [#1547](https://github.com/rollup/plugins/pull/1547)
+
 ## v5.0.2
 
 _2022-10-21_
