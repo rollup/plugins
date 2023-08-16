@@ -41,3 +41,29 @@ test.serial('not inject cjs shim for cjs output', async (t) => {
   t.snapshot(output.code);
   t.falsy(output.map);
 });
+
+test.serial('inject cjs shim for esm output with a single import statement', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/cjs-single-import.js',
+    plugins: [esmShim()],
+    external: ['magic-string']
+  });
+  const result = await bundle.generate({ format: 'es' });
+  t.is(result.output.length, 1);
+  const [output] = result.output;
+  t.snapshot(output.code);
+  t.falsy(output.map);
+});
+
+test.serial('inject cjs shim for esm output with multiple import statements', async (t) => {
+  const bundle = await rollup({
+    input: 'test/fixtures/cjs-multiple-imports.js',
+    plugins: [esmShim()],
+    external: ['magic-string', 'node:crypto']
+  });
+  const result = await bundle.generate({ format: 'es' });
+  t.is(result.output.length, 1);
+  const [output] = result.output;
+  t.snapshot(output.code);
+  t.falsy(output.map);
+});
