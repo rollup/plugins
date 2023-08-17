@@ -234,6 +234,25 @@ this.resolve(importee, importer, {
 });
 ```
 
+## Resolve Options
+
+After this plugin resolved an import id to its target file in `node_modules`, it will invoke `this.resolve` again with the resolved id. It will pass the following information in the resolve options:
+
+```js
+this.resolve(resolved.id, importer, {
+  custom: {
+    'node-resolve': {
+      resolved, // the object with information from node.js resolve
+      importee // the original import id
+    }
+  }
+});
+```
+
+Your plugin can use the `importee` information to map an original import to its resolved file in `node_modules`, in a plugin hook such as `resolveId`.
+
+The `resolved` object contains the resolved id, which is passed as the first parameter. It also has a property `moduleSideEffects`, which may contain the value from the npm `package.json` field `sideEffects` or `null`.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
