@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.2.0
+
+_2023-08-17_
+
+### Features
+
+- feat: pass original importee to secondary resolve [#1557](https://github.com/rollup/plugins/pull/1557)
+
 ## v15.1.0
 
 _2023-05-30_
