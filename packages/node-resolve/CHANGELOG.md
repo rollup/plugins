@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.2.1
+
+_2023-08-22_
+
+### Bugfixes
+
+- fix: Implement package exports / imports resolution algorithm according to Node documentation [#1549](https://github.com/rollup/plugins/pull/1549)
+
 ## v15.2.0
 
 _2023-08-17_
