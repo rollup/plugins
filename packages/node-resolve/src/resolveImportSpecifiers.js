@@ -115,7 +115,8 @@ async function resolveWithExportMap({
   moduleDirectories,
   modulePaths,
   rootDir,
-  ignoreSideEffectsForRoot
+  ignoreSideEffectsForRoot,
+  allowExportsFolderMapping
 }) {
   if (importSpecifier.startsWith('#')) {
     // this is a package internal import, resolve using package imports field
@@ -204,6 +205,7 @@ async function resolveWithExportMap({
         moduleDirs: moduleDirectories,
         pkgURL,
         pkgJsonPath,
+        allowExportsFolderMapping,
         conditions: exportConditions
       };
       const resolvedPackageExport = await resolvePackageExports(context, subpath, pkgJson.exports);
@@ -284,7 +286,8 @@ export default async function resolveImportSpecifiers({
   moduleDirectories,
   modulePaths,
   rootDir,
-  ignoreSideEffectsForRoot
+  ignoreSideEffectsForRoot,
+  allowExportsFolderMapping
 }) {
   try {
     const exportMapRes = await resolveWithExportMap({
@@ -300,7 +303,8 @@ export default async function resolveImportSpecifiers({
       moduleDirectories,
       modulePaths,
       rootDir,
-      ignoreSideEffectsForRoot
+      ignoreSideEffectsForRoot,
+      allowExportsFolderMapping
     });
     if (exportMapRes) return exportMapRes;
   } catch (error) {

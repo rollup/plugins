@@ -4,11 +4,11 @@ import fs from 'fs';
 
 import { fileExists } from '../fs';
 
-function isModuleDir(current, moduleDirs) {
+function isModuleDir(current: string, moduleDirs: readonly string[]) {
   return moduleDirs.some((dir) => current.endsWith(dir));
 }
 
-export async function findPackageJson(base, moduleDirs) {
+export async function findPackageJson(base: string, moduleDirs: readonly string[]) {
   const { root } = path.parse(base);
   let current = base;
 
@@ -23,7 +23,7 @@ export async function findPackageJson(base, moduleDirs) {
   return null;
 }
 
-export function isUrl(str) {
+export function isUrl(str: string) {
   try {
     return !!new URL(str);
   } catch (_) {
@@ -31,46 +31,55 @@ export function isUrl(str) {
   }
 }
 
-export function isConditions(exports) {
+/**
+ * Conditions is an export object where all keys are conditions like 'node' (aka do not with '.')
+ */
+export function isConditions(exports: any) {
   return typeof exports === 'object' && Object.keys(exports).every((k) => !k.startsWith('.'));
 }
 
-export function isMappings(exports) {
+/**
+ * Mappings is an export object where all keys start with '.
+ */
+export function isMappings(exports: any) {
   return typeof exports === 'object' && !isConditions(exports);
 }
 
-export function isMixedExports(exports) {
+/**
+ * Check for mixed exports, which are exports where some keys start with '.' and some do not
+ */
+export function isMixedExports(exports: Record<string, any>) {
   const keys = Object.keys(exports);
   return keys.some((k) => k.startsWith('.')) && keys.some((k) => !k.startsWith('.'));
 }
 
-export function createBaseErrorMsg(importSpecifier, importer) {
+export function createBaseErrorMsg(importSpecifier: string, importer: string) {
   return `Could not resolve import "${importSpecifier}" in ${importer}`;
 }
 
-export function createErrorMsg(context, reason, internal) {
+export function createErrorMsg(context: any, reason?: string, isImports?: boolean) {
   const { importSpecifier, importer, pkgJsonPath } = context;
   const base = createBaseErrorMsg(importSpecifier, importer);
-  const field = internal ? 'imports' : 'exports';
+  const field = isImports ? 'imports' : 'exports';
   return `${base} using ${field} defined in ${pkgJsonPath}.${reason ? ` ${reason}` : ''}`;
 }
 
 export class ResolveError extends Error {}
 
 export class InvalidConfigurationError extends ResolveError {
-  constructor(context, reason) {
+  constructor(context: any, reason?: string) {
     super(createErrorMsg(context, `Invalid "exports" field. ${reason}`));
   }
 }
 
 export class InvalidModuleSpecifierError extends ResolveError {
-  constructor(context, internal, reason) {
-    super(createErrorMsg(context, reason, internal));
+  constructor(context: any, isImports?: boolean, reason?: string) {
+    super(createErrorMsg(context, reason, isImports));
   }
 }
 
 export class InvalidPackageTargetError extends ResolveError {
-  constructor(context, reason) {
+  constructor(context: any, reason?: string) {
     super(createErrorMsg(context, reason));
   }
 }
