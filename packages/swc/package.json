@@ -62,10 +62,11 @@
     }
   },
   "dependencies": {
-    "smob": "^1.0.0"
+    "smob": "^1.4.0",
+    "@rollup/pluginutils": "^5.0.1"
   },
   "devDependencies": {
-    "@swc/core": "^1.3.58",
+    "@swc/core": "^1.3.78",
     "rollup": "^3.0.0-7",
     "typescript": "^4.8.3"
   },
