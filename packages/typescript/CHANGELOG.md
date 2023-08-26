@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v11.1.3
+
+_2023-08-26_
+
+### Bugfixes
+
+- fix: emit declaration files for type-only source files that are not explicitly included [#1555](https://github.com/rollup/plugins/pull/1555)
+
 ## v11.1.2
 
 _2023-06-28_
