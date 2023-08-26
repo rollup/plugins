@@ -1,5 +1,13 @@
 # @rollup/plugin-esm-shim ChangeLog
 
+## v0.1.2
+
+_2023-08-26_
+
+### Bugfixes
+
+- fix: pattern matching [#1560](https://github.com/rollup/plugins/pull/1560)
+
 ## v0.1.1
 
 _2023-05-17_
