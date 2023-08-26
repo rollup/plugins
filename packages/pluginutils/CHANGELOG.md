@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.0.4
+
+_2023-08-26_
+
+### Updates
+
+- docs: configure correct options [#1563](https://github.com/rollup/plugins/pull/1563)
+
 ## v5.0.3
 
 _2023-08-13_
