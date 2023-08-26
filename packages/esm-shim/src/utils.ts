@@ -13,24 +13,27 @@ function matchAllPolyfill(input: string, pattern: string | RegExp): RegExpMatchA
     return [];
   }
 
+  let idx = 0;
   for (let i = 0; i < result.length; i++) {
-    output.push(result[i].match(new RegExp(pattern)) || []);
+    const match: RegExpMatchArray = [result[i]];
+    match.index = idx;
+    idx += result[i].length;
+    output.push(match);
   }
   return output;
 }
 
-export function matchAll(regex: RegExp, input: string, addition: Record<string, any>) {
-  const matches = [];
-  for (const match of matchAllPolyfill(input, regex)) {
-    matches.push({
-      ...addition,
-      ...match.groups,
-      code: match[0],
-      start: match.index,
-      end: (match.index || 0) + match[0].length
-    });
+function findPositionToInsertShim(input: string, pattern: RegExp) {
+  let lastImport;
+  // mimicking behavior of `String.matchAll` as it returns an iterator, not an array
+  for (const match of matchAllPolyfill(input, pattern)) {
+    lastImport = match;
   }
-  return matches;
+  if (!lastImport) {
+    return 0;
+  }
+
+  return (lastImport.index || 0) + lastImport[0].length;
 }
 
 export function provideCJSSyntax(code: string): Output | null {
@@ -38,8 +41,7 @@ export function provideCJSSyntax(code: string): Output | null {
     return null;
   }
 
-  const lastESMImport = matchAll(ESMStaticImportRegex, code, { type: 'static' }).pop();
-  const indexToAppend = lastESMImport ? lastESMImport.end : 0;
+  const indexToAppend = findPositionToInsertShim(code, ESMStaticImportRegex);
   const s = new MagicString(code);
   s.appendRight(indexToAppend, ESMShim);
 
