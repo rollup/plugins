@@ -48,11 +48,11 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
     onwarn
   });
   const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
-  const declaration = output[1].source as string;
+  const declaration = output[2].source as string;
 
   t.deepEqual(
     output.map((out) => out.fileName),
-    ['main.js', 'types/main.d.ts', 'types/main.d.ts.map']
+    ['main.js', 'types/main.d.ts.map', 'types/main.d.ts']
   );
 
   t.true(declaration.includes('declare const answer = 42;'), declaration);
@@ -100,22 +100,53 @@ test.serial('supports creating declaration files for interface only source file'
     { format: 'es', dir: 'fixtures/export-interface-only/dist' },
     true
   );
-  const declaration = output[1].source as string;
+  const declaration = output[2].source as string;
 
   t.deepEqual(
     output.map((out) => out.fileName),
     [
       'main.js',
-      'types/interface.d.ts',
       'types/interface.d.ts.map',
-      'types/main.d.ts',
-      'types/main.d.ts.map'
+      'types/interface.d.ts',
+      'types/main.d.ts.map',
+      'types/main.d.ts'
     ]
   );
 
   t.true(declaration.includes('export interface ITest'), declaration);
   t.true(declaration.includes('//# sourceMappingURL=interface.d.ts.map'), declaration);
 });
+
+test.serial(
+  'supports creating declaration files for type-only source files that are implicitly included',
+  async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/implicitly-included-type-only-file/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/implicitly-included-type-only-file/tsconfig.json',
+          declarationDir: 'fixtures/implicitly-included-type-only-file/dist/types',
+          declaration: true
+        }),
+        onwarn
+      ]
+    });
+    const output = await getCode(
+      bundle,
+      { format: 'es', dir: 'fixtures/implicitly-included-type-only-file/dist' },
+      true
+    );
+    const declaration = output[1].source as string;
+
+    t.deepEqual(
+      output.map((out) => out.fileName),
+      // 'types/should-not-be-emitted-types.d.ts' should not be emitted because 'main.ts' does not import/export from it.
+      ['main.js', 'types/should-be-emitted-types.d.ts', 'types/main.d.ts']
+    );
+
+    t.true(declaration.includes('export declare type MyNumber = number;'), declaration);
+  }
+);
 
 test.serial('supports creating declaration files in declarationDir', async (t) => {
   const bundle = await rollup({

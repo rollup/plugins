@@ -16,15 +16,22 @@ export interface TypescriptSourceDescription extends Partial<SourceDescription> 
 /**
  * Checks if the given OutputFile represents some code
  */
-function isCodeOutputFile(name: string): boolean {
-  return !isMapOutputFile(name) && !name.endsWith('.d.ts');
+export function isCodeOutputFile(name: string): boolean {
+  return !isMapOutputFile(name) && !isDeclarationOutputFile(name);
 }
 
 /**
  * Checks if the given OutputFile represents some source map
  */
-function isMapOutputFile(name: string): boolean {
-  return name.endsWith('.map');
+export function isMapOutputFile(name: string): boolean {
+  return name.endsWith('ts.map');
+}
+
+/**
+ * Checks if the given OutputFile represents some declaration
+ */
+export function isDeclarationOutputFile(name: string): boolean {
+  return /\.d\.[cm]?ts$/.test(name);
 }
 
 /**
