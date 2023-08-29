@@ -48,7 +48,11 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 ## Options
 
 The plugin accepts an object as input parameter to modify the default behaviour.
-This object has an `swc` property to provide library specific [Options](https://swc.rs/docs/configuration/swcrc).
+
+### `swc`
+
+- Type: [Options](https://swc.rs/docs/configuration/swcrc)
+- Default: `undefined`
 
 ```typescript
 import type { Options as SWCOptions } from '@swc/core';
@@ -57,6 +61,22 @@ declare type Options = {
   swc?: SWCOptions;
 };
 ```
+
+### `exclude`
+
+- Type: `String` | `Array[...String]`
+- Default: `null`
+
+A [picomatch pattern](https://github.com/micromatch/picomatch),
+or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
+
+### `include`
+
+- Type: `String` | `Array[...String]`
+- Default: `null`
+
+A [picomatch pattern](https://github.com/micromatch/picomatch),
+or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
 
 ## Alternatives
 

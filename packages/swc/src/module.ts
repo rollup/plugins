@@ -1,4 +1,5 @@
 import type { Plugin } from 'rollup';
+import { createFilter } from '@rollup/pluginutils';
 import type { Options as SWCOptions } from '@swc/core';
 import { transform } from '@swc/core';
 import { merge } from 'smob';
@@ -6,6 +7,8 @@ import { merge } from 'smob';
 import type { Options } from './type';
 
 export function swc(input: Options = {}): Plugin {
+  const filter = createFilter(input.include, input.exclude);
+
   const swcOptions: SWCOptions = merge({}, input.swc || {}, {
     jsc: {
       target: 'es2020',
@@ -23,7 +26,9 @@ export function swc(input: Options = {}): Plugin {
 
   return {
     name: 'swc',
-    transform(code) {
+    transform(code, id) {
+      if (!filter(id)) return null;
+
       return transform(code, {
         ...swcOptions,
         sourceMaps: true
