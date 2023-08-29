@@ -1,5 +1,13 @@
 # @rollup/plugin-swc ChangeLog
 
+## v0.2.0
+
+_2023-08-29_
+
+### Features
+
+- feat: allow input files to be filtered [#1566](https://github.com/rollup/plugins/pull/1566)
+
 ## v0.1.1
 
 _2023-05-17_
