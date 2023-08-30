@@ -3,6 +3,7 @@ import * as path from 'path';
 import { createHash } from 'crypto';
 
 import type { Plugin } from 'rollup';
+import { createFilter } from '@rollup/pluginutils';
 
 import type { RollupWasmOptions } from '../types';
 
@@ -19,6 +20,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
   const syncFiles = sync.map((x) => path.resolve(x));
   const copies = Object.create(null);
+  const filter = createFilter(options.include, options.exclude);
 
   return {
     name: 'wasm',
@@ -34,6 +36,10 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
     load(id) {
       if (id === HELPERS_ID) {
         return getHelpersModule(targetEnv);
+      }
+
+      if (!filter(id)) {
+        return null;
       }
 
       if (!/\.wasm$/.test(id)) {
@@ -74,6 +80,10 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
     },
 
     transform(code, id) {
+      if (!filter(id)) {
+        return null;
+      }
+
       if (code && /\.wasm$/.test(id)) {
         const isSync = syncFiles.indexOf(id) !== -1;
         const publicFilepath = copies[id] ? `'${copies[id].publicFilepath}'` : null;
