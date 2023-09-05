@@ -26,20 +26,20 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
 
+      - name: Install pnpm
+        run: |
+          npm install pnpm -g;
+
       - name: Sanity Check
         run: |
           echo branch `git branch --show-current`;
           echo node `node -v`;
+          echo pnpm `pnpm -v`;
 
       - name: Initliaze .npmrc
         run: >
           echo -e "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}\n$(cat .npmrc)" > .npmrc
           && cat -n .npmrc
-
-      - name: Install pnpm
-        run: |
-          npm install pnpm -g;
-          echo node `pnpm -v`;
 
       - name: Set Git Config
         run: |

@@ -37,7 +37,7 @@ jobs:
         run: |
           echo branch `git branch --show-current`;
           echo node `node --version`;
-          echo yarn `pnpm --version`
+          echo pnpm `pnpm --version`
 
       - name: pnpm install
         run: pnpm install
