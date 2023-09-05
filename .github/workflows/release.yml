@@ -36,7 +36,7 @@ jobs:
           echo node `node -v`;
           echo pnpm `pnpm -v`;
 
-      - name: Initliaze .npmrc
+      - name: Initialize .npmrc
         run: >
           echo -e "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}\n$(cat .npmrc)" > .npmrc
           && cat -n .npmrc
