@@ -13,13 +13,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [windows-latest, ubuntu-latest]
         node: ['20', '18', '16']
 
-    name: Node v${{ matrix.node }}
+    name: Node v${{ matrix.node }} on ${{ matrix.os }}
 
     steps:
       - name: Checkout Commit
@@ -42,19 +43,22 @@ jobs:
           echo pnpm `pnpm --version`
 
       - name: pnpm install
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Prettier
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node == '18' }}
         run: pnpm run prettier:check
 
       # pnpm audit isn't as robust as it needs to be atm
       # - name: Audit Dependencies
+      #   if: ${{ matrix.os == 'ubuntu-latest' && matrix.node == '18' }}
       #   run: pnpm security
 
       - name: Build Packages
         run: pnpm --recursive build
 
       - name: Lint Monorepo
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node == '18' }}
         run: pnpm lint:js
 
       - name: Run Tests
