@@ -30,9 +30,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Checkout Master
-        run: git branch -f master origin/master
-
       - name: Install pnpm
         run: npm install pnpm -g
 

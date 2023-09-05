@@ -27,9 +27,6 @@ jobs:
       - name: Checkout Commit
         uses: actions/checkout@v4
 
-      - name: Checkout Master
-        run: git branch -f master origin/master
-
       - name: Setup Node
         uses: actions/setup-node@v3
         with:

@@ -26,11 +26,6 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
 
-      - name: Checkout Master
-        run: |
-          git branch -f master origin/master
-          git checkout master
-
       - name: Sanity Check
         run: |
           echo branch `git branch --show-current`;
