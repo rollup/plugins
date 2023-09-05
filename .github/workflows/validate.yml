@@ -17,16 +17,16 @@ jobs:
 
     strategy:
       matrix:
-        node: ['18', '16', '14']
+        node: ['20', '18', '16']
 
     name: Node v${{ matrix.node }}
 
     steps:
       - name: Checkout Commit
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
