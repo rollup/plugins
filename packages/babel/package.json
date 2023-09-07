@@ -16,9 +16,6 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
   "exports": {
-    "types": {
-      "import": "./dist/es/index.d.ts"
-    },
     "import": "./dist/es/index.js",
     "default": "./dist/cjs/index.js"
   },
@@ -84,7 +81,6 @@
     "rollup": "^4.0.0-24",
     "source-map": "^0.7.4"
   },
-  "types": "./types/index.d.ts",
   "ava": {
     "files": [
       "!**/fixtures/**",
