@@ -17,9 +17,6 @@
   "module": "./dist/es/index.js",
   "type": "commonjs",
   "exports": {
-    "types": {
-      "import": "./dist/es/index.d.ts"
-    },
     "import": "./dist/es/index.js",
     "default": "./dist/cjs/index.js"
   },
@@ -71,7 +68,6 @@
     "@rollup/plugin-alias": "^4.0.0",
     "rollup": "^3.2.3"
   },
-  "types": "./types/index.d.ts",
   "ava": {
     "workerThreads": false,
     "files": [

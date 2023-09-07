@@ -16,9 +16,6 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
   "exports": {
-    "types": {
-      "import": "./dist/es/index.d.ts"
-    },
     "import": "./dist/es/index.js",
     "default": "./dist/cjs/index.js"
   },
@@ -81,7 +78,6 @@
     "source-map": "^0.7.4",
     "string-capitalize": "^1.0.1"
   },
-  "types": "./types/index.d.ts",
   "ava": {
     "workerThreads": false,
     "files": [

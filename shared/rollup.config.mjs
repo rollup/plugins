@@ -27,6 +27,7 @@ export function createConfig({ pkg, external = [] }) {
         file: pkg.main,
         exports: 'named',
         footer: 'module.exports = Object.assign(exports.default, exports);',
+        plugins: [emitDeclarationFile()],
         sourcemap: true
       },
       {

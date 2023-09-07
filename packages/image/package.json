@@ -16,9 +16,6 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
   "exports": {
-    "types": {
-      "import": "./dist/es/index.d.ts"
-    },
     "import": "./dist/es/index.js",
     "default": "./dist/cjs/index.js"
   },
@@ -67,7 +64,6 @@
     "@rollup/plugin-buble": "^1.0.0",
     "rollup": "^3.2.3"
   },
-  "types": "./types/index.d.ts",
   "ava": {
     "workerThreads": false,
     "files": [
