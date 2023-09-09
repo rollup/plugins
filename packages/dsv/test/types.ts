@@ -13,7 +13,17 @@ const config: RollupOptions = {
       include: 'node_modules/**',
       exclude: ['node_modules/foo/**', 'node_modules/bar/**'],
       processRow(row) {
-        return row;
+        return {
+          foo: +row.foo,
+          bar: new Date(row.bar),
+          baz: row.baz === 'true',
+          ...row
+        };
+      }
+    }),
+    dsv({
+      processRow() {
+        // void
       }
     })
   ]
