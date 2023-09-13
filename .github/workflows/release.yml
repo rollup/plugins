@@ -19,17 +19,19 @@ jobs:
     steps:
       - name: Checkout Commit
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Update Master
+        run: |
+          git pull --force --no-tags origin master:master
+          git checkout master
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-
-      - name: Checkout Master
-        run: |
-          git branch -f master origin/master
-          git checkout master
 
       - name: Enable Corepack
         id: pnpm-setup
