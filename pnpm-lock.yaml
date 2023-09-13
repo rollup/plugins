@@ -72,8 +72,8 @@ importers:
         specifier: ^15.1.0
         version: 15.1.0
       pnpm:
-        specifier: ^7.12.2
-        version: 7.13.3
+        specifier: ^8.7.5
+        version: 8.7.5
       prettier-plugin-package:
         specifier: ^1.3.0
         version: 1.3.0(prettier@2.8.0)
@@ -6273,9 +6273,9 @@ packages:
       irregular-plurals: 3.3.0
     dev: true
 
-  /pnpm@7.13.3:
-    resolution: {integrity: sha512-6avqSfzfAr/9w1ZleaMI276ZuZUu88eOIe6v2mTCuwtSjUEqheboH1G4m7jgF+4arMUfnBrz371UAU+DCeCiSA==}
-    engines: {node: '>=14.6'}
+  /pnpm@8.7.5:
+    resolution: {integrity: sha512-WI8WZb89Uiq5x2jdz4PcQMG9ovTnXcDCEpoEckPYIT2zD8/+dEhVozPlT7bu3WkBgE0uTARtgyIKAFt+IpW2cQ==}
+    engines: {node: '>=16.14'}
     hasBin: true
     dev: true
 
