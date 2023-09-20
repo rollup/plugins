@@ -17,33 +17,58 @@ jobs:
 
     strategy:
       matrix:
-        node: ['18', '16', '14']
+        node: ['20', '18']
 
     name: Node v${{ matrix.node }}
 
     steps:
       - name: Checkout Commit
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Update Master
+        run: git pull --force --no-tags origin master:master
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Checkout Master
-        run: git branch -f master origin/master
+      - name: Enable Corepack
+        id: pnpm-setup
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+          pnpm config set script-shell "/usr/bin/bash"
+          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
 
-      - name: Install pnpm
-        run: npm install pnpm -g
+      - name: pnpm Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-setup.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: ESLint Cache
+        uses: actions/cache@v3
+        with:
+          path: ./.eslintcache
+          key: ${{ runner.os }}-eslintcache-${{ hashFiles('./eslintcache') }}
+          restore-keys: |
+            ${{ runner.os }}-eslintcache-
 
       - name: Sanity Check
         run: |
+          echo git `git version`;
           echo branch `git branch --show-current`;
-          echo node `node --version`;
-          echo yarn `pnpm --version`
+          echo node `node -v`;
+          echo pnpm `pnpm -v`
+          echo `moon --version`
 
       - name: pnpm install
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Prettier
         run: pnpm run prettier:check
