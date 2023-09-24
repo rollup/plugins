@@ -47,4 +47,4 @@ jobs:
         run: pnpm install --ignore-scripts
 
       - name: run tests
-        run: pnpm --filter "...[origin/master]" ci:test
+        run: pnpm --workspace-concurrency 1 --filter "...[origin/master]" ci:test

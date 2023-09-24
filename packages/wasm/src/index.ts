@@ -45,6 +45,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       if (!/\.wasm$/.test(id)) {
         return null;
       }
+      this.addWatchFile(id);
 
       return Promise.all([fs.promises.stat(id), fs.promises.readFile(id)]).then(
         ([stats, buffer]) => {

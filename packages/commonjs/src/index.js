@@ -306,7 +306,7 @@ export default function commonjs(options = {}) {
       try {
         return transformAndCheckExports.call(this, code, id);
       } catch (err) {
-        return this.error(err, err.loc);
+        return this.error(err, err.pos);
       }
     }
   };

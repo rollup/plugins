@@ -13,12 +13,16 @@ module.exports = {
     plugins: [
       {
         async buildStart() {
-          await this.resolve('./other.js', ID_MAIN, { isEntry: true, custom: { test: 42 } });
+          await this.resolve('./other.js', ID_MAIN, {
+            skipSelf: false,
+            isEntry: true,
+            custom: { test: 42 }
+          });
         },
         buildEnd() {
           assert.deepStrictEqual(resolveIdArgs, [
-            ['other.js', 'main.js', { assertions: {}, custom: { test: 42 }, isEntry: true }],
-            ['main.js', void 0, { assertions: {}, custom: {}, isEntry: true }]
+            ['other.js', 'main.js', { attributes: {}, custom: { test: 42 }, isEntry: true }],
+            ['main.js', void 0, { attributes: {}, custom: {}, isEntry: true }]
           ]);
         },
         resolveId(source, importer, options) {
