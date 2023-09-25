@@ -17,7 +17,7 @@ import findTypescriptOutput, {
   normalizePath,
   emitFile,
   isDeclarationOutputFile,
-  isMapOutputFile
+  isTypeScriptMapOutputFile
 } from './outputFile';
 import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
@@ -156,11 +156,11 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     async generateBundle(outputOptions) {
-      const declarationAndMapFiles = [...emittedFiles.keys()].filter(
-        (fileName) => isDeclarationOutputFile(fileName) || isMapOutputFile(fileName)
+      const declarationAndTypeScriptMapFiles = [...emittedFiles.keys()].filter(
+        (fileName) => isDeclarationOutputFile(fileName) || isTypeScriptMapOutputFile(fileName)
       );
 
-      declarationAndMapFiles.forEach((id) => {
+      declarationAndTypeScriptMapFiles.forEach((id) => {
         const code = getEmittedFile(id, emittedFiles, tsCache);
         if (!code || !parsedOptions.options.declaration) {
           return;

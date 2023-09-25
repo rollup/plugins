@@ -612,6 +612,24 @@ test.serial('should not emit null sourceContent', async (t) => {
   t.false(sourcemap.sourcesContent.includes(undefined));
 });
 
+test.serial('should not emit sourceContent that references a non-existent file', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    output: {
+      sourcemap: true
+    },
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'es', sourcemap: true }, true);
+  const sourcemap = output[0].map;
+  t.false(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map'));
+});
+
 test.serial('should not fail if source maps are off', async (t) => {
   await t.notThrowsAsync(
     rollup({
