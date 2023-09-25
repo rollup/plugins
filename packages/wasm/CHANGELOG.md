@@ -1,5 +1,13 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v6.2.1
+
+_2023-09-25_
+
+### Updates
+
+- chore: manually bump package version after failed release in CI ([0e2fbdd](https://github.com/rollup/plugins/commit/0e2fbdd130078f9f82df71f620cccede0ec69e02))
+
 ## v6.1.3
 
 _2023-05-12_
