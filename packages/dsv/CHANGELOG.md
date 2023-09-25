@@ -1,5 +1,13 @@
 # @rollup/plugin-dsv ChangeLog
 
+## v3.0.3
+
+_2023-09-25_
+
+### Bugfixes
+
+- fix: fix type of processRow option [#1581](https://github.com/rollup/plugins/pull/1581)
+
 ## v3.0.2
 
 _2023-01-20_
