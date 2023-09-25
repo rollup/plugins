@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v11.1.4
+
+_2023-09-25_
+
+### Bugfixes
+
+- fix: fix sourcemap sourcecontent referencing non-existent files [#1571](https://github.com/rollup/plugins/pull/1571)
+
 ## v11.1.3
 
 _2023-08-26_
