@@ -24,6 +24,13 @@ export function isCodeOutputFile(name: string): boolean {
  * Checks if the given OutputFile represents some source map
  */
 export function isMapOutputFile(name: string): boolean {
+  return name.endsWith('.map');
+}
+
+/**
+ * Checks if the given OutputFile represents some TypeScript source map
+ */
+export function isTypeScriptMapOutputFile(name: string): boolean {
   return name.endsWith('ts.map');
 }
 
