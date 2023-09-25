@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-dsv",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "publishConfig": {
     "access": "public"
   },
