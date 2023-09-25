@@ -794,6 +794,10 @@ importers:
         version: 4.8.4
 
   packages/wasm:
+    dependencies:
+      '@rollup/pluginutils':
+        specifier: ^5.0.2
+        version: 5.0.4(rollup@3.2.3)
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
@@ -2420,6 +2424,21 @@ packages:
       estree-walker: 2.0.2
       picomatch: 2.3.1
       rollup: 3.20.2
+    dev: false
+
+  /@rollup/pluginutils@5.0.4(rollup@3.2.3):
+    resolution: {integrity: sha512-0KJnIoRI8A+a1dqOYLxH8vBf8bphDmty5QvIm2hqm7oFCFYKCAZWWd2hXgMibaPsNDhI0AtpYfQZJG47pt/k4g==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@types/estree': 1.0.0
+      estree-walker: 2.0.2
+      picomatch: 2.3.1
+      rollup: 3.2.3
     dev: false
 
   /@sindresorhus/is@4.6.0:

@@ -46,6 +46,20 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 ## Options
 
+### `exclude`
+
+Type: `String` | `Array[...String]`<br>
+Default: `null`
+
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
+
+### `include`
+
+Type: `String` | `Array[...String]`<br>
+Default: `null`
+
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all wasm files are targeted.
+
 ### `sync`
 
 Type: `Array[...String]`<br>

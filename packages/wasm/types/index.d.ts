@@ -1,4 +1,5 @@
 import type { Plugin } from 'rollup';
+import type { FilterPattern } from '@rollup/pluginutils';
 
 /**
  * - `"auto"` will determine the environment at runtime and invoke the correct methods accordingly
@@ -10,6 +11,18 @@ export type TargetEnv = 'auto' | 'auto-inline' | 'browser' | 'node';
 
 export interface RollupWasmOptions {
   /**
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin
+   * should _ignore_.
+   * By default no files are ignored.
+   */
+  exclude?: FilterPattern;
+  /**
+   * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin
+   * should operate on.
+   * By default all wasm files are targeted.
+   */
+  include?: FilterPattern;
+  /**
    * Specifies an array of strings that each represent a WebAssembly file to load synchronously.
    */
   sync?: readonly string[];
@@ -18,7 +31,7 @@ export interface RollupWasmOptions {
    * If `maxFileSize` is set to `0` all files will be copied.
    * Files specified in `sync` to load synchronously are always inlined, regardless of size.
    */
-  maxFileSize?: Number;
+  maxFileSize?: number;
   /**
    * String used to rename the emitted Wasm files.
    */
