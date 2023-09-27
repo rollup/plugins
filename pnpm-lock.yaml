@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -243,8 +239,8 @@ importers:
         specifier: 1.2.1
         version: 1.2.1
       magic-string:
-        specifier: ^0.27.0
-        version: 0.27.0
+        specifier: ^0.30.3
+        version: 0.30.3
     devDependencies:
       '@rollup/plugin-json':
         specifier: ^5.0.0
@@ -327,8 +323,8 @@ importers:
         specifier: ^3.2.12
         version: 3.2.12
       magic-string:
-        specifier: ^0.27.0
-        version: 0.27.0
+        specifier: ^0.30.3
+        version: 0.30.3
     devDependencies:
       acorn:
         specifier: ^8.8.0
@@ -368,8 +364,8 @@ importers:
   packages/esm-shim:
     dependencies:
       magic-string:
-        specifier: ^0.30.0
-        version: 0.30.0
+        specifier: ^0.30.3
+        version: 0.30.3
     devDependencies:
       rollup:
         specifier: ^4.0.0-24
@@ -440,8 +436,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       magic-string:
-        specifier: ^0.27.0
-        version: 0.27.0
+        specifier: ^0.30.3
+        version: 0.30.3
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
@@ -602,8 +598,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(rollup@4.0.0-24)
       magic-string:
-        specifier: ^0.27.0
-        version: 0.27.0
+        specifier: ^0.30.3
+        version: 0.30.3
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
@@ -655,8 +651,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       magic-string:
-        specifier: ^0.27.0
-        version: 0.27.0
+        specifier: ^0.30.3
+        version: 0.30.3
     devDependencies:
       acorn:
         specifier: ^8.8.0
@@ -2170,7 +2166,7 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       '@jridgewell/set-array': 1.1.2
-      '@jridgewell/sourcemap-codec': 1.4.14
+      '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
   /@jridgewell/gen-mapping@0.3.2:
@@ -2178,7 +2174,7 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       '@jridgewell/set-array': 1.1.2
-      '@jridgewell/sourcemap-codec': 1.4.14
+      '@jridgewell/sourcemap-codec': 1.4.15
       '@jridgewell/trace-mapping': 0.3.16
 
   /@jridgewell/resolve-uri@3.1.0:
@@ -2199,6 +2195,9 @@ packages:
   /@jridgewell/sourcemap-codec@1.4.14:
     resolution: {integrity: sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==}
 
+  /@jridgewell/sourcemap-codec@1.4.15:
+    resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
+
   /@jridgewell/trace-mapping@0.3.16:
     resolution: {integrity: sha512-LCQ+NeThyJ4k1W2d+vIKdxuSt9R3pQSZ4P92m7EakaYuXcVWbHuT5bjNcqLd4Rdgi6xYWYDvBJZJLZSLanjDcA==}
     dependencies:
@@ -2209,7 +2208,7 @@ packages:
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
     dependencies:
       '@jridgewell/resolve-uri': 3.1.0
-      '@jridgewell/sourcemap-codec': 1.4.14
+      '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
@@ -5675,18 +5674,11 @@ packages:
       sourcemap-codec: 1.4.8
     dev: true
 
-  /magic-string@0.27.0:
-    resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}
+  /magic-string@0.30.3:
+    resolution: {integrity: sha512-B7xGbll2fG/VjP+SWg4sX3JynwIU0mjoTc6MPpKNuIvftk6u6vqhDnk1R80b8C2GBR6ywqy+1DcKBrevBg+bmw==}
     engines: {node: '>=12'}
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.4.14
-    dev: false
-
-  /magic-string@0.30.0:
-    resolution: {integrity: sha512-LA+31JYDJLs82r2ScLrlz1GjSgu66ZV518eyWT+S8VhyQn/JL0u9MeBOvQMGYiPk1DBiSN9DDMOcXvigJZaViQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@jridgewell/sourcemap-codec': 1.4.14
+      '@jridgewell/sourcemap-codec': 1.4.15
     dev: false
 
   /make-dir@2.1.0:
@@ -8005,3 +7997,7 @@ packages:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
