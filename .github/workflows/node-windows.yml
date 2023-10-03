@@ -41,7 +41,7 @@ jobs:
         id: pnpm-setup
         run: |
           corepack enable
-          corepack prepare pnpm@latest --activate
+          corepack prepare pnpm@8.0.0 --activate
 
       - name: pnpm install
         run: pnpm install --ignore-scripts
