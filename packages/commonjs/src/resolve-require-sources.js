@@ -108,7 +108,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
         setInitialParentType(parentId, parentMeta.initialCommonJSType);
         await Promise.all(
           parentRequires.map(({ resolved, isConditional }) =>
-            analyzeRequiredModule(parentId, resolved, isConditional, this.load)
+            analyzeRequiredModule(parentId, resolved, isConditional, this.load.bind(this))
           )
         );
         if (getTypeForFullyAnalyzedModule(parentId) !== parentMeta.isCommonJS) {
@@ -143,11 +143,11 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
                     (
                       await this.load({ id: resolved.id })
                     ).meta.commonjs.resolved,
-                    this.load
+                    this.load.bind(this)
                   )) !== IS_WRAPPED_COMMONJS
                 );
               }
-              return (await getTypeForImportedModule(resolved, this.load)) === IS_WRAPPED_COMMONJS;
+              return (await getTypeForImportedModule(resolved, this.load.bind(this))) === IS_WRAPPED_COMMONJS;
             })
         )
       ).some((shouldTransform) => shouldTransform);
@@ -182,7 +182,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
               return { id: wrapId(childId, EXTERNAL_SUFFIX), allowProxy: false };
             }
             parentMeta.requires.push({ resolved, isConditional });
-            await analyzeRequiredModule(parentId, resolved, isConditional, rollupContext.load);
+            await analyzeRequiredModule(parentId, resolved, isConditional, rollupContext.load.bind(this);
             return { id: childId, allowProxy: true };
           })
         );
