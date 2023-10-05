@@ -222,7 +222,7 @@ test('transforms all chunks in a code-splitting setup', async (t) => {
   t.deepEqual(
     output.map(({ code }) => code),
     [
-      `import('./dep-20aaf50b.js').then(function (result) {
+      `import('./dep--s88I99N.js').then(function (result) {
   return console.log(result);
 });
 `,
