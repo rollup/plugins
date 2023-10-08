@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v0.4.4
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v0.4.3
 
 _2023-05-17_
