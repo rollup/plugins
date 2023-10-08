@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-commonjs",
-  "version": "25.0.4",
+  "version": "25.0.5",
   "publishConfig": {
     "access": "public"
   },
@@ -54,7 +54,7 @@
     "require"
   ],
   "peerDependencies": {
-    "rollup": "^2.68.0||^3.0.0"
+    "rollup": "^2.68.0||^3.0.0||^4.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -74,7 +74,7 @@
     "@rollup/plugin-node-resolve": "^15.0.0",
     "locate-character": "^2.0.5",
     "require-relative": "^0.8.7",
-    "rollup": "^3.19.0",
+    "rollup": "^4.0.0-24",
     "shx": "^0.3.4",
     "source-map": "^0.7.4",
     "source-map-support": "^0.5.21",

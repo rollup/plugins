@@ -51,6 +51,7 @@ export default function image(opts = {}) {
         return null;
       }
 
+      this.addWatchFile(id);
       const isSvg = mime === mimeTypes['.svg'];
       const format = isSvg ? 'utf-8' : 'base64';
       const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');

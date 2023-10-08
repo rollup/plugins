@@ -300,6 +300,9 @@ export default async function transformCommonjs(
               }
               if (!ignoreDynamicRequires) {
                 if (isShorthandProperty(parent)) {
+                  // as key and value are the same object, isReference regards
+                  // both as references, so we need to skip now
+                  skippedNodes.add(parent.value);
                   magicString.prependRight(node.start, 'require: ');
                 }
                 replacedDynamicRequires.push(node);

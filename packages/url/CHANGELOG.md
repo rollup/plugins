@@ -1,5 +1,13 @@
 # @rollup/plugin-url ChangeLog
 
+## v8.0.2
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v8.0.1
 
 _2022-10-21_
@@ -153,7 +161,7 @@ _2018-10-01_
 
 ### Breaking Changes
 
-- Version 2.0.0 requires rollup@0.60 and higher – deprecated `onwrite` hook replaced with new `generateBundle` hook, so plugin will not work with earlier versions of Rollup.  
+- Version 2.0.0 requires rollup@0.60 and higher – deprecated `onwrite` hook replaced with new `generateBundle` hook, so plugin will not work with earlier versions of Rollup.
   Use version 1.4 with rollup<0.60
 
 ## 1.4.0

@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-sucrase",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "publishConfig": {
     "access": "public"
   },
@@ -54,7 +54,7 @@
     "jsx"
   ],
   "peerDependencies": {
-    "rollup": "^2.53.1||^3.0.0"
+    "rollup": "^2.53.1||^3.0.0||^4.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^4.0.0",
-    "rollup": "^3.2.3"
+    "rollup": "^4.0.0-24"
   },
   "types": "./types/index.d.ts",
   "ava": {

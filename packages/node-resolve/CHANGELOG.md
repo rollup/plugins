@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.2.2
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v15.2.1
 
 _2023-08-22_

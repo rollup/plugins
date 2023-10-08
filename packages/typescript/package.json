@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-typescript",
-  "version": "11.1.4",
+  "version": "11.1.5",
   "publishConfig": {
     "access": "public"
   },
@@ -51,7 +51,7 @@
     "es2015"
   ],
   "peerDependencies": {
-    "rollup": "^2.14.0||^3.0.0",
+    "rollup": "^2.14.0||^3.0.0||^4.0.0",
     "tslib": "*",
     "typescript": ">=3.7.0"
   },
@@ -73,7 +73,7 @@
     "@types/node": "^14.18.30",
     "@types/resolve": "^1.20.2",
     "buble": "^0.20.0",
-    "rollup": "^3.2.3",
+    "rollup": "^4.0.0-24",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts"

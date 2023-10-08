@@ -1,5 +1,13 @@
 # @rollup/plugin-json ChangeLog
 
+## v6.0.1
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v6.0.0
 
 _2022-12-17_

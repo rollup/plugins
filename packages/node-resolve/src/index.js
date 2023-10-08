@@ -305,6 +305,7 @@ export function nodeResolve(opts = {}) {
           // `moduleSideEffects` information.
           const resolvedResolved = await this.resolve(resolved.id, importer, {
             ...resolveOptions,
+            skipSelf: false,
             custom: { ...custom, 'node-resolve': { ...custom['node-resolve'], resolved, importee } }
           });
           if (resolvedResolved) {

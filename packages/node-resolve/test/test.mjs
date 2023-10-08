@@ -563,13 +563,13 @@ test('passes on "isEntry" flag and original importee', async (t) => {
   });
 
   t.deepEqual(resolveOptions, [
-    ['other.js', 'main.js', { assertions: {}, custom: {}, isEntry: true }],
-    ['main.js', void 0, { assertions: {}, custom: {}, isEntry: true }],
+    ['other.js', 'main.js', { attributes: {}, custom: {}, isEntry: true }],
+    ['main.js', void 0, { attributes: {}, custom: {}, isEntry: true }],
     [
       'other.js',
       'main.js',
       {
-        assertions: {},
+        attributes: {},
         custom: {
           'node-resolve': {
             resolved: {
@@ -586,7 +586,7 @@ test('passes on "isEntry" flag and original importee', async (t) => {
       'main.js',
       void 0,
       {
-        assertions: {},
+        attributes: {},
         custom: {
           'node-resolve': {
             resolved: {
@@ -599,12 +599,12 @@ test('passes on "isEntry" flag and original importee', async (t) => {
         isEntry: true
       }
     ],
-    ['dep.js', 'main.js', { assertions: {}, custom: {}, isEntry: false }],
+    ['dep.js', 'main.js', { attributes: {}, custom: {}, isEntry: false }],
     [
       'dep.js',
       'main.js',
       {
-        assertions: {},
+        attributes: {},
         custom: {
           'node-resolve': {
             resolved: {
@@ -630,7 +630,11 @@ test('passes on custom options', async (t) => {
       {
         name: 'test',
         async buildStart() {
-          await this.resolve('entry/main.js', void 0, { isEntry: false, custom: { test: 42 } });
+          await this.resolve('entry/main.js', void 0, {
+            isEntry: false,
+            skipSelf: false,
+            custom: { test: 42 }
+          });
         },
         resolveId(source, importer, options) {
           resolveOptions.push([
@@ -643,12 +647,12 @@ test('passes on custom options', async (t) => {
     ]
   });
   t.deepEqual(resolveOptions, [
-    ['main.js', void 0, { assertions: {}, custom: { test: 42 }, isEntry: false }],
+    ['main.js', void 0, { attributes: {}, custom: { test: 42 }, isEntry: false }],
     [
       'main.js',
       void 0,
       {
-        assertions: {},
+        attributes: {},
         custom: {
           test: 42,
           'node-resolve': {
@@ -662,12 +666,12 @@ test('passes on custom options', async (t) => {
         isEntry: false
       }
     ],
-    ['other.js', void 0, { assertions: {}, custom: {}, isEntry: true }],
+    ['other.js', void 0, { attributes: {}, custom: {}, isEntry: true }],
     [
       'other.js',
       void 0,
       {
-        assertions: {},
+        attributes: {},
         custom: {
           'node-resolve': {
             resolved: {

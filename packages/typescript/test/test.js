@@ -1058,8 +1058,8 @@ test.serial('normalizes resolved ids to avoid duplicate output on windows', asyn
   const files = await getCode(bundle, { format: 'es' }, true);
 
   t.is(files.length, 2);
-  t.true(files[1].fileName.includes('two.js'), files[1].fileName);
-  t.true(files[1].code.includes("import { one } from './one.js';"), files[1].code);
+  t.true(files[0].fileName.includes('two.js'), files[1].fileName);
+  t.true(files[0].code.includes("import { one } from './one.js';"), files[1].code);
 });
 
 test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
