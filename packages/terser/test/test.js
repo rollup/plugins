@@ -1,3 +1,5 @@
+const os = require('os');
+
 const test = require('ava');
 const { rollup } = require('rollup');
 
@@ -355,4 +357,22 @@ test.serial('terser preserve vars in nameCache when provided', async (t) => {
       props: {}
     }
   });
+});
+
+test.serial('minify when os.cpus().length === 0', async (t) => {
+  const original = os.cpus;
+  os.cpus = () => [];
+  try {
+    const bundle = await rollup({
+      input: 'test/fixtures/unminified.js',
+      plugins: [terser()]
+    });
+    const result = await bundle.generate({ format: 'cjs' });
+    t.is(result.output.length, 1);
+    const [output] = result.output;
+    t.is(output.code, '"use strict";window.a=5,window.a<3&&console.log(4);\n');
+    t.falsy(output.map);
+  } finally {
+    os.cpus = original;
+  }
 });

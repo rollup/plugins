@@ -40,7 +40,8 @@ export class WorkerPool extends EventEmitter {
   constructor(options: WorkerPoolOptions) {
     super();
 
-    this.maxInstances = options.maxWorkers || cpus().length;
+    // cpus() can return [] on some platforms, and we always need at least 1 worker
+    this.maxInstances = options.maxWorkers || cpus().length || 1;
     this.filePath = options.filePath;
 
     this.on(freeWorker, () => {
