@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.2.3
+
+_2023-10-08_
+
+### Bugfixes
+
+- fix: modulePaths default is not set [#1534](https://github.com/rollup/plugins/pull/1534)
+
 ## v15.2.2
 
 _2023-10-05_
