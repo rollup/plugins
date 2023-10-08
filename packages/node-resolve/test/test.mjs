@@ -6,7 +6,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import test from 'ava';
 import { rollup } from 'rollup';
 
-import { nodeResolve } from 'current-package';
+import { nodeResolve, DEFAULTS } from 'current-package';
 
 import { evaluateBundle, getCode, getImports, testBundle } from '../../../util/test.js';
 
@@ -21,6 +21,10 @@ const getLastPathFragment = (path) => path && path.split(/[\\/]/).slice(-1)[0];
 test('exposes plugin version', (t) => {
   const plugin = nodeResolve();
   t.regex(plugin.version, /^\d+\.\d+\.\d+/);
+});
+
+test('has default config', (t) => {
+  t.snapshot(DEFAULTS);
 });
 
 test('finds a module with jsnext:main', async (t) => {
