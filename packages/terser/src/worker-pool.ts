@@ -1,6 +1,6 @@
 import { AsyncResource } from 'async_hooks';
 import { Worker } from 'worker_threads';
-import { cpus } from 'os';
+import os from 'os';
 import { EventEmitter } from 'events';
 
 import serializeJavascript from 'serialize-javascript';
@@ -40,8 +40,14 @@ export class WorkerPool extends EventEmitter {
   constructor(options: WorkerPoolOptions) {
     super();
 
-    // cpus() can return [] on some platforms, and we always need at least 1 worker
-    this.maxInstances = options.maxWorkers || cpus().length || 1;
+    if (options.maxWorkers) {
+      this.maxInstances = options.maxWorkers;
+    } else if (typeof os.availableParallelism === 'function') {
+      this.maxInstances = os.availableParallelism();
+    } else {
+      // cpus() can return [] on some platforms, and we always need at least 1 worker
+      this.maxInstances = os.cpus().length || 1;
+    }
     this.filePath = options.filePath;
 
     this.on(freeWorker, () => {
