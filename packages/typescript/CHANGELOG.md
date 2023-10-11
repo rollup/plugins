@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v11.1.5
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v11.1.4
 
 _2023-09-25_

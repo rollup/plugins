@@ -1,5 +1,13 @@
 # @rollup/plugin-wasm ChangeLog
 
+## v6.2.2
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v6.2.1
 
 _2023-09-25_

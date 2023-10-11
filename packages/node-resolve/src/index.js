@@ -37,6 +37,7 @@ const defaults = {
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: [],
   moduleDirectories: ['node_modules'],
+  modulePaths: [],
   ignoreSideEffectsForRoot: false,
   // TODO: set to false in next major release or remove
   allowExportsFolderMapping: true

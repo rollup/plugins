@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.5
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v25.0.4
 
 _2023-08-11_
