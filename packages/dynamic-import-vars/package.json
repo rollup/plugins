@@ -67,7 +67,7 @@
     "astring": "^1.8.5",
     "estree-walker": "^2.0.2",
     "fast-glob": "^3.2.12",
-    "magic-string": "^0.27.0"
+    "magic-string": "^0.30.4"
   },
   "devDependencies": {
     "acorn": "^8.8.0",
