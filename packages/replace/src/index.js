@@ -74,7 +74,7 @@ export default function replace(options = {}) {
   if (objectGuards) expandTypeofReplacements(replacements);
   const functionValues = mapToFunctions(replacements);
   const keys = Object.keys(functionValues).sort(longest).map(escape);
-  const lookahead = preventAssignment ? '(?!\\s*=[^=])' : '';
+  const lookahead = preventAssignment ? '(?!\\s*(=[^=]|:[^:]))' : '';
   const pattern = new RegExp(
     `${delimiters[0]}(${keys.join('|')})${delimiters[1]}${lookahead}`,
     'g'
