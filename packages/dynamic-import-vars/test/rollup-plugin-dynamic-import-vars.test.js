@@ -204,3 +204,29 @@ test('dynamic imports assertions', async (t) => {
   );
   t.snapshot(output[0].code);
 });
+
+test("doesn't throw if no files in dir when option isn't set", async (t) => {
+  let thrown = false;
+  try {
+    await rollup({
+      input: 'fixture-no-files.js',
+      plugins: [dynamicImportVars()]
+    });
+  } catch (_) {
+    thrown = true;
+  }
+  t.false(thrown);
+});
+
+test('throws if no files in dir when option is set', async (t) => {
+  let thrown = false;
+  try {
+    await rollup({
+      input: 'fixture-no-files.js',
+      plugins: [dynamicImportVars({ errorWhenNoFilesFound: true })]
+    });
+  } catch (_) {
+    thrown = true;
+  }
+  t.true(thrown);
+});
