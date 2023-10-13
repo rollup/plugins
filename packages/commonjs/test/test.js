@@ -1291,3 +1291,18 @@ test('allows the config to be reused', async (t) => {
     ['bar.js']
   );
 });
+
+test('keep the shebang at the top of the file content', async (t) => {
+  const bundle = await rollup({
+    input: ['fixtures/samples/shebang/main.js'],
+    plugins: [commonjs()]
+  });
+
+  const { output } = await bundle.generate({
+    exports: 'auto',
+    format: 'cjs',
+    chunkFileNames: '[name].js'
+  });
+
+  t.is(output[0].code.startsWith('#!/usr/bin/env node\n'), true);
+});

@@ -478,6 +478,13 @@ export default async function transformCommonjs(
     magicString.remove(0, commentEnd).trim();
   }
 
+  let shebang = '';
+  if (code.startsWith('#!')) {
+    const shebangEndPosition = code.indexOf('\n') + 1;
+    shebang = code.slice(0, shebangEndPosition);
+    magicString.remove(0, shebangEndPosition).trim();
+  }
+
   const exportMode = isEsModule
     ? 'none'
     : shouldWrap
@@ -561,13 +568,13 @@ function ${requireName} () {
 
   magicString
     .trim()
-    .prepend(leadingComment + importBlock)
+    .prepend(shebang + leadingComment + importBlock)
     .append(exportBlock);
 
   return {
     code: magicString.toString(),
     map: sourceMap ? magicString.generateMap() : null,
     syntheticNamedExports: isEsModule || usesRequireWrapper ? false : '__moduleExports',
-    meta: { commonjs: commonjsMeta }
+    meta: { commonjs: { ...commonjsMeta, shebang } }
   };
 }
