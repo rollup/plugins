@@ -57,7 +57,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^5.0.1",
     "estree-walker": "^2.0.2",
-    "magic-string": "^0.30.4"
+    "magic-string": "^0.30.5"
   },
   "devDependencies": {
     "acorn": "^8.8.0",

@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -145,12 +141,6 @@ importers:
         specifier: ^4.8.3
         version: 4.8.4
 
-  packages/auto-install/test/fixtures/pnpm-bare:
-    dependencies:
-      node-noop:
-        specifier: ^1.0.0
-        version: 1.0.0
-
   packages/babel:
     dependencies:
       '@babel/helper-module-imports':
@@ -249,8 +239,8 @@ importers:
         specifier: 1.2.1
         version: 1.2.1
       magic-string:
-        specifier: ^0.30.4
-        version: 0.30.4
+        specifier: ^0.30.5
+        version: 0.30.5
     devDependencies:
       '@rollup/plugin-json':
         specifier: ^5.0.0
@@ -333,8 +323,8 @@ importers:
         specifier: ^3.2.12
         version: 3.2.12
       magic-string:
-        specifier: ^0.30.4
-        version: 0.30.4
+        specifier: ^0.30.5
+        version: 0.30.5
     devDependencies:
       acorn:
         specifier: ^8.8.0
@@ -374,8 +364,8 @@ importers:
   packages/esm-shim:
     dependencies:
       magic-string:
-        specifier: ^0.30.4
-        version: 0.30.4
+        specifier: ^0.30.5
+        version: 0.30.5
     devDependencies:
       rollup:
         specifier: ^4.0.0-24
@@ -446,8 +436,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       magic-string:
-        specifier: ^0.30.4
-        version: 0.30.4
+        specifier: ^0.30.5
+        version: 0.30.5
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
@@ -608,8 +598,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(rollup@4.0.0-24)
       magic-string:
-        specifier: ^0.30.4
-        version: 0.30.4
+        specifier: ^0.30.5
+        version: 0.30.5
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
@@ -5729,6 +5719,13 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: false
 
+  /magic-string@0.30.5:
+    resolution: {integrity: sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: false
+
   /make-dir@2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
     engines: {node: '>=6'}
@@ -5955,6 +5952,7 @@ packages:
 
   /node-noop@1.0.0:
     resolution: {integrity: sha512-1lpWqKwZ9yUosQfW1uy3jm6St4ZbmeDKKGmdzwzedbyBI4LgHtGyL1ofDdqiSomgaYaSERi+qWtj64huJQjl7g==}
+    dev: true
 
   /node-preload@0.2.1:
     resolution: {integrity: sha512-RM5oyBy45cLEoHqCeh+MNuFAxO0vTFBLskvQbOKnEE7YTTSN4tbN8QWDIPQ6L+WvKsB/qLEGpYe2ZZ9d4W9OIQ==}
@@ -8050,3 +8048,7 @@ packages:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
