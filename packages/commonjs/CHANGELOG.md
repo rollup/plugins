@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.6
+
+_2023-10-15_
+
+### Bugfixes
+
+- fix: Keep the shebang at the top of the file content [#1610](https://github.com/rollup/plugins/pull/1610)
+
 ## v25.0.5
 
 _2023-10-05_
