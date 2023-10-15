@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^5.0.1",
-    "magic-string": "^0.27.0"
+    "magic-string": "^0.30.3"
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^1.0.0",
