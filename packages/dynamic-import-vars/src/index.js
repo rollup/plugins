@@ -57,7 +57,9 @@ function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFile
 
             if (errorWhenNoFilesFound && paths.length === 0) {
               this.error(
-                new Error('No files found when trying to dynamically load concatted string')
+                new Error(
+                  `No files found in ${glob} when trying to dynamically load concatted string from ${id}`
+                )
               );
             }
 
