@@ -300,6 +300,9 @@ export default async function transformCommonjs(
               }
               if (!ignoreDynamicRequires) {
                 if (isShorthandProperty(parent)) {
+                  // as key and value are the same object, isReference regards
+                  // both as references, so we need to skip now
+                  skippedNodes.add(parent.value);
                   magicString.prependRight(node.start, 'require: ');
                 }
                 replacedDynamicRequires.push(node);
@@ -475,6 +478,13 @@ export default async function transformCommonjs(
     magicString.remove(0, commentEnd).trim();
   }
 
+  let shebang = '';
+  if (code.startsWith('#!')) {
+    const shebangEndPosition = code.indexOf('\n') + 1;
+    shebang = code.slice(0, shebangEndPosition);
+    magicString.remove(0, shebangEndPosition).trim();
+  }
+
   const exportMode = isEsModule
     ? 'none'
     : shouldWrap
@@ -558,13 +568,13 @@ function ${requireName} () {
 
   magicString
     .trim()
-    .prepend(leadingComment + importBlock)
+    .prepend(shebang + leadingComment + importBlock)
     .append(exportBlock);
 
   return {
     code: magicString.toString(),
     map: sourceMap ? magicString.generateMap() : null,
     syntheticNamedExports: isEsModule || usesRequireWrapper ? false : '__moduleExports',
-    meta: { commonjs: commonjsMeta }
+    meta: { commonjs: { ...commonjsMeta, shebang } }
   };
 }

@@ -170,6 +170,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
             currentlyResolvingForParent.add(source);
             const resolved =
               (await rollupContext.resolve(source, parentId, {
+                skipSelf: false,
                 custom: { 'node-resolve': { isRequire: true } }
               })) || resolveExtensions(source, parentId, extensions);
             currentlyResolvingForParent.delete(source);

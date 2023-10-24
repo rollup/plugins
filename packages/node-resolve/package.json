@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-node-resolve",
-  "version": "15.2.1",
+  "version": "15.2.3",
   "publishConfig": {
     "access": "public"
   },
@@ -52,7 +52,7 @@
     "modules"
   ],
   "peerDependencies": {
-    "rollup": "^2.78.0||^3.0.0"
+    "rollup": "^2.78.0||^3.0.0||^4.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -74,7 +74,7 @@
     "@rollup/plugin-commonjs": "^23.0.0",
     "@rollup/plugin-json": "^5.0.0",
     "es5-ext": "^0.10.62",
-    "rollup": "^3.2.3",
+    "rollup": "^4.0.0-24",
     "source-map": "^0.7.4",
     "string-capitalize": "^1.0.1"
   },

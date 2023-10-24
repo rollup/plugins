@@ -271,7 +271,16 @@ export default function commonjs(options = {}) {
       // entry suffix is just appended to not mess up relative external resolution
       if (id.endsWith(ENTRY_SUFFIX)) {
         const acutalId = id.slice(0, -ENTRY_SUFFIX.length);
-        return getEntryProxy(acutalId, getDefaultIsModuleExports(acutalId), this.getModuleInfo);
+        const {
+          meta: { commonjs: commonjsMeta }
+        } = this.getModuleInfo(acutalId);
+        const shebang = commonjsMeta?.shebang ?? '';
+        return getEntryProxy(
+          acutalId,
+          getDefaultIsModuleExports(acutalId),
+          this.getModuleInfo,
+          shebang
+        );
       }
 
       if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
@@ -306,7 +315,7 @@ export default function commonjs(options = {}) {
       try {
         return transformAndCheckExports.call(this, code, id);
       } catch (err) {
-        return this.error(err, err.loc);
+        return this.error(err, err.pos);
       }
     }
   };

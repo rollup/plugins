@@ -31,6 +31,7 @@ export default function url(options = {}) {
       if (!filter(id)) {
         return null;
       }
+      this.addWatchFile(id);
       return Promise.all([fsStatPromise(id), fsReadFilePromise(id)]).then(([stats, buffer]) => {
         let data;
         if ((limit && stats.size > limit) || limit === 0) {

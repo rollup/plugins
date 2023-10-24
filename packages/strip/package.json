@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-strip",
-  "version": "3.0.2",
+  "version": "3.0.4",
   "publishConfig": {
     "access": "public"
   },
@@ -46,7 +46,7 @@
     "javascript"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -56,11 +56,11 @@
   "dependencies": {
     "@rollup/pluginutils": "^5.0.1",
     "estree-walker": "^2.0.2",
-    "magic-string": "^0.27.0"
+    "magic-string": "^0.30.3"
   },
   "devDependencies": {
     "acorn": "^8.8.0",
-    "rollup": "^3.2.3"
+    "rollup": "^4.0.0-24"
   },
   "ava": {
     "files": [

@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 
-import type { Plugin, RollupOptions, SourceDescription } from 'rollup';
+import type { Plugin, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
 import type { RollupTypescriptOptions } from '../types';
@@ -17,7 +17,7 @@ import findTypescriptOutput, {
   normalizePath,
   emitFile,
   isDeclarationOutputFile,
-  isMapOutputFile
+  isTypeScriptMapOutputFile
 } from './outputFile';
 import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
@@ -55,10 +55,17 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   return {
     name: 'typescript',
 
-    buildStart(rollupOptions: RollupOptions) {
+    buildStart(rollupOptions) {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
-      preflight({ config: parsedOptions, context: this, rollupOptions, tslib });
+      preflight({
+        config: parsedOptions,
+        context: this,
+        // TODO drop rollup@3 support and remove
+        inputPreserveModules: (rollupOptions as unknown as { preserveModules: boolean })
+          .preserveModules,
+        tslib
+      });
 
       // Fixes a memory leak https://github.com/rollup/plugins/issues/322
       if (this.meta.watchMode !== true) {
@@ -142,6 +149,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     async load(id) {
       if (!filter(id)) return null;
 
+      this.addWatchFile(id);
       await watchProgramHelper.wait();
 
       const fileName = normalizePath(id);
@@ -156,11 +164,11 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     },
 
     async generateBundle(outputOptions) {
-      const declarationAndMapFiles = [...emittedFiles.keys()].filter(
-        (fileName) => isDeclarationOutputFile(fileName) || isMapOutputFile(fileName)
+      const declarationAndTypeScriptMapFiles = [...emittedFiles.keys()].filter(
+        (fileName) => isDeclarationOutputFile(fileName) || isTypeScriptMapOutputFile(fileName)
       );
 
-      declarationAndMapFiles.forEach((id) => {
+      declarationAndTypeScriptMapFiles.forEach((id) => {
         const code = getEmittedFile(id, emittedFiles, tsCache);
         if (!code || !parsedOptions.options.declaration) {
           return;

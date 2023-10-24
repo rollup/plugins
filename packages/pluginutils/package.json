@@ -1,6 +1,6 @@
 {
   "name": "@rollup/pluginutils",
-  "version": "5.0.4",
+  "version": "5.0.5",
   "publishConfig": {
     "access": "public"
   },
@@ -52,7 +52,7 @@
     "utils"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -71,7 +71,7 @@
     "@types/node": "^14.18.30",
     "@types/picomatch": "^2.3.0",
     "acorn": "^8.8.0",
-    "rollup": "^3.2.3",
+    "rollup": "^4.0.0-24",
     "typescript": "^4.8.3"
   },
   "ava": {

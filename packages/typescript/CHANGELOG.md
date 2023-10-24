@@ -1,5 +1,21 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v11.1.5
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
+## v11.1.4
+
+_2023-09-25_
+
+### Bugfixes
+
+- fix: fix sourcemap sourcecontent referencing non-existent files [#1571](https://github.com/rollup/plugins/pull/1571)
+
 ## v11.1.3
 
 _2023-08-26_

@@ -20,7 +20,7 @@ interface RollupDsvOptions {
    * The function can either manipulate the passed row, or return an entirely new row object.
    * @default undefined
    */
-  processRow?: null | ((row: DSVRowString, id: string) => DSVRowString | undefined);
+  processRow?: null | ((row: DSVRowString, id: string) => object | void);
 }
 
 /**

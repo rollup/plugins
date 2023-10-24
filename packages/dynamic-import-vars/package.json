@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-dynamic-import-vars",
-  "version": "2.0.5",
+  "version": "2.0.7",
   "publishConfig": {
     "access": "public"
   },
@@ -54,7 +54,7 @@
     "interpolation"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0||^3.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -66,12 +66,12 @@
     "astring": "^1.8.5",
     "estree-walker": "^2.0.2",
     "fast-glob": "^3.2.12",
-    "magic-string": "^0.27.0"
+    "magic-string": "^0.30.3"
   },
   "devDependencies": {
     "acorn": "^8.8.0",
     "prettier": "^2.7.1",
-    "rollup": "^3.2.3"
+    "rollup": "^4.0.0-24"
   },
   "ava": {
     "workerThreads": false,

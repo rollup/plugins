@@ -509,7 +509,9 @@ test('creates an error with a code frame when parsing fails', async (t) => {
   } catch (error) {
     t.is(
       error.frame,
-      '1: /* eslint-disable */\n2: export const foo = 2,\n                        ^'
+      `1: /* eslint-disable */
+2: export const foo = 2,
+                       ^`
     );
   }
 });
@@ -665,11 +667,17 @@ test('does not affect subsequently created instances when called with `requireRe
   const options = { requireReturnsDefault: 'preferred' };
 
   const instance1 = commonjs(options);
-  const bundle1 = await rollup({ input, plugins: [instance1] });
+  const bundle1 = await rollup({
+    input,
+    plugins: [instance1]
+  });
   const code1 = (await bundle1.generate({})).output[0].code;
 
   const instance2 = commonjs(options);
-  const bundle2 = await rollup({ input, plugins: [instance2] });
+  const bundle2 = await rollup({
+    input,
+    plugins: [instance2]
+  });
   const code2 = (await bundle2.generate({})).output[0].code;
 
   t.is(code1, code2);
@@ -1266,14 +1274,35 @@ test('allows the config to be reused', async (t) => {
       })
     ]
   };
-  let bundle = await rollup({ input: 'foo.js', ...config });
+  let bundle = await rollup({
+    input: 'foo.js',
+    ...config
+  });
   t.deepEqual(
     bundle.cache.modules.map(({ id }) => id),
     ['foo.js']
   );
-  bundle = await rollup({ input: 'bar.js', ...config });
+  bundle = await rollup({
+    input: 'bar.js',
+    ...config
+  });
   t.deepEqual(
     bundle.cache.modules.map(({ id }) => id),
     ['bar.js']
   );
+});
+
+test('keep the shebang at the top of the file content', async (t) => {
+  const bundle = await rollup({
+    input: ['fixtures/samples/shebang/main.js'],
+    plugins: [commonjs()]
+  });
+
+  const { output } = await bundle.generate({
+    exports: 'auto',
+    format: 'cjs',
+    chunkFileNames: '[name].js'
+  });
+
+  t.is(output[0].code.startsWith('#!/usr/bin/env node\n'), true);
 });

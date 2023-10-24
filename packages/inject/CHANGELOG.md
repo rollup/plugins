@@ -1,5 +1,21 @@
 # @rollup/plugin-inject ChangeLog
 
+## v5.0.5
+
+_2023-10-15_
+
+### Bugfixes
+
+- fix: bump magic-string version [#1596](https://github.com/rollup/plugins/pull/1596)
+
+## v5.0.4
+
+_2023-10-05_
+
+### Bugfixes
+
+- fix: ensure rollup 4 compatibility [#1595](https://github.com/rollup/plugins/pull/1595)
+
 ## v5.0.3
 
 _2022-12-17_

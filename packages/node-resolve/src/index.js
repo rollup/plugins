@@ -37,6 +37,7 @@ const defaults = {
   extensions: ['.mjs', '.js', '.json', '.node'],
   resolveOnly: [],
   moduleDirectories: ['node_modules'],
+  modulePaths: [],
   ignoreSideEffectsForRoot: false,
   // TODO: set to false in next major release or remove
   allowExportsFolderMapping: true
@@ -304,6 +305,7 @@ export function nodeResolve(opts = {}) {
           // `moduleSideEffects` information.
           const resolvedResolved = await this.resolve(resolved.id, importer, {
             ...resolveOptions,
+            skipSelf: false,
             custom: { ...custom, 'node-resolve': { ...custom['node-resolve'], resolved, importee } }
           });
           if (resolvedResolved) {

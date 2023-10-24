@@ -612,6 +612,24 @@ test.serial('should not emit null sourceContent', async (t) => {
   t.false(sourcemap.sourcesContent.includes(undefined));
 });
 
+test.serial('should not emit sourceContent that references a non-existent file', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    output: {
+      sourcemap: true
+    },
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'es', sourcemap: true }, true);
+  const sourcemap = output[0].map;
+  t.false(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map'));
+});
+
 test.serial('should not fail if source maps are off', async (t) => {
   await t.notThrowsAsync(
     rollup({
@@ -1040,8 +1058,8 @@ test.serial('normalizes resolved ids to avoid duplicate output on windows', asyn
   const files = await getCode(bundle, { format: 'es' }, true);
 
   t.is(files.length, 2);
-  t.true(files[1].fileName.includes('two.js'), files[1].fileName);
-  t.true(files[1].code.includes("import { one } from './one.js';"), files[1].code);
+  t.true(files[0].fileName.includes('two.js'), files[1].fileName);
+  t.true(files[0].code.includes("import { one } from './one.js';"), files[1].code);
 });
 
 test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
