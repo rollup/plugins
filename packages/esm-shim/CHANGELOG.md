@@ -1,5 +1,13 @@
 # @rollup/plugin-esm-shim ChangeLog
 
+## v0.1.4
+
+_2023-10-15_
+
+### Bugfixes
+
+- fix: bump magic-string version [#1596](https://github.com/rollup/plugins/pull/1596)
+
 ## v1.0.3
 
 _2023-10-05_

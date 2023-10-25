@@ -33,7 +33,7 @@
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
-    "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
+    "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "ava",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },

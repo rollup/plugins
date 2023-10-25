@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-strip",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "publishConfig": {
     "access": "public"
   },
@@ -32,7 +32,7 @@
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
-    "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
+    "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "ava"
   },
   "files": [
@@ -57,7 +57,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^5.0.1",
     "estree-walker": "^2.0.2",
-    "magic-string": "^0.27.0"
+    "magic-string": "^0.30.3"
   },
   "devDependencies": {
     "acorn": "^8.8.0",

@@ -44,7 +44,7 @@ export async function getStaticRequireProxy(id, requireReturnsDefault, loadModul
   return `export { default } from ${JSON.stringify(id)};`;
 }
 
-export function getEntryProxy(id, defaultIsModuleExports, getModuleInfo) {
+export function getEntryProxy(id, defaultIsModuleExports, getModuleInfo, shebang) {
   const {
     meta: { commonjs: commonjsMeta },
     hasDefaultExport
@@ -55,9 +55,13 @@ export function getEntryProxy(id, defaultIsModuleExports, getModuleInfo) {
     if (hasDefaultExport) {
       code += `export { default } from ${stringifiedId};`;
     }
-    return code;
+    return shebang + code;
   }
-  return getEsImportProxy(id, defaultIsModuleExports);
+  const result = getEsImportProxy(id, defaultIsModuleExports);
+  return {
+    ...result,
+    code: shebang + result.code
+  };
 }
 
 export function getEsImportProxy(id, defaultIsModuleExports) {
