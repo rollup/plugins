@@ -61,6 +61,13 @@ Default: `[]`
 
 Files to exclude in this plugin (default none).
 
+#### `errorWhenNoFilesFound`
+
+Type: `Boolean`<br>
+Default: `false`
+
+By default, the plugin will not throw errors when target files are not found. Setting this option to true will result in errors thrown when encountering files which don't exist.
+
 #### `warnOnError`
 
 Type: `Boolean`<br>

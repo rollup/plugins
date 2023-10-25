@@ -27,6 +27,7 @@ jobs:
         run: |
           git pull --force --no-tags origin master:master
           git checkout master
+          git fetch --tags
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -38,7 +39,7 @@ jobs:
         id: pnpm-setup
         run: |
           corepack enable
-          corepack prepare pnpm@latest --activate
+          corepack prepare pnpm@8 --activate
           pnpm config set script-shell "/usr/bin/bash"
           echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
 

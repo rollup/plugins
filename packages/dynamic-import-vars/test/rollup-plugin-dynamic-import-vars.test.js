@@ -204,3 +204,35 @@ test('dynamic imports assertions', async (t) => {
   );
   t.snapshot(output[0].code);
 });
+
+test("doesn't throw if no files in dir when option isn't set", async (t) => {
+  let thrown = false;
+  try {
+    await rollup({
+      input: 'fixture-no-files.js',
+      plugins: [dynamicImportVars()]
+    });
+  } catch (_) {
+    thrown = true;
+  }
+  t.false(thrown);
+});
+
+test('throws if no files in dir when option is set', async (t) => {
+  let thrown = false;
+  try {
+    await rollup({
+      input: 'fixture-no-files.js',
+      plugins: [dynamicImportVars({ errorWhenNoFilesFound: true })]
+    });
+  } catch (error) {
+    t.deepEqual(
+      error.message,
+      `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
+        './fixtures/fixture-no-files.js'
+      )}`
+    );
+    thrown = true;
+  }
+  t.true(thrown);
+});
