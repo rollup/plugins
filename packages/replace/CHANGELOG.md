@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v5.0.5
+
+_2023-10-29_
+
+### Bugfixes
+
+- fix: prevent variable before colons from being replaced when preventAssigment is true (#1609)
+
 ## v5.0.4
 
 _2023-10-15_
