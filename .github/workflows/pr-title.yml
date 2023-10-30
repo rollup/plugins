@@ -19,5 +19,5 @@ jobs:
         uses: clowdhaus/actions/pr-title@v0.1.0
         with:
           on-fail-message: "Your PR title doesn't match the required format. The title should be in the conventional commit (https://www.conventionalcommits.org/en/v1.0.0-beta.4/) format. e.g.\n\n```\nchore(plugin-name): add pr title workflow\n```"
-          title-regex: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([\w|,|\-|\|]+\))?(!)?\:\s.*$'
+          title-regex: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(([*]|[\w|,|\-|\|]+)\))?(!)?\:\s.*'
           github-token: ${{ secrets.GITHUB_TOKEN }}
