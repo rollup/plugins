@@ -1,5 +1,13 @@
 # @rollup/plugin-esm-shim ChangeLog
 
+## v0.1.5
+
+_2023-11-05_
+
+### Updates
+
+- refactor: use prefix for build in module imports (#1622)
+
 ## v0.1.4
 
 _2023-10-15_
