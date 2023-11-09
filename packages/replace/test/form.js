@@ -21,10 +21,11 @@ readdirSync('./fixtures/form').forEach((dir) => {
 
   test(`${dir}: ${config.description}`, (t) => {
     const { transform } = replace(config.options);
-    const input = readFileSync(`fixtures/form/${dir}/input.js`, 'utf-8');
+    const extname = config.isTypescript ? 'ts' : 'js';
+    const input = readFileSync(`fixtures/form/${dir}/input.${extname}`, 'utf-8');
 
     return Promise.resolve(
-      transform.call(transformContext, input, `${__dirname}/fixtures/form/${dir}/input.js`)
+      transform.call(transformContext, input, `${__dirname}/fixtures/form/${dir}/input.${extname}`)
     ).then((transformed) => {
       const actual = (transformed ? transformed.code : input).trim();
       t.snapshot(actual);

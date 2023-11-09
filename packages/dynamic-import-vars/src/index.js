@@ -9,7 +9,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import { dynamicImportToGlob, VariableDynamicImportError } from './dynamic-import-to-glob';
 
-function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
+function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFilesFound } = {}) {
   const filter = createFilter(include, exclude);
 
   return {
@@ -54,6 +54,14 @@ function dynamicImportVariables({ include, exclude, warnOnError } = {}) {
             const paths = result.map((r) =>
               r.startsWith('./') || r.startsWith('../') ? r : `./${r}`
             );
+
+            if (errorWhenNoFilesFound && paths.length === 0) {
+              this.error(
+                new Error(
+                  `No files found in ${glob} when trying to dynamically load concatted string from ${id}`
+                )
+              );
+            }
 
             // create magic string if it wasn't created already
             ms = ms || new MagicString(code);

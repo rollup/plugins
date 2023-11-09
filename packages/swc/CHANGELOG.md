@@ -1,5 +1,13 @@
 # @rollup/plugin-swc ChangeLog
 
+## v0.3.0
+
+_2023-11-09_
+
+### Features
+
+- feat: allow passing `env` property as option (#1624)
+
 ## v0.2.1
 
 _2023-10-05_

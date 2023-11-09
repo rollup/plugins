@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.1.0
+
+_2023-10-25_
+
+### Features
+
+- feat: Error when files not found (#1611)
+
 ## v2.0.7
 
 _2023-10-15_

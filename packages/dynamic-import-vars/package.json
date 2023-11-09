@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-dynamic-import-vars",
-  "version": "2.0.7",
+  "version": "2.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -32,7 +32,7 @@
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build --sourcemap",
-    "release": "pnpm --workspace-root plugin:release --pkg $npm_package_name",
+    "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "ava"
   },
   "files": [
