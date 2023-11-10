@@ -93,20 +93,18 @@ export default function replace(options = {}) {
     },
 
     renderChunk(code, chunk) {
-      const id = chunk.fileName;
-      if (!keys.length) return null;
-      if (!filter(id)) return null;
-      return executeReplacement(code, id);
+      return executeReplacement(code, chunk.fileName);
     },
 
     transform(code, id) {
-      if (!keys.length) return null;
-      if (!filter(id)) return null;
       return executeReplacement(code, id);
     }
   };
 
   function executeReplacement(code, id) {
+    if (!keys.length) return null;
+    if (!filter(id)) return null;
+
     const magicString = new MagicString(code);
     if (!codeHasReplacements(code, id, magicString)) {
       return null;
