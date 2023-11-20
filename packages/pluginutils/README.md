@@ -100,7 +100,7 @@ export default function myPlugin(options = {}) {
 Constructs a filter function which can be used to determine whether or not certain modules should be operated upon.
 
 Parameters: `(include?: <picomatch>, exclude?: <picomatch>, options?: Object)`<br>
-Returns: `String`
+Returns: `(id: string | unknown) => boolean`
 
 #### `include` and `exclude`
 
