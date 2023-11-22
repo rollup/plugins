@@ -656,7 +656,8 @@ test('show warning for non-absolute non-plugin resolved id', async (t) => {
       })
     ],
     onwarn(log) {
-      warnList.push(log);
+      const formattedLog = { ...log, message: log.message.replace(/\//g, '/') };
+      warnList.push(formattedLog);
     }
   });
   t.deepEqual(warnList, [
