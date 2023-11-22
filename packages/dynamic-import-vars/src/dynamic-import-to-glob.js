@@ -1,15 +1,18 @@
 import path from 'path';
 
+import fastGlob from 'fast-glob';
+
 export class VariableDynamicImportError extends Error {}
 
 /* eslint-disable-next-line no-template-curly-in-string */
 const example = 'For example: import(`./foo/${bar}.js`).';
 
 function sanitizeString(str) {
+  if (str === '') return str;
   if (str.includes('*')) {
     throw new VariableDynamicImportError('A dynamic import cannot contain * characters.');
   }
-  return str;
+  return fastGlob.escapePath(str);
 }
 
 function templateLiteralToGlob(node) {
