@@ -195,10 +195,10 @@ test('i/am/a/file', (t) =>
 test('Windows absolute path aliasing', (t) => {
   if (!isWindows) {
     t.deepEqual(1, 1);
-    return;
+    return null;
   }
 
-  resolveAliasWithRollup(
+  return resolveAliasWithRollup(
     {
       entries: [
         {
