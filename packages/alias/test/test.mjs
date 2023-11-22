@@ -1,6 +1,7 @@
 import path, { posix } from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
+import os from 'os';
 
 import test from 'ava';
 import { rollup } from 'rollup';
@@ -10,13 +11,16 @@ import alias from 'current-package';
 
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 
+const isWindows = os.platform() === 'win32';
+
 /**
  * Helper function to test configuration with Rollup
  * @param plugins is an array of plugins for Rollup, they should include "alias"
+ * @param externalIds is an array of ids that will be external
  * @param tests is an array of pairs [source, importer]
  * @returns {Promise<unknown>}
  */
-function resolveWithRollup(plugins, tests) {
+function resolveWithRollup(plugins, externalIds, tests) {
   if (!plugins.find((p) => p.name === 'alias')) {
     throw new Error('`plugins` should include the alias plugin.');
   }
@@ -41,6 +45,7 @@ function resolveWithRollup(plugins, tests) {
           },
           resolveId(id) {
             if (id === 'dummy-input') return id;
+            if (externalIds.includes(id)) return { id, external: true };
             return null;
           },
           load(id) {
@@ -58,11 +63,12 @@ function resolveWithRollup(plugins, tests) {
 /**
  * Helper function to test configuration with Rollup and injected alias plugin
  * @param aliasOptions is a configuration for alias plugin
+ * @param externalIds is an array of ids that will be external
  * @param tests is an array of pairs [source, importer]
  * @returns {Promise<unknown>}
  */
-function resolveAliasWithRollup(aliasOptions, tests) {
-  return resolveWithRollup([alias(aliasOptions)], tests);
+function resolveAliasWithRollup(aliasOptions, externalIds, tests) {
+  return resolveWithRollup([alias(aliasOptions)], externalIds, tests);
 }
 
 test('type', (t) => {
@@ -90,6 +96,7 @@ test('Simple aliasing (array)', (t) =>
         { find: './local', replacement: 'global' }
       ]
     },
+    ['bar', 'paradise', 'global'],
     [
       { source: 'foo', importer: '/src/importer.js' },
       { source: 'pony', importer: '/src/importer.js' },
@@ -106,6 +113,7 @@ test('Simple aliasing (object)', (t) =>
         './local': 'global'
       }
     },
+    ['bar', 'paradise', 'global'],
     [
       { source: 'foo', importer: '/src/importer.js' },
       { source: 'pony', importer: '/src/importer.js' },
@@ -125,6 +133,7 @@ test('RegExp aliasing', (t) =>
         { find: /^test\/$/, replacement: 'this/is/strict' }
       ]
     },
+    ['fooooooooobar2019', 'i/am/a/barbie/girl', 'this/is/strict'],
     [
       {
         source: 'fooooooooobar',
@@ -150,6 +159,7 @@ test('Will not confuse modules with similar names', (t) =>
         { find: './foo', replacement: 'bar' }
       ]
     },
+    [],
     [
       { source: 'foo2', importer: '/src/importer.js' },
       {
@@ -168,6 +178,7 @@ test('Alias entry file', (t) =>
     {
       entries: [{ find: 'abacaxi', replacement: './abacaxi' }]
     },
+    ['./abacaxi/entry.js'],
     // eslint-disable-next-line no-undefined
     [{ source: 'abacaxi/entry.js' }]
   ).then((result) => t.deepEqual(result, ['./abacaxi/entry.js'])));
@@ -177,10 +188,16 @@ test('i/am/a/file', (t) =>
     {
       entries: [{ find: 'resolve', replacement: 'i/am/a/file' }]
     },
+    ['i/am/a/file'],
     [{ source: 'resolve', importer: '/src/import.js' }]
   ).then((result) => t.deepEqual(result, ['i/am/a/file'])));
 
-test('Windows absolute path aliasing', (t) =>
+test('Windows absolute path aliasing', (t) => {
+  if (!isWindows) {
+    t.deepEqual(1, 1);
+    return;
+  }
+
   resolveAliasWithRollup(
     {
       entries: [
@@ -190,13 +207,15 @@ test('Windows absolute path aliasing', (t) =>
         }
       ]
     },
+    [],
     [
       {
         source: 'resolve',
         importer: posix.resolve(DIRNAME, './fixtures/index.js')
       }
     ]
-  ).then((result) => t.deepEqual(result, ['E:\\react\\node_modules\\fbjs\\lib\\warning'])));
+  ).then((result) => t.deepEqual(result, ['E:\\react\\node_modules\\fbjs\\lib\\warning']));
+});
 
 /**
  * Helper function to get moduleIDs from final Rollup bundle
@@ -276,6 +295,7 @@ test('Global customResolver function', (t) => {
       ],
       customResolver: () => customResult
     },
+    [],
     [
       {
         source: 'test',
@@ -300,6 +320,7 @@ test('Local customResolver function', (t) => {
       ],
       customResolver: () => customResult
     },
+    [],
     [
       {
         source: 'test',
@@ -322,6 +343,7 @@ test('Global customResolver plugin-like object', (t) => {
       ],
       customResolver: { resolveId: () => customResult }
     },
+    [],
     [
       {
         source: 'test',
@@ -348,6 +370,7 @@ test('Local customResolver plugin-like object', (t) => {
       ],
       customResolver: { resolveId: () => customResult }
     },
+    [],
     [
       {
         source: 'test',
@@ -373,6 +396,7 @@ test('supports node-resolve as a custom resolver', (t) =>
       ],
       customResolver: nodeResolvePlugin()
     },
+    [],
     [
       {
         source: 'local-resolver',
@@ -450,6 +474,7 @@ test('Forwards isEntry and custom options to a custom resolver', (t) => {
         return args[0];
       }
     },
+    [],
     [
       { source: 'entry', importer: '/src/importer.js', options: { isEntry: true } },
       {
@@ -497,9 +522,15 @@ test('Forwards isEntry and custom options to other plugins', (t) => {
         name: 'test',
         resolveId(...args) {
           resolverCalls.push(args);
+
+          if (['entry-point', 'non-entry-point'].includes(args[0])) {
+            return { id: args[0], external: true };
+          }
+          return null;
         }
       }
     ],
+    [],
     [
       { source: 'entry', importer: '/src/importer.js', options: { isEntry: true } },
       {
@@ -558,6 +589,7 @@ test('CustomResolver plugin-like object with buildStart', (t) => {
         buildStart: () => (count.option += 1)
       }
     },
+    [],
     []
   ).then(() =>
     t.deepEqual(count, {
@@ -607,4 +639,34 @@ test('Works as CJS plugin', async (t) => {
         `expected ${normalizedIds[index]} to end with ${expectedId}`
       )
     );
+});
+
+test('show warning for non-absolute non-plugin resolved id', async (t) => {
+  const warnList = [];
+  await rollup({
+    input: './test/fixtures/warn.js',
+    plugins: [
+      alias({
+        entries: [
+          {
+            find: '@',
+            replacement: path.relative(process.cwd(), path.join(DIRNAME, './fixtures/folder'))
+          }
+        ]
+      })
+    ],
+    onwarn(log) {
+      warnList.push(log);
+    }
+  });
+  t.deepEqual(warnList, [
+    {
+      message:
+        'rewrote @/warn-importee.js to test/fixtures/folder/warn-importee.js but was not an abolute path and was not handled by other plugins. ' +
+        'This will lead to duplicated modules for the same path. ' +
+        'To avoid duplicating modules, you should resolve to an absolute path.',
+      code: 'PLUGIN_WARNING',
+      plugin: 'alias'
+    }
+  ]);
 });
