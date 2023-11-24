@@ -9,7 +9,7 @@
 
 # @rollup/plugin-typescript
 
-🍣 A Rollup plugin for seamless integration between Rollup and Typescript.
+🍣 A Rollup plugin for seamless integration between Rollup and TypeScript.
 
 ## Requirements
 
@@ -27,7 +27,7 @@ Note that both `typescript` and `tslib` are peer dependencies of this plugin tha
 
 ## Why?
 
-See [@rollup/plugin-babel](https://github.com/rollup/plugins/tree/master/packages/babel).
+This plugins lets you bundle TypeScript source code files with Rollup. It also adds support for Rollup configuration files written in TypeScript.
 
 ## Usage
 
@@ -225,7 +225,7 @@ Earlier version of `@rollup/plugin-typescript` required that the `compilerOption
 
 ### Typescript compiler options
 
-Some of Typescript's [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html) affect how Rollup builds files.
+Some of TypeScript's [CompilerOptions](https://www.typescriptlang.org/docs/handbook/compiler-options.html) affect how Rollup builds files.
 
 #### `noEmitOnError`
 
@@ -246,9 +246,25 @@ Declaration files are automatically included if they are listed in the `files` f
 These compiler options are ignored by Rollup:
 
 - `noEmitHelpers`, `importHelpers`: The `tslib` helper module always must be used.
-- `noEmit`, `emitDeclarationOnly`: Typescript needs to emit code for the plugin to work with.
+- `noEmit`, `emitDeclarationOnly`: TypeScript needs to emit code for the plugin to work with.
   - _Note: While this was true for early iterations of `@rollup/plugin-typescript`, it is no longer. To override this behavior, and defer to `tsconfig.json` for these options, see the [`noForceEmit`](#noForceEmit) option_
-- `noResolve`: Preventing Typescript from resolving code may break compilation
+- `noResolve`: Preventing TypeScript from resolving code may break compilation
+
+### tsconfig.json recommendations
+
+[TypeScript 5.0 introduced](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#moduleresolution-bundler) the `bundler` option for the `--moduleResolution` setting. With the `bundler` option and Rollup, you can safely use on Node.js 16 and above filenames without file extensions in your relative path `import` statements such as `import Utils from "./utils"`.
+
+Use these options in `tsconfig.json` to take advantage of this feature:
+```
+{
+  "compilerOptions": {
+    "module": "esnext", // Or a numbered ES module version such as es2020
+    "moduleResolution": "bundler",
+  }
+}
+```
+
+Note that this configuration is not compatible with [importing CommonJS](#importing-commonjs) files from TypeScript.
 
 ### Importing CommonJS
 
@@ -298,7 +314,7 @@ export default {
 
 ### Faster compiling
 
-Previous versions of this plugin used Typescript's `transpileModule` API, which is faster but does not perform typechecking and does not support cross-file features like `const enum`s and emit-less types. If you want this behaviour, you can use [@rollup/plugin-sucrase](https://github.com/rollup/plugins/tree/master/packages/sucrase) instead.
+Previous versions of this plugin used TypeScript's `transpileModule` API, which is faster but does not perform typechecking and does not support cross-file features like `const enum`s and emit-less types. If you want this behaviour, you can use [@rollup/plugin-sucrase](https://github.com/rollup/plugins/tree/master/packages/sucrase) instead.
 
 ## Meta
 
