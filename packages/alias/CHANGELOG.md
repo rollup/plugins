@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v5.1.0
+
+_2023-11-25_
+
+### Features
+
+- feat: add warning to avoid unintended duplicate modules (#1634)
+
 ## v5.0.1
 
 _2023-10-05_
