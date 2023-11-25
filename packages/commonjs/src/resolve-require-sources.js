@@ -182,7 +182,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
               return { id: wrapId(childId, EXTERNAL_SUFFIX), allowProxy: false };
             }
             parentMeta.requires.push({ resolved, isConditional });
-            await analyzeRequiredModule(parentId, resolved, isConditional, rollupContext.load.bind(this);
+            await analyzeRequiredModule(parentId, resolved, isConditional, rollupContext.load.bind(this));
             return { id: childId, allowProxy: true };
           })
         );
