@@ -268,3 +268,21 @@ test('throws when dynamic import imports does not contain a file extension', (t)
   );
   t.true(error instanceof VariableDynamicImportError);
 });
+
+test('escapes ()', (t) => {
+  const ast = parse('import(`./${foo}/(foo).js`);', {
+    sourceType: 'module'
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
+  t.is(glob, './*/\\(foo\\).js');
+});
+
+test('escapes []', (t) => {
+  const ast = parse('import(`./${foo}/[foo].js`);', {
+    sourceType: 'module'
+  });
+
+  const glob = dynamicImportToGlob(ast.body[0].expression.source);
+  t.is(glob, './*/\\[foo\\].js');
+});
