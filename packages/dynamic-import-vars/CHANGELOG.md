@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.1.1
+
+_2023-11-25_
+
+### Bugfixes
+
+- fix: escape special glob characters (#1636)
+
 ## v2.1.0
 
 _2023-10-25_
