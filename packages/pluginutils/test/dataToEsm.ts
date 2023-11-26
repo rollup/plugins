@@ -115,14 +115,14 @@ test('support arbitrary module namespace identifier names', (t) => {
   t.is(
     dataToEsm(
       { foo: 'foo', 'foo.bar': 'foo.bar', '\udfff': 'non wellformed' },
-      { namedExports: 'include-arbitrary-name' }
+      { namedExports: true, includeArbitraryNames: true }
     ),
     'export var foo = "foo";\nvar _arbitrary0 = "foo.bar";\nexport {\n\t_arbitrary0 as "foo.bar"\n};\nexport default {\n\tfoo: foo,\n\t"foo.bar": "foo.bar",\n\t"\\udfff": "non wellformed"\n};\n'
   );
   t.is(
     dataToEsm(
       { foo: 'foo', 'foo.bar': 'foo.bar', '\udfff': 'non wellformed' },
-      { namedExports: 'include-arbitrary-name', compact: true }
+      { namedExports: true, includeArbitraryNames: true, compact: true }
     ),
     'export var foo="foo";var _arbitrary0="foo.bar";export{_arbitrary0 as "foo.bar"};export default{foo:foo,"foo.bar":"foo.bar","\\udfff":"non wellformed"};'
   );

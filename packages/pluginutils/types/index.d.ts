@@ -11,7 +11,8 @@ export interface AttachedScope {
 export interface DataToEsmOptions {
   compact?: boolean;
   indent?: string;
-  namedExports?: boolean | 'include-arbitrary-name';
+  namedExports?: boolean;
+  includeArbitraryNames?: boolean;
   objectShorthand?: boolean;
   preferConst?: boolean;
 }

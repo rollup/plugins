@@ -115,7 +115,7 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
       defaultExportRows.push(
         `${stringify(key)}:${_}${serialize(value, options.compact ? null : t, '')}`
       );
-      if (options.namedExports === 'include-arbitrary-name' && isWellFormedString(key)) {
+      if (options.includeArbitraryNames && isWellFormedString(key)) {
         const variableName = `${arbitraryNamePrefix}${arbitraryNameExportRows.length}`;
         namedExportCode += `${declarationType} ${variableName}${_}=${_}${serialize(
           value,

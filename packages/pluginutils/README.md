@@ -167,7 +167,8 @@ const esModuleSource = dataToEsm(
     indent: '\t',
     preferConst: true,
     objectShorthand: true,
-    namedExports: true
+    namedExports: true,
+    includeArbitraryNames: false
   }
 );
 /*
