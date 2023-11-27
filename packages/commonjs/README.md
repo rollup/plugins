@@ -49,13 +49,13 @@ When used together with the node-resolve plugin
 ### `strictRequires`
 
 Type: `"auto" | boolean | "debug" | string[]`<br>
-Default: `"auto"`
+Default: `true`
 
 By default, this plugin will try to hoist `require` statements as imports to the top of each file. While this works well for many code bases and allows for very efficient ESM output, it does not perfectly capture CommonJS semantics as the initialisation order of required modules will be different. The resultant side effects can include log statements being emitted in a different order, and some code that is dependent on the initialisation order of polyfills in require statements may not work. But it is especially problematic when there are circular `require` calls between CommonJS modules as those often rely on the lazy execution of nested `require` calls.
 
-Setting this option to `true` will wrap all CommonJS files in functions which are executed when they are required for the first time, preserving NodeJS semantics. This is the safest setting and should be used if the generated code does not work correctly with `"auto"`. Note that `strictRequires: true` can have a small impact on the size and performance of generated code, but less so if the code is minified.
+The default value of `true` will wrap all CommonJS files in functions which are executed when they are required for the first time, preserving NodeJS semantics. This is the safest setting and should be used if the generated code does not work correctly with `"auto"`. Note that `strictRequires: true` can have a small impact on the size and performance of generated code, but less so if the code is minified.
 
-The default value of `"auto"` will only wrap CommonJS files when they are part of a CommonJS dependency cycle, e.g. an index file that is required by some of its dependencies, or if they are only required in a potentially "conditional" way like from within an if-statement or a function. All other CommonJS files are hoisted. This is the recommended setting for most code bases. Note that the detection of conditional requires can be subject to race conditions if there are both conditional and unconditional requires of the same file, which in edge cases may result in inconsistencies between builds. If you think this is a problem for you, you can avoid this by using any value other than `"auto"` or `"debug"`.
+Setting this option to `"auto"` will only wrap CommonJS files when they are part of a CommonJS dependency cycle, e.g. an index file that is required by some of its dependencies, or if they are only required in a potentially "conditional" way like from within an if-statement or a function. All other CommonJS files are hoisted. This is the recommended setting for most code bases. Note that the detection of conditional requires can be subject to race conditions if there are both conditional and unconditional requires of the same file, which in edge cases may result in inconsistencies between builds. If you think this is a problem for you, you can avoid this by using any value other than `"auto"` or `"debug"`.
 
 `false` will entirely prevent wrapping and hoist all files. This may still work depending on the nature of cyclic dependencies but will often cause problems.
 
