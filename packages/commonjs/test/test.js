@@ -889,9 +889,15 @@ test('handles when an imported dependency of an ES module changes type', async (
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjs');
-  t.deepEqual(trackedTransforms, ['dep.js', '\0commonjsHelpers.js', '\0dep.js?commonjs-exports']);
+  t.deepEqual(trackedTransforms, [
+    'dep.js',
+    'main.js',
+    '\0dep.js?commonjs-es-import',
+    '\0commonjsHelpers.js',
+    '\0dep.js?commonjs-exports'
+  ]);
   trackedTransforms.length = 0;
   const cjsCode = await getCodeFromBundle(bundle);
   t.snapshot(cjsCode);
@@ -901,7 +907,7 @@ test('handles when an imported dependency of an ES module changes type', async (
   bundle = await rollup(options);
   t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjscjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-es-import']);
+  t.deepEqual(trackedTransforms, ['dep.js']);
   trackedTransforms.length = 0;
   const wrappedCode = await getCodeFromBundle(bundle);
   t.snapshot(wrappedCode);
@@ -933,9 +939,9 @@ test('handles when an imported dependency of an ES module changes type', async (
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js']);
+  t.deepEqual(trackedTransforms, ['dep.js']);
   trackedTransforms.length = 0;
   t.is(await getCodeFromBundle(bundle), cjsCode);
 
@@ -944,7 +950,7 @@ test('handles when an imported dependency of an ES module changes type', async (
   bundle = await rollup(options);
   t.is(meta.isCommonJS, false);
   t.deepEqual((await executeBundle(bundle, t)).exports, 'esm');
-  t.deepEqual(trackedTransforms, ['dep.js']);
+  t.deepEqual(trackedTransforms, ['dep.js', 'main.js']);
   trackedTransforms.length = 0;
   t.is(await getCodeFromBundle(bundle), esCode);
 });
@@ -972,9 +978,15 @@ test('handles when a dynamically imported dependency of an ES module changes typ
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual(await (await executeBundle(bundle, t)).exports, 'cjs');
-  t.deepEqual(trackedTransforms, ['dep.js', '\0commonjsHelpers.js', '\0dep.js?commonjs-exports']);
+  t.deepEqual(trackedTransforms, [
+    'dep.js',
+    'main.js',
+    '\0dep.js?commonjs-es-import',
+    '\0commonjsHelpers.js',
+    '\0dep.js?commonjs-exports'
+  ]);
   trackedTransforms.length = 0;
 
   modules['dep.js'] = "exports.dep = 'cjs'; exports.dep += require('dep.js').dep;";
@@ -982,7 +994,7 @@ test('handles when a dynamically imported dependency of an ES module changes typ
   bundle = await rollup(options);
   t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual(await (await executeBundle(bundle, t)).exports, 'cjscjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-es-import']);
+  t.deepEqual(trackedTransforms, ['dep.js']);
   trackedTransforms.length = 0;
 
   resetModules();
@@ -1010,9 +1022,9 @@ test('handles when a dynamically imported dependency of an ES module changes typ
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual(await (await executeBundle(bundle, t)).exports, 'cjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js']);
+  t.deepEqual(trackedTransforms, ['dep.js']);
   trackedTransforms.length = 0;
 
   resetModules();
@@ -1020,7 +1032,7 @@ test('handles when a dynamically imported dependency of an ES module changes typ
   bundle = await rollup(options);
   t.is(meta.isCommonJS, false);
   t.deepEqual(await (await executeBundle(bundle, t)).exports, 'esm');
-  t.deepEqual(trackedTransforms, ['dep.js']);
+  t.deepEqual(trackedTransforms, ['dep.js', 'main.js']);
   trackedTransforms.length = 0;
 });
 
@@ -1055,12 +1067,12 @@ test('handles when a required dependency of a CJS module changes type', async (t
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjs');
   t.deepEqual(trackedTransforms, [
     'dep.js',
     'main.js',
-    '\0dep.js?commonjs-proxy',
+    'main.js?commonjs-entry',
     '\0dep.js?commonjs-exports'
   ]);
   trackedTransforms.length = 0;
@@ -1072,7 +1084,7 @@ test('handles when a required dependency of a CJS module changes type', async (t
   bundle = await rollup(options);
   t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjscjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js']);
+  t.deepEqual(trackedTransforms, ['dep.js', 'main.js?commonjs-entry']);
   trackedTransforms.length = 0;
   const wrappedCode = await getCodeFromBundle(bundle);
   t.snapshot(wrappedCode);
@@ -1082,7 +1094,12 @@ test('handles when a required dependency of a CJS module changes type', async (t
   bundle = await rollup(options);
   t.is(meta.isCommonJS, false);
   t.deepEqual((await executeBundle(bundle, t)).exports, 'esm');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-proxy']);
+  t.deepEqual(trackedTransforms, [
+    'dep.js',
+    'main.js',
+    'main.js?commonjs-entry',
+    '\0dep.js?commonjs-proxy'
+  ]);
   trackedTransforms.length = 0;
   t.is(await getCodeFromBundle(bundle), esCode);
 
@@ -1091,16 +1108,21 @@ test('handles when a required dependency of a CJS module changes type', async (t
   bundle = await rollup(options);
   t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjscjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-exports']);
+  t.deepEqual(trackedTransforms, [
+    'dep.js',
+    'main.js',
+    'main.js?commonjs-entry',
+    '\0dep.js?commonjs-exports'
+  ]);
   trackedTransforms.length = 0;
   t.is(await getCodeFromBundle(bundle), wrappedCode);
 
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-proxy']);
+  t.deepEqual(trackedTransforms, ['dep.js', 'main.js?commonjs-entry']);
   trackedTransforms.length = 0;
   t.is(await getCodeFromBundle(bundle), cjsCode);
 
@@ -1109,7 +1131,12 @@ test('handles when a required dependency of a CJS module changes type', async (t
   bundle = await rollup(options);
   t.is(meta.isCommonJS, false);
   t.deepEqual((await executeBundle(bundle, t)).exports, 'esm');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-proxy']);
+  t.deepEqual(trackedTransforms, [
+    'dep.js',
+    'main.js',
+    'main.js?commonjs-entry',
+    '\0dep.js?commonjs-proxy'
+  ]);
   trackedTransforms.length = 0;
   t.is(await getCodeFromBundle(bundle), esCode);
 });
@@ -1144,14 +1171,9 @@ test('handles when a required dependency of a mixed ES module changes type', asy
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjs');
-  t.deepEqual(trackedTransforms, [
-    'dep.js',
-    'main.js',
-    '\0dep.js?commonjs-proxy',
-    '\0dep.js?commonjs-exports'
-  ]);
+  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-exports']);
   trackedTransforms.length = 0;
   const cjsCode = await getCodeFromBundle(bundle);
   t.snapshot(cjsCode);
@@ -1161,7 +1183,7 @@ test('handles when a required dependency of a mixed ES module changes type', asy
   bundle = await rollup(options);
   t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjscjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js']);
+  t.deepEqual(trackedTransforms, ['dep.js']);
   trackedTransforms.length = 0;
   const wrappedCode = await getCodeFromBundle(bundle);
   t.snapshot(wrappedCode);
@@ -1187,9 +1209,9 @@ test('handles when a required dependency of a mixed ES module changes type', asy
   modules['dep.js'] = "exports.dep = 'cjs';";
   options.cache = bundle.cache;
   bundle = await rollup(options);
-  t.is(meta.isCommonJS, true);
+  t.is(meta.isCommonJS, 'withRequireFunction');
   t.deepEqual((await executeBundle(bundle, t)).exports, 'cjs');
-  t.deepEqual(trackedTransforms, ['dep.js', 'main.js', '\0dep.js?commonjs-proxy']);
+  t.deepEqual(trackedTransforms, ['dep.js']);
   trackedTransforms.length = 0;
   t.is(await getCodeFromBundle(bundle), cjsCode);
 
