@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 module.exports = {
-  description: 'notifies the node-resolve plugin if an id is imported via "require"',
+  description: 'notifies the node-resolve plugin if an id is imported via "require" (strictRequires: "auto")',
   options: {
     plugins: [
       {
@@ -18,6 +18,9 @@ module.exports = {
         }
       }
     ]
+  },
+  pluginOptions: {
+    strictRequires: 'auto'
   },
   async exports(exports) {
     assert.deepStrictEqual(await exports, [{ default: 'imported' }, { default: 'imported' }]);

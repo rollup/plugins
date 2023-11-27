@@ -4,7 +4,7 @@ const ID_MAIN = path.join(__dirname, 'main.js');
 const ID_OTHER = path.join(__dirname, 'other.js');
 
 module.exports = {
-  description: 'exposes cjs file type detection to other plugins',
+  description: 'exposes cjs file type detection to other plugins (strictRequires: "auto")',
   options: {
     input: [ID_MAIN, ID_OTHER],
     plugins: [
@@ -26,5 +26,8 @@ module.exports = {
         }
       }
     ]
+  },
+  pluginOptions: {
+    strictRequires: 'auto'
   }
 };

@@ -265,12 +265,13 @@ test('converts a CommonJS module with custom file extension', async (t) => {
   t.is((await executeBundle(bundle, t)).exports, 42);
 });
 
-test('import CommonJS module with esm property should get default export ', async (t) => {
+test('import CommonJS module with esm property should get default export (strictRequires: "auto")', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/cjs-with-esm-property/main.js',
     plugins: [
       commonjs({
-        defaultIsModuleExports: 'auto'
+        defaultIsModuleExports: 'auto',
+        strictRequires: 'auto'
       })
     ]
   });
@@ -281,7 +282,8 @@ test('import CommonJS module with esm property should get default export ', asyn
     input: 'fixtures/samples/cjs-with-esm-property/main.js',
     plugins: [
       commonjs({
-        defaultIsModuleExports: true
+        defaultIsModuleExports: true,
+        strictRequires: 'auto'
       })
     ]
   });
@@ -371,10 +373,10 @@ test('deconflicts helper name', async (t) => {
   t.not(exports, 'nope');
 });
 
-test('deconflicts reserved keywords', async (t) => {
+test('deconflicts reserved keywords (strictRequires: "auto")', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/reserved-as-property/main.js',
-    plugins: [commonjs()]
+    plugins: [commonjs({ strictRequires: 'auto' })]
   });
 
   const reservedProp = (await executeBundle(bundle, t, { exports: 'named' })).exports.delete;

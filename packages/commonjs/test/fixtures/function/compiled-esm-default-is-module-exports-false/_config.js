@@ -1,6 +1,7 @@
 module.exports = {
-  description: 'returns the default property',
+  description: 'returns the default property (strictRequires: "auto")',
   pluginOptions: {
-    defaultIsModuleExports: false
+    defaultIsModuleExports: false,
+    strictRequires: 'auto'
   }
 };
