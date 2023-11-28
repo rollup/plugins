@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.1.2
+
+_2023-11-28_
+
+### Bugfixes
+
+- fix: Allow a "no files found" error to be emitted as warning (#1625)
+
 ## v2.1.1
 
 _2023-11-25_
