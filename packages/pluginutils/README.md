@@ -143,7 +143,7 @@ export default function myPlugin(options = {}) {
 
 Transforms objects into tree-shakable ES Module imports.
 
-Parameters: `(data: Object)`<br>
+Parameters: `(data: Object, options: DataToEsmOptions)`<br>
 Returns: `String`
 
 #### `data`
@@ -151,6 +151,12 @@ Returns: `String`
 Type: `Object`
 
 An object to transform into an ES module.
+
+#### `options`
+
+Type: `DataToEsmOptions`
+
+_Note: Please see the TypeScript definition for complete documentation of these options_
 
 #### Usage
 
