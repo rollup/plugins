@@ -68,6 +68,8 @@ Default: `false`
 
 By default, the plugin will not throw errors when target files are not found. Setting this option to true will result in errors thrown when encountering files which don't exist.
 
+⚠️ _Important:_ Enabling this option when `warnOnError` is set to `true` will result in a warning and _not_ an error
+
 #### `warnOnError`
 
 Type: `Boolean`<br>
