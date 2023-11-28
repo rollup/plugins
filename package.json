@@ -9,7 +9,7 @@
     "lint:js": "eslint --cache packages scripts shared util --ext .js,.ts,.mjs",
     "lint:json": "prettier --write .github/**/*.yml **/tsconfig.json tsconfig.*.json pnpm-workspace.yaml",
     "lint:package": "prettier --write **/package.json",
-    "package:release": "versioner --stripShortName='^@.+/plugin-' --target",
+    "package:release": "versioner --stripShortName='^@.+/(plugin-)?' --target",
     "preinstall": "node scripts/disallow-npm.js",
     "prepare": "husky install",
     "prettier": "prettier --write .",
