@@ -10,6 +10,12 @@ export interface AttachedScope {
 
 export interface DataToEsmOptions {
   compact?: boolean;
+  /**
+   * @desc When this option is set, dataToEsm will generate a named export for keys that
+   * are not a valid identifier, by leveraging the "Arbitrary Module Namespace Identifier
+   * Names" feature. See: https://github.com/tc39/ecma262/pull/2154
+   */
+  includeArbitraryNames?: boolean;
   indent?: string;
   namedExports?: boolean;
   objectShorthand?: boolean;
