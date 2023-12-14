@@ -11,6 +11,7 @@ function isModuleDir(current: string, moduleDirs: readonly string[]) {
 export async function findPackageJson(base: string, moduleDirs: readonly string[]) {
   const { root } = path.parse(base);
   let current = base;
+  let prev_current = null;
 
   while (current !== root && !isModuleDir(current, moduleDirs)) {
     const pkgJsonPath = path.join(current, 'package.json');
@@ -18,7 +19,11 @@ export async function findPackageJson(base: string, moduleDirs: readonly string[
       const pkgJsonString = fs.readFileSync(pkgJsonPath, 'utf-8');
       return { pkgJson: JSON.parse(pkgJsonString), pkgPath: current, pkgJsonPath };
     }
+    prev_current = current;
     current = path.resolve(current, '..');
+
+    // issue #1647 prevent infinite loop for virtual modules
+    if (current === "/" && prev_current === "/") break;
   }
   return null;
 }
