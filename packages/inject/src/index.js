@@ -96,7 +96,7 @@ export default function inject(options) {
       } catch (err) {
         this.warn({
           code: 'PARSE_ERROR',
-          message: `rollup-plugin-inject: failed to parse ${id}. Consider restricting the plugin to particular files via options.include`
+          message: `@rollup/plugin-inject: failed to parse ${id}. Consider restricting the plugin to particular files via options.include`
         });
       }
       if (!ast) {

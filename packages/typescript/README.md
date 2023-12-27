@@ -63,7 +63,7 @@ export default {
 }
 ```
 
-The following options are unique to `rollup-plugin-typescript`:
+The following options are unique to `@rollup/plugin-typescript`:
 
 ### `exclude`
 

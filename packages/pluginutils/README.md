@@ -64,7 +64,7 @@ Attaches `Scope` objects to the relevant nodes of an AST. Each `Scope` object ha
 Parameters: `(ast: Node, propertyName?: String)`<br>
 Returns: `Object`
 
-See [rollup-plugin-inject](https://github.com/rollup/rollup-plugin-inject) or [rollup-plugin-commonjs](https://github.com/rollup/rollup-plugin-commonjs) for an example of usage.
+See [@rollup/plugin-inject](https://github.com/rollup/plugins/tree/master/packages/inject) or [@rollup/plugin-commonjs](https://github.com/rollup/plugins/tree/master/packages/commonjs) for an example of usage.
 
 ```js
 import { attachScopes } from '@rollup/pluginutils';
