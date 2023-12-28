@@ -728,8 +728,8 @@ importers:
   packages/typescript:
     dependencies:
       '@rollup/pluginutils':
-        specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        specifier: ^5.1.0
+        version: 5.1.0(rollup@4.0.0-24)
       resolve:
         specifier: ^1.22.1
         version: 1.22.1
