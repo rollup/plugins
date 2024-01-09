@@ -104,7 +104,7 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
         if (!path.isAbsolute(updatedId)) {
           this.warn(
-            `rewrote ${importee} to ${updatedId} but was not an abolute path and was not handled by other plugins. ` +
+            `rewrote ${importee} to ${updatedId} but was not an absolute path and was not handled by other plugins. ` +
               `This will lead to duplicated modules for the same path. ` +
               `To avoid duplicating modules, you should resolve to an absolute path.`
           );
