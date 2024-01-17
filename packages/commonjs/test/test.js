@@ -265,13 +265,12 @@ test('converts a CommonJS module with custom file extension', async (t) => {
   t.is((await executeBundle(bundle, t)).exports, 42);
 });
 
-test('import CommonJS module with esm property should get default export (strictRequires: "auto")', async (t) => {
+test('import CommonJS module with esm property should get default export ', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/cjs-with-esm-property/main.js',
     plugins: [
       commonjs({
-        defaultIsModuleExports: 'auto',
-        strictRequires: 'auto'
+        defaultIsModuleExports: 'auto'
       })
     ]
   });
@@ -282,13 +281,12 @@ test('import CommonJS module with esm property should get default export (strict
     input: 'fixtures/samples/cjs-with-esm-property/main.js',
     plugins: [
       commonjs({
-        defaultIsModuleExports: true,
-        strictRequires: 'auto'
+        defaultIsModuleExports: true
       })
     ]
   });
   const result2 = await executeBundle(bundle2, t);
-  t.is(result2.error.message, 'lib is not a function');
+  t.is(result2.error.message, 'libExports is not a function');
 });
 
 test('identifies named exports from object literals', async (t) => {
