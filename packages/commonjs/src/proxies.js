@@ -75,8 +75,10 @@ export function getEsImportProxy(id, defaultIsModuleExports) {
     `export { ${exportsName} as __moduleExports };`;
   if (defaultIsModuleExports === true) {
     code += `\nexport { ${exportsName} as default };`;
+  } else if (defaultIsModuleExports === false) {
+    code += `\nexport default ${exportsName}.default;`;
   } else {
-    code += `export default /*@__PURE__*/getDefaultExportFromCjs(${exportsName});`;
+    code += `\nexport default /*@__PURE__*/getDefaultExportFromCjs(${exportsName});`;
   }
   return {
     code,
