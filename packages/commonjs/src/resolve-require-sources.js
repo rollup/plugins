@@ -192,13 +192,14 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
           // eslint-disable-next-line no-multi-assign
           const isCommonJS = (parentMeta.isRequiredCommonJS[dependencyId] =
             getTypeForFullyAnalyzedModule(dependencyId));
+          const isWrappedCommonJS = isCommonJS === IS_WRAPPED_COMMONJS;
           fullyAnalyzedModules[dependencyId] = true;
           return {
+            wrappedModuleSideEffects:
+              isWrappedCommonJS && rollupContext.getModuleInfo(dependencyId).moduleSideEffects,
             source: sources[index].source,
             id: allowProxy
-              ? isCommonJS === IS_WRAPPED_COMMONJS
-                ? wrapId(dependencyId, WRAPPED_SUFFIX)
-                : wrapId(dependencyId, PROXY_SUFFIX)
+              ? wrapId(dependencyId, isWrappedCommonJS ? WRAPPED_SUFFIX : PROXY_SUFFIX)
               : dependencyId,
             isCommonJS
           };

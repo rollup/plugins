@@ -1,7 +1,14 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 import { __exports as input } from "\u0000fixtures/form/defaultIsModuleExports-auto-no-__esModule/input.js?commonjs-exports";
 
-var _default = input.default = 2;
-var named = input.named = 3;
+var hasRequiredInput;
 
-export { input as __moduleExports, named, input as default };
+function requireInput () {
+	if (hasRequiredInput) return input;
+	hasRequiredInput = 1;
+	input.default = 2;
+	input.named = 3;
+	return input;
+}
+
+export { requireInput as __require };

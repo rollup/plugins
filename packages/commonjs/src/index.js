@@ -1,4 +1,4 @@
-import { extname, relative, resolve, dirname } from 'path';
+import { dirname, extname, relative, resolve } from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -239,7 +239,7 @@ export default function commonjs(options = {}) {
       }
     },
 
-    load(id) {
+    async load(id) {
       if (id === HELPERS_ID) {
         return getHelpersModule();
       }
@@ -285,7 +285,11 @@ export default function commonjs(options = {}) {
 
       if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
         const actualId = unwrapId(id, ES_IMPORT_SUFFIX);
-        return getEsImportProxy(actualId, getDefaultIsModuleExports(actualId));
+        return getEsImportProxy(
+          actualId,
+          getDefaultIsModuleExports(actualId),
+          (await this.load({ id: actualId })).moduleSideEffects
+        );
       }
 
       if (id === DYNAMIC_MODULES_ID) {

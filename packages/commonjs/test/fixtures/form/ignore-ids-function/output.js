@@ -2,7 +2,14 @@ import * as commonjsHelpers from "_commonjsHelpers.js";
 import { __exports as input } from "\u0000fixtures/form/ignore-ids-function/input.js?commonjs-exports";
 import require$$0 from "\u0000CWD/fixtures/form/ignore-ids-function/bar.js?commonjs-proxy";
 
-var foo = require( 'foo' );
-var bar = require$$0;
+var hasRequiredInput;
 
-export { input as __moduleExports, input as default };
+function requireInput () {
+	if (hasRequiredInput) return input;
+	hasRequiredInput = 1;
+	var foo = require( 'foo' );
+	var bar = require$$0;
+	return input;
+}
+
+export { requireInput as __require };

@@ -2,11 +2,11 @@ const path = require('path');
 const assert = require('assert');
 
 let referenceId;
-const testEntry = 'generated-foo2.js';
+const testEntry = 'generated-foo.js';
 
 module.exports = {
   description:
-    'use correct side-effects flags for files that become entry points after they are loaded (strictRequires: false)',
+    'use correct side-effects flags for files that become entry points after they are loaded (strictRequires: true)',
   testEntry,
   options: {
     treeshake: { moduleSideEffects: false },
@@ -20,13 +20,17 @@ module.exports = {
         },
         generateBundle() {
           assert.strictEqual(this.getFileName(referenceId), testEntry);
+        },
+        moduleParsed({ id, code }) {
+          console.log('\n===', id);
+          console.log(code);
         }
       }
     ],
     output: { chunkFileNames: 'generated-[name].js' }
   },
   pluginOptions: {
-    strictRequires: false
+    strictRequires: true
   },
   global: (global, t) => {
     t.is(global.foo, 'foo');
