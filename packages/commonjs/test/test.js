@@ -324,7 +324,7 @@ test('can handle parens around right have node while producing default export', 
     plugins: [commonjs()]
   });
 
-  t.is((await executeBundle(bundle, t)).exports, 42);
+  t.is((await executeBundle(bundle, t, { testEntry: 'index.js' })).exports, 42);
 });
 
 test('typeof transforms: correct-scoping', async (t) => {
@@ -333,7 +333,7 @@ test('typeof transforms: correct-scoping', async (t) => {
     plugins: [commonjs()]
   });
 
-  t.is((await executeBundle(bundle, t)).exports, 'object');
+  t.is((await executeBundle(bundle, t, { testEntry: 'correct-scoping.js' })).exports, 'object');
 });
 
 test('typeof transforms: protobuf', async (t) => {
@@ -343,7 +343,7 @@ test('typeof transforms: protobuf', async (t) => {
     plugins: [commonjs()]
   });
 
-  t.is((await executeBundle(bundle, t)).exports, true);
+  t.is((await executeBundle(bundle, t, { testEntry: 'protobuf.js' })).exports, true);
 });
 
 test('typeof transforms: sinon', async (t) => {
