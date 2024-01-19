@@ -371,13 +371,13 @@ test('deconflicts helper name', async (t) => {
   t.not(exports, 'nope');
 });
 
-test('deconflicts reserved keywords (strictRequires: "auto")', async (t) => {
+test('deconflicts reserved keywords', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/samples/reserved-as-property/main.js',
-    plugins: [commonjs({ strictRequires: 'auto' })]
+    plugins: [commonjs()]
   });
 
-  const reservedProp = (await executeBundle(bundle, t, { exports: 'named' })).exports.delete;
+  const reservedProp = (await executeBundle(bundle, t, { exports: 'default' })).exports.delete;
   t.is(reservedProp, 'foo');
 });
 

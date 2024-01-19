@@ -51,7 +51,7 @@ When used together with the node-resolve plugin
 Type: `"auto" | boolean | "debug" | string[]`<br>
 Default: `true`
 
-By default, this plugin will try to hoist `require` statements as imports to the top of each file. While this works well for many code bases and allows for very efficient ESM output, it does not perfectly capture CommonJS semantics as the initialisation order of required modules will be different. The resultant side effects can include log statements being emitted in a different order, and some code that is dependent on the initialisation order of polyfills in require statements may not work. But it is especially problematic when there are circular `require` calls between CommonJS modules as those often rely on the lazy execution of nested `require` calls.
+Historically, this plugin tried to hoist `require` statements as imports to the top of each file. While this works well for many code bases and allows for very efficient ESM output, it does not perfectly capture CommonJS semantics as the initialisation order of required modules will be different. The resultant side effects can include log statements being emitted in a different order, and some code that is dependent on the initialisation order of polyfills in require statements may not work. But it is especially problematic when there are circular `require` calls between CommonJS modules as those often rely on the lazy execution of nested `require` calls.
 
 The default value of `true` will wrap all CommonJS files in functions which are executed when they are required for the first time, preserving NodeJS semantics. This is the safest setting and should be used if the generated code does not work correctly with `"auto"`. Note that `strictRequires: true` can have a small impact on the size and performance of generated code, but less so if the code is minified.
 
@@ -385,6 +385,30 @@ For these situations, you can change Rollup's behaviour either globally or per m
   ```
 
 To change this for individual modules, you can supply a function for `requireReturnsDefault` instead. This function will then be called once for each required ES module or external dependency with the corresponding id and allows you to return different values for different modules.
+
+## Using CommonJS files as entry points
+
+With this plugin, you can also use CommonJS files as entry points. This means, however, that when you are bundling to an ES module, your bundle will only have a default export. If you want named exports instead, you should use an ES module entry point instead that reexports from your CommonJS entry point, e.g.
+
+```js
+// main.cjs, the CommonJS entry
+exports.foo = 'foo';
+exports.bar = 'bar';
+
+// main.mjs, the ES module entry
+export { foo, bar } from './main.cjs';
+
+// rollup.config.mjs
+export default {
+  input: 'main.mjs',
+  output: {
+    format: 'es',
+    file: 'bundle.mjs'
+  }
+};
+```
+
+When bundling to CommonJS, i.e `output.format === 'cjs'`, make sure that you do not set `output.exports` to `'named'`. The default value of `'auto'` will usually work, but you can also set it explicitly to `'default'`. That makes sure that Rollup assigns the default export that was generated for your CommonJS entry point to `module.exports`, and semantics do not change.
 
 ## Using with @rollup/plugin-node-resolve
 
