@@ -57,21 +57,21 @@ export function getEntryProxy(id, defaultIsModuleExports, getModuleInfo, shebang
     }
     return shebang + code;
   }
-  const result = getEsImportProxy(id, defaultIsModuleExports);
+  const result = getEsImportProxy(id, defaultIsModuleExports, true);
   return {
     ...result,
     code: shebang + result.code
   };
 }
 
-export function getEsImportProxy(id, defaultIsModuleExports) {
+export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) {
   const name = getName(id);
   const exportsName = `${name}Exports`;
   const requireModule = `require${capitalize(name)}`;
   let code =
     `import { getDefaultExportFromCjs } from "${HELPERS_ID}";\n` +
     `import { __require as ${requireModule} } from ${JSON.stringify(id)};\n` +
-    `var ${exportsName} = ${requireModule}();\n` +
+    `var ${exportsName} = ${moduleSideEffects ? '' : '/*@__PURE__*/ '}${requireModule}();\n` +
     `export { ${exportsName} as __moduleExports };`;
   if (defaultIsModuleExports === true) {
     code += `\nexport { ${exportsName} as default };`;
