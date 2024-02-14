@@ -23,7 +23,7 @@ This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v
 Using npm:
 
 ```console
-npm install @rollup/plugin-swc --save-dev
+npm install @rollup/plugin-swc @swc/core --save-dev
 ```
 
 ## Usage
