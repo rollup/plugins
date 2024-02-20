@@ -26,6 +26,11 @@ const testBundle = async (t, bundle) => {
   return func(t);
 };
 
+const setup = (t) => {
+  global.result = null;
+  global.t = t;
+};
+
 test('async compiling', async (t) => {
   t.plan(2);
 
@@ -51,8 +56,7 @@ test('fetching WASM from separate file', async (t) => {
   await bundle.write({ format: 'cjs', file: outputFile });
   const glob = join(outputDir, `**/*.wasm`).split(sep).join(posix.sep);
 
-  global.result = null;
-  global.t = t;
+  setup(t);
   await import(outputFile);
   await global.result;
   t.snapshot(await globby(glob));
@@ -61,6 +65,7 @@ test('fetching WASM from separate file', async (t) => {
 
 test('complex module decoding', async (t) => {
   t.plan(2);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/complex.js',
@@ -71,6 +76,7 @@ test('complex module decoding', async (t) => {
 
 test('sync compiling', async (t) => {
   t.plan(2);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/sync.js',
@@ -85,6 +91,7 @@ test('sync compiling', async (t) => {
 
 test('imports', async (t) => {
   t.plan(1);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/imports.js',
@@ -99,6 +106,7 @@ test('imports', async (t) => {
 
 test('worker', async (t) => {
   t.plan(2);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/worker.js',
@@ -120,6 +128,7 @@ test('worker', async (t) => {
 
 test('injectHelper', async (t) => {
   t.plan(4);
+  setup(t);
 
   const injectImport = `import { _loadWasmModule } from ${JSON.stringify('\0wasmHelpers.js')};`;
 
@@ -146,12 +155,13 @@ test('injectHelper', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('target environment auto', async (t) => {
+test('loader auto', async (t) => {
   t.plan(5);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasmPlugin({ targetEnv: 'auto' })]
+    plugins: [wasmPlugin({ loader: 'auto' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
@@ -160,12 +170,13 @@ test('target environment auto', async (t) => {
   t.true(code.includes(`fetch`));
 });
 
-test('target environment auto-inline', async (t) => {
+test('loader auto-inline', async (t) => {
   t.plan(6);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasmPlugin({ targetEnv: 'auto-inline' })]
+    plugins: [wasmPlugin({ loader: 'auto-inline' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
@@ -175,12 +186,13 @@ test('target environment auto-inline', async (t) => {
   t.true(code.includes(`if (isNode)`));
 });
 
-test('target environment browser', async (t) => {
+test('loader browser', async (t) => {
   t.plan(4);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasmPlugin({ targetEnv: 'browser' })]
+    plugins: [wasmPlugin({ loader: 'browser' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
@@ -188,12 +200,13 @@ test('target environment browser', async (t) => {
   t.true(code.includes(`fetch`));
 });
 
-test('target environment node', async (t) => {
+test('loader node', async (t) => {
   t.plan(4);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
-    plugins: [wasmPlugin({ targetEnv: 'node' })]
+    plugins: [wasmPlugin({ loader: 'node' })]
   });
   const code = await getCode(bundle);
   await testBundle(t, bundle);
@@ -201,13 +214,33 @@ test('target environment node', async (t) => {
   t.true(!code.includes(`fetch`));
 });
 
+test('loader custom', async (t) => {
+  t.plan(1);
+  setup(t);
+
+  function custom(sync, path, base64, imports) {
+    // eslint-disable-next-line no-console
+    console.log(`custom load: ${sync}, ${path}, ${base64}, ${imports}`);
+  }
+
+  const bundle = await rollup({
+    input: 'fixtures/async.js',
+    plugins: [wasmPlugin({ loader: custom })]
+  });
+
+  const code = await getCode(bundle);
+
+  t.true(code.includes('custom load'));
+});
+
 test('filename override', async (t) => {
   t.plan(1);
+  setup(t);
 
   const bundle = await rollup({
     input: 'fixtures/async.js',
     plugins: [
-      wasmPlugin({ maxFileSize: 0, targetEnv: 'node', fileName: 'start-[name]-suffix[extname]' })
+      wasmPlugin({ maxFileSize: 0, loader: 'node', fileName: 'start-[name]-suffix[extname]' })
     ]
   });
 
@@ -220,6 +253,7 @@ test('filename override', async (t) => {
 
 test('works as CJS plugin', async (t) => {
   t.plan(2);
+  setup(t);
   const require = createRequire(import.meta.url);
   const wasmPluginCjs = require('current-package');
   const bundle = await rollup({
@@ -233,10 +267,11 @@ test('works as CJS plugin', async (t) => {
 if (!process.version.startsWith('v14')) {
   test('avoid uncaught exception on file read', async (t) => {
     t.plan(2);
+    setup(t);
 
     const bundle = await rollup({
       input: 'fixtures/complex.js',
-      plugins: [wasmPlugin({ maxFileSize: 0, targetEnv: 'node' })]
+      plugins: [wasmPlugin({ maxFileSize: 0, loader: 'node' })]
     });
 
     const raw = await getCode(bundle);
