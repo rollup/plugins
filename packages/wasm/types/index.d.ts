@@ -9,6 +9,23 @@ import type { FilterPattern } from '@rollup/pluginutils';
  */
 export type TargetEnv = 'auto' | 'auto-inline' | 'browser' | 'node';
 
+/**
+ * The type for the plugin's loader function
+ *
+ * This is the function that ends up called when encountering a WASM import to load it and turn it into an usable object at runtime.
+ *
+ * @param {boolean} sync Whether the load should happen synchronously or not
+ * @param {string | null} filepath The path to the module.
+ * @param {string | null} src The base64-encoded source of the module
+ * @param {any} imports An object containing the module's imports
+ */
+export type WasmLoaderFunction = (
+  sync: boolean,
+  filepath: string | null,
+  src: string,
+  imports: any
+) => void;
+
 export interface RollupWasmOptions {
   /**
    * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin
@@ -41,7 +58,21 @@ export interface RollupWasmOptions {
    */
   publicPath?: string;
   /**
+   * The loader used to process WASM modules.
+   *
+   * This plugin provides 4 default loaders:
+   * - `"auto"` will determine the environment at runtime and invoke the correct methods accordingly
+   * - `"auto-inline"` always inlines the Wasm and will decode it according to the environment
+   * - `"browser"` omits emitting code that requires node.js builtin modules that may play havoc on downstream bundlers
+   * - `"node"` omits emitting code that requires `fetch`
+   *
+   * Additionally, you can pass your own loader function if you need better control. The plugin expects a
+   * function with the following signature: `_loadWasmModule(sync: boolean, filepath: string, src: string, imports: any)`.
+   */
+  loader?: TargetEnv | WasmLoaderFunction;
+  /**
    * Configures what code is emitted to instantiate the Wasm (both inline and separate)
+   * @deprecated Use {@link RollupWasmOptions.loader}
    */
   targetEnv?: TargetEnv;
 }
