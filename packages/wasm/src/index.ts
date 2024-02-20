@@ -7,15 +7,17 @@ import { createFilter } from '@rollup/pluginutils';
 
 import type { RollupWasmOptions } from '../types';
 
-import { getHelpersModule, HELPERS_ID } from './helper';
+import { getHelpersModule, HELPERS_ID, LOADER_FUNC_NAME } from './helper';
 
 export function wasm(options: RollupWasmOptions = {}): Plugin {
+  // eslint-disable-next-line no-param-reassign
+  options.loader ??= options.targetEnv;
   const {
     sync = [],
     maxFileSize = 14 * 1024,
     publicPath = '',
-    targetEnv = 'auto',
-    fileName = '[hash][extname]'
+    fileName = '[hash][extname]',
+    loader = 'auto'
   } = options;
 
   const syncFiles = sync.map((x) => path.resolve(x));
@@ -35,7 +37,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
     load(id) {
       if (id === HELPERS_ID) {
-        return getHelpersModule(targetEnv);
+        return getHelpersModule(loader);
       }
 
       if (!filter(id)) {
@@ -49,7 +51,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
       return Promise.all([fs.promises.stat(id), fs.promises.readFile(id)]).then(
         ([stats, buffer]) => {
-          if (targetEnv === 'auto-inline') {
+          if (loader === 'auto-inline') {
             return buffer.toString('binary');
           }
 
@@ -88,6 +90,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       if (code && /\.wasm$/.test(id)) {
         const isSync = syncFiles.indexOf(id) !== -1;
         const publicFilepath = copies[id] ? `'${copies[id].publicFilepath}'` : null;
+        let out = '';
         let src;
 
         if (publicFilepath === null) {
@@ -100,12 +103,14 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
           src = null;
         }
 
+        out = `import { ${LOADER_FUNC_NAME} } from ${JSON.stringify(HELPERS_ID)};
+export default function (imports) { return ${LOADER_FUNC_NAME}(${+isSync}, ${publicFilepath}, ${src}, imports) }`;
+
         return {
           map: {
             mappings: ''
           },
-          code: `import { _loadWasmModule } from ${JSON.stringify(HELPERS_ID)};
-export default function(imports){return _loadWasmModule(${+isSync}, ${publicFilepath}, ${src}, imports)}`
+          code: out
         };
       }
       return null;
