@@ -360,7 +360,8 @@ test.serial('terser preserve vars in nameCache when provided', async (t) => {
 });
 
 test.serial('minify when os.cpus().length === 0', async (t) => {
-  const original = os.cpus;
+  const originalAvailableParallelism = os.availableParallelism;
+  const originalCpus = os.cpus;
   os.cpus = () => [];
   try {
     const bundle = await rollup({
@@ -373,6 +374,7 @@ test.serial('minify when os.cpus().length === 0', async (t) => {
     t.is(output.code, '"use strict";window.a=5,window.a<3&&console.log(4);\n');
     t.falsy(output.map);
   } finally {
-    os.cpus = original;
+    os.availableParallelism = originalAvailableParallelism;
+    os.cpus = originalCpus;
   }
 });
