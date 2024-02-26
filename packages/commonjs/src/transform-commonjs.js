@@ -292,6 +292,14 @@ export default async function transformCommonjs(
         case 'Identifier': {
           const { name } = node;
           if (!isReference(node, parent) || scope.contains(name)) return;
+          const isClassBodyPropertyKey =
+            parent.type === 'PropertyDefinition' && parent.key === node;
+          if (isClassBodyPropertyKey && parent.value) return;
+          const prependLeftToClassBodyPropertyKey = (value) => {
+            if (isClassBodyPropertyKey && !parent.value) {
+              magicString.prependLeft(node.start, value);
+            }
+          };
           switch (name) {
             case 'require':
               uses.require = true;
@@ -305,6 +313,7 @@ export default async function transformCommonjs(
                   skippedNodes.add(parent.value);
                   magicString.prependRight(node.start, 'require: ');
                 }
+                prependLeftToClassBodyPropertyKey('require = ');
                 replacedDynamicRequires.push(node);
               }
               return;
@@ -316,10 +325,12 @@ export default async function transformCommonjs(
             case 'global':
               uses.global = true;
               if (!ignoreGlobal) {
+                prependLeftToClassBodyPropertyKey('global = ');
                 replacedGlobal.push(node);
               }
               return;
             case 'define':
+              prependLeftToClassBodyPropertyKey('define = ');
               magicString.overwrite(node.start, node.end, 'undefined', {
                 storeName: true
               });
