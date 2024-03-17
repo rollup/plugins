@@ -11,4 +11,4 @@ const require = cjsModule.createRequire(import.meta.url);
 `;
 
 export const ESMStaticImportRegex =
-  /(?<=\s|^|;)import\s*([\s"']*(?<imports>[\w\t\n\r $*,/{}]+)from\s*)?["']\s*(?<specifier>(?<="\s*)[^"]*[^\s"](?=\s*")|(?<='\s*)[^']*[^\s'](?=\s*'))\s*["'][\s;]*/gm;
+  /(?<=\s|^|;)import\s*([\s"']*(?<imports>[\w\t\n\r $*,/{}]+)from\s*)?["']\s*(?<specifier>(?<="\s*)[^"\n]*[^\s"](?=\s*")|(?<='\s*)[^'\n]*[^\s'](?=\s*'))\s*["'][\s;]*/gm;

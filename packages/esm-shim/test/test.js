@@ -67,3 +67,19 @@ test.serial('inject cjs shim for esm output with multiple import statements', as
   t.snapshot(output.code);
   t.falsy(output.map);
 });
+
+// see issue #1649 https://github.com/rollup/plugins/issues/1649
+test.serial(
+  'inject cjs shim should not break on valid js object with `import` literal value',
+  async (t) => {
+    const bundle = await rollup({
+      input: 'test/fixtures/cjs-import-literal.js',
+      plugins: [esmShim()]
+    });
+    const result = await bundle.generate({ format: 'es' });
+    t.is(result.output.length, 1);
+    const [output] = result.output;
+    t.snapshot(output.code);
+    t.falsy(output.map);
+  }
+);
