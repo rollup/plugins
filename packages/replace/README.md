@@ -179,6 +179,19 @@ replace({
 });
 ```
 
+### `sourceMap` or `sourcemap`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Enables generating sourcemaps for the bundled code. For example, where the plugin is called as follows:
+
+```js
+replace({
+  sourcemap: true
+});
+```
+
 ## Word Boundaries
 
 By default, values will only match if they are surrounded by _word boundaries_.
