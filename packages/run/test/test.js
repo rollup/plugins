@@ -97,6 +97,22 @@ test('throws an error when bundle is not written to disk', async (t) => {
   );
 });
 
+test('throws an error when there are multiple entry points', async (t) => {
+  const testInput = join(cwd, 'change-detect-input.js');
+  await t.throwsAsync(
+    async () => {
+      await rollup({
+        input: [input, testInput],
+        plugins: [run()]
+      });
+    },
+    {
+      instanceOf: Error,
+      message: '@rollup/plugin-run only works with a single entry point'
+    }
+  );
+});
+
 test('detects changes - forks a new child process and kills older process', async (t) => {
   // eslint-disable-next-line no-shadow
   const testInput = join(cwd, 'change-detect-input.js');
