@@ -15,12 +15,14 @@ const sinon = require('sinon');
 const run = require('../');
 
 const cwd = join(__dirname, 'fixtures/');
-const file = join(cwd, 'output/bundle.js');
+const outputDir = join(cwd, 'output');
+const file = join(outputDir, 'bundle.js');
 const input = join(cwd, 'input.js');
 
 process.chdir(cwd);
 
 const outputOptions = { file, format: 'cjs' };
+const outputDirOptions = { dir: outputDir, format: 'cjs' };
 
 let mockChildProcess;
 test.before(() => {
@@ -62,8 +64,7 @@ test('checks entry point facade module', async (t) => {
     preserveEntrySignatures: 'strict',
     plugins: [run()]
   });
-  const outputDir = join(cwd, 'output');
-  await bundle.write({ dir: outputDir, format: 'cjs' });
+  await bundle.write(outputDirOptions);
   t.true(mockChildProcess.calledWithExactly(join(outputDir, 'index.js'), [], {}));
 });
 
