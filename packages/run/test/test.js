@@ -98,6 +98,23 @@ test('throws an error when bundle is not written to disk', async (t) => {
   );
 });
 
+test('throws an error when input option is invalid', async (t) => {
+  const testInput = join(cwd, 'change-detect-input.js');
+  const bundle = await rollup({
+    input: [input, testInput],
+    plugins: [run({ input: 'something that is not an input' })]
+  });
+  await t.throwsAsync(
+    async () => {
+      await bundle.write(outputDirOptions);
+    },
+    {
+      instanceOf: Error,
+      message: '@rollup/plugin-run could not find output chunk'
+    }
+  );
+});
+
 test('throws an error when there are multiple entry points', async (t) => {
   const testInput = join(cwd, 'change-detect-input.js');
   await t.throwsAsync(
@@ -109,7 +126,8 @@ test('throws an error when there are multiple entry points', async (t) => {
     },
     {
       instanceOf: Error,
-      message: '@rollup/plugin-run only works with a single entry point'
+      message:
+        '@rollup/plugin-run must have a single entry point; consider setting the `input` option'
     }
   );
 });
@@ -135,6 +153,16 @@ test('allow the allowRestart option', async (t) => {
   });
   await bundle.write(outputOptions);
   t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+});
+
+test('allow the input option', async (t) => {
+  const testInput = join(cwd, 'change-detect-input.js');
+  const bundle = await rollup({
+    input: [input, testInput],
+    plugins: [run({ input })]
+  });
+  await bundle.write(outputDirOptions);
+  t.true(mockChildProcess.calledWithExactly(join(outputDir, 'input.js'), [], { input }));
 });
 
 test.after(async () => {
