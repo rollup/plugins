@@ -1,9 +1,16 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 import { __exports as input } from "\u0000fixtures/form/compiled-esm-deconflict/input.js?commonjs-exports";
 
-Object.defineProperty(input, '__esModule', { value: true });
-var foo_1 = input.foo = 'bar';
+var hasRequiredInput;
 
-const foo = 'also bar';
+function requireInput () {
+	if (hasRequiredInput) return input;
+	hasRequiredInput = 1;
+	Object.defineProperty(input, '__esModule', { value: true });
+	input.foo = 'bar';
 
-export { input as __moduleExports, foo_1 as foo, input as default };
+	const foo = 'also bar';
+	return input;
+}
+
+export { requireInput as __require };

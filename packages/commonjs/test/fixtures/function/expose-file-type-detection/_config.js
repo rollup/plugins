@@ -11,16 +11,18 @@ module.exports = {
       {
         moduleParsed({ id, meta: { commonjs } }) {
           if (id === ID_OTHER) {
-            if (commonjs.isCommonJS !== true) {
+            if (commonjs.isCommonJS !== 'withRequireFunction') {
               throw new Error(
                 `File "${id}" wrongly detected: isCommonJS === ${JSON.stringify(
                   commonjs.isCommonJS
-                )}`
+                )} instead of "withRequireFunction"`
               );
             }
-          } else if (commonjs && commonjs.isCommonJS !== false) {
+          } else if (commonjs && !!commonjs.isCommonJS) {
             throw new Error(
-              `File "${id}" wrongly detected: isCommonJS === ${JSON.stringify(commonjs.isCommonJS)}`
+              `File "${id}" wrongly detected: isCommonJS === ${JSON.stringify(
+                commonjs.isCommonJS
+              )} instead of false`
             );
           }
         }

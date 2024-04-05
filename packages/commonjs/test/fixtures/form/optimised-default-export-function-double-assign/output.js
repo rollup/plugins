@@ -1,7 +1,14 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 
-var bar;
-var input = bar = function foo () {};
+var input;
+var hasRequiredInput;
 
-export default /*@__PURE__*/commonjsHelpers.getDefaultExportFromCjs(input);
-export { input as __moduleExports };
+function requireInput () {
+	if (hasRequiredInput) return input;
+	hasRequiredInput = 1;
+	var bar;
+	input = bar = function foo () {};
+	return input;
+}
+
+export { requireInput as __require };

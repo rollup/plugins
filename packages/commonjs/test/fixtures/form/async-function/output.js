@@ -1,8 +1,15 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 
-var input = async function () {
-	// TODO
-};
+var input;
+var hasRequiredInput;
 
-export default /*@__PURE__*/commonjsHelpers.getDefaultExportFromCjs(input);
-export { input as __moduleExports };
+function requireInput () {
+	if (hasRequiredInput) return input;
+	hasRequiredInput = 1;
+	input = async function () {
+		// TODO
+	};
+	return input;
+}
+
+export { requireInput as __require };
