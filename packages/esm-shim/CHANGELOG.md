@@ -1,5 +1,13 @@
 # @rollup/plugin-esm-shim ChangeLog
 
+## v0.1.6
+
+_2024-04-05_
+
+### Bugfixes
+
+- fix: do not insert shims at `import` literal (#1696)
+
 ## v0.1.5
 
 _2023-11-05_
