@@ -58,6 +58,7 @@ export function nodeResolve(opts = {}) {
   const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
   const rootDir = resolve(options.rootDir || process.cwd());
+  const expectExportsError = options.expectExportsError ?? false;
   let { dedupe } = options;
   let rollupOptions;
 
@@ -187,7 +188,8 @@ export function nodeResolve(opts = {}) {
       modulePaths,
       rootDir,
       ignoreSideEffectsForRoot,
-      allowExportsFolderMapping: options.allowExportsFolderMapping
+      allowExportsFolderMapping: options.allowExportsFolderMapping,
+      expectExportsError
     });
 
     const importeeIsBuiltin = isBuiltinModule(importee);
