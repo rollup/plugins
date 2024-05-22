@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v25.0.8
+
+_2024-05-22_
+
+### Bugfixes
+
+- fix: preserve the class body property keys even if they are special keywords (#1688)
+
 ## v25.0.7
 
 _2023-10-15_
