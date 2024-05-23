@@ -14,20 +14,29 @@ export default function virtual(modules: RollupVirtualOptions): Plugin {
     resolvedIds.set(path.resolve(id), modules[id]);
   });
 
+  function getImporterSuffix(id: string, importer: string | undefined) {
+    const module = modules[id] ?? resolvedIds.get(id);
+    if (typeof module === 'function') {
+      const importerSuffix = importer ? `${IMPORTER_SEP}${importer}` : '';
+      return importerSuffix;
+    }
+
+    return '';
+  }
+
   return {
     name: 'virtual',
 
     resolveId(id, importer) {
-      const importerSuffix = importer ? `${IMPORTER_SEP}${importer}` : '';
-
-      if (id in modules) return PREFIX + id + importerSuffix;
+      if (id in modules) return PREFIX + id + getImporterSuffix(id, importer);
 
       if (importer) {
         const importerNoPrefix = importer.startsWith(PREFIX)
           ? importer.slice(PREFIX.length)
           : importer;
         const resolved = path.resolve(path.dirname(importerNoPrefix), id);
-        if (resolvedIds.has(resolved)) return PREFIX + resolved + importerSuffix;
+        if (resolvedIds.has(resolved))
+          return PREFIX + resolved + getImporterSuffix(resolved, importer);
       }
 
       return null;

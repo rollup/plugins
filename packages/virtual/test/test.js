@@ -22,7 +22,7 @@ test('loads an absolute path from memory', (t) => {
 
   const resolved = plugin.resolveId('./foo.js', 'src/main.js');
 
-  t.is(resolved, `\0virtual:${path.resolve('src/foo.js')}::src/main.js`);
+  t.is(resolved, `\0virtual:${path.resolve('src/foo.js')}`);
   t.is(plugin.load(resolved), 'export default 42');
 });
 
