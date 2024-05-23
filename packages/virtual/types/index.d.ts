@@ -1,7 +1,8 @@
 import type { Plugin } from 'rollup';
 
+export type RollupVirtualOption = string | ((importer: string | undefined) => string);
 export interface RollupVirtualOptions {
-  [id: string]: string;
+  [id: string]: RollupVirtualOption;
 }
 
 /**
