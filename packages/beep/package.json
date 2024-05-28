@@ -15,7 +15,7 @@
   "bugs": "https://github.com/rollup/plugins/issues",
   "main": "lib/index.js",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",

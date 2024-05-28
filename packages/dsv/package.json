@@ -20,6 +20,9 @@
     "import": "./dist/es/index.js",
     "default": "./dist/cjs/index.js"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "rollup -c",
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
