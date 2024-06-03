@@ -117,10 +117,15 @@ test.serial(
     });
 
     // this should throw an error just like the equivalent setup using output.dir above
-    await t.throwsAsync(() =>
+    const wrongDirError = await t.throwsAsync(() =>
       getCode(bundle, { format: 'es', file: 'fixtures/basic/dist/index.js' }, true)
     );
-    // TODO add check for specific error message
+    t.true(
+      wrongDirError.message.includes(
+        `Path of Typescript compiler option 'declarationDir' must be located inside the same directory as the Rollup 'file' option`
+      ),
+      `Unexpected error message: ${wrongDirError.message}`
+    );
   }
 );
 
