@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v5.0.7
+
+_2024-06-05_
+
+### Bugfixes
+
+- fix: add missing sourceMap documentation (#1698)
+
 ## v5.0.6
 
 _2024-06-05_
