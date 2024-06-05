@@ -15,7 +15,7 @@ export interface RollupHtmlOptions {
   fileName?: string;
   meta?: Record<string, any>[];
   publicPath?: string;
-  template?: (templateoptions?: RollupHtmlTemplateOptions) => string;
+  template?: (templateoptions: RollupHtmlTemplateOptions) => string | Promise<string>;
 }
 
 export function makeHtmlAttributes(attributes: Record<string, string>): string;
