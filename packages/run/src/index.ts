@@ -12,6 +12,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
 
   const args = opts.args || [];
   const allowRestarts = opts.allowRestarts || false;
+  const overrideInput = opts.input;
   const forkOptions = opts.options || opts;
   delete (forkOptions as RollupRunOptions).args;
   delete (forkOptions as RollupRunOptions).allowRestarts;
@@ -20,7 +21,7 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
     name: 'run',
 
     buildStart(options) {
-      let inputs = options.input;
+      let inputs = overrideInput ?? options.input;
 
       if (typeof inputs === 'string') {
         inputs = [inputs];
@@ -31,7 +32,9 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       }
 
       if (inputs.length > 1) {
-        throw new Error(`@rollup/plugin-run only works with a single entry point`);
+        throw new Error(
+          `@rollup/plugin-run must have a single entry point; consider setting the \`input\` option`
+        );
       }
 
       input = resolve(inputs[0]);
