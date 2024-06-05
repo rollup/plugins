@@ -147,7 +147,10 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
                   )) !== IS_WRAPPED_COMMONJS
                 );
               }
-              return (await getTypeForImportedModule(resolved, this.load.bind(this))) === IS_WRAPPED_COMMONJS;
+              return (
+                (await getTypeForImportedModule(resolved, this.load.bind(this))) ===
+                IS_WRAPPED_COMMONJS
+              );
             })
         )
       ).some((shouldTransform) => shouldTransform);
@@ -182,7 +185,12 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
               return { id: wrapId(childId, EXTERNAL_SUFFIX), allowProxy: false };
             }
             parentMeta.requires.push({ resolved, isConditional });
-            await analyzeRequiredModule(parentId, resolved, isConditional, rollupContext.load.bind(this));
+            await analyzeRequiredModule(
+              parentId,
+              resolved,
+              isConditional,
+              rollupContext.load.bind(this)
+            );
             return { id: childId, allowProxy: true };
           })
         );
