@@ -3,7 +3,7 @@ import { join, resolve, dirname } from 'path';
 
 import getCommonDir from 'commondir';
 
-import glob from 'glob';
+import { glob } from 'glob';
 
 import { getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
 
