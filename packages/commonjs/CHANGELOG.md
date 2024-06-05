@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v26.0.1
+
+_2024-06-05_
+
+### Bugfixes
+
+- fix: correct import of glob (04a15b5)
+
 ## v26.0.0
 
 _2024-06-05_
