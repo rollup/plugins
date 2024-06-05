@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v5.0.6
+
+_2024-06-05_
+
+### Bugfixes
+
+- fix: ternary operator replacement (#1712)
+
 ## v5.0.5
 
 _2023-10-29_
