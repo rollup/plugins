@@ -79,9 +79,11 @@ export interface RollupNodeResolveOptions {
   /**
    * If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`,
    * the plugin will look for locally installed modules of the same name.
+   *
+   * If a function is provided, it will be called to determine whether to prefer built-ins.
    * @default true
    */
-  preferBuiltins?: boolean;
+  preferBuiltins?: boolean | ((module: string) => boolean);
 
   /**
    * An `Array` which instructs the plugin to limit module resolution to those whose

@@ -30,13 +30,12 @@ test('handles importing builtins', async (t) => {
 });
 
 test('warning when preferring a builtin module, no explicit configuration', async (t) => {
-  let warning = null;
+  let warning = '';
   await rollup({
     input: 'prefer-builtin.js',
-    onwarn({ message }) {
-      // eslint-disable-next-line no-bitwise
-      if (~message.indexOf('preferring')) {
-        warning = message;
+    onwarn({ message, pluginCode }) {
+      if (pluginCode === 'PREFER_BUILTINS') {
+        warning += message;
       }
     },
     plugins: [nodeResolve()]
@@ -47,7 +46,8 @@ test('warning when preferring a builtin module, no explicit configuration', asyn
     warning,
     `preferring built-in module 'events' over local alternative ` +
       `at '${localPath}', pass 'preferBuiltins: false' to disable this behavior ` +
-      `or 'preferBuiltins: true' to disable this warning`
+      `or 'preferBuiltins: true' to disable this warning.` +
+      `or passing a function to 'preferBuiltins' to provide more fine-grained control over which built-in modules to prefer.`
   );
 });
 
@@ -133,4 +133,28 @@ test('detects builtins imported with node: protocol', async (t) => {
   });
 
   t.is(warnings.length, 0);
+});
+
+test('accpet passing a function to determine which builtins to prefer', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'prefer-builtin-local-and-builtin.js',
+    onwarn({ message }) {
+      warnings.push(message);
+    },
+    plugins: [
+      nodeResolve({
+        preferBuiltins: (id) => id !== 'events'
+      })
+    ]
+  });
+
+  const {
+    module: { exports }
+  } = await testBundle(t, bundle);
+
+  t.is(warnings.length, 0);
+  t.is(exports.sep, require('node:path').sep);
+  t.not(exports.events, require('node:events'));
+  t.is(exports.events, 'not the built-in events module');
 });
