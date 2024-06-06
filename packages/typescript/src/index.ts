@@ -178,20 +178,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         if (outputOptions.dir) {
           baseDir = outputOptions.dir;
         } else if (outputOptions.file) {
-          // find common path of output.file and configured declation output
-          const outputDir = path.dirname(outputOptions.file);
-          const configured = path.resolve(
-            parsedOptions.options.declarationDir ||
-              parsedOptions.options.outDir ||
-              tsconfig ||
-              process.cwd()
-          );
-          const backwards = path
-            .relative(outputDir, configured)
-            .split(path.sep)
-            .filter((v) => v === '..')
-            .join(path.sep);
-          baseDir = path.normalize(`${outputDir}/${backwards}`);
+          // the bundle output directory used by rollup when outputOptions.file is used instead of outputOptions.dir
+          baseDir = path.dirname(outputOptions.file);
         }
         if (!baseDir) return;
 

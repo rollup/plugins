@@ -101,6 +101,34 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
   );
 });
 
+test.serial(
+  'ensures declarationDir is located in Rollup output directory when output.file is used',
+  async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          declarationDir: 'fixtures/basic/other/',
+          declaration: true
+        })
+      ],
+      onwarn
+    });
+
+    // this should throw an error just like the equivalent setup using output.dir above
+    const wrongDirError = await t.throwsAsync(() =>
+      getCode(bundle, { format: 'es', file: 'fixtures/basic/dist/index.js' }, true)
+    );
+    t.true(
+      wrongDirError.message.includes(
+        `Path of Typescript compiler option 'declarationDir' must be located inside the same directory as the Rollup 'file' option`
+      ),
+      `Unexpected error message: ${wrongDirError.message}`
+    );
+  }
+);
+
 test.serial('ensures multiple outputs can be built', async (t) => {
   // In a rollup.config.js we would pass an array
   // The rollup method that's exported as a library won't do that so we must make two calls
