@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import type { Plugin } from 'rollup';
 
-import type { RollupVirtualOptions, VirtualIdResolver } from '../';
+import type { RollupVirtualOptions, VirtualIdResolver } from '../types';
 
 const PREFIX = `\0virtual:`;
 const IMPORTER_SEP = `::`;

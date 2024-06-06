@@ -1,5 +1,13 @@
 # @rollup/plugin-swc ChangeLog
 
+## v0.3.1
+
+_2024-06-05_
+
+### Updates
+
+- docs: add @swc/core to install step (#1666)
+
 ## v0.3.0
 
 _2023-11-09_

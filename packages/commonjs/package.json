@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-commonjs",
-  "version": "25.0.8",
+  "version": "26.0.1",
   "publishConfig": {
     "access": "public"
   },
@@ -21,7 +21,7 @@
     "default": "./dist/cjs/index.js"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0 || 14 >= 14.17"
   },
   "scripts": {
     "build": "rollup -c",
@@ -65,7 +65,7 @@
     "@rollup/pluginutils": "^5.0.1",
     "commondir": "^1.0.1",
     "estree-walker": "^2.0.2",
-    "glob": "^8.0.3",
+    "glob": "^10.4.1",
     "is-reference": "1.2.1",
     "magic-string": "^0.30.3"
   },
@@ -75,7 +75,6 @@
     "locate-character": "^2.0.5",
     "require-relative": "^0.8.7",
     "rollup": "^4.0.0-24",
-    "shx": "^0.3.4",
     "source-map": "^0.7.4",
     "source-map-support": "^0.5.21",
     "typescript": "^4.8.3"

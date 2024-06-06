@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-replace",
-  "version": "5.0.5",
+  "version": "5.0.7",
   "publishConfig": {
     "access": "public"
   },
