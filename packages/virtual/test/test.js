@@ -25,3 +25,19 @@ test('loads an absolute path from memory', (t) => {
   t.is(resolved, `\0virtual:${path.resolve('src/foo.js')}`);
   t.is(plugin.load(resolved), 'export default 42');
 });
+
+test('use function that takes a module ID', (t) => {
+  const plugin = virtual({
+    routeName: (importer) => {
+      const routeRoot = 'src/views/';
+      const routeName = importer.replace(routeRoot, '').replace(/\.\w+$/, '');
+
+      return `export const routeName = '${routeName}'`;
+    }
+  });
+
+  const resolved = plugin.resolveId('routeName', 'src/views/user/index.vue');
+
+  t.is(resolved, `\0virtual:routeName::src/views/user/index.vue`);
+  t.is(plugin.load(resolved), "export const routeName = 'user/index'");
+});
