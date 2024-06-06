@@ -2,13 +2,13 @@ import * as path from 'path';
 
 import type { Plugin } from 'rollup';
 
-import type { RollupVirtualOptions, RollupVirtualOption } from '../';
+import type { RollupVirtualOptions, VirtualIdResolver } from '../';
 
 const PREFIX = `\0virtual:`;
 const IMPORTER_SEP = `::`;
 
 export default function virtual(modules: RollupVirtualOptions): Plugin {
-  const resolvedIds = new Map<string, RollupVirtualOption>();
+  const resolvedIds = new Map<string, VirtualIdResolver>();
 
   Object.keys(modules).forEach((id) => {
     resolvedIds.set(path.resolve(id), modules[id]);
