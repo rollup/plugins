@@ -154,8 +154,8 @@ importers:
         specifier: ^7.18.6
         version: 7.18.6
       '@rollup/pluginutils':
-        specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        specifier: ^5.1.0
+        version: 5.1.0(rollup@4.0.0-24)
     devDependencies:
       '@babel/core':
         specifier: ^7.19.1
