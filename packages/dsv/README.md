@@ -88,6 +88,13 @@ dsv({
 });
 ```
 
+### `noHeader`
+
+Type: `Bool`<br>
+Default: false
+
+Don't use first rows values as key for all following rows
+
 ## Meta
 
 [CONTRIBUTING](./.github/CONTRIBUTING.md)
