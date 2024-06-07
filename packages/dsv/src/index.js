@@ -1,10 +1,10 @@
 import { extname } from 'path';
 
-import { csvParse, tsvParse } from 'd3-dsv';
+import { csvParse, csvParseRows, tsvParse, tsvParseRows } from 'd3-dsv';
 import toSource from 'tosource';
 import { createFilter } from '@rollup/pluginutils';
 
-const parsers = { '.csv': csvParse, '.tsv': tsvParse };
+const parsers = { '.csv': [csvParse, csvParseRows], '.tsv': [tsvParse, tsvParseRows] };
 
 export default function dsv(options = {}) {
   const filter = createFilter(options.include, options.exclude);
@@ -18,7 +18,7 @@ export default function dsv(options = {}) {
       const ext = extname(id);
       if (!(ext in parsers)) return null;
 
-      let rows = parsers[ext](code);
+      let rows = parsers[ext][options.noHeader ? 1 : 0](code);
 
       if (options.processRow) {
         rows = rows.map((row) => options.processRow(row, id) || row);
