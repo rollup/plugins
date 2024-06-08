@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign, no-shadow, no-undefined */
 import { dirname, normalize, resolve, sep } from 'path';
 
-import isBuiltinModule from 'is-builtin-module';
+import { builtinModules } from 'module';
+
 import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
@@ -42,6 +43,8 @@ const defaults = {
   // TODO: set to false in next major release or remove
   allowExportsFolderMapping: true
 };
+const nodeImportPrefix = /^node:/;
+
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
 export function nodeResolve(opts = {}) {
@@ -190,7 +193,7 @@ export function nodeResolve(opts = {}) {
       allowExportsFolderMapping: options.allowExportsFolderMapping
     });
 
-    const importeeIsBuiltin = isBuiltinModule(importee);
+    const importeeIsBuiltin = builtinModules.includes(importee.replace(nodeImportPrefix, ''));
     const resolved =
       importeeIsBuiltin && preferBuiltins
         ? {
