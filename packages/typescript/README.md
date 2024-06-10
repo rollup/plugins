@@ -125,7 +125,7 @@ typescript({
 
 ### `transformers`
 
-Type: `{ [before | after | afterDeclarations]: TransformerFactory[] }`<br>
+Type: `{ [before | after | afterDeclarations]: TransformerFactory[] } | ((program: ts.Program) => ts.CustomTransformers)`<br>
 Default: `undefined`
 
 Allows registration of TypeScript custom transformers at any of the supported stages:
@@ -195,6 +195,48 @@ typescript({
         };
       }
     ]
+  }
+});
+```
+
+Alternatively, the transformers can be created inside a factory.
+
+Supported transformer factories:
+
+- all **built-in** TypeScript custom transformer factories:
+
+  - `import('typescript').TransformerFactory` annotated **TransformerFactory** bellow
+  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+
+The example above could be written like this:
+
+```js
+typescript({
+  transformers: function (program) {
+    return {
+      before: [
+        ProgramRequiringTransformerFactory(program),
+        TypeCheckerRequiringTransformerFactory(program.getTypeChecker())
+      ],
+      after: [
+        // You can use normal transformers directly
+        require('custom-transformer-based-on-Context')
+      ],
+      afterDeclarations: [
+        // Or even define in place
+        function fixDeclarationFactory(context) {
+          return function fixDeclaration(source) {
+            function visitor(node) {
+              // Do real work here
+
+              return ts.visitEachChild(node, visitor, context);
+            }
+
+            return ts.visitEachChild(source, visitor, context);
+          };
+        }
+      ]
+    };
   }
 });
 ```

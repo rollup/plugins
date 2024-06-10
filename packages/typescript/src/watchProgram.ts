@@ -1,9 +1,11 @@
 import type { PluginContext } from 'rollup';
 import typescript from 'typescript';
 import type {
+  CustomTransformers,
   Diagnostic,
   EmitAndSemanticDiagnosticsBuilderProgram,
   ParsedCommandLine,
+  Program,
   WatchCompilerHostOfFilesAndCompilerOptions,
   WatchStatusReporter,
   WriteFileCallback
@@ -39,7 +41,7 @@ interface CreateProgramOptions {
   /** Function to resolve a module location */
   resolveModule: Resolver;
   /** Custom TypeScript transformers */
-  transformers?: CustomTransformerFactories;
+  transformers?: CustomTransformerFactories | ((program: Program) => CustomTransformers);
 }
 
 type DeferredResolve = ((value: boolean | PromiseLike<boolean>) => void) | (() => void);
@@ -155,22 +157,36 @@ function createWatchHost(
     parsedOptions.projectReferences
   );
 
+  let createdTransformers: CustomTransformers | undefined;
   return {
     ...baseHost,
     /** Override the created program so an in-memory emit is used */
     afterProgramCreate(program) {
       const origEmit = program.emit;
       // eslint-disable-next-line no-param-reassign
-      program.emit = (targetSourceFile, _, ...args) =>
-        origEmit(
+      program.emit = (
+        targetSourceFile,
+        _,
+        cancellationToken,
+        emitOnlyDtsFiles,
+        customTransformers
+      ) => {
+        createdTransformers ??=
+          typeof transformers === 'function'
+            ? transformers(program.getProgram())
+            : mergeTransformers(
+                program,
+                transformers,
+                customTransformers as CustomTransformerFactories
+              );
+        return origEmit(
           targetSourceFile,
           writeFile,
-          // cancellationToken
-          args[0],
-          // emitOnlyDtsFiles
-          args[1],
-          mergeTransformers(program, transformers, args[2] as CustomTransformerFactories)
+          cancellationToken,
+          emitOnlyDtsFiles,
+          createdTransformers
         );
+      };
 
       return baseHost.afterProgramCreate!(program);
     },
