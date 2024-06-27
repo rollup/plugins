@@ -7,9 +7,9 @@ module.exports = {
   },
   pluginOptions: {
     dynamicRequireTargets: [
-      'fixtures/function/dynamic-require-slash-access',
-      'fixtures/function/dynamic-require-slash-access/sub',
-      'fixtures/function/dynamic-require-slash-access/node_modules/custom-module',
+      'fixtures/function/dynamic-require-slash-access/',
+      'fixtures/function/dynamic-require-slash-access/sub/',
+      'fixtures/function/dynamic-require-slash-access/node_modules/custom-module/',
       'fixtures/function/dynamic-require-slash-access/node_modules/custom-module2/*.js'
     ]
   }

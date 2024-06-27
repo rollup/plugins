@@ -7,7 +7,7 @@ module.exports = {
   },
   pluginOptions: {
     dynamicRequireTargets: [
-      'fixtures/function/dynamic-require-resolve-reference/node_modules/{custom-module,custom-module2}{,/*.js}'
+      'fixtures/function/dynamic-require-resolve-reference/node_modules/{custom-module,custom-module2}{/,/*.js}'
     ]
   }
 };
