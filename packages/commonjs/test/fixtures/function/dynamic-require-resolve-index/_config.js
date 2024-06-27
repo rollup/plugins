@@ -7,9 +7,9 @@ module.exports = {
   },
   pluginOptions: {
     dynamicRequireTargets: [
-      'fixtures/function/dynamic-require-resolve-index',
-      'fixtures/function/dynamic-require-resolve-index/sub',
-      'fixtures/function/dynamic-require-resolve-index/node_modules/custom-module'
+      'fixtures/function/dynamic-require-resolve-index/',
+      'fixtures/function/dynamic-require-resolve-index/sub/',
+      'fixtures/function/dynamic-require-resolve-index/node_modules/custom-module/'
     ]
   }
 };
