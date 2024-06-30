@@ -32,6 +32,7 @@
     "codecov-lite": "2.0.0",
     "conventional-commits-parser": "^3.2.1",
     "del-cli": "^5.0.0",
+    "eslint": "^8.57.0",
     "eslint-config-rollup": "^3.0.1",
     "esm": "^3.2.25",
     "execa": "^5.1.1",
