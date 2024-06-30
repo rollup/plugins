@@ -31,7 +31,7 @@
     "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "lint:graphql": "prettier --write \"test/fixtures/**/*.graphql\"",
     "prebuild": "del-cli dist && pnpm lint:graphql",
-    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prepare": "[ ! -d 'dist' ] && pnpm build || true",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
