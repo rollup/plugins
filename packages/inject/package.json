@@ -30,7 +30,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "prebuild": "del-cli dist",
-    "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
+    "prepare": "[ ! -d 'dist' ] && pnpm build || true",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
