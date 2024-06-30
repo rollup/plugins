@@ -1,12 +1,74 @@
 import fs from 'fs';
-
 import { createRequire } from 'module';
+
+import { resolve } from 'path';
 
 import test from 'ava';
 import nodeResolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
 import { rollup } from 'rollup';
 
-import eslint from 'current-package';
+import rollupConfig from '../rollup.config.mjs';
+
+const require = createRequire(import.meta.url);
+const __dirname = new URL('.', import.meta.url).pathname;
+/**
+ * @type {import('current-package').default}
+ */
+let eslint;
+
+test.before('bundle @rollup/plugin-eslint for legacy eslint tests', async () => {
+  const workspaceRoot = resolve(__dirname, '../../../');
+  const workspaceEslintPath = resolve(workspaceRoot, 'node_modules/eslint');
+  const { main, devDependencies, dependencies } = JSON.parse(fs.readFileSync(resolve(workspaceEslintPath, 'package.json'), 'utf8'));
+  const workspaceEslintEntry = resolve(workspaceEslintPath, main)
+  await rollup({
+    ...rollupConfig,
+    external: (rollupConfig.external ?? []).filter((id) => id !== 'eslint'),
+    plugins: [
+      ...(rollupConfig.plugins ?? []),
+      json(),
+      nodeResolve({
+        // glob v7 causes a circular dependency error
+        resolveOnly: [
+          ...Object.keys(devDependencies ?? {}).filter((id) => id !== 'glob'),
+          ...Object.keys(dependencies ?? {}).filter((id) => id !== 'glob')
+        ]
+      }),
+      commonjs(),
+      {
+        name: 'resolve-eslint',
+        // to bundle eslint v8
+        resolveId(id) {
+          if (id === 'eslint') {
+            return workspaceEslintEntry;
+          }
+        }
+      },
+      {
+        name: 'hack-commonjs-dynamic-require',
+        // a hack solution for dynamic requiring eslint formatters
+        footer: `
+          function commonjsRequire(path) {
+            path = path.replace(/^\\/test/, '')
+            return require(resolve(${JSON.stringify(workspaceEslintPath)}, path))
+          }
+        `
+      }
+    ]
+  })
+    .then((b) => b.write({ format: 'cjs', sourcemap: true, file: resolve(__dirname, 'temp.js') }))
+  eslint = require(resolve(__dirname, 'temp.js'))
+});
+
+test.after.always('cleanup', async () => {
+  [resolve(__dirname, 'temp.js'), resolve(__dirname, 'temp.js.map')].forEach((file) => {
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+    }
+  })
+});
 
 test('should lint files', async (t) => {
   let count = 0;
@@ -200,25 +262,4 @@ test('should fix source code', async (t) => {
   );
 
   fs.unlinkSync('./test/fixtures/fixable-clone.js');
-});
-
-test('works with cjs plugin', async (t) => {
-  const require = createRequire(import.meta.url);
-  const eslintPluginCjs = require('current-package');
-  let count = 0;
-  await rollup({
-    input: './test/fixtures/undeclared.js',
-    plugins: [
-      eslintPluginCjs({
-        formatter: (results) => {
-          count += results[0].messages.length;
-          // eslint-disable-next-line prefer-destructuring
-          const { message } = results[0].messages[0];
-          t.is(message, "'x' is not defined.");
-        }
-      })
-    ]
-  });
-
-  t.is(count, 1);
 });
