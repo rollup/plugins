@@ -29,7 +29,7 @@
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm test -- --verbose",
-    "prebuild": "del-cli dist",
+    "prebuild": "rm -rf dist",
     "prepare": "[ ! -d 'dist' ] && pnpm build || true",
     "prepublishOnly": "pnpm build",
     "prerelease": "pnpm build",

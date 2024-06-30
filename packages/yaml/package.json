@@ -29,7 +29,7 @@
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm test -- --verbose",
-    "prebuild": "del-cli dist",
+    "prebuild": "rm -rf dist",
     "prepare": "[ ! -d 'dist' ] && pnpm build || true",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
@@ -63,7 +63,6 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.0",
-    "del-cli": "^5.0.0",
     "rollup": "^4.0.0-24",
     "source-map-support": "^0.5.21"
   },
