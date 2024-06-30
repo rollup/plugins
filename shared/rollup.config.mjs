@@ -33,7 +33,7 @@ export function createConfig({ pkg, external = [] }) {
       {
         format: 'es',
         file: pkg.module,
-        plugins: [emitModulePackageFile(), emitDeclarationFile()],
+        plugins: [emitDeclarationFile('m')],
         sourcemap: true
       }
     ],
@@ -41,26 +41,13 @@ export function createConfig({ pkg, external = [] }) {
   };
 }
 
-export function emitModulePackageFile() {
-  return {
-    name: 'emit-module-package-file',
-    generateBundle() {
-      this.emitFile({
-        type: 'asset',
-        fileName: 'package.json',
-        source: `{"type":"module"}`
-      });
-    }
-  };
-}
-
-export function emitDeclarationFile() {
+export function emitDeclarationFile(m = '') {
   return {
     name: 'emit-declaration-file',
     async generateBundle() {
       this.emitFile({
         type: 'asset',
-        fileName: 'index.d.ts',
+        fileName: `index.d.${m}ts`,
         source: await fs.readFile('./types/index.d.ts')
       });
     }
