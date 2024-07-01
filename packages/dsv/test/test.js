@@ -22,9 +22,27 @@ test('converts a csv file', async (t) => {
   return testBundle(t, bundle);
 });
 
+test('converts a csv file with bom', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/csv-with-bom/main.js',
+    plugins: [dsv()]
+  });
+  t.plan(1);
+  return testBundle(t, bundle);
+});
+
 test('converts a tsv file', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/basic-tsv/main.js',
+    plugins: [dsv()]
+  });
+  t.plan(1);
+  return testBundle(t, bundle);
+});
+
+test('converts a tsv file with bom', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/tsv-with-bom/main.js',
     plugins: [dsv()]
   });
   t.plan(1);
