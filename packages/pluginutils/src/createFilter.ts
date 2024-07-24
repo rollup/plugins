@@ -43,7 +43,8 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
-  if (!includeMatchers.length) return (id) => typeof id === 'string' && !id.includes('\0');
+  if (!includeMatchers.length && !excludeMatchers.length)
+    return (id) => typeof id === 'string' && !id.includes('\0');
 
   return function result(id: string | unknown): boolean {
     if (typeof id !== 'string') return false;
@@ -61,7 +62,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
       if (matcher.test(pathId)) return true;
     }
 
-    return false;
+    return !includeMatchers.length;
   };
 };
 
