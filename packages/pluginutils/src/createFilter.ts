@@ -23,8 +23,6 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
   return posix.join(basePath, normalizePath(id));
 }
 
-const ALWAYS_MATCH = () => true;
-
 const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
   const resolutionBase = options && options.resolve;
 
@@ -45,7 +43,7 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
-  if (!includeMatchers.length) return ALWAYS_MATCH;
+  if (!includeMatchers.length) return (id) => typeof id === 'string' && !id.includes('\0');
 
   return function result(id: string | unknown): boolean {
     if (typeof id !== 'string') return false;
