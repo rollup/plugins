@@ -58,9 +58,6 @@
       "optional": true
     }
   },
-  "dependencies": {
-    "slash": "^4.0.0"
-  },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-typescript": "^9.0.1",
