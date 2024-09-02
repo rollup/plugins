@@ -43,26 +43,10 @@ function expandTypeofReplacements(replacements) {
     const objMatch = key.match(objKeyRegEx);
     if (!objMatch) return;
     let dotIndex = objMatch[1].length;
-    let lastIndex = 0;
     do {
       // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)} ===`] = '"object" ===';
-      // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)} !==`] = '"object" !==';
-      // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)}===`] = '"object"===';
-      // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)}!==`] = '"object"!==';
-      // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)} ==`] = '"object" ===';
-      // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)} !=`] = '"object" !==';
-      // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)}==`] = '"object"===';
-      // eslint-disable-next-line no-param-reassign
-      replacements[`typeof ${key.slice(lastIndex, dotIndex)}!=`] = '"object"!==';
-      lastIndex = dotIndex + 1;
-      dotIndex = key.indexOf('.', lastIndex);
+      replacements[`typeof ${key.slice(0, dotIndex)}`] = '"object"';
+      dotIndex = key.indexOf('.', dotIndex + 1);
     } while (dotIndex !== -1);
   });
 }
