@@ -1,7 +1,8 @@
 import type { Plugin } from 'rollup';
 
+export type VirtualIdResolver = string | ((importer: string | undefined) => string);
 export interface RollupVirtualOptions {
-  [id: string]: string;
+  [id: string]: VirtualIdResolver;
 }
 
 /**
