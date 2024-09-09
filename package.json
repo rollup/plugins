@@ -11,7 +11,7 @@
     "lint:package": "prettier --write **/package.json",
     "package:release": "versioner --stripShortName='^@.+/(plugin-)?' --target",
     "preinstall": "node scripts/disallow-npm.js",
-    "prepare": "husky install",
+    "prepare": "husky",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
     "security": "pnpm audit --audit-level=high"
@@ -36,7 +36,7 @@
     "esm": "^3.2.25",
     "execa": "^5.1.1",
     "globby": "^11.0.1",
-    "husky": "8.0.1",
+    "husky": "9.1.5",
     "lint-staged": "11.0.1",
     "nyc": "^15.1.0",
     "pnpm": "^8.7.5",
