@@ -25,6 +25,7 @@ function getReplacements(options) {
   delete values.sourcemap;
   delete values.sourceMap;
   delete values.objectGuards;
+  delete values.preventAssignment;
   return values;
 }
 
