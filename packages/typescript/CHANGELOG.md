@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.1.0
+
+_2024-09-22_
+
+### Features
+
+- feat: add transformers factory. (#1668)
+
 ## v12.0.0
 
 _2024-09-22_
