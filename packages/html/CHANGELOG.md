@@ -1,5 +1,13 @@
 # @rollup/plugin-html ChangeLog
 
+## v1.0.4
+
+_2024-09-22_
+
+### Bugfixes
+
+- fix: template function first arg is always provided (#1718)
+
 ## v1.0.3
 
 _2023-10-05_
