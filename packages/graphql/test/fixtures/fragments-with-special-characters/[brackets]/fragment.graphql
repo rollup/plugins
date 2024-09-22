@@ -1,0 +1,3 @@
+fragment BracketsFragment on Brackets {
+  id
+}
