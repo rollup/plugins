@@ -76,10 +76,6 @@ importers:
         version: 4.8.4
 
   packages/alias:
-    dependencies:
-      slash:
-        specifier: ^4.0.0
-        version: 4.0.0
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
@@ -7315,6 +7311,7 @@ packages:
   /slash@4.0.0:
     resolution: {integrity: sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==}
     engines: {node: '>=12'}
+    dev: true
 
   /slice-ansi@3.0.0:
     resolution: {integrity: sha512-pSyv7bSTC7ig9Dcgbw9AuRNUb5k5V6oDudjZoMBSr13qpLBG7tB+zgCkARjq7xIUgdz5P1Qe8u+rSGdouOOIyQ==}
