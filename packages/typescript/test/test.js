@@ -1264,6 +1264,119 @@ test('supports custom transformers', async (t) => {
   );
 });
 
+test('supports passing a custom transformers factory', async (t) => {
+  const warnings = [];
+
+  let program = null;
+  let typeChecker = null;
+
+  const bundle = await rollup({
+    input: 'fixtures/transformers/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/transformers/tsconfig.json',
+        outDir: 'fixtures/transformers/dist',
+        declaration: true,
+        transformers: (p) => {
+          program = p;
+          typeChecker = p.getTypeChecker();
+          return {
+            before: [
+              function removeOneParameterFactory(context) {
+                return function removeOneParameter(source) {
+                  function visitor(node) {
+                    if (ts.isArrowFunction(node)) {
+                      return ts.factory.createArrowFunction(
+                        node.modifiers,
+                        node.typeParameters,
+                        [node.parameters[0]],
+                        node.type,
+                        node.equalsGreaterThanToken,
+                        node.body
+                      );
+                    }
+
+                    return ts.visitEachChild(node, visitor, context);
+                  }
+
+                  return ts.visitEachChild(source, visitor, context);
+                };
+              }
+            ],
+            after: [
+              // Enforce a constant numeric output
+              function enforceConstantReturnFactory(context) {
+                return function enforceConstantReturn(source) {
+                  function visitor(node) {
+                    if (ts.isReturnStatement(node)) {
+                      return ts.factory.createReturnStatement(ts.factory.createNumericLiteral('1'));
+                    }
+
+                    return ts.visitEachChild(node, visitor, context);
+                  }
+
+                  return ts.visitEachChild(source, visitor, context);
+                };
+              }
+            ],
+            afterDeclarations: [
+              // Change the return type to numeric
+              function fixDeclarationFactory(context) {
+                return function fixDeclaration(source) {
+                  function visitor(node) {
+                    if (ts.isFunctionTypeNode(node)) {
+                      return ts.factory.createFunctionTypeNode(
+                        node.typeParameters,
+                        [node.parameters[0]],
+                        ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+                      );
+                    }
+
+                    return ts.visitEachChild(node, visitor, context);
+                  }
+
+                  return ts.visitEachChild(source, visitor, context);
+                };
+              }
+            ]
+          };
+        }
+      })
+    ],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+
+  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/transformers' }, true);
+
+  t.is(warnings.length, 0);
+  t.deepEqual(
+    output.map((out) => out.fileName),
+    ['main.js', 'dist/main.d.ts']
+  );
+
+  // Expect the function to have one less arguments from before transformer and return 1 from after transformer
+  t.true(output[0].code.includes('var HashFn = function (val) { return 1; };'), output[0].code);
+
+  // Expect the definition file to reflect the resulting function type after transformer modifications
+  t.true(
+    output[1].source.includes('export declare const HashFn: (val: string) => number;'),
+    output[1].source
+  );
+
+  // Expect a Program to have been forwarded for transformers with custom factories requesting one
+  t.deepEqual(program && program.emit && typeof program.emit === 'function', true);
+
+  // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
+  t.deepEqual(
+    typeChecker &&
+      typeChecker.getTypeAtLocation &&
+      typeof typeChecker.getTypeAtLocation === 'function',
+    true
+  );
+});
+
 // This test randomly fails with a segfault directly at the first "await waitForWatcherEvent" before any event occurred.
 // Skipping it until we can figure out what the cause is.
 test.serial.skip('picks up on newly included typescript files in watch mode', async (t) => {

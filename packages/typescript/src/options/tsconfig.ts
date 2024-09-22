@@ -45,6 +45,7 @@ function makeForcedCompilerOptions(noForceEmit: boolean) {
 
 /**
  * Finds the path to the tsconfig file relative to the current working directory.
+ * @param ts Custom typescript implementation
  * @param relativePath Relative tsconfig path given by the user.
  * If `false` is passed, then a null path is returned.
  * @returns The absolute path, or null if the file does not exist.
@@ -69,9 +70,8 @@ function getTsConfigPath(ts: typeof typescript, relativePath?: string | false) {
 
 /**
  * Tries to read the tsconfig file at `tsConfigPath`.
+ * @param ts Custom typescript implementation
  * @param tsConfigPath Absolute path to tsconfig JSON file.
- * @param explicitPath If true, the path was set by the plugin user.
- * If false, the path was computed automatically.
  */
 function readTsConfigFile(ts: typeof typescript, tsConfigPath: string) {
   const { config, error } = ts.readConfigFile(tsConfigPath, (path) => readFileSync(path, 'utf8'));
@@ -122,13 +122,14 @@ function setModuleResolutionKind(parsedConfig: ParsedCommandLine): ParsedCommand
   };
 }
 
-const configCache = new Map() as typescript.Map<ExtendedConfigCacheEntry>;
+const configCache = new Map() as typescript.ESMap<string, ExtendedConfigCacheEntry>;
 
 /**
  * Parse the Typescript config to use with the plugin.
  * @param ts Typescript library instance.
  * @param tsconfig Path to the tsconfig file, or `false` to ignore the file.
  * @param compilerOptions Options passed to the plugin directly for Typescript.
+ * @param noForceEmit Whether to respect emit options from {@link tsconfig}
  *
  * @returns Parsed tsconfig.json file with some important properties:
  * - `options`: Parsed compiler options.
