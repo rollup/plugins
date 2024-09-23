@@ -6,7 +6,7 @@ module.exports = {
         async resolveId(source, importer, options) {
           if (source.endsWith('dep.js')) {
             return {
-              ...(await this.resolve(source, importer, { skipSelf: true, ...options })),
+              ...(await this.resolve(source, importer, options)),
               meta: { test: 'provided' }
             };
           }

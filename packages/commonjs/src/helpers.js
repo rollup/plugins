@@ -2,12 +2,19 @@ export const isWrappedId = (id, suffix) => id.endsWith(suffix);
 export const wrapId = (id, suffix) => `\0${id}${suffix}`;
 export const unwrapId = (wrappedId, suffix) => wrappedId.slice(1, -suffix.length);
 
+// A proxy module when a module is required from non-wrapped CommonJS. Is different for ESM and CommonJS requires.
 export const PROXY_SUFFIX = '?commonjs-proxy';
+// Indicates that a required module is wrapped commonjs and needs special handling.
 export const WRAPPED_SUFFIX = '?commonjs-wrapped';
+// Indicates that a required module is external
 export const EXTERNAL_SUFFIX = '?commonjs-external';
+// A helper module that contains the exports object of a module
 export const EXPORTS_SUFFIX = '?commonjs-exports';
+// A helper module that contains the module object of a module, e.g. when module.exports is reassigned
 export const MODULE_SUFFIX = '?commonjs-module';
+// A special proxy for CommonJS entry points
 export const ENTRY_SUFFIX = '?commonjs-entry';
+// A proxy when wrapped ESM is required from CommonJS
 export const ES_IMPORT_SUFFIX = '?commonjs-es-import';
 
 export const DYNAMIC_MODULES_ID = '\0commonjs-dynamic-modules';
