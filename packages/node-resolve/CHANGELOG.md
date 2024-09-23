@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.2.4
+
+_2024-09-22_
+
+### Updates
+
+- chore: remove is-builtin-module (#1735)
+
 ## v15.2.3
 
 _2023-10-08_

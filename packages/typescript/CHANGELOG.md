@@ -1,5 +1,21 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.1.0
+
+_2024-09-22_
+
+### Features
+
+- feat: add transformers factory. (#1668)
+
+## v12.0.0
+
+_2024-09-22_
+
+### Breaking Changes
+
+- fix!: correctly resolve filenames of declaration files for `output.file` (#1728)
+
 ## v11.1.6
 
 _2024-01-09_
