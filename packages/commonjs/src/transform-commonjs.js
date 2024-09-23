@@ -102,7 +102,6 @@ export default async function transformCommonjs(
   const topLevelAssignments = new Set();
   const topLevelDefineCompiledEsmExpressions = [];
   const replacedGlobal = [];
-  const replacedThis = [];
   const replacedDynamicRequires = [];
   const importedVariables = new Set();
   const indentExclusionRanges = [];
@@ -370,7 +369,7 @@ export default async function transformCommonjs(
           if (lexicalDepth === 0 && !classBodyDepth) {
             uses.global = true;
             if (!ignoreGlobal) {
-              replacedThis.push(node);
+              replacedGlobal.push(node);
             }
           }
           return;
@@ -442,11 +441,6 @@ export default async function transformCommonjs(
 
   for (const node of replacedGlobal) {
     magicString.overwrite(node.start, node.end, `${helpersName}.commonjsGlobal`, {
-      storeName: true
-    });
-  }
-  for (const node of replacedThis) {
-    magicString.overwrite(node.start, node.end, exportsName, {
       storeName: true
     });
   }

@@ -1,13 +1,5 @@
 # @rollup/plugin-commonjs ChangeLog
 
-## v26.0.2
-
-_2024-09-23_
-
-### Bugfixes
-
-- fix: replace top-level this with exports name (#1618)
-
 ## v26.0.1
 
 _2024-06-05_

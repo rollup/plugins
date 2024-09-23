@@ -1,11 +1,10 @@
-const { augmentThis, classThis, y } = require('./foo');
+const { augmentThis, classThis } = require('./foo');
 
 const obj = {};
 augmentThis.call(obj);
 
 t.is(obj.x, 'x');
-t.is(this.y, undefined);
-t.is(y, 'y');
+t.is(this.y, 'y');
 
 const instance = new classThis();
 
