@@ -39,7 +39,7 @@ jobs:
         id: pnpm-setup
         run: |
           corepack enable
-          corepack prepare pnpm@8 --activate
+          corepack prepare pnpm@latest --activate
           pnpm config set script-shell "/usr/bin/bash"
           echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
 
