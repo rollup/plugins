@@ -1,5 +1,14 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v27.0.0
+
+_2024-09-23_
+
+### Breaking Changes
+
+- feat!: default strictRequires to true (#1639)
+- fix!: replace top-level this with exports name (#1618)
+
 ## v26.0.3
 
 _2024-09-23_
