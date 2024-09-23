@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v26.0.3
+
+_2024-09-23_
+
+### Updates
+
+- chore: revert #1618 (e98927b)
+
 ## v26.0.1
 
 _2024-06-05_
