@@ -43,9 +43,12 @@ const createFilter: CreateFilter = function createFilter(include?, exclude?, opt
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
+  if (!includeMatchers.length && !excludeMatchers.length)
+    return (id) => typeof id === 'string' && !id.includes('\0');
+
   return function result(id: string | unknown): boolean {
     if (typeof id !== 'string') return false;
-    if (/\0/.test(id)) return false;
+    if (id.includes('\0')) return false;
 
     const pathId = normalizePath(id);
 
