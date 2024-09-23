@@ -267,6 +267,9 @@ importers:
       d3-dsv:
         specifier: 2.0.0
         version: 2.0.0
+      strip-bom:
+        specifier: ^4.0.0
+        version: 4.0.0
       tosource:
         specifier: ^2.0.0-alpha.3
         version: 2.0.0-alpha.3
@@ -2496,6 +2499,7 @@ packages:
     resolution: {integrity: sha512-BGnRktAZq4RI6FSicI+F6ws9paiYmjyaXUNKSukLthzgzPC91V4SXVylbFOCKvrhdWAr0lvZgcTrkgYNAmAcuQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     optional: true
 
@@ -2503,6 +2507,7 @@ packages:
     resolution: {integrity: sha512-FzhHpp+vRTjIUYXMExj9Ffj2bCQgnRAzlWlsQTdYGYvPQMVadfPMvnlcr4Li8P7Yv1iBFtDzRVfZAgL5glvIAA==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     optional: true
 
@@ -2510,6 +2515,7 @@ packages:
     resolution: {integrity: sha512-0y+oXnCCT5+U5V58bY7dy65yDrWWfopFJwtC2EbFeA9SHrVjG36/TQo535ML3zdFwO+fma8r5FP1os0psbQBXQ==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     optional: true
 
@@ -2595,6 +2601,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -2604,6 +2611,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -2613,6 +2621,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -2622,6 +2631,7 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -7511,7 +7521,6 @@ packages:
   /strip-bom@4.0.0:
     resolution: {integrity: sha512-3xurFv5tEgii33Zi8Jtp55wEIILR9eh34FAW00PZf+JnSsTmV/ioewSgQl97JHvgjoRGwPShsWm+IdrxB35d0w==}
     engines: {node: '>=8'}
-    dev: true
 
   /strip-final-newline@2.0.0:
     resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
