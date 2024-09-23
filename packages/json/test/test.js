@@ -54,6 +54,17 @@ test('generates named exports', async (t) => {
   t.is(code.indexOf('this-should-be-excluded'), -1, 'should exclude unused properties');
 });
 
+test('generates named exports including arbitrary names', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/arbitrary/main.js',
+    plugins: [json({ includeArbitraryNames: true })]
+  });
+
+  const { result } = await testBundle(t, bundle, { inject: { exports: {} } });
+
+  t.is(result.bar, 'baz');
+});
+
 test('resolves extensionless imports in conjunction with the node-resolve plugin', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/extensionless/main.js',

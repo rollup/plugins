@@ -1,5 +1,29 @@
 # @rollup/plugin-esm-shim ChangeLog
 
+## v0.1.7
+
+_2024-06-05_
+
+### Bugfixes
+
+- fix: missing exports in types (#1670)
+
+## v0.1.6
+
+_2024-04-05_
+
+### Bugfixes
+
+- fix: do not insert shims at `import` literal (#1696)
+
+## v0.1.5
+
+_2023-11-05_
+
+### Updates
+
+- refactor: use prefix for build in module imports (#1622)
+
 ## v0.1.4
 
 _2023-10-15_

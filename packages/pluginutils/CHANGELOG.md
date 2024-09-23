@@ -1,5 +1,25 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.1.1
+
+_2024-09-22_
+
+### Bugfixes
+
+- fix: improve regex performance (#1753)
+
+## v5.1.0
+
+_2023-11-28_
+
+### Features
+
+- feat: add `includeArbitraryNames: true` to `dataToEsm` (#1635)
+
+### Updates
+
+- doc: correct the return type of createFilter (#1633)
+
 ## v5.0.5
 
 _2023-10-05_

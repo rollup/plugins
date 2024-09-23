@@ -1,5 +1,13 @@
 # @rollup/plugin-run ChangeLog
 
+## v3.1.0
+
+_2024-06-05_
+
+### Features
+
+- feat: add `input` option (#1699)
+
 ## v3.0.2
 
 _2023-10-05_

@@ -83,6 +83,13 @@ Default: `false`
 
 If `true`, instructs the plugin to listen to `stdin` for the sequences listed below followed by enter (carriage return).
 
+### `input`
+
+Type: `String`<br>
+Default: `null`
+
+Specifies the entry point this plugin will use. Not necessary if you only have a single entry point.
+
 #### `stdin` Input Actions
 
 When this option is enabled, `stdin` will listen for the following input and perform the associated action:

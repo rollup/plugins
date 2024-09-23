@@ -1,5 +1,29 @@
 # @rollup/plugin-replace ChangeLog
 
+## v5.0.7
+
+_2024-06-05_
+
+### Bugfixes
+
+- fix: add missing sourceMap documentation (#1698)
+
+## v5.0.6
+
+_2024-06-05_
+
+### Bugfixes
+
+- fix: ternary operator replacement (#1712)
+
+## v5.0.5
+
+_2023-10-29_
+
+### Bugfixes
+
+- fix: prevent variable before colons from being replaced when preventAssigment is true (#1609)
+
 ## v5.0.4
 
 _2023-10-15_

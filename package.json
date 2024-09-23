@@ -9,7 +9,7 @@
     "lint:js": "eslint --cache packages scripts shared util --ext .js,.ts,.mjs",
     "lint:json": "prettier --write .github/**/*.yml **/tsconfig.json tsconfig.*.json pnpm-workspace.yaml",
     "lint:package": "prettier --write **/package.json",
-    "package:release": "versioner --stripShortName='^@.+/plugin-' --target",
+    "package:release": "versioner --stripShortName='^@.+/(plugin-)?' --target",
     "preinstall": "node scripts/disallow-npm.js",
     "prepare": "husky install",
     "prettier": "prettier --write .",
@@ -17,20 +17,15 @@
     "security": "pnpm audit --audit-level=high"
   },
   "devDependencies": {
-    "@ava/babel": "2.0.0",
     "@dot/versioner": "^0.3.1",
     "@rollup/plugin-typescript": "^9.0.1",
-    "@types/conventional-commits-parser": "^3.0.2",
     "@types/node": "14.18.30",
-    "@types/semver": "^7.3.7",
     "@types/source-map-support": "^0.5.4",
-    "@types/yargs-parser": "^20.2.1",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "ava": "^4.3.3",
     "chalk": "^4.1.0",
     "codecov-lite": "2.0.0",
-    "conventional-commits-parser": "^3.2.1",
     "del-cli": "^5.0.0",
     "eslint-config-rollup": "^3.0.1",
     "esm": "^3.2.25",
@@ -41,14 +36,9 @@
     "nyc": "^15.1.0",
     "pnpm": "^8.7.5",
     "prettier-plugin-package": "^1.3.0",
-    "semver": "^7.3.2",
     "source-map-support": "^0.5.21",
     "ts-node": "10.9.1",
-    "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.8.3",
-    "write-pkg": "^4.0.0",
-    "yaml": "^1.10.0",
-    "yargs-parser": "^20.2.9"
+    "typescript": "^4.8.3"
   },
   "ava": {
     "files": [
@@ -85,5 +75,6 @@
       "lib/client*.js",
       "test/"
     ]
-  }
+  },
+  "packageManager": "pnpm@8.15.8+sha512.d1a029e1a447ad90bc96cd58b0fad486d2993d531856396f7babf2d83eb1823bb83c5a3d0fc18f675b2d10321d49eb161fece36fe8134aa5823ecd215feed392"
 }

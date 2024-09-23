@@ -12,7 +12,7 @@
   },
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/virtual#readme",
-  "bugs": "https://github.com/rollup/rollup-plugin-virtual/issues",
+  "bugs": "https://github.com/rollup/plugins/issues",
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.js",
   "exports": {

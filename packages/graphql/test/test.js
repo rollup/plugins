@@ -62,3 +62,15 @@ test('should support graphqls schema files', async (t) => {
   t.truthy('doc' in module.exports);
   t.is(module.exports.doc.kind, 'Document');
 });
+
+test('should support fragment imports with brackets and parentheses in file paths', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/fragments-with-special-characters/index.js',
+    plugins: [graphql()]
+  });
+
+  const { module } = await testBundle(t, bundle);
+
+  t.truthy('doc' in module.exports);
+  t.is(module.exports.doc.kind, 'Document');
+});

@@ -59,6 +59,17 @@ function serialize(obj: unknown, indent: Indent, baseIndent: string): string {
   return stringify(obj);
 }
 
+// isWellFormed exists from Node.js 20
+const hasStringIsWellFormed = 'isWellFormed' in String.prototype;
+
+function isWellFormedString(input: string): boolean {
+  // @ts-expect-error String::isWellFormed exists from ES2024. tsconfig lib is set to ES6
+  if (hasStringIsWellFormed) return input.isWellFormed();
+
+  // https://github.com/tc39/proposal-is-usv-string/blob/main/README.md#algorithm
+  return !/\p{Surrogate}/u.test(input);
+}
+
 const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
   const t = options.compact ? '' : 'indent' in options ? options.indent : '\t';
   const _ = options.compact ? '' : ' ';
@@ -78,8 +89,19 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
     return `export default${magic}${code};`;
   }
 
+  let maxUnderbarPrefixLength = 0;
+  for (const key of Object.keys(data)) {
+    const underbarPrefixLength = /^(_+)/.exec(key)?.[0].length ?? 0;
+    if (underbarPrefixLength > maxUnderbarPrefixLength) {
+      maxUnderbarPrefixLength = underbarPrefixLength;
+    }
+  }
+
+  const arbitraryNamePrefix = `${'_'.repeat(maxUnderbarPrefixLength + 1)}arbitrary`;
+
   let namedExportCode = '';
   const defaultExportRows = [];
+  const arbitraryNameExportRows: string[] = [];
   for (const [key, value] of Object.entries(data)) {
     if (key === makeLegalIdentifier(key)) {
       if (options.objectShorthand) defaultExportRows.push(key);
@@ -93,11 +115,27 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
       defaultExportRows.push(
         `${stringify(key)}:${_}${serialize(value, options.compact ? null : t, '')}`
       );
+      if (options.includeArbitraryNames && isWellFormedString(key)) {
+        const variableName = `${arbitraryNamePrefix}${arbitraryNameExportRows.length}`;
+        namedExportCode += `${declarationType} ${variableName}${_}=${_}${serialize(
+          value,
+          options.compact ? null : t,
+          ''
+        )};${n}`;
+        arbitraryNameExportRows.push(`${variableName} as ${JSON.stringify(key)}`);
+      }
     }
   }
-  return `${namedExportCode}export default${_}{${n}${t}${defaultExportRows.join(
+
+  const arbitraryExportCode =
+    arbitraryNameExportRows.length > 0
+      ? `export${_}{${n}${t}${arbitraryNameExportRows.join(`,${n}${t}`)}${n}};${n}`
+      : '';
+  const defaultExportCode = `export default${_}{${n}${t}${defaultExportRows.join(
     `,${n}${t}`
   )}${n}};${n}`;
+
+  return `${namedExportCode}${arbitraryExportCode}${defaultExportCode}`;
 };
 
 export { dataToEsm as default };

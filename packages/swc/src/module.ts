@@ -9,7 +9,7 @@ import type { Options } from './type';
 export function swc(input: Options = {}): Plugin {
   const filter = createFilter(input.include, input.exclude);
 
-  const swcOptions: SWCOptions = merge({}, input.swc || {}, {
+  const defaults: SWCOptions = {
     jsc: {
       target: 'es2020',
       parser: {
@@ -22,7 +22,13 @@ export function swc(input: Options = {}): Plugin {
       },
       loose: true
     }
-  });
+  };
+
+  if (input.swc && input.swc.env) {
+    delete defaults.jsc?.target;
+  }
+
+  const swcOptions: SWCOptions = merge({}, input.swc || {}, defaults);
 
   return {
     name: 'swc',
@@ -31,7 +37,8 @@ export function swc(input: Options = {}): Plugin {
 
       return transform(code, {
         ...swcOptions,
-        sourceMaps: true
+        sourceMaps: true,
+        filename: id
       });
     }
   };

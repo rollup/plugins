@@ -292,7 +292,12 @@ export default async function transformCommonjs(
           return;
         case 'Identifier': {
           const { name } = node;
-          if (!isReference(node, parent) || scope.contains(name)) return;
+          if (
+            !isReference(node, parent) ||
+            scope.contains(name) ||
+            (parent.type === 'PropertyDefinition' && parent.key === node)
+          )
+            return;
           switch (name) {
             case 'require':
               uses.require = true;

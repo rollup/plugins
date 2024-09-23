@@ -218,7 +218,7 @@ test("doesn't throw if no files in dir when option isn't set", async (t) => {
   t.false(thrown);
 });
 
-test('throws if no files in dir when option is set', async (t) => {
+test('throws if no files in dir when `errorWhenNoFilesFound` is set', async (t) => {
   let thrown = false;
   try {
     await rollup({
@@ -235,4 +235,22 @@ test('throws if no files in dir when option is set', async (t) => {
     thrown = true;
   }
   t.true(thrown);
+});
+
+test('warns if no files in dir when `errorWhenNoFilesFound` and `warnOnError` are both set', async (t) => {
+  let warningEmitted = false;
+  await rollup({
+    input: 'fixture-no-files.js',
+    plugins: [dynamicImportVars({ errorWhenNoFilesFound: true, warnOnError: true })],
+    onwarn(warning) {
+      t.deepEqual(
+        warning.message,
+        `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
+          './fixtures/fixture-no-files.js'
+        )}`
+      );
+      warningEmitted = true;
+    }
+  });
+  t.true(warningEmitted);
 });

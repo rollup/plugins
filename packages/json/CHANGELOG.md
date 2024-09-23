@@ -1,5 +1,13 @@
 # @rollup/plugin-json ChangeLog
 
+## v6.1.0
+
+_2023-12-12_
+
+### Features
+
+- feat: add `includeArbitraryNames` option (#1641)
+
 ## v6.0.1
 
 _2023-10-05_

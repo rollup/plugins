@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-alias",
-  "version": "5.0.1",
+  "version": "5.1.1",
   "publishConfig": {
     "access": "public"
   },
@@ -57,9 +57,6 @@
     "rollup": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "slash": "^4.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.0",
