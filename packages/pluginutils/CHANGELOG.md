@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.1.2
+
+_2024-09-23_
+
+### Bugfixes
+
+- fix: optimize `createFilter` and `normalizePath` (#1750)
+
 ## v5.1.1
 
 _2024-09-22_
