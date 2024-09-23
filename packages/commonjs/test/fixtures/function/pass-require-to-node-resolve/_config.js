@@ -6,13 +6,13 @@ module.exports = {
     plugins: [
       {
         name: 'node-resolve-mock',
-        resolveId(source, importer, { custom }) {
-          const { isRequire } = (custom && custom['node-resolve']) || {};
+        resolveId(source, importer, options) {
+          const { isRequire } = options.custom?.['node-resolve'] || {};
           if (source === './foo') {
-            return this.resolve(isRequire ? './foo-required' : './foo-imported', importer);
+            return this.resolve(isRequire ? './foo-required' : './foo-imported', importer, options);
           }
           if (source === './bar') {
-            return this.resolve(isRequire ? './bar-required' : './bar-imported', importer);
+            return this.resolve(isRequire ? './bar-required' : './bar-imported', importer, options);
           }
           return null;
         }

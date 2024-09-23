@@ -29,15 +29,13 @@ function replaceRequires(source) {
   let index = 0;
 
   // replace a require statement with a variable
-  const replaceSource = source.replace(/require\(([^)]+)\)/gi, (match, path) => {
-    const replacePath = path.replace(/["']+/g, '');
-
-    if (!imports[replacePath]) {
+  const replaceSource = source.replace(/require\(["']([^"']+)["']\)/gi, (match, path) => {
+    if (!imports[path]) {
       index += 1;
-      imports[replacePath] = `frgmt${index}`;
+      imports[path] = `frgmt${index}`;
     }
 
-    return imports[replacePath];
+    return imports[path];
   });
 
   // prepare import statements

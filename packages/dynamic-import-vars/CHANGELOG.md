@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.1.3
+
+_2024-09-22_
+
+### Bugfixes
+
+- fix: simplify regex (#1751)
+
 ## v2.1.2
 
 _2023-11-28_

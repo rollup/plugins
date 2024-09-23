@@ -1,5 +1,13 @@
 # @rollup/plugin-graphql ChangeLog
 
+## v2.0.5
+
+_2024-09-22_
+
+### Bugfixes
+
+- fix: handle parentheses in fragment import file paths. (#1746)
+
 ## v2.0.4
 
 _2023-10-05_

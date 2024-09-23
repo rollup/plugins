@@ -1,0 +1,7 @@
+#import "./(parentheses)/fragment.graphql"
+#import "./[brackets]/fragment.graphql"
+
+query Query {
+  ...ParenthesesFragment
+  ...BracketsFragment
+}

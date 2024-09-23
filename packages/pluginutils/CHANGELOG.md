@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.1.1
+
+_2024-09-22_
+
+### Bugfixes
+
+- fix: improve regex performance (#1753)
+
 ## v5.1.0
 
 _2023-11-28_

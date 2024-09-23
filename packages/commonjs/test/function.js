@@ -48,7 +48,12 @@ readdirSync('./fixtures/function').forEach((dir) => {
         console.groupEnd();
       }
     }
-    const { exports, global, error } = runCodeSplitTest(codeMap, t, config.context);
+    const { exports, global, error } = runCodeSplitTest(
+      codeMap,
+      t,
+      config.testEntry || 'main.js',
+      config.context
+    );
 
     if (config.exports) config.exports(exports, t);
     if (config.global) config.global(global, t);
