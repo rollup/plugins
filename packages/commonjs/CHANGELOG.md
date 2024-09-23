@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.0
+
+_2024-09-23_
+
+### Breaking Changes
+
+- chore: switch to fdir for fewer dependencies (#1741)
+
 ## v27.0.0
 
 _2024-09-23_
