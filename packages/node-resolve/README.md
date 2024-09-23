@@ -133,10 +133,18 @@ Specifies the properties to scan within a `package.json`, used to determine the 
 
 ### `preferBuiltins`
 
-Type: `Boolean`<br>
+Type: `Boolean | (module: string) => boolean`<br>
 Default: `true` (with warnings if a builtin module is used over a local version. Set to `true` to disable warning.)
 
 If `true`, the plugin will prefer built-in modules (e.g. `fs`, `path`). If `false`, the plugin will look for locally installed modules of the same name.
+
+Alternatively, you may pass in a function that returns a boolean to confirm whether the plugin should prefer built-in modules. e.g.
+
+```js
+preferBuiltins: (module) => module !== 'punycode';
+```
+
+will not treat `punycode` as a built-in module
 
 ### `modulesOnly`
 
