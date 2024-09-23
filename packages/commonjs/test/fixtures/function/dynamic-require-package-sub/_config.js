@@ -6,7 +6,7 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve');
 module.exports = {
   description: 'resolves imports of node_modules from subdirectories',
   options: {
-    input: path.join(__dirname, 'sub/entry.js'),
+    input: path.join(__dirname, 'sub/main.js'),
     plugins: [nodeResolve(), json()]
   },
   pluginOptions: {

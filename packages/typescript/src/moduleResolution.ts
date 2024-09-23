@@ -20,7 +20,9 @@ export type Resolver = (
 
 /**
  * Create a helper for resolving modules using Typescript.
- * @param host Typescript host that extends `ModuleResolutionHost`
+ * @param ts custom typescript implementation
+ * @param host Typescript host that extends {@link ModuleResolutionHost}
+ * @param filter
  * with methods for sanitizing filenames and getting compiler options.
  */
 export default function createModuleResolver(
