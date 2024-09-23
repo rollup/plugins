@@ -3,7 +3,7 @@ import { join, resolve, dirname } from 'path';
 
 import getCommonDir from 'commondir';
 
-import glob from 'glob';
+import { glob } from 'glob';
 
 import { getVirtualPathForDynamicRequirePath, normalizePathSlashes } from './utils';
 
@@ -41,7 +41,9 @@ export function getDynamicRequireModules(patterns, dynamicRequireRoot) {
       isNegated
         ? dynamicRequireModules.delete(targetPath)
         : dynamicRequireModules.set(targetPath, resolvedPath);
-    for (const path of glob.sync(isNegated ? pattern.substr(1) : pattern)) {
+    for (const path of glob
+      .sync(isNegated ? pattern.substr(1) : pattern)
+      .sort((a, b) => a.localeCompare(b, 'en'))) {
       const resolvedPath = resolve(path);
       const requirePath = normalizePathSlashes(resolvedPath);
       if (isDirectory(resolvedPath)) {

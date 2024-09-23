@@ -1,6 +1,6 @@
 {
   "name": "@rollup/pluginutils",
-  "version": "5.0.5",
+  "version": "5.1.1",
   "publishConfig": {
     "access": "public"
   },

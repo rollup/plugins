@@ -154,6 +154,19 @@ Default: `null`
 
 A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all files are targeted.
 
+### `sourceMap` or `sourcemap`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Enables generating sourcemaps for the bundled code. For example, where the plugin is called as follows:
+
+```js
+replace({
+  sourcemap: true
+});
+```
+
 ### `values`
 
 Type: `{ [key: String]: Replacement }`, where `Replacement` is either a string or a `function` that returns a string.

@@ -15,12 +15,14 @@ const sinon = require('sinon');
 const run = require('../');
 
 const cwd = join(__dirname, 'fixtures/');
-const file = join(cwd, 'output/bundle.js');
+const outputDir = join(cwd, 'output');
+const file = join(outputDir, 'bundle.js');
 const input = join(cwd, 'input.js');
 
 process.chdir(cwd);
 
 const outputOptions = { file, format: 'cjs' };
+const outputDirOptions = { dir: outputDir, format: 'cjs' };
 
 let mockChildProcess;
 test.before(() => {
@@ -62,8 +64,7 @@ test('checks entry point facade module', async (t) => {
     preserveEntrySignatures: 'strict',
     plugins: [run()]
   });
-  const outputDir = join(cwd, 'output');
-  await bundle.write({ dir: outputDir, format: 'cjs' });
+  await bundle.write(outputDirOptions);
   t.true(mockChildProcess.calledWithExactly(join(outputDir, 'index.js'), [], {}));
 });
 
@@ -97,6 +98,40 @@ test('throws an error when bundle is not written to disk', async (t) => {
   );
 });
 
+test('throws an error when input option is invalid', async (t) => {
+  const testInput = join(cwd, 'change-detect-input.js');
+  const bundle = await rollup({
+    input: [input, testInput],
+    plugins: [run({ input: 'something that is not an input' })]
+  });
+  await t.throwsAsync(
+    async () => {
+      await bundle.write(outputDirOptions);
+    },
+    {
+      instanceOf: Error,
+      message: '@rollup/plugin-run could not find output chunk'
+    }
+  );
+});
+
+test('throws an error when there are multiple entry points', async (t) => {
+  const testInput = join(cwd, 'change-detect-input.js');
+  await t.throwsAsync(
+    async () => {
+      await rollup({
+        input: [input, testInput],
+        plugins: [run()]
+      });
+    },
+    {
+      instanceOf: Error,
+      message:
+        '@rollup/plugin-run must have a single entry point; consider setting the `input` option'
+    }
+  );
+});
+
 test('detects changes - forks a new child process and kills older process', async (t) => {
   // eslint-disable-next-line no-shadow
   const testInput = join(cwd, 'change-detect-input.js');
@@ -118,6 +153,16 @@ test('allow the allowRestart option', async (t) => {
   });
   await bundle.write(outputOptions);
   t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+});
+
+test('allow the input option', async (t) => {
+  const testInput = join(cwd, 'change-detect-input.js');
+  const bundle = await rollup({
+    input: [input, testInput],
+    plugins: [run({ input })]
+  });
+  await bundle.write(outputDirOptions);
+  t.true(mockChildProcess.calledWithExactly(join(outputDir, 'input.js'), [], { input }));
 });
 
 test.after(async () => {

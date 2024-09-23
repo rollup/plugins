@@ -56,11 +56,14 @@ function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFile
             );
 
             if (errorWhenNoFilesFound && paths.length === 0) {
-              this.error(
-                new Error(
-                  `No files found in ${glob} when trying to dynamically load concatted string from ${id}`
-                )
+              const error = new Error(
+                `No files found in ${glob} when trying to dynamically load concatted string from ${id}`
               );
+              if (warnOnError) {
+                this.warn(error);
+              } else {
+                this.error(error);
+              }
             }
 
             // create magic string if it wasn't created already

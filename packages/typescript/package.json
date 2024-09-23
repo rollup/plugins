@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-typescript",
-  "version": "11.1.5",
+  "version": "12.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -64,7 +64,7 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^5.0.1",
+    "@rollup/pluginutils": "^5.1.0",
     "resolve": "^1.22.1"
   },
   "devDependencies": {

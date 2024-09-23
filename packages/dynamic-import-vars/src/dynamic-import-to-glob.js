@@ -107,7 +107,7 @@ export function dynamicImportToGlob(node, sourceString) {
   }
 
   // Disallow ./*.ext
-  const ownDirectoryStarExtension = /^\.\/\*\.[\w]+$/;
+  const ownDirectoryStarExtension = /^\.\/\*\.\w+$/;
   if (ownDirectoryStarExtension.test(glob)) {
     throw new VariableDynamicImportError(
       `${

@@ -37,7 +37,8 @@ export function swc(input: Options = {}): Plugin {
 
       return transform(code, {
         ...swcOptions,
-        sourceMaps: true
+        sourceMaps: true,
+        filename: id
       });
     }
   };

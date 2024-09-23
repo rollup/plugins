@@ -1,5 +1,21 @@
 # @rollup/plugin-swc ChangeLog
 
+## v0.4.0
+
+_2024-09-06_
+
+### Features
+
+- feat: sets filename property, so to make additional swc features… (#1761)
+
+## v0.3.1
+
+_2024-06-05_
+
+### Updates
+
+- docs: add @swc/core to install step (#1666)
+
 ## v0.3.0
 
 _2023-11-09_
