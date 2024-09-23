@@ -7,9 +7,9 @@ module.exports = {
   },
   pluginOptions: {
     dynamicRequireTargets: [
-      'fixtures/function/dynamic-require-instances/direct',
+      'fixtures/function/dynamic-require-instances/direct/',
       'fixtures/function/dynamic-require-instances/direct/index.js',
-      'fixtures/function/dynamic-require-instances/package',
+      'fixtures/function/dynamic-require-instances/package/',
       'fixtures/function/dynamic-require-instances/package/main.js'
     ]
   }

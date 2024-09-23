@@ -6,6 +6,7 @@ module.exports = {
     sourcemap: true,
     sourceMap: true,
     include: '**/input.js',
-    exclude: 'node_modules/**'
+    exclude: 'node_modules/**',
+    preventAssignment: false
   }
 };

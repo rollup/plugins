@@ -5,4 +5,5 @@ console.log(`
   sourceMap
   include
   exclude
+  preventAssignment
 `);

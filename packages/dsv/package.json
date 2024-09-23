@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-dsv",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "publishConfig": {
     "access": "public"
   },
@@ -52,6 +52,7 @@
     "@rollup/pluginutils": "^5.0.1",
     "@types/d3-dsv": "^3.0.0",
     "d3-dsv": "2.0.0",
+    "strip-bom": "^4.0.0",
     "tosource": "^2.0.0-alpha.3"
   },
   "devDependencies": {

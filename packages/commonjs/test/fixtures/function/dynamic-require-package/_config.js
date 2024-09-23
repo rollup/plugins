@@ -8,9 +8,9 @@ module.exports = {
   },
   pluginOptions: {
     dynamicRequireTargets: [
-      'fixtures/function/dynamic-require-package',
-      'fixtures/function/dynamic-require-package/sub',
-      'fixtures/function/dynamic-require-package/node_modules/custom-module'
+      'fixtures/function/dynamic-require-package/',
+      'fixtures/function/dynamic-require-package/sub/',
+      'fixtures/function/dynamic-require-package/node_modules/custom-module/'
     ]
   }
 };

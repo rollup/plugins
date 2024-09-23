@@ -165,7 +165,7 @@ function processRequireExpressions(
   magicString
 ) {
   const generateRequireName = getGenerateRequireName();
-  for (const { source, id: resolvedId, isCommonJS } of requireTargets) {
+  for (const { source, id: resolvedId, isCommonJS, wrappedModuleSideEffects } of requireTargets) {
     const requires = requiresBySource[source];
     const name = generateRequireName(requires);
     let usesRequired = false;
@@ -184,7 +184,11 @@ function processRequireExpressions(
       } else if (canConvertRequire) {
         needsImport = true;
         if (isCommonJS === IS_WRAPPED_COMMONJS) {
-          magicString.overwrite(node.start, node.end, `${name}()`);
+          magicString.overwrite(
+            node.start,
+            node.end,
+            `${wrappedModuleSideEffects ? '' : '/*@__PURE__*/ '}${name}()`
+          );
         } else if (usesReturnValue) {
           usesRequired = true;
           magicString.overwrite(node.start, node.end, name);
