@@ -1,4 +1,5 @@
 import { builtinModules } from 'module';
+import { promises as fs } from 'fs';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import typescript from '@rollup/plugin-typescript';
@@ -26,12 +27,13 @@ export function createConfig({ pkg, external = [] }) {
         file: pkg.main,
         exports: 'named',
         footer: 'module.exports = Object.assign(exports.default, exports);',
+        plugins: [emitDeclarationFile()],
         sourcemap: true
       },
       {
         format: 'es',
         file: pkg.module,
-        plugins: [emitModulePackageFile()],
+        plugins: [emitDeclarationFile('m')],
         sourcemap: true
       }
     ],
@@ -39,14 +41,14 @@ export function createConfig({ pkg, external = [] }) {
   };
 }
 
-export function emitModulePackageFile() {
+export function emitDeclarationFile(m = '') {
   return {
-    name: 'emit-module-package-file',
-    generateBundle() {
+    name: 'emit-declaration-file',
+    async generateBundle() {
       this.emitFile({
         type: 'asset',
-        fileName: 'package.json',
-        source: `{"type":"module"}`
+        fileName: `index.d.${m}ts`,
+        source: await fs.readFile('./types/index.d.ts')
       });
     }
   };
