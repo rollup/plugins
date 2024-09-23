@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v15.3.0
+
+_2024-09-23_
+
+### Features
+
+- feat: allow preferBuiltins to be a function (#1694)
+
 ## v15.2.4
 
 _2024-09-22_
