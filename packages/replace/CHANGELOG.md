@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v6.0.1
+
+_2024-09-23_
+
+### Bugfixes
+
+- fix: The `preventAssignment` option is treated as a value to replace (#1768)
+
 ## v6.0.0
 
 _2024-09-23_
