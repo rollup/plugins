@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v6.0.0
+
+_2024-09-23_
+
+### Breaking Changes
+
+- fix!: objectGuards doesn't take effects (#1764)
+
 ## v5.0.7
 
 _2024-06-05_
