@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { createFilter } from '@rollup/pluginutils';
 
-import type { Plugin, SourceDescription } from 'rollup';
+import type { Plugin, PluginContext, SourceDescription } from 'rollup';
 import type { Watch } from 'typescript';
 
 import type { RollupTypescriptOptions } from '../types';
@@ -37,6 +37,31 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     tslib,
     typescript: ts
   } = getPluginOptions(options);
+  const createProgram = (context: PluginContext) =>
+    createWatchProgram(ts, context, {
+      formatHost,
+      resolveModule,
+      parsedOptions,
+      writeFile(fileName, data, _writeByteOrderMark, _onError, sourceFiles) {
+        if (sourceFiles) {
+          for (const sourceFile of sourceFiles) {
+            if (!parsedOptions.fileNames.includes(sourceFile.fileName)) {
+              parsedOptions.fileNames.push(sourceFile.fileName);
+            }
+          }
+        }
+
+        if (parsedOptions.options.composite || parsedOptions.options.incremental) {
+          tsCache.cacheCode(fileName, data);
+        }
+        emittedFiles.set(fileName, data);
+      },
+      status(diagnostic) {
+        watchProgramHelper.handleStatus(diagnostic);
+      },
+      transformers
+    });
+
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
@@ -56,6 +81,14 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     name: 'typescript',
 
     buildStart(rollupOptions) {
+      if (typeof rollupOptions.input === 'string') {
+        rollupOptions.input = [rollupOptions.input];
+      }
+
+      if (Array.isArray(rollupOptions.input)) {
+        parsedOptions.fileNames = rollupOptions.input.map((fileName) => path.resolve(fileName));
+      }
+
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
       preflight({
@@ -74,21 +107,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         program = null;
       }
       if (!program) {
-        program = createWatchProgram(ts, this, {
-          formatHost,
-          resolveModule,
-          parsedOptions,
-          writeFile(fileName, data) {
-            if (parsedOptions.options.composite || parsedOptions.options.incremental) {
-              tsCache.cacheCode(fileName, data);
-            }
-            emittedFiles.set(fileName, data);
-          },
-          status(diagnostic) {
-            watchProgramHelper.handleStatus(diagnostic);
-          },
-          transformers
-        });
+        program = createProgram(this);
       }
     },
 
@@ -139,7 +158,6 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
       if (resolved) {
         if (/\.d\.[cm]?ts/.test(resolved.extension)) return null;
-        if (!filter(resolved.resolvedFileName)) return null;
         return path.normalize(resolved.resolvedFileName);
       }
 
@@ -149,16 +167,20 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     async load(id) {
       if (!filter(id)) return null;
 
-      this.addWatchFile(id);
+      const resolvedId = path.resolve(id);
+
+      this.addWatchFile(resolvedId);
       await watchProgramHelper.wait();
 
-      const fileName = normalizePath(id);
+      const fileName = normalizePath(resolvedId);
       if (!parsedOptions.fileNames.includes(fileName)) {
         // Discovered new file that was not known when originally parsing the TypeScript config
-        parsedOptions.fileNames.push(fileName);
+        parsedOptions.fileNames.push(path.resolve(fileName));
+
+        createProgram(this).close();
       }
 
-      const output = findTypescriptOutput(ts, parsedOptions, id, emittedFiles, tsCache);
+      const output = findTypescriptOutput(ts, parsedOptions, resolvedId, emittedFiles, tsCache);
 
       return output.code != null ? (output as SourceDescription) : null;
     },
