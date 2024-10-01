@@ -66,8 +66,8 @@
     "@rollup/pluginutils": "^5.0.1",
     "astring": "^1.8.5",
     "estree-walker": "^2.0.2",
-    "fast-glob": "^3.2.12",
-    "magic-string": "^0.30.3"
+    "magic-string": "^0.30.3",
+    "tinyglobby": "^0.2.8"
   },
   "devDependencies": {
     "acorn": "^8.8.0",

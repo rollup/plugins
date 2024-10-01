@@ -1,6 +1,6 @@
 import path from 'path';
 
-import fastGlob from 'fast-glob';
+import { escapePath } from 'tinyglobby';
 
 export class VariableDynamicImportError extends Error {}
 
@@ -12,7 +12,7 @@ function sanitizeString(str) {
   if (str.includes('*')) {
     throw new VariableDynamicImportError('A dynamic import cannot contain * characters.');
   }
-  return fastGlob.escapePath(str);
+  return escapePath(str);
 }
 
 function templateLiteralToGlob(node) {
