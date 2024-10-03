@@ -19,9 +19,14 @@
   "module": "./dist/es/index.js",
   "type": "commonjs",
   "exports": {
-    "types": "./types/index.d.ts",
-    "import": "./dist/es/index.js",
-    "default": "./dist/cjs/index.js"
+    "require": {
+      "types": "./dist/cjs/index.d.ts",
+      "default": "./dist/cjs/index.js"
+    },
+    "import": {
+      "types": "./dist/es/index.d.ts",
+      "default": "./dist/es/index.js"
+    }
   },
   "engines": {
     "node": ">=14.0.0"
@@ -75,7 +80,7 @@
     "rollup": "^4.0.0-24",
     "typescript": "^4.8.3"
   },
-  "types": "./types/index.d.ts",
+  "types": "./dist/cjs/index.d.ts",
   "ava": {
     "extensions": [
       "ts"
