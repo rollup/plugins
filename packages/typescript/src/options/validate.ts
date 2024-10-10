@@ -58,13 +58,16 @@ export function validatePaths(
   for (const dirProperty of DIRECTORY_PROPS) {
     if (compilerOptions[dirProperty] && outputDir) {
       // Checks if the given path lies within Rollup output dir
-      const fromRollupDirToTs = relative(outputDir, compilerOptions[dirProperty]!);
-      if (fromRollupDirToTs.startsWith('..')) {
-        if (outputOptions.dir) {
+      if (outputOptions.dir) {
+        const fromRollupDirToTs = relative(outputDir, compilerOptions[dirProperty]!);
+        if (fromRollupDirToTs.startsWith('..')) {
           context.error(
             `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside Rollup 'dir' option.`
           );
-        } else {
+        }
+      } else {
+        const fromTsDirToRollup = relative(compilerOptions[dirProperty]!, outputDir);
+        if (fromTsDirToRollup.startsWith('..')) {
           context.error(
             `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside the same directory as the Rollup 'file' option.`
           );
