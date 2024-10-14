@@ -203,8 +203,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       estree-walker:
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       fdir:
         specifier: ^6.2.0
         version: 6.3.0(picomatch@4.0.2)
@@ -293,8 +293,8 @@ importers:
         specifier: ^1.8.5
         version: 1.8.5
       estree-walker:
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       fast-glob:
         specifier: ^3.2.12
         version: 3.2.12
@@ -409,8 +409,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(rollup@4.0.0-24)
       estree-walker:
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       magic-string:
         specifier: ^0.30.3
         version: 0.30.3
@@ -534,8 +534,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       estree-walker:
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       picomatch:
         specifier: ^2.3.1
         version: 2.3.1
@@ -621,8 +621,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(rollup@4.0.0-24)
       estree-walker:
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       magic-string:
         specifier: ^0.30.3
         version: 0.30.3
@@ -1772,6 +1772,9 @@ packages:
   '@types/estree@1.0.0':
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
 
+  '@types/estree@1.0.6':
+    resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
+
   '@types/http-cache-semantics@4.0.1':
     resolution: {integrity: sha512-SZs7ekbP8CN0txVG2xVRH6EgKmEm31BOxA07vkFaETzZz1xh+cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn+iRPQ==}
 
@@ -2689,6 +2692,9 @@ packages:
 
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
+
+  estree-walker@3.0.3:
+    resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
@@ -5778,6 +5784,8 @@ snapshots:
 
   '@types/estree@1.0.0': {}
 
+  '@types/estree@1.0.6': {}
+
   '@types/http-cache-semantics@4.0.1': {}
 
   '@types/json-schema@7.0.11': {}
@@ -6922,6 +6930,10 @@ snapshots:
   estree-walker@0.6.1: {}
 
   estree-walker@2.0.2: {}
+
+  estree-walker@3.0.3:
+    dependencies:
+      '@types/estree': 1.0.6
 
   esutils@2.0.3: {}
 

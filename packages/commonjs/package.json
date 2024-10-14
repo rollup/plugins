@@ -64,7 +64,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^5.0.1",
     "commondir": "^1.0.1",
-    "estree-walker": "^2.0.2",
+    "estree-walker": "^3.0.3",
     "fdir": "^6.2.0",
     "is-reference": "1.2.1",
     "magic-string": "^0.30.3",
