@@ -40,8 +40,9 @@
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "ava",
-    "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
+    "test": "pnpm test:ts && pnpm test:dts && ava",
+    "test:dts": "tsc --build ./test-typings && tsc --build ./test-typings --clean",
+    "test:ts": "tsc --noEmit"
   },
   "files": [
     "dist",

@@ -43,6 +43,7 @@
     "pretest": "pnpm build --sourcemap",
     "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "ava",
+    "test:dts": "tsc --build ./test-typings && tsc --build ./test-typings --clean",
     "test:ts": "tsc --noEmit"
   },
   "files": [

@@ -1,0 +1,11 @@
+{
+  "include": ["./index.ts"],
+  "compilerOptions": {
+    "moduleResolution": "Node16",
+    "module": "Node16",
+    "composite": true,
+    "tsBuildInfoFile": "output/.tsbuildinfo",
+    "skipLibCheck": true,
+    "noEmit": true
+  }
+}
