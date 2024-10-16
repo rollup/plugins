@@ -129,6 +129,36 @@ test.serial(
   }
 );
 
+test.serial(
+  'ensures output files can be written to subdirectories within the tsconfig outDir',
+  async (t) => {
+    const warnings = [];
+    const outputOpts = { format: 'es', file: 'fixtures/basic/dist/esm/main.js' };
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      output: outputOpts,
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          outDir: 'fixtures/basic/dist'
+        })
+      ],
+      onwarn(warning) {
+        warnings.push(warning);
+      }
+    });
+
+    // This should not throw an error
+    const output = await getFiles(bundle, outputOpts);
+
+    t.deepEqual(
+      output.map((out) => out.fileName),
+      ['fixtures/basic/dist/esm/main.js']
+    );
+    t.is(warnings.length, 0);
+  }
+);
+
 test.serial('ensures multiple outputs can be built', async (t) => {
   // In a rollup.config.js we would pass an array
   // The rollup method that's exported as a library won't do that so we must make two calls
