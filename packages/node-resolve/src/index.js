@@ -292,7 +292,7 @@ export function nodeResolve(opts = {}) {
           return importee;
         }
         // ignore IDs with null character, these belong to other plugins
-        if (importee.includes('\0')) return null;
+        if (importee && importee.includes('\0')) return null;
 
         const { custom = {} } = resolveOptions;
         const { 'node-resolve': { resolved: alreadyResolved } = {} } = custom;
@@ -300,7 +300,7 @@ export function nodeResolve(opts = {}) {
           return alreadyResolved;
         }
 
-        if (importer.includes('\0')) {
+        if (importer && importer.includes('\0')) {
           importer = undefined;
         }
 
