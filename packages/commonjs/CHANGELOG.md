@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.1
+
+_2024-10-16_
+
+### Updates
+
+- chore: upgrade picomatch (#1775)
+
 ## v28.0.0
 
 _2024-09-23_
