@@ -206,8 +206,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       fdir:
-        specifier: ^6.1.1
-        version: 6.1.1(picomatch@2.3.1)
+        specifier: ^6.2.0
+        version: 6.3.0(picomatch@4.0.2)
       is-reference:
         specifier: 1.2.1
         version: 1.2.1
@@ -215,8 +215,8 @@ importers:
         specifier: ^0.30.3
         version: 0.30.3
       picomatch:
-        specifier: ^2.3.1
-        version: 2.3.1
+        specifier: ^4.0.2
+        version: 4.0.2
     devDependencies:
       '@rollup/plugin-json':
         specifier: ^5.0.0
@@ -2723,10 +2723,10 @@ packages:
   fastq@1.13.0:
     resolution: {integrity: sha512-YpkpUnK8od0o1hmeSc7UUs/eB/vIPWJYjKck2QKIzAf71Vm1AAQ3EbuZB3g2JIy+pg+ERD0vqI79KyZiB2e2Nw==}
 
-  fdir@6.1.1:
-    resolution: {integrity: sha512-QfKBVg453Dyn3mr0Q0O+Tkr1r79lOTAKSi9f/Ot4+qVEwxWhav2Z+SudrG9vQjM2aYRMQQZ2/Q1zdA8ACM1pDg==}
+  fdir@6.3.0:
+    resolution: {integrity: sha512-QOnuT+BOtivR77wYvCWHfGt9s4Pz1VIMbD463vegT5MLqNXy8rYFT/lPVEqf/bhYeT6qmqrNHhsX+rWwe3rOCQ==}
     peerDependencies:
-      picomatch: 3.x
+      picomatch: ^3 || ^4
     peerDependenciesMeta:
       picomatch:
         optional: true
@@ -6975,9 +6975,9 @@ snapshots:
     dependencies:
       reusify: 1.0.4
 
-  fdir@6.1.1(picomatch@2.3.1):
+  fdir@6.3.0(picomatch@4.0.2):
     optionalDependencies:
-      picomatch: 2.3.1
+      picomatch: 4.0.2
 
   fdir@6.4.0(picomatch@4.0.2):
     optionalDependencies:
