@@ -288,7 +288,6 @@ test('escapes []', (t) => {
   t.is(glob, './*/\\[foo\\].js');
 });
 
-
 [
   './../foo/./../foo.js',
   './../../a/foo.js',
