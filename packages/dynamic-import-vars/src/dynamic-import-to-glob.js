@@ -126,11 +126,14 @@ export function dynamicImportToGlob(node, sourceString) {
   return glob;
 }
 
-export const normalizePath = (p) =>
-  p
-    // remove any ./ inside the path
-    .replace(/\/\.\//g, '/')
-    // remove dir/ + ../ pairs
-    .replace(/([^/.][^/]*\/)(([^/.][^/]*\/)(([^/.][^/]*\/)(\.\.\/))*?(\.\.\/))*?(\.\.\/)/g, '')
-    // remove unnecessary leading ./
-    .replace(/^(\.\/)+(?=\.\.\/)/g, '');
+export function normalizePath(p) {
+  return (
+    p
+      // remove any ./ inside the path
+      .replace(/\/\.\//g, '/')
+      // remove dir/ + ../ pairs
+      .replace(/([^/.][^/]*\/)(([^/.][^/]*\/)(([^/.][^/]*\/)(\.\.\/))*?(\.\.\/))*?(\.\.\/)/g, '')
+      // remove unnecessary leading ./
+      .replace(/^(\.\/)+(?=\.\.\/)/g, '')
+  );
+}

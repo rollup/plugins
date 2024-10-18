@@ -13,7 +13,7 @@ import {
   normalizePath
 } from './dynamic-import-to-glob';
 
-const normalizePathString = normalizePath.toString().substring(10);
+const normalizePathString = normalizePath.toString().replace(/\n/g, '\n  ');
 
 function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFilesFound } = {}) {
   const filter = createFilter(include, exclude);
@@ -78,7 +78,7 @@ function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFile
             // will turn these into chunks automatically
             ms.prepend(
               `function __variableDynamicImportRuntime${dynamicImportIndex}__(path) {
-  const normalPath = path${normalizePathString};
+  path = (${normalizePathString})(path);
   switch (normalPath) {
 ${paths
   .map((p) => `    case '${p}': return import('${p}'${importArg ? `, ${importArg}` : ''});`)
