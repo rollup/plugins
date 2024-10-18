@@ -78,7 +78,7 @@ function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFile
             // will turn these into chunks automatically
             ms.prepend(
               `function __variableDynamicImportRuntime${dynamicImportIndex}__(path) {
-  path = (${normalizePathString})(path);
+  const normalPath = (${normalizePathString})(path);
   switch (normalPath) {
 ${paths
   .map((p) => `    case '${p}': return import('${p}'${importArg ? `, ${importArg}` : ''});`)
