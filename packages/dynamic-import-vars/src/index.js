@@ -13,10 +13,7 @@ import {
   normalizePath
 } from './dynamic-import-to-glob';
 
-const normalizePathString = normalizePath
-  .toString()
-  .substring(6)
-  .replace(/\n {2}/g, '\n    ');
+const normalizePathString = normalizePath.toString().substring(10);
 
 function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFilesFound } = {}) {
   const filter = createFilter(include, exclude);
