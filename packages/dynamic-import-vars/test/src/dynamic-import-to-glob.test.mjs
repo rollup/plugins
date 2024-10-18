@@ -296,7 +296,8 @@ test('escapes []', (t) => {
   './../فو/bar/../../foo.js',
   '../foo/../foo.js',
   './../foo/../bar/.././../foo.js',
-  './../foo/bar/.././../foo.js'
+  './../foo/bar/.././../foo.js',
+  './foo/bar/baz/../qux/../../../../foo.js'
 ].forEach((p) => {
   test(`normalizePath - ${p}`, (t) => {
     const normalPath = normalizePath(p);

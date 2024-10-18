@@ -131,6 +131,6 @@ export const normalizePath = (p) =>
     // remove any ./ inside the path
     .replace(/\/\.\//g, '/')
     // remove dir/ + ../ pairs
-    .replace(/([^/.][^/]*\/)(([^/.][^/]*\/)(\.\.\/))?(\.\.\/)/g, '')
+    .replace(/([^/.][^/]*\/)(([^/.][^/]*\/)(([^/.][^/]*\/)(\.\.\/))*?(\.\.\/))*?(\.\.\/)/g, '')
     // remove unnecessary leading ./
     .replace(/^(\.\/)+(?=\.\.\/)/g, '');
