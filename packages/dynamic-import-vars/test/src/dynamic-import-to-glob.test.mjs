@@ -2,8 +2,9 @@
 
 import { parse } from 'acorn';
 import test from 'ava';
+import { posix } from 'node:path';
 
-import { dynamicImportToGlob, VariableDynamicImportError } from 'current-package';
+import { dynamicImportToGlob, normalizePath, VariableDynamicImportError } from 'current-package';
 
 test('template literal with variable filename', (t) => {
   const ast = parse('import(`./foo/${bar}.js`);', {
@@ -285,4 +286,20 @@ test('escapes []', (t) => {
 
   const glob = dynamicImportToGlob(ast.body[0].expression.source);
   t.is(glob, './*/\\[foo\\].js');
+});
+
+
+[
+  './../foo/./../foo.js',
+  './../../a/foo.js',
+  './föö/../bar/.././../foo.js',
+  './../فو/bar/../../foo.js',
+  '../foo/../foo.js',
+  './../foo/../bar/.././../foo.js',
+  './../foo/bar/.././../foo.js'
+].forEach((p) => {
+  test(`normalizePath - ${p}`, (t) => {
+    const normalPath = normalizePath(p);
+    t.is(posix.normalize(p), normalPath);
+  });
 });

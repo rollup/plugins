@@ -7,7 +7,16 @@ import { generate } from 'astring';
 
 import { createFilter } from '@rollup/pluginutils';
 
-import { dynamicImportToGlob, VariableDynamicImportError } from './dynamic-import-to-glob';
+import {
+  dynamicImportToGlob,
+  VariableDynamicImportError,
+  normalizePath
+} from './dynamic-import-to-glob';
+
+const normalizePathString = normalizePath
+  .toString()
+  .substring(6)
+  .replace(/\n {2}/g, '\n    ');
 
 function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFilesFound } = {}) {
   const filter = createFilter(include, exclude);
@@ -72,13 +81,14 @@ function dynamicImportVariables({ include, exclude, warnOnError, errorWhenNoFile
             // will turn these into chunks automatically
             ms.prepend(
               `function __variableDynamicImportRuntime${dynamicImportIndex}__(path) {
-  switch (path) {
+  const normalPath = path${normalizePathString};
+  switch (normalPath) {
 ${paths
   .map((p) => `    case '${p}': return import('${p}'${importArg ? `, ${importArg}` : ''});`)
   .join('\n')}
 ${`    default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
-        reject.bind(null, new Error("Unknown variable dynamic import: " + path))
+        reject.bind(null, new Error("Unknown variable dynamic import: " + normalPath))
       );
     })\n`}   }
  }\n\n`
@@ -122,4 +132,4 @@ ${`    default: return new Promise(function(resolve, reject) {
 }
 
 export default dynamicImportVariables;
-export { dynamicImportToGlob, VariableDynamicImportError };
+export { dynamicImportToGlob, VariableDynamicImportError, normalizePath };
