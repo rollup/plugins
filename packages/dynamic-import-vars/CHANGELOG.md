@@ -1,5 +1,13 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.1.5
+
+_2024-10-21_
+
+### Updates
+
+- chore: revert 2.1.4 changes (#1799)
+
 ## v2.1.4
 
 _2024-10-16_
