@@ -1,10 +1,10 @@
-import type { BaseNode } from 'estree';
+import type { Node } from 'estree';
 
 export interface AttachedScope {
   parent?: AttachedScope;
   isBlockScope: boolean;
   declarations: { [key: string]: boolean };
-  addDeclaration(node: BaseNode, isBlockDeclaration: boolean, isVar: boolean): void;
+  addDeclaration(node: Node, isBlockDeclaration: boolean, isVar: boolean): void;
   contains(name: string): boolean;
 }
 
@@ -37,7 +37,7 @@ export function addExtension(filename: string, ext?: string): string;
  * Each `Scope` object has a `scope.contains(name)` method that returns `true`
  * if a given name is defined in the current scope or a parent scope.
  */
-export function attachScopes(ast: BaseNode, propertyName?: string): AttachedScope;
+export function attachScopes(ast: Node, propertyName?: string): AttachedScope;
 
 /**
  * Constructs a filter function which can be used to determine whether or not
@@ -66,7 +66,7 @@ export function dataToEsm(data: unknown, options?: DataToEsmOptions): string;
  * Extracts the names of all assignment targets based upon specified patterns.
  * @param param An `acorn` AST Node.
  */
-export function extractAssignedNames(param: BaseNode): string[];
+export function extractAssignedNames(param: Node): string[];
 
 /**
  * Constructs a bundle-safe identifier from a `string`.

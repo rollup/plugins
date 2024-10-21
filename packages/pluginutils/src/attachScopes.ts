@@ -106,7 +106,7 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
       }
 
       // create new block scope
-      if (node.type === 'BlockStatement' && !/Function/.test(parent.type)) {
+      if (node.type === 'BlockStatement' && parent && !/Function/.test(parent.type)) {
         newScope = new Scope({
           parent: scope,
           block: true
