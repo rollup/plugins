@@ -532,7 +532,7 @@ importers:
     dependencies:
       '@types/estree':
         specifier: ^1.0.0
-        version: 1.0.0
+        version: 1.0.6
       estree-walker:
         specifier: ^3.0.3
         version: 3.0.3
@@ -5629,7 +5629,7 @@ snapshots:
 
   '@rollup/pluginutils@5.1.0(rollup@4.0.0-24)':
     dependencies:
-      '@types/estree': 1.0.0
+      '@types/estree': 1.0.6
       estree-walker: 2.0.2
       picomatch: 2.3.1
     optionalDependencies:
@@ -5779,7 +5779,7 @@ snapshots:
 
   '@types/eslint@8.4.6':
     dependencies:
-      '@types/estree': 1.0.0
+      '@types/estree': 1.0.6
       '@types/json-schema': 7.0.11
 
   '@types/estree@1.0.0': {}
@@ -7317,7 +7317,7 @@ snapshots:
 
   is-reference@1.2.1:
     dependencies:
-      '@types/estree': 1.0.0
+      '@types/estree': 1.0.6
 
   is-regex@1.1.4:
     dependencies:
