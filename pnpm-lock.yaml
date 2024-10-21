@@ -295,12 +295,12 @@ importers:
       estree-walker:
         specifier: ^2.0.2
         version: 2.0.2
+      fast-glob:
+        specifier: ^3.2.12
+        version: 3.2.12
       magic-string:
         specifier: ^0.30.3
         version: 0.30.3
-      tinyglobby:
-        specifier: ^0.2.8
-        version: 0.2.8
     devDependencies:
       acorn:
         specifier: ^8.8.0
@@ -2731,14 +2731,6 @@ packages:
       picomatch:
         optional: true
 
-  fdir@6.4.0:
-    resolution: {integrity: sha512-3oB133prH1o4j/L5lLW7uOCF1PlD+/It2L0eL/iAqWMB91RBbqTewABqxhj0ibBd90EEmWZq7ntIWzVaWcXTGQ==}
-    peerDependencies:
-      picomatch: ^3 || ^4
-    peerDependenciesMeta:
-      picomatch:
-        optional: true
-
   figures@4.0.1:
     resolution: {integrity: sha512-rElJwkA/xS04Vfg+CaZodpso7VqBknOYbzi6I76hI4X80RUjkSxO2oAyPmGbuXUppywjqndOrQDl817hDnI++w==}
     engines: {node: '>=12'}
@@ -4414,10 +4406,6 @@ packages:
   time-zone@1.0.0:
     resolution: {integrity: sha512-TIsDdtKo6+XrPtiTm1ssmMngN1sAhyKnTO2kunQWqNPWIVvCm15Wmw4SWInwTVgJ5u/Tr04+8Ei9TNcw4x4ONA==}
     engines: {node: '>=4'}
-
-  tinyglobby@0.2.8:
-    resolution: {integrity: sha512-AMLZywN0vbhiZi2neFEaj9VIIxC+PjDMsp0nAK6tpR86LJavZgHqGz0S/FOONwBygC+mu7R0/TyAQw0gx0Mu9Q==}
-    engines: {node: '>=12.0.0'}
 
   to-fast-properties@2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
@@ -6979,10 +6967,6 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
-  fdir@6.4.0(picomatch@4.0.2):
-    optionalDependencies:
-      picomatch: 4.0.2
-
   figures@4.0.1:
     dependencies:
       escape-string-regexp: 5.0.0
@@ -8641,11 +8625,6 @@ snapshots:
   through@2.3.8: {}
 
   time-zone@1.0.0: {}
-
-  tinyglobby@0.2.8:
-    dependencies:
-      fdir: 6.4.0(picomatch@4.0.2)
-      picomatch: 4.0.2
 
   to-fast-properties@2.0.0: {}
 
