@@ -1,27 +1,31 @@
 /* eslint-disable line-comment-position, no-new-func, no-undefined */
 
-const os = require('os');
-const path = require('path');
+import { createRequire } from 'module';
+import * as os from 'os';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const test = require('ava');
-const { getLocator } = require('locate-character');
-const { rollup } = require('rollup');
-const { install } = require('source-map-support');
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import test from 'ava';
+import { getLocator } from 'locate-character';
+import { rollup } from 'rollup';
+import { install } from 'source-map-support';
 
-const { testBundle } = require('../../../util/test');
-
-const { peerDependencies } = require('../package.json');
-
-const {
+import {
   commonjs,
   executeBundle,
   getCodeFromBundle,
   normalizePathSlashes
-} = require('./helpers/util.js');
+} from './helpers/util.mjs';
+
+const require = createRequire(import.meta.url);
+
+const { peerDependencies } = require('../package.json');
+
+const { testBundle } = require('../../../util/test.js');
 
 install();
-test.beforeEach(() => process.chdir(__dirname));
+test.beforeEach(() => process.chdir(fileURLToPath(new URL('.', import.meta.url))));
 
 const loader = (modules) => {
   return {
@@ -228,7 +232,7 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
 
   // ensure we resolve starting from a directory with
   // symlinks in node_modules.
-  process.chdir(path.join(__dirname, 'fixtures/samples/symlinked-node-modules'));
+  process.chdir(fileURLToPath(new URL('fixtures/samples/symlinked-node-modules', import.meta.url)));
 
   return t.notThrowsAsync(
     rollup({
@@ -652,7 +656,7 @@ if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
     // We do a second run in a worker so that all internal state is cleared
     const { Worker } = await import('worker_threads');
     const getRollupUpCodeWithCache = new Worker(
-      path.join(__dirname, 'fixtures/samples/caching/rollupWorker.js'),
+      fileURLToPath(new URL('fixtures/samples/caching/rollupWorker.js', import.meta.url)),
       {
         workerData: cache
       }

@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
-const acorn = require('acorn');
-const test = require('ava');
+import * as acorn from 'acorn';
+import test from 'ava';
 
-const inject = require('..');
+import inject from 'current-package';
 
 const compare = (t, fixture, options) => {
   const filename = path.resolve(`test/fixtures/${fixture}/input.js`);
