@@ -1,13 +1,15 @@
-const path = require('path');
+import { createRequire } from 'module';
+import * as path from 'path';
 
-const commonjsPlugin = require('../..');
+import commonjsPlugin from 'current-package';
 
-function commonjs(options) {
-  delete require.cache[require.resolve('../..')];
+const require = createRequire(import.meta.url);
+
+export function commonjs(options) {
   return commonjsPlugin(options);
 }
 
-function normalizePathSlashes(path) {
+export function normalizePathSlashes(path) {
   return path.replace(/\\/g, '/');
 }
 
@@ -27,7 +29,7 @@ function requireWithContext(code, context) {
   return contextWithExports.module.exports;
 }
 
-function runCodeSplitTest(codeMap, t, entryName = 'main.js', configContext = {}) {
+export function runCodeSplitTest(codeMap, t, entryName = 'main.js', configContext = {}) {
   const requireFromOutputVia = (importer) => (importee) => {
     const outputId = path.posix.join(path.posix.dirname(importer), importee);
     const code = codeMap[outputId];
@@ -63,7 +65,7 @@ function runCodeSplitTest(codeMap, t, entryName = 'main.js', configContext = {})
   return { exports, global };
 }
 
-async function getCodeMapFromBundle(bundle, options = {}) {
+export async function getCodeMapFromBundle(bundle, options = {}) {
   const generated = await bundle.generate({
     interop: 'compat',
     exports: 'auto',
@@ -77,21 +79,12 @@ async function getCodeMapFromBundle(bundle, options = {}) {
   return codeMap;
 }
 
-async function getCodeFromBundle(bundle, customOptions = {}) {
+export async function getCodeFromBundle(bundle, customOptions = {}) {
   const options = { exports: 'auto', format: 'cjs', ...customOptions };
   return (await bundle.generate(options)).output[0].code;
 }
 
-async function executeBundle(bundle, t, { context, exports, testEntry = 'main.js' } = {}) {
+export async function executeBundle(bundle, t, { context, exports, testEntry = 'main.js' } = {}) {
   const codeMap = await getCodeMapFromBundle(bundle, exports ? { exports } : {});
   return runCodeSplitTest(codeMap, t, testEntry, context);
 }
-
-module.exports = {
-  commonjs,
-  executeBundle,
-  getCodeFromBundle,
-  getCodeMapFromBundle,
-  normalizePathSlashes,
-  runCodeSplitTest
-};

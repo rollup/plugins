@@ -1,14 +1,18 @@
 /* eslint-disable global-require, import/no-dynamic-require, no-console */
 
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import { createRequire } from 'module';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-const acorn = require('acorn');
-const test = require('ava');
+import * as acorn from 'acorn';
+import test from 'ava';
 
-const { commonjs } = require('./helpers/util.js');
+import { commonjs } from './helpers/util.mjs';
 
-process.chdir(__dirname);
+const require = createRequire(import.meta.url);
+
+process.chdir(fileURLToPath(new URL('.', import.meta.url)));
 
 const transformContext = {
   error: (base, props) => {

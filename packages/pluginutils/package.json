@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@types/estree": "^1.0.0",
-    "estree-walker": "^2.0.2",
+    "estree-walker": "^3.0.3",
     "picomatch": "^2.3.1"
   },
   "devDependencies": {

@@ -1,13 +1,17 @@
 /* eslint-disable global-require, import/no-dynamic-require, no-console */
 
-const { readdirSync } = require('fs');
+import { readdirSync } from 'fs';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
 
-const test = require('ava');
-const { rollup } = require('rollup');
+import test from 'ava';
+import { rollup } from 'rollup';
 
-const { commonjs, getCodeMapFromBundle, runCodeSplitTest } = require('./helpers/util');
+import { commonjs, getCodeMapFromBundle, runCodeSplitTest } from './helpers/util.mjs';
 
-process.chdir(__dirname);
+const require = createRequire(import.meta.url);
+
+process.chdir(fileURLToPath(new URL('.', import.meta.url)));
 
 readdirSync('./fixtures/function').forEach((dir) => {
   let config;

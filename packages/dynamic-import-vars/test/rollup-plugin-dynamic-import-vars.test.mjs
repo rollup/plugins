@@ -1,13 +1,16 @@
 /* eslint-disable import/no-unresolved */
 
-const { join } = require('path');
+import { posix } from 'path';
+import { fileURLToPath } from 'url';
 
-const test = require('ava');
-const { rollup } = require('rollup');
+import test from 'ava';
+import { rollup } from 'rollup';
 
-const dynamicImportVars = require('current-package');
+import dynamicImportVars from 'current-package';
 
-process.chdir(join(__dirname, 'fixtures'));
+const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
+
+process.chdir(fileURLToPath(new URL('fixtures', import.meta.url)));
 
 test('single dir', async (t) => {
   const bundle = await rollup({
@@ -16,9 +19,9 @@ test('single dir', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/fixture-single-dir.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-1.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-2.js')
+    posix.resolve(DIRNAME, './fixtures/fixture-single-dir.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-2.js')
   ];
 
   t.deepEqual(
@@ -35,12 +38,12 @@ test('multiple dirs', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/fixture-multiple-dirs.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-1.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-2.js'),
-    require.resolve('./fixtures/module-dir-b/module-b-1.js'),
-    require.resolve('./fixtures/module-dir-b/module-b-2.js'),
-    require.resolve('./fixtures/sub-dir/fixture-upwards-path.js')
+    posix.resolve(DIRNAME, './fixtures/fixture-multiple-dirs.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-2.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-b/module-b-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-b/module-b-2.js'),
+    posix.resolve(DIRNAME, './fixtures/sub-dir/fixture-upwards-path.js')
   ];
 
   t.deepEqual(
@@ -57,9 +60,9 @@ test('upwards dir path', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/sub-dir/fixture-upwards-path.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-1.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-2.js')
+    posix.resolve(DIRNAME, './fixtures/sub-dir/fixture-upwards-path.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-2.js')
   ];
 
   t.deepEqual(
@@ -76,11 +79,11 @@ test('complex concatenation', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/fixture-complex-concat.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-1.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-2.js'),
-    require.resolve('./fixtures/module-dir-b/module-b-1.js'),
-    require.resolve('./fixtures/module-dir-b/module-b-2.js')
+    posix.resolve(DIRNAME, './fixtures/fixture-complex-concat.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-2.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-b/module-b-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-b/module-b-2.js')
   ];
 
   t.deepEqual(
@@ -97,9 +100,9 @@ test('own directory', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/fixture-own-dir.js'),
-    require.resolve('./fixtures/root-module-a.js'),
-    require.resolve('./fixtures/root-module-b.js')
+    posix.resolve(DIRNAME, './fixtures/fixture-own-dir.js'),
+    posix.resolve(DIRNAME, './fixtures/root-module-a.js'),
+    posix.resolve(DIRNAME, './fixtures/root-module-b.js')
   ];
 
   t.deepEqual(
@@ -116,12 +119,12 @@ test('multiple dynamic imports', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/fixture-multiple-imports.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-1.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-2.js'),
-    require.resolve('./fixtures/module-dir-b/module-b-1.js'),
-    require.resolve('./fixtures/module-dir-b/module-b-2.js'),
-    require.resolve('./fixtures/sub-dir/fixture-upwards-path.js')
+    posix.resolve(DIRNAME, './fixtures/fixture-multiple-imports.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-2.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-b/module-b-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-b/module-b-2.js'),
+    posix.resolve(DIRNAME, './fixtures/sub-dir/fixture-upwards-path.js')
   ];
 
   t.deepEqual(
@@ -138,8 +141,8 @@ test("doesn't change imports that should not be changed", async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/fixture-unchanged.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-2.js')
+    posix.resolve(DIRNAME, './fixtures/fixture-unchanged.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-2.js')
   ];
 
   t.deepEqual(
@@ -160,7 +163,7 @@ test('can exclude files', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
 
-  const expectedFiles = [require.resolve('./fixtures/fixture-excluded.js')];
+  const expectedFiles = [posix.resolve(DIRNAME, './fixtures/fixture-excluded.js')];
 
   t.deepEqual(
     expectedFiles,
@@ -193,9 +196,9 @@ test('dynamic imports assertions', async (t) => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   const expectedFiles = [
-    require.resolve('./fixtures/fixture-assert.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-1.js'),
-    require.resolve('./fixtures/module-dir-a/module-a-2.js')
+    posix.resolve(DIRNAME, './fixtures/fixture-assert.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-1.js'),
+    posix.resolve(DIRNAME, './fixtures/module-dir-a/module-a-2.js')
   ];
 
   t.deepEqual(
@@ -228,7 +231,8 @@ test('throws if no files in dir when `errorWhenNoFilesFound` is set', async (t) 
   } catch (error) {
     t.deepEqual(
       error.message,
-      `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
+      `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${posix.resolve(
+        DIRNAME,
         './fixtures/fixture-no-files.js'
       )}`
     );
@@ -245,7 +249,8 @@ test('warns if no files in dir when `errorWhenNoFilesFound` and `warnOnError` ar
     onwarn(warning) {
       t.deepEqual(
         warning.message,
-        `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
+        `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${posix.resolve(
+          DIRNAME,
           './fixtures/fixture-no-files.js'
         )}`
       );
