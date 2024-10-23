@@ -65,8 +65,15 @@ export function validatePaths(
             `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside Rollup 'dir' option.`
           );
         }
-      } else {
+      } else if (dirProperty === 'outDir') {
         const fromTsDirToRollup = relative(compilerOptions[dirProperty]!, outputDir);
+        if (fromTsDirToRollup.startsWith('..')) {
+          context.error(
+            `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside the same directory as the Rollup 'file' option.`
+          );
+        }
+      } else {
+        const fromTsDirToRollup = relative(outputDir, compilerOptions[dirProperty]!);
         if (fromTsDirToRollup.startsWith('..')) {
           context.error(
             `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside the same directory as the Rollup 'file' option.`
