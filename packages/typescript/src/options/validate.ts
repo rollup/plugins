@@ -66,7 +66,7 @@ export function validatePaths(
           );
         }
       } else if(dirProperty === 'outDir') {
-        const fromTsDirToRollup = relative(compilerOptions[dirProperty],outputDir);
+        const fromTsDirToRollup = relative(compilerOptions[dirProperty]!,outputDir);
         if (fromTsDirToRollup.startsWith('..')) {
             context.error(`@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside the same directory as the Rollup 'file' option.`);
         }
