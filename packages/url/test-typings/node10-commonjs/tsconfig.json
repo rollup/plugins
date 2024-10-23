@@ -1,0 +1,11 @@
+{
+  "include": ["./index.ts"],
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "module": "CommonJS",
+    "composite": true,
+    "tsBuildInfoFile": "output/.tsbuildinfo",
+    "skipLibCheck": true,
+    "noEmit": true
+  }
+}
