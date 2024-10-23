@@ -130,6 +130,28 @@ test.serial(
 );
 
 test.serial(
+  'ensures declarationDir is allowed in Rollup output directory when output.file is used',
+  async (t) => {
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          declarationDir: 'fixtures/basic/dist/other',
+          declaration: true
+        })
+      ],
+      onwarn
+    });
+
+    // this should not throw an error
+    await t.notThrowsAsync(() =>
+      getCode(bundle, { format: 'es', file: 'fixtures/basic/dist/index.js' }, true)
+    );
+  }
+);
+
+test.serial(
   'ensures output files can be written to subdirectories within the tsconfig outDir',
   async (t) => {
     const warnings = [];
