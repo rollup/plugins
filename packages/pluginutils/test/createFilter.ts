@@ -175,3 +175,27 @@ test('normalizes path when pattern has resolution base', (t) => {
   t.truthy(filterPosix(resolve('test/a')));
   t.truthy(filterWin(resolve('test/a')));
 });
+
+test('pass a regular expression to the include parameter', (t) => {
+  const filter = createFilter([/zxcvbnmasdfg/]);
+  t.truthy(filter(resolve('zxcvbnmasdfg')));
+  t.falsy(filter(resolve('zxcvbnmasdfe')));
+});
+
+test('pass a regular expression to the include parameter with g flag', (t) => {
+  const filter = createFilter([/zxcvbnmasdfg/g]);
+  t.truthy(filter(resolve('zxcvbnmasdfg')));
+  t.truthy(filter(resolve('zxcvbnmasdfg')));
+});
+
+test('pass a regular expression to the exclude parameter', (t) => {
+  const filter = createFilter(null, [/zxcvbnmasdfg/]);
+  t.falsy(filter(resolve('zxcvbnmasdfg')));
+  t.truthy(filter(resolve('zxcvbnmasdfe')));
+});
+
+test('pass a regular expression to the exclude parameter with g flag', (t) => {
+  const filter = createFilter(null, [/zxcvbnmasdfg/g]);
+  t.falsy(filter(resolve('zxcvbnmasdfg')));
+  t.falsy(filter(resolve('zxcvbnmasdfg')));
+});
