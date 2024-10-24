@@ -11,7 +11,7 @@ import resolvePackageImportsExports from './resolvePackageImportsExports';
 /**
  * Implementation of PACKAGE_EXPORTS_RESOLVE
  */
-async function resolvePackageExports(context: any, subpath: string, exports: any) {
+async function resolvePackageExports(context: any, subpath: string, exports: any, expectError?: boolean) {
   // If exports is an Object with both a key starting with "." and a key not starting with "."
   if (isMixedExports(exports)) {
     // throw an Invalid Package Configuration error.
@@ -62,6 +62,11 @@ async function resolvePackageExports(context: any, subpath: string, exports: any
     if (resolvedMatch) {
       return resolvedMatch;
     }
+  }
+
+  if (expectError) {
+    console.log(`Could not find valid exports for ${context?.importSpecifier}, falling back`);
+    return;
   }
 
   // Throw a Package Path Not Exported error.
