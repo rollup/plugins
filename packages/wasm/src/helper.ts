@@ -1,6 +1,8 @@
-import type { TargetEnv } from '../types';
+import type { TargetEnv, WasmLoaderFunction } from '../types';
 
 export const HELPERS_ID = '\0wasmHelpers.js';
+
+export const LOADER_FUNC_NAME = '_loadWasmModule';
 
 const nodeFilePath = `
 var fs = require("fs")
@@ -94,8 +96,8 @@ const envModule = (env: TargetEnv) => {
   }
 };
 
-export const getHelpersModule = (env: TargetEnv) => `
-function _loadWasmModule (sync, filepath, src, imports) {
+const defaultLoader = (env: TargetEnv) => `
+function ${LOADER_FUNC_NAME} (sync, filepath, src, imports) {
   function _instantiateOrCompile(source, imports, stream) {
     var instantiateFunc = stream ? WebAssembly.instantiateStreaming : WebAssembly.instantiate;
     var compileFunc = stream ? WebAssembly.compileStreaming : WebAssembly.compile;
@@ -116,5 +118,16 @@ function _loadWasmModule (sync, filepath, src, imports) {
     return _instantiateOrCompile(buf, imports, false)
   }
 }
-export { _loadWasmModule };
 `;
+
+export const getHelpersModule = (loader: WasmLoaderFunction | TargetEnv) => {
+  let code = '';
+  if (loader instanceof Function) {
+    code += loader.toString().replace(loader.name, LOADER_FUNC_NAME);
+  } else {
+    code += defaultLoader(loader);
+  }
+
+  code += `export { ${LOADER_FUNC_NAME} };`;
+  return code;
+};
