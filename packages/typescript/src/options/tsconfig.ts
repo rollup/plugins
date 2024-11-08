@@ -74,10 +74,31 @@ function getTsConfigPath(ts: typeof typescript, relativePath?: string | false) {
  * @param tsConfigPath Absolute path to tsconfig JSON file.
  */
 function readTsConfigFile(ts: typeof typescript, tsConfigPath: string) {
-  const { config, error } = ts.readConfigFile(tsConfigPath, (path) => readFileSync(path, 'utf8'));
-  if (error) {
-    throw Object.assign(Error(), diagnosticToWarning(ts, null, error));
-  }
+  const rawConfigFile: string = readFileSync(tsConfigPath, 'utf8');
+
+  const jsonConfig = (() => {
+    const { config, error } = ts.parseConfigFileTextToJson(tsConfigPath, rawConfigFile);
+
+    if (error) {
+      throw Object.assign(Error(), diagnosticToWarning(ts, null, error));
+    }
+
+    return config;
+  })();
+
+  const config = (() => {
+    const { raw, errors } = ts.parseJsonConfigFileContent(
+      jsonConfig,
+      ts.sys,
+      dirname(tsConfigPath)
+    );
+
+    if (errors.length > 0) {
+      throw Object.assign(Error(), diagnosticToWarning(ts, null, errors[0]));
+    }
+
+    return raw;
+  })();
 
   return config || {};
 }
