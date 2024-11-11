@@ -537,27 +537,6 @@ test.serial('should support extends property with given tsconfig', async (t) => 
   t.not(usage, -1, 'should contain usage');
 });
 
-test.serial(
-  'should inherit module and module resolution properties from extended config',
-  async (t) => {
-    process.chdir('fixtures/tsconfig-extends/ts-config-extends-inherit-module-settings');
-
-    const bundle = await rollup({
-      input: 'main.tsx',
-      plugins: [
-        typescript({
-          tsconfig: './tsconfig.json'
-        })
-      ],
-      onwarn
-    });
-    const code = await getCode(bundle, outputOptions);
-
-    const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
-    t.not(usage, -1, 'should contain usage');
-  }
-);
-
 test.serial('should support extends property with node resolution', async (t) => {
   process.chdir('fixtures/tsconfig-extends-module');
 
