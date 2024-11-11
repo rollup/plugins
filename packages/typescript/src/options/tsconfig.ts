@@ -181,8 +181,8 @@ export function parseTypescriptConfig(
           ...tsConfigFile,
           compilerOptions: {
             ...DEFAULT_COMPILER_OPTIONS,
-            ...tsConfigFile.compilerOptions,
-            ...compilerOptions
+            ...compilerOptions,
+            ...tsConfigFile.compilerOptions
           }
         },
         ts.sys,
