@@ -4,10 +4,10 @@
  * @param {Array} externals List of external files.
  *   The format is: [{ type: 'js', file: '//xxxx1.js', pos: 'before' }, { type: 'css', file: '//xxxx1.css' }]
  *
- * @return {Function} The templae method required by plugin-html
+ * @return {Function} The template method required by plugin-html
  */
 export default function htmlTemplate(externals) {
-  return ({ attributes, files, meta, publicPath, title }) => {
+  return ({ attributes, files, meta, publicPath, title, scriptsOnHead }) => {
     let scripts = [...(files.js || [])];
     let links = [...(files.css || [])];
 
@@ -42,6 +42,11 @@ export default function htmlTemplate(externals) {
         return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`;
       })
       .join('\n');
+
+    if (scriptsOnHead === true) {
+      links += scripts;
+      scripts = '';
+    }
 
     const metas = meta
       .map((input) => {

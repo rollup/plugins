@@ -7,6 +7,7 @@ export interface RollupHtmlTemplateOptions {
   meta: Record<string, any>[];
   bundle: OutputBundle;
   files: Record<string, (OutputChunk | OutputAsset)[]>;
+  scriptsOnHead?: boolean;
 }
 
 export interface RollupHtmlOptions {
@@ -16,6 +17,7 @@ export interface RollupHtmlOptions {
   meta?: Record<string, any>[];
   publicPath?: string;
   template?: (templateoptions: RollupHtmlTemplateOptions) => string;
+  scriptsOnHead?: boolean;
 }
 
 export function makeHtmlAttributes(attributes: Record<string, string>): string;

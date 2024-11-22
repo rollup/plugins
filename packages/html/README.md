@@ -121,6 +121,13 @@ Default: `'Rollup Bundle'`
 
 Specifies the HTML document title.
 
+### `scriptsOnHead`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Place scripts in head instead body.
+
 ## Exports
 
 ### `makeHtmlAttributes(attributes)`
