@@ -24,6 +24,12 @@ export interface RollupReplaceOptions {
    */
   exclude?: FilterPattern;
   /**
+   * When replacing dot-separated object properties like `process.env.NODE_ENV`,
+   * will also replace `typeof process` object guard checks against the objects
+   * with the string `"object"`
+   */
+  objectGuards?: boolean;
+  /**
    * If false, skips source map generation. This will improve performance.
    * @default true
    */
