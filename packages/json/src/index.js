@@ -1,8 +1,16 @@
 import { createFilter, dataToEsm } from '@rollup/pluginutils';
 
 export default function json(options = {}) {
-  const filter = createFilter(options.include, options.exclude);
-  const indent = 'indent' in options ? options.indent : '\t';
+  const {
+    include,
+    exclude,
+    indent = '\t',
+    preferConst,
+    compact,
+    namedExports,
+    includeArbitraryNames
+  } = options;
+  const filter = createFilter(include, exclude);
 
   return {
     name: 'json',
@@ -15,10 +23,10 @@ export default function json(options = {}) {
         const parsed = JSON.parse(code);
         return {
           code: dataToEsm(parsed, {
-            preferConst: options.preferConst,
-            compact: options.compact,
-            namedExports: options.namedExports,
-            includeArbitraryNames: options.includeArbitraryNames,
+            preferConst,
+            compact,
+            namedExports,
+            includeArbitraryNames,
             indent
           }),
           map: { mappings: '' }
