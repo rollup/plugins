@@ -53,7 +53,7 @@ This plugin supports the package entrypoints feature from node js, specified in 
 Type: `Array[...String]`<br>
 Default: `[]`
 
-Additional conditions of the package.json exports field to match when resolving modules. By default, this plugin looks for the `['default', 'module', 'import']` conditions when resolving imports.
+Additional conditions of the package.json exports field to match when resolving modules. By default, this plugin looks for the `['default', 'module', 'import', 'development|production']` conditions when resolving imports. If neither the `development` or `production` conditions are provided it will default to `production` - or `development` if `NODE_ENV` is set to a value other than `production`.
 
 When using `@rollup/plugin-commonjs` v16 or higher, this plugin will use the `['default', 'module', 'require']` conditions when resolving require statements.
 

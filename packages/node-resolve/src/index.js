@@ -52,8 +52,17 @@ export function nodeResolve(opts = {}) {
 
   const options = { ...defaults, ...opts };
   const { extensions, jail, moduleDirectories, modulePaths, ignoreSideEffectsForRoot } = options;
-  const conditionsEsm = [...baseConditionsEsm, ...(options.exportConditions || [])];
-  const conditionsCjs = [...baseConditionsCjs, ...(options.exportConditions || [])];
+  const exportConditions = options.exportConditions || [];
+  const devProdCondition =
+    exportConditions.includes('development') || exportConditions.includes('production')
+      ? []
+      : [
+          process.env.NODE_ENV && process.env.NODE_ENV !== 'production'
+            ? 'development'
+            : 'production'
+        ];
+  const conditionsEsm = [...baseConditionsEsm, ...exportConditions, ...devProdCondition];
+  const conditionsCjs = [...baseConditionsCjs, ...exportConditions, ...devProdCondition];
   const packageInfoCache = new Map();
   const idToPackageInfo = new Map();
   const mainFields = getMainFields(options);
@@ -171,7 +180,6 @@ export function nodeResolve(opts = {}) {
     const warn = (...args) => context.warn(...args);
     const isRequire = custom && custom['node-resolve'] && custom['node-resolve'].isRequire;
     const exportConditions = isRequire ? conditionsCjs : conditionsEsm;
-
     if (useBrowserOverrides && !exportConditions.includes('browser'))
       exportConditions.push('browser');
 

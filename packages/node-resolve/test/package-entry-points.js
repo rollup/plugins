@@ -413,3 +413,13 @@ test('custom condition takes precedence over browser field with `browser: true`'
 
   t.deepEqual(module.exports, 'FROM WEBWORKER CONDITION');
 });
+
+test('development condition is used when NODE_ENV is not production', async (t) => {
+  const bundle = await rollup({
+    input: 'dev-prod-conditions.js',
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, 'DEV');
+});
