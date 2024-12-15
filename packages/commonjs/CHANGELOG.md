@@ -1,5 +1,21 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.2
+
+_2024-12-15_
+
+### Updates
+
+- docs: `output.exports` recommendation also applies to IIFE (#1810)
+
+## v28.0.1
+
+_2024-10-16_
+
+### Updates
+
+- chore: upgrade picomatch (#1775)
+
 ## v28.0.0
 
 _2024-09-23_

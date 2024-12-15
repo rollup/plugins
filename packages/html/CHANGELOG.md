@@ -1,5 +1,21 @@
 # @rollup/plugin-html ChangeLog
 
+## v1.1.0
+
+_2024-12-15_
+
+### Features
+
+- feat: implement scripts on head tag (#1816)
+
+## v1.0.5
+
+_2024-12-15_
+
+### Bugfixes
+
+- fix: types for plugin (#1264)
+
 ## v1.0.4
 
 _2024-09-22_

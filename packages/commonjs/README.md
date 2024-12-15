@@ -408,7 +408,7 @@ export default {
 };
 ```
 
-When bundling to CommonJS, i.e `output.format === 'cjs'`, make sure that you do not set `output.exports` to `'named'`. The default value of `'auto'` will usually work, but you can also set it explicitly to `'default'`. That makes sure that Rollup assigns the default export that was generated for your CommonJS entry point to `module.exports`, and semantics do not change.
+When bundling to CommonJS or IIFE, i.e `output.format === 'cjs'` / `output.format === 'iife'`, make sure that you do not set `output.exports` to `'named'`. The default value of `'auto'` will usually work, but you can also set it explicitly to `'default'`. That makes sure that Rollup assigns the default export that was generated for your CommonJS entry point to `module.exports`, and semantics do not change.
 
 ## Using with @rollup/plugin-node-resolve
 

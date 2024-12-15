@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.1.1
+
+_2024-10-16_
+
+### Bugfixes
+
+- fix: allow for files to be nested in folders within outDir (#1783)
+
 ## v12.1.0
 
 _2024-09-22_

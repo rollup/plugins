@@ -1,5 +1,21 @@
 # @rollup/plugin-dynamic-import-vars ChangeLog
 
+## v2.1.5
+
+_2024-10-21_
+
+### Updates
+
+- chore: revert 2.1.4 changes (#1799)
+
+## v2.1.4
+
+_2024-10-16_
+
+### Updates
+
+- chore: switch to tinyglobby for fewer dependencies (#1780)
+
 ## v2.1.3
 
 _2024-09-22_

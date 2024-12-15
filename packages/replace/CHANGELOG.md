@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v6.0.2
+
+_2024-12-15_
+
+### Bugfixes
+
+- fix: add missing types for `objectGuards` option (#1818)
+
 ## v6.0.1
 
 _2024-09-23_

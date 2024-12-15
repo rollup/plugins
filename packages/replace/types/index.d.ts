@@ -12,6 +12,7 @@ export interface RollupReplaceOptions {
     | Replacement
     | RollupReplaceOptions['include']
     | RollupReplaceOptions['values']
+    | RollupReplaceOptions['objectGuards']
     | RollupReplaceOptions['preventAssignment'];
 
   /**
@@ -33,6 +34,12 @@ export interface RollupReplaceOptions {
    * of `foo`, supply delimiters
    */
   delimiters?: [string, string];
+  /**
+   * When replacing dot-separated object properties like `process.env.NODE_ENV`,
+   * will also replace `typeof process` object guard checks against the objects
+   * with the string `"object"`.
+   */
+  objectGuards?: boolean;
   /**
    * Prevents replacing strings where they are followed by a single equals
    * sign.
