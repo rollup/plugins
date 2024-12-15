@@ -82,7 +82,7 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
       let newScope: AttachedScope | undefined;
 
       // create new function scope
-      if (/Function/.test(node.type)) {
+      if (node.type.includes('Function')) {
         const func = node as estree.Function;
         newScope = new Scope({
           parent: scope,
@@ -106,7 +106,7 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
       }
 
       // create new block scope
-      if (node.type === 'BlockStatement' && !/Function/.test(parent.type)) {
+      if (node.type === 'BlockStatement' && !parent.type.includes('Function')) {
         newScope = new Scope({
           parent: scope,
           block: true
