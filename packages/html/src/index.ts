@@ -70,7 +70,7 @@ const defaultTemplate = async ({
 
 const supportedFormats = ['es', 'esm', 'iife', 'umd'];
 
-const defaults = {
+const defaults: Required<RollupHtmlOptions> = {
   attributes: {
     link: null,
     html: { lang: 'en' },
@@ -84,11 +84,8 @@ const defaults = {
 };
 
 export default function html(opts: RollupHtmlOptions = {}): Plugin {
-  const { attributes, fileName, meta, publicPath, template, title } = Object.assign(
-    {},
-    defaults,
-    opts
-  );
+  const { attributes, fileName, meta, publicPath, template, title }: Required<RollupHtmlOptions> =
+    Object.assign({}, defaults, opts);
 
   return {
     name: 'html',
