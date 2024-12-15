@@ -48,6 +48,13 @@ Once run successfully, an HTML file should be written to the bundle output desti
 
 ## Options
 
+### `addScriptsToHead`
+
+Type: `Boolean`<br>
+Default: `false`
+
+Place scripts in the `<head>` tag instead of `<body>`.
+
 ### `attributes`
 
 Type: `Object`<br>
