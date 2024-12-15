@@ -130,7 +130,7 @@ test.serial('scripts on head', async (t) => {
         attributes: {
           script: { defer: true }
         },
-        scriptsOnHead: true
+        addScriptsToHead: true
       })
     ]
   });

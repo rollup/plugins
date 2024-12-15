@@ -32,7 +32,7 @@ const defaultTemplate = async ({
   meta,
   publicPath,
   title,
-  scriptsOnHead
+  addScriptsToHead
 }: RollupHtmlTemplateOptions) => {
   let scripts = (files.js || [])
     .map(({ fileName }) => {
@@ -48,7 +48,7 @@ const defaultTemplate = async ({
     })
     .join('\n');
 
-  if (scriptsOnHead === true) {
+  if (addScriptsToHead === true) {
     links += scripts;
     scripts = '';
   }
@@ -76,7 +76,7 @@ const defaultTemplate = async ({
 
 const supportedFormats = ['es', 'esm', 'iife', 'umd'];
 
-const defaults = {
+const defaults: Required<RollupHtmlOptions> = {
   attributes: {
     link: null,
     html: { lang: 'en' },
@@ -87,15 +87,17 @@ const defaults = {
   publicPath: '',
   template: defaultTemplate,
   title: 'Rollup Bundle',
-  scriptsOnHead: false
+  addScriptsToHead: false
 };
 
 export default function html(opts: RollupHtmlOptions = {}): Plugin {
-  const { attributes, fileName, meta, publicPath, template, title, scriptsOnHead } = Object.assign(
-    {},
-    defaults,
-    opts
-  );
+  // const { attributes, fileName, meta, publicPath, template, title, addScriptsToHead } = Object.assign(
+  //   {},
+  //   defaults,
+  //   opts
+  // );
+  const { attributes, fileName, meta, publicPath, template, title }: Required<RollupHtmlOptions> =
+    Object.assign({}, defaults, opts);
 
   return {
     name: 'html',
@@ -125,7 +127,7 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
         meta,
         publicPath,
         title,
-        scriptsOnHead
+        addScriptsToHead
       });
 
       const htmlFile: EmittedAsset = {

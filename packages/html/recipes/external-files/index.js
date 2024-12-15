@@ -7,7 +7,7 @@
  * @return {Function} The template method required by plugin-html
  */
 export default function htmlTemplate(externals) {
-  return ({ attributes, files, meta, publicPath, title, scriptsOnHead }) => {
+  return ({ attributes, files, meta, publicPath, title, addScriptsToHead }) => {
     let scripts = [...(files.js || [])];
     let links = [...(files.css || [])];
 
@@ -43,7 +43,7 @@ export default function htmlTemplate(externals) {
       })
       .join('\n');
 
-    if (scriptsOnHead === true) {
+    if (addScriptsToHead === true) {
       links += scripts;
       scripts = '';
     }
