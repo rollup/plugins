@@ -8,7 +8,7 @@ const resolve = (...parts: string[]) => normalizePath(rawResolve(...parts));
 
 test.beforeEach(() => process.chdir(__dirname));
 
-test('includes by default', (t) => {
+test('includes by default ', (t) => {
   const filter = createFilter();
   t.truthy(filter(resolve('x')));
 });
