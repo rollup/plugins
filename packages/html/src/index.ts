@@ -91,13 +91,15 @@ const defaults: Required<RollupHtmlOptions> = {
 };
 
 export default function html(opts: RollupHtmlOptions = {}): Plugin {
-  // const { attributes, fileName, meta, publicPath, template, title, addScriptsToHead } = Object.assign(
-  //   {},
-  //   defaults,
-  //   opts
-  // );
-  const { attributes, fileName, meta, publicPath, template, title }: Required<RollupHtmlOptions> =
-    Object.assign({}, defaults, opts);
+  const {
+    addScriptsToHead,
+    attributes,
+    fileName,
+    meta,
+    publicPath,
+    template,
+    title
+  }: Required<RollupHtmlOptions> = Object.assign({}, defaults, opts);
 
   return {
     name: 'html',
@@ -122,12 +124,12 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
       const files = getFiles(bundle);
       const source = await template({
         attributes,
+        addScriptsToHead,
         bundle,
         files,
         meta,
         publicPath,
-        title,
-        addScriptsToHead
+        title
       });
 
       const htmlFile: EmittedAsset = {
