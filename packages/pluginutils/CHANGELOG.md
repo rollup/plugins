@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.1.4
+
+_2024-12-15_
+
+### Updates
+
+- refactor: replace `test` with `includes` (#1787)
+
 ## v5.1.3
 
 _2024-10-23_
