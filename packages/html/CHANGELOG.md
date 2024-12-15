@@ -1,5 +1,13 @@
 # @rollup/plugin-html ChangeLog
 
+## v1.0.5
+
+_2024-12-15_
+
+### Bugfixes
+
+- fix: types for plugin (#1264)
+
 ## v1.0.4
 
 _2024-09-22_
