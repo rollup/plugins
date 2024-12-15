@@ -63,11 +63,7 @@ export default function getResolveId(extensions, isPossibleCjsId) {
       // All logic below is specific to ES imports.
       // Also, if we do not skip this logic for requires that are resolved while
       // transforming a commonjs file, it can easily lead to deadlocks.
-      if (
-        customOptions &&
-        customOptions['node-resolve'] &&
-        customOptions['node-resolve'].isRequire
-      ) {
+      if (customOptions?.['node-resolve']?.isRequire) {
         return null;
       }
       const currentlyResolvingForParent = currentlyResolving.get(importer);

@@ -27,7 +27,7 @@ function requireWithContext(code, context) {
   return contextWithExports.module.exports;
 }
 
-function runCodeSplitTest(codeMap, t, configContext = {}) {
+function runCodeSplitTest(codeMap, t, entryName = 'main.js', configContext = {}) {
   const requireFromOutputVia = (importer) => (importee) => {
     const outputId = path.posix.join(path.posix.dirname(importer), importee);
     const code = codeMap[outputId];
@@ -42,8 +42,6 @@ function runCodeSplitTest(codeMap, t, configContext = {}) {
     return require(importee);
   };
 
-  const chunkNames = Object.keys(codeMap);
-  const entryName = chunkNames.length === 1 ? chunkNames[0] : 'main.js';
   if (!codeMap[entryName]) {
     throw new Error(
       `Could not find entry "${entryName}" in generated output.\nChunks:\n${Object.keys(
@@ -56,7 +54,7 @@ function runCodeSplitTest(codeMap, t, configContext = {}) {
   let exports;
   try {
     exports = requireWithContext(codeMap[entryName], {
-      require: requireFromOutputVia('main.js'),
+      require: requireFromOutputVia(entryName),
       ...context
     });
   } catch (error) {
@@ -84,9 +82,9 @@ async function getCodeFromBundle(bundle, customOptions = {}) {
   return (await bundle.generate(options)).output[0].code;
 }
 
-async function executeBundle(bundle, t, { context, exports } = {}) {
+async function executeBundle(bundle, t, { context, exports, testEntry = 'main.js' } = {}) {
   const codeMap = await getCodeMapFromBundle(bundle, exports ? { exports } : {});
-  return runCodeSplitTest(codeMap, t, context);
+  return runCodeSplitTest(codeMap, t, testEntry, context);
 }
 
 module.exports = {

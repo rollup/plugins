@@ -1,4 +1,4 @@
-import { relative } from 'path';
+import { relative, dirname } from 'path';
 
 import type { OutputOptions, PluginContext } from 'rollup';
 
@@ -51,14 +51,27 @@ export function validatePaths(
     );
   }
 
+  let outputDir: string | undefined = outputOptions.dir;
+  if (outputOptions.file) {
+    outputDir = dirname(outputOptions.file);
+  }
   for (const dirProperty of DIRECTORY_PROPS) {
-    if (compilerOptions[dirProperty] && outputOptions.dir) {
+    if (compilerOptions[dirProperty] && outputDir) {
       // Checks if the given path lies within Rollup output dir
-      const fromRollupDirToTs = relative(outputOptions.dir, compilerOptions[dirProperty]!);
-      if (fromRollupDirToTs.startsWith('..')) {
-        context.error(
-          `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside Rollup 'dir' option.`
-        );
+      if (outputOptions.dir) {
+        const fromRollupDirToTs = relative(outputDir, compilerOptions[dirProperty]!);
+        if (fromRollupDirToTs.startsWith('..')) {
+          context.error(
+            `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside Rollup 'dir' option.`
+          );
+        }
+      } else {
+        const fromTsDirToRollup = relative(compilerOptions[dirProperty]!, outputDir);
+        if (fromTsDirToRollup.startsWith('..')) {
+          context.error(
+            `@rollup/plugin-typescript: Path of Typescript compiler option '${dirProperty}' must be located inside the same directory as the Rollup 'file' option.`
+          );
+        }
       }
     }
   }

@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign, no-shadow, no-undefined */
 import { dirname, normalize, resolve, sep } from 'path';
 
-import isBuiltinModule from 'is-builtin-module';
+import { builtinModules } from 'module';
+
 import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
@@ -42,6 +43,8 @@ const defaults = {
   // TODO: set to false in next major release or remove
   allowExportsFolderMapping: true
 };
+const nodeImportPrefix = /^node:/;
+
 export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
 
 export function nodeResolve(opts = {}) {
@@ -55,7 +58,7 @@ export function nodeResolve(opts = {}) {
   const idToPackageInfo = new Map();
   const mainFields = getMainFields(options);
   const useBrowserOverrides = mainFields.indexOf('browser') !== -1;
-  const isPreferBuiltinsSet = options.preferBuiltins === true || options.preferBuiltins === false;
+  const isPreferBuiltinsSet = Object.prototype.hasOwnProperty.call(options, 'preferBuiltins');
   const preferBuiltins = isPreferBuiltinsSet ? options.preferBuiltins : true;
   const rootDir = resolve(options.rootDir || process.cwd());
   let { dedupe } = options;
@@ -190,9 +193,11 @@ export function nodeResolve(opts = {}) {
       allowExportsFolderMapping: options.allowExportsFolderMapping
     });
 
-    const importeeIsBuiltin = isBuiltinModule(importee);
+    const importeeIsBuiltin = builtinModules.includes(importee.replace(nodeImportPrefix, ''));
+    const preferImporteeIsBuiltin =
+      typeof preferBuiltins === 'function' ? preferBuiltins(importee) : preferBuiltins;
     const resolved =
-      importeeIsBuiltin && preferBuiltins
+      importeeIsBuiltin && preferImporteeIsBuiltin
         ? {
             packageInfo: undefined,
             hasModuleSideEffects: () => null,
@@ -227,11 +232,14 @@ export function nodeResolve(opts = {}) {
     idToPackageInfo.set(location, packageInfo);
 
     if (hasPackageEntry) {
-      if (importeeIsBuiltin && preferBuiltins) {
+      if (importeeIsBuiltin && preferImporteeIsBuiltin) {
         if (!isPreferBuiltinsSet && resolvedWithoutBuiltins && resolved !== importee) {
-          context.warn(
-            `preferring built-in module '${importee}' over local alternative at '${resolvedWithoutBuiltins.location}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning`
-          );
+          context.warn({
+            message:
+              `preferring built-in module '${importee}' over local alternative at '${resolvedWithoutBuiltins.location}', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning.` +
+              `or passing a function to 'preferBuiltins' to provide more fine-grained control over which built-in modules to prefer.`,
+            pluginCode: 'PREFER_BUILTINS'
+          });
         }
         return false;
       } else if (jail && location.indexOf(normalize(jail.trim(sep))) !== 0) {

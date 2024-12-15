@@ -1,5 +1,29 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.1.3
+
+_2024-10-23_
+
+### Bugfixes
+
+- fix: upgrade picomatch (#1796)
+
+## v5.1.2
+
+_2024-09-23_
+
+### Bugfixes
+
+- fix: optimize `createFilter` and `normalizePath` (#1750)
+
+## v5.1.1
+
+_2024-09-22_
+
+### Bugfixes
+
+- fix: improve regex performance (#1753)
+
 ## v5.1.0
 
 _2023-11-28_

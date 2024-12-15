@@ -1,6 +1,13 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 import { __exports as input } from "\u0000fixtures/form/compiled-esm-define-exports-empty/input.js?commonjs-exports";
 
-Object.defineProperty(input, "__esModule", { value: true });
+var hasRequiredInput;
 
-export { input as __moduleExports, input as default };
+function requireInput () {
+	if (hasRequiredInput) return input;
+	hasRequiredInput = 1;
+	Object.defineProperty(input, "__esModule", { value: true });
+	return input;
+}
+
+export { requireInput as __require };

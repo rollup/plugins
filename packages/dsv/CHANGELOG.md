@@ -1,5 +1,13 @@
 # @rollup/plugin-dsv ChangeLog
 
+## v3.0.5
+
+_2024-09-23_
+
+### Bugfixes
+
+- fix: strip bom from csv/tsv files if necessary (#1745)
+
 ## v3.0.4
 
 _2023-10-05_

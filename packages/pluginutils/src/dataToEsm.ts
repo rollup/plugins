@@ -91,7 +91,7 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
 
   let maxUnderbarPrefixLength = 0;
   for (const key of Object.keys(data)) {
-    const underbarPrefixLength = key.match(/^(_+)/)?.[0].length ?? 0;
+    const underbarPrefixLength = /^(_+)/.exec(key)?.[0].length ?? 0;
     if (underbarPrefixLength > maxUnderbarPrefixLength) {
       maxUnderbarPrefixLength = underbarPrefixLength;
     }

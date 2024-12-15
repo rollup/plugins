@@ -1,5 +1,38 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.1
+
+_2024-10-16_
+
+### Updates
+
+- chore: upgrade picomatch (#1775)
+
+## v28.0.0
+
+_2024-09-23_
+
+### Breaking Changes
+
+- chore: switch to fdir for fewer dependencies (#1741)
+
+## v27.0.0
+
+_2024-09-23_
+
+### Breaking Changes
+
+- feat!: default strictRequires to true (#1639)
+- fix!: replace top-level this with exports name (#1618)
+
+## v26.0.3
+
+_2024-09-23_
+
+### Updates
+
+- chore: revert #1618 (e98927b)
+
 ## v26.0.1
 
 _2024-06-05_
