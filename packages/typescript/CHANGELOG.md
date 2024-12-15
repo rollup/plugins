@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.1.2
+
+_2024-12-15_
+
+### Bugfixes
+
+- fix: path validation issue in validatePaths function (#1800)
+
 ## v12.1.1
 
 _2024-10-16_
