@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.2
+
+_2024-12-15_
+
+### Updates
+
+- docs: `output.exports` recommendation also applies to IIFE (#1810)
+
 ## v28.0.1
 
 _2024-10-16_
