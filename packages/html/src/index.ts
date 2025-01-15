@@ -34,10 +34,12 @@ const defaultTemplate = async ({
   title,
   addScriptsToHead
 }: RollupHtmlTemplateOptions) => {
+  // Only directly <script>-load entry chunks; others are loaded indirectly
   let scripts = (files.js || [])
-    .map(({ fileName }) => {
+    .filter((file) => file.type === 'chunk' && file.isEntry)
+    .map((file) => {
       const attrs = makeHtmlAttributes(attributes.script);
-      return `<script src="${publicPath}${fileName}"${attrs}></script>`;
+      return `<script src="${publicPath}${file.fileName}"${attrs}></script>`;
     })
     .join('\n');
 

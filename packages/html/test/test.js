@@ -108,6 +108,15 @@ test.serial('imports', async (t) => {
   t.snapshot(code);
 });
 
+test.serial('dynamic_imports_not_loaded', async (t) => {
+  const bundle = await rollup({
+    input: 'catwoman.js',
+    plugins: [html()]
+  });
+  const code = await getCode(bundle, { dir: 'output', format: 'esm' }, true);
+  t.snapshot(code);
+});
+
 test.serial('template', async (t) => {
   const bundle = await rollup({
     input: 'batman.js',
