@@ -2,7 +2,7 @@
 [npm-url]: https://www.npmjs.com/package/@rollup/plugin-legacy
 [size]: https://packagephobia.now.sh/badge?p=@rollup/plugin-legacy
 [size-url]: https://packagephobia.now.sh/result?p=@rollup/plugin-legacy
-
+#
 [![npm][npm]][npm-url]
 [![size][size]][size-url]
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
