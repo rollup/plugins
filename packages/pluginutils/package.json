@@ -63,6 +63,7 @@
   "dependencies": {
     "@types/estree": "^1.0.0",
     "estree-walker": "^2.0.2",
+    "pathe": "^2.0.1",
     "picomatch": "^4.0.2"
   },
   "devDependencies": {

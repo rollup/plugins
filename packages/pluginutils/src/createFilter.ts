@@ -1,4 +1,4 @@
-import { resolve, posix, isAbsolute } from 'path';
+import { resolve, posix, isAbsolute } from 'pathe';
 
 import pm from 'picomatch';
 

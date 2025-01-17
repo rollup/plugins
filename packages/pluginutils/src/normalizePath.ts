@@ -1,4 +1,4 @@
-import { win32, posix } from 'path';
+import { win32, posix } from 'pathe';
 
 import type { NormalizePath } from '../types';
 
