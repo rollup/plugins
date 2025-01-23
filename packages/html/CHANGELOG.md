@@ -1,5 +1,13 @@
 # @rollup/plugin-html ChangeLog
 
+## v2.0.0
+
+_2025-01-23_
+
+### Breaking Changes
+
+- fix!: output only entry chunks by default, not assets or nonentry chunks (#1835)
+
 ## v1.1.0
 
 _2024-12-15_
