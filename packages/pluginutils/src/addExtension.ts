@@ -1,4 +1,4 @@
-import { extname } from 'path';
+import { extname } from 'pathe';
 
 import type { AddExtension } from '../types';
 
