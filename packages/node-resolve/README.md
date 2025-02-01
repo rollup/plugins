@@ -181,6 +181,9 @@ rootDir: path.join(process.cwd(), '..')
 
 ### `ignoreSideEffectsForRoot`
 
+Type: `Boolean`<br>
+Default: `false`
+
 If you use the `sideEffects` property in the package.json, by default this is respected for files in the root package. Set to `true` to ignore the `sideEffects` configuration for the root package.
 
 ### `allowExportsFolderMapping`
