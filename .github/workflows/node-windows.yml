@@ -37,11 +37,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Enable Corepack
-        id: pnpm-setup
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
 
       - name: pnpm install
         run: pnpm install --ignore-scripts

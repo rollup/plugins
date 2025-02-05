@@ -35,21 +35,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Enable Corepack
-        id: pnpm-setup
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-          pnpm config set script-shell "/usr/bin/bash"
-          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
-
-      - name: pnpm Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-setup.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
 
       - name: ESLint Cache
         uses: actions/cache@v3
