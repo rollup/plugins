@@ -103,8 +103,8 @@ Configures what code is emitted to instantiate the Wasm (both inline and separat
 
 - `"auto"` will determine the environment at runtime and invoke the correct methods accordingly
 - `"auto-inline"` always inlines the Wasm and will decode it according to the environment
-- `"browser"` omits emitting code that requires node.js builtin modules that may play havoc on downstream bundlers
-- `"node"` omits emitting code that requires `fetch`
+- `"node"` omits emitting code that requires node.js builtin modules that may play havoc on downstream bundlers
+- `"browser"` omits emitting code that requires `fetch`
 
 ## Usage
 
