@@ -44,6 +44,7 @@ export default function sucrase(opts = {}) {
         transforms: opts.transforms,
         jsxPragma: opts.jsxPragma,
         jsxFragmentPragma: opts.jsxFragmentPragma,
+        jsxRuntime: opts.jsxRuntime,
         enableLegacyTypeScriptModuleInterop: opts.enableLegacyTypeScriptModuleInterop,
         enableLegacyBabel5ModuleInterop: opts.enableLegacyBabel5ModuleInterop,
         production: opts.production,

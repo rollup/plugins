@@ -59,6 +59,7 @@ The following [Sucrase options](https://github.com/alangpierce/sucrase#transform
 - `enableLegacyTypeScriptModuleInterop`
 - `jsxFragmentPragma`
 - `jsxPragma`
+- `jsxRuntime`
 - `production`
 - `transforms`
 
