@@ -8,6 +8,7 @@ interface RollupSucraseOptions
     | 'transforms'
     | 'jsxPragma'
     | 'jsxFragmentPragma'
+    | 'jsxRuntime'
     | 'enableLegacyTypeScriptModuleInterop'
     | 'enableLegacyBabel5ModuleInterop'
     | 'production'
