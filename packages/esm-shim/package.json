@@ -60,7 +60,8 @@
     }
   },
   "dependencies": {
-    "magic-string": "^0.30.3"
+    "magic-string": "^0.30.3",
+    "mlly": "^1.7.4"
   },
   "devDependencies": {
     "rollup": "^4.0.0-24",
