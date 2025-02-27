@@ -1,5 +1,13 @@
 # @rollup/plugin-esm-shim ChangeLog
 
+## v0.1.8
+
+_2025-02-27_
+
+### Bugfixes
+
+- fix: use `mlly` to find index to append shim (#1844)
+
 ## v0.1.7
 
 _2024-06-05_
