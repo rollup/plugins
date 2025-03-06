@@ -6,4 +6,5 @@ console.log(`
   include
   exclude
   preventAssignment
+  values
 `);
