@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.3
+
+_2025-03-06_
+
+### Bugfixes
+
+- fix: fix error when bundle contains require() of module with falsy `__esModule` export (#1850)
+
 ## v28.0.2
 
 _2024-12-15_
