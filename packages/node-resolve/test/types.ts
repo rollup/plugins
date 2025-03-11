@@ -21,7 +21,8 @@ const config = {
       mainFields: ['untranspiled', 'module', 'main'],
       modulesOnly: true,
       resolveOnly: ['some_module', /^@some_scope\/.*$/],
-      rootDir: 'root'
+      rootDir: 'root',
+      ignoreSideEffectsForRoot: false
     })
   ]
 };
