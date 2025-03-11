@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v16.0.1
+
+_2025-03-11_
+
+### Bugfixes
+
+- fix: add `ignoreSideEffectsForRoot` to exported interface (#1841)
+
 ## v16.0.0
 
 _2024-12-15_
