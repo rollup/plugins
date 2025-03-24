@@ -103,6 +103,12 @@ Default: `false`
 
 If `true`, instructs the plugin to declare properties as variables, using either `var` or `const`. This pertains to tree-shaking.
 
+### `extensions`
+
+Type: `Array[...String]`<br>
+Default: `['.json']`
+A list of file extensions to be handled by the plugin. By default, only `.json` files are handled.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)

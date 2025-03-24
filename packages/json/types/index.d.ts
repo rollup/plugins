@@ -33,6 +33,11 @@ export interface RollupJsonOptions {
    * @default true
    */
   namedExports?: boolean;
+  /**
+   * Specify the file extensions to be parsed as JSON
+   * @default ['.json']
+   */
+  extensions?: string[];
 }
 
 /**
