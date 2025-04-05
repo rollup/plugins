@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, statSync } from 'fs';
-import { join, resolve, dirname } from 'path';
+import { join, resolve, dirname, relative } from 'path';
 
 import getCommonDir from 'commondir';
 
@@ -46,7 +46,7 @@ export function getDynamicRequireModules(patterns, dynamicRequireRoot) {
       .withBasePath()
       .withDirs()
       .glob(isNegated ? pattern.substr(1) : pattern)
-      .crawl()
+      .crawl(relative('.', dynamicRequireRoot))
       .sync()
       .sort((a, b) => a.localeCompare(b, 'en'))) {
       const resolvedPath = resolve(path);
