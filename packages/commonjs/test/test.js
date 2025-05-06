@@ -1328,3 +1328,14 @@ test('keep the shebang at the top of the file content', async (t) => {
 
   t.is(output[0].code.startsWith('#!/usr/bin/env node\n'), true);
 });
+
+test('handles bind when requireReturnsDefault is false', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/bind/main.js',
+    plugins: [commonjs()]
+  });
+
+  const result = await executeBundle(bundle, t);
+  t.is(result.error, undefined);
+  t.is(result.exports, 42);
+});
