@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.4
+
+_2025-06-14_
+
+### Bugfixes
+
+- fix: try/catch instanceof in getAugmentedNamespace (#1868)
+
 ## v28.0.3
 
 _2025-03-06_
