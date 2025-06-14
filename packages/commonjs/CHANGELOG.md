@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.5
+
+_2025-06-14_
+
+### Bugfixes
+
+- fix: crawl dynamicRequireRoot outside cwd (#1859)
+
 ## v28.0.4
 
 _2025-06-14_
