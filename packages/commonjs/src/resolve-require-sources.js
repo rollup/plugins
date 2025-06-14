@@ -141,7 +141,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
                 return (
                   (await getTypeForImportedModule(
                     (
-                      await this.load({ id: resolved.id })
+                      await this.load(resolved)
                     ).meta.commonjs.resolved,
                     this.load
                   )) !== IS_WRAPPED_COMMONJS
