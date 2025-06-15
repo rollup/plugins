@@ -1285,6 +1285,48 @@ test('handles external dependencies when using the cache', async (t) => {
   t.is(await getCodeFromBundle(bundle), code);
 });
 
+test('Correctly processes meta data when using the cache but invalidating proxy modules', async (t) => {
+  const modules = {};
+  const resetModules = () => {
+    modules['main.js'] = "import first from 'first.js';export default first;";
+    modules['first.js'] = "import second from 'second.js';export default second;";
+    modules['second.js'] = 'module.exports = 42;';
+  };
+  const options = {
+    input: 'main.js',
+    external: ['external'],
+    plugins: [
+      {
+        name: 'test',
+        shouldTransformCachedModule({ id }) {
+          if (id.endsWith('?commonjs-es-import')) {
+            return true;
+          }
+          return null;
+        },
+        transform(code, id) {
+          if (id.endsWith('?commonjs-es-import')) {
+            return `${code}\n//${Date.now()}`;
+          }
+          return null;
+        }
+      },
+      commonjs(),
+      loader(modules)
+    ],
+    onwarn
+  };
+
+  resetModules();
+  let bundle = await rollup(options);
+  t.is((await executeBundle(bundle, t)).exports, 42);
+
+  options.cache = bundle.cache;
+  modules['main.js'] = "import first from 'first.js';export default first + 1;";
+  bundle = await rollup(options);
+  t.is((await executeBundle(bundle, t)).exports, 43);
+});
+
 test('allows the config to be reused', async (t) => {
   const config = {
     preserveModules: true,
