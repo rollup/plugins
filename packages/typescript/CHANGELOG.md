@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.1.3
+
+_2025-06-17_
+
+### Bugfixes
+
+- fix: fixes #1652 compile when source exists anywhere in the working directory (#1653)
+
 ## v12.1.2
 
 _2024-12-15_
