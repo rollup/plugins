@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.2.0
+
+_2025-06-17_
+
+### Features
+
+- feat: add `exactRegex` and `prefixRegex` (#1865)
+
 ## v5.1.4
 
 _2024-12-15_
