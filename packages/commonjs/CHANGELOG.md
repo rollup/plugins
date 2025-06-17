@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.6
+
+_2025-06-17_
+
+### Bugfixes
+
+- fix: fix crash with invalidated proxy modules (#1876)
+
 ## v28.0.5
 
 _2025-06-14_
