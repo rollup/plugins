@@ -68,6 +68,12 @@ Default: `null`
 
 A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
 
+### `extensions`
+
+Type: `Array[...String]`<br>
+Default: `['.json']`
+A list of file extensions to be handled by the plugin. By default, only `.json` files are handled.
+
 ### `include`
 
 Type: `String` | `Array[...String]`<br>
@@ -102,12 +108,6 @@ Type: `Boolean`<br>
 Default: `false`
 
 If `true`, instructs the plugin to declare properties as variables, using either `var` or `const`. This pertains to tree-shaking.
-
-### `extensions`
-
-Type: `Array[...String]`<br>
-Default: `['.json']`
-A list of file extensions to be handled by the plugin. By default, only `.json` files are handled.
 
 ## Meta
 
