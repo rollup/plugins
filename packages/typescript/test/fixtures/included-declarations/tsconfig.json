@@ -1,0 +1,3 @@
+{
+  "include": ["main.ts", "declarations.d.ts"],
+}
