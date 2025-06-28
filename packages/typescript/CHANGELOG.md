@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.1.4
+
+_2025-06-28_
+
+### Bugfixes
+
+- fix: revert #1653 (#1880)
+
 ## v12.1.3
 
 _2025-06-17_
