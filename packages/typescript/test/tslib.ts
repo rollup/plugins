@@ -1,5 +1,4 @@
 import { platform } from 'os';
-import { resolve } from 'path';
 
 import test from 'ava';
 import type { RollupError } from 'rollup';
@@ -63,15 +62,13 @@ test.serial('fails on bad tslib path', async (t) => {
     return;
   }
 
-  t.deepEqual(
-    error.message,
-    `Could not load fixtures/joker/tslib.js (imported by fixtures/overriding-tslib/main.ts): ENOENT: no such file or directory, open 'fixtures/joker/tslib.js'`
-  );
-  t.deepEqual(error.watchFiles, [
-    resolve('fixtures/overriding-tslib/main.ts'),
-    'fixtures/joker/tslib.js'
-  ]);
-  t.deepEqual(error.code, 'ENOENT');
+  if (error.watchFiles) {
+    let [filePath] = error.watchFiles;
+    filePath = filePath.substring(filePath.indexOf('packages'));
+    error.watchFiles[0] = filePath;
+  }
+
+  t.snapshot(error);
 });
 
 test.serial('fails without tslib installed', async (t) => {

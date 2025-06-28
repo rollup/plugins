@@ -1154,8 +1154,7 @@ test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
   t.is(files.length, 1);
 });
 
-// todo: why would want to deliberately forbid resolution from outside of CWD? What problem does it solve to add such a constraint?
-test.skip('does it fail for filtering with incorrect rootDir in nested projects', async (t) => {
+test.serial('does it fail for filtering with incorrect rootDir in nested projects', async (t) => {
   process.chdir('fixtures/root-dir/packages/test-2');
   const error = await t.throwsAsync(
     rollup({
@@ -1615,17 +1614,18 @@ test.serial('compiled external library', async (t) => {
   t.pass();
 });
 
-test.serial(
-  'do not consider files that are not part of the entry point dependency graph',
-  async (t) => {
-    process.chdir('fixtures/with-invalid-sources-inside-cwd');
-    const input = 'main.ts';
+test.serial('observes included declarations', async (t) => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/included-declarations/main.ts',
+    external: ['declared-module'],
+    plugins: [typescript({ tsconfig: 'fixtures/included-declarations/tsconfig.json' })],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  t.deepEqual(warnings, []);
 
-    const build = await rollup({
-      input,
-      plugins: [typescript()]
-    });
-
-    t.deepEqual(build.watchFiles, [path.resolve('main.ts'), path.resolve('valid.ts')]);
-  }
-);
+  const files = await getCode(bundle, { format: 'es' }, true);
+  t.is(files.length, 1);
+});
