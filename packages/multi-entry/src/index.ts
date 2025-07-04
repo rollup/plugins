@@ -5,6 +5,8 @@ import type { Plugin } from 'rollup';
 
 import type { RollupMultiEntryOptions } from '../types';
 
+import { extractDirectories } from './utils';
+
 const DEFAULT_OUTPUT = 'multi-entry.js';
 const AS_IMPORT = 'import';
 const AS_EXPORT = 'export * from';
@@ -63,6 +65,10 @@ export default function multiEntry(config: RollupMultiEntryOptions = {}): Plugin
             .then((paths) => paths.map(exporter).join('\n'))
         : Promise.resolve('');
       virtualisedEntry = virtual({ [options.input as unknown as string]: await entries }) as any;
+
+      if (this.meta.watchMode) {
+        for (const dir of extractDirectories(patterns)) this.addWatchFile(dir);
+      }
     },
 
     resolveId(id, importer) {
