@@ -80,7 +80,7 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       );
     },
 
-    transform(code, id) {
+    async transform(code, id) {
       if (!filter(id)) {
         return null;
       }
@@ -90,8 +90,10 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
         const publicFilepath = copies[id] ? `'${copies[id].publicFilepath}'` : null;
         let src;
 
+        const buffer = Buffer.from(code, 'binary');
+
         if (publicFilepath === null) {
-          src = Buffer.from(code, 'binary').toString('base64');
+          src = buffer.toString('base64');
           src = `'${src}'`;
         } else {
           if (isSync) {
@@ -100,16 +102,59 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
           src = null;
         }
 
+        const mod = await WebAssembly.compile(buffer);
+        const imports = WebAssembly.Module.imports(mod);
+        const exports = WebAssembly.Module.exports(mod);
+
+        // Generate import statements for WASM module imports
+        let importStatements = '';
+        let importObj = '';
+        let i = 0;
+        for (const { module, kind } of imports) {
+          importStatements += `import * as i${i} from ${JSON.stringify(module)};\n`;
+          // We use the special __wasmInstance export for Wasm - Wasm linking
+          // to allow direct global bindings between Wasm modules.
+          importObj += `${JSON.stringify(module)}: ${
+            kind === 'global' ? `i${i}.__wasmInstance?.exports || i${i}` : `i${i}`
+          },`;
+          i += 1;
+        }
+
+        // Always provide an imports object, even if empty
+        importObj = importObj ? `{${importObj}}` : '{}';
+
+        // Generate export statements for WASM module exports
+        let exportStatements = '';
+        let exportList = '';
+        i = 0;
+        for (const { name, kind } of exports) {
+          const idOrName = /^[$_a-z][$_a-z0-9]+$/i.test(name) ? name : JSON.stringify(name);
+          exportStatements += `let e${i} = __wasmInstance.exports[${JSON.stringify(name)}];\n`;
+          if (kind === 'global') {
+            exportStatements += `try { e${i} = e${i}.value } catch { e${i} = undefined }\n`;
+          }
+          if (exportList) exportList += ', ';
+          exportList += `e${i} as ${idOrName}`;
+          i += 1;
+        }
+
         return {
           map: {
             mappings: ''
           },
           code: `import { _loadWasmModule } from ${JSON.stringify(HELPERS_ID)};
-export default function(imports){return _loadWasmModule(${+isSync}, ${publicFilepath}, ${src}, imports)}`
+${importStatements}
+export const __wasmInstance = ${
+            isSync ? '' : 'await '
+          }_loadWasmModule(${+isSync}, ${publicFilepath}, ${src}, ${importObj});
+${exportStatements}
+export { ${exportList} };
+`
         };
       }
       return null;
     },
+
     generateBundle: async function write() {
       await Promise.all(
         Object.keys(copies).map(async (name) => {

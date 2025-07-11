@@ -1,0 +1,20 @@
+(module
+  (type (;0;) (func (result i32)))
+  (table $tab (;0;) 1 funcref)
+  (memory $mem (;0;) 1)
+  (global $glob (;0;) i32 i32.const 42)
+  (global $global_with_space (;1;) i32 i32.const 123)
+  (global $utf8_edge (;2;) i32 i32.const 789)
+  (export "mem" (memory $mem))
+  (export "tab" (table $tab))
+  (export "glob" (global $glob))
+  (export "func" (func $func))
+  (export "valuewithspaces" (global $global_with_space))
+  (export "\u{1f3af}test-func!" (func $emoji_func))
+  (func $func (;0;) (type 0) (result i32)
+    i32.const 100
+  )
+  (func $emoji_func (;1;) (type 0) (result i32)
+    i32.const 456
+  )
+)

@@ -1,5 +1,6 @@
 module.exports = {
   extends: ['rollup', 'plugin:import/typescript'],
+  ignorePatterns: ['packages/wasm/test/fixtures/jsapi/**'],
   parserOptions: {
     project: ['./tsconfig.eslint.json', './packages/*/tsconfig.json'],
     tsconfigRootDir: __dirname

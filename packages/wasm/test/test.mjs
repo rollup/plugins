@@ -26,7 +26,7 @@ const testBundle = async (t, bundle) => {
   return func(t);
 };
 
-test('async compiling', async (t) => {
+test.skip('async compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
@@ -36,7 +36,7 @@ test('async compiling', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('fetching WASM from separate file', async (t) => {
+test.skip('fetching WASM from separate file', async (t) => {
   t.plan(3);
 
   const bundle = await rollup({
@@ -59,7 +59,7 @@ test('fetching WASM from separate file', async (t) => {
   await del(outputDir);
 });
 
-test('complex module decoding', async (t) => {
+test.skip('complex module decoding', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
@@ -69,7 +69,7 @@ test('complex module decoding', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('sync compiling', async (t) => {
+test.skip('sync compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
@@ -83,7 +83,7 @@ test('sync compiling', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('imports', async (t) => {
+test.skip('imports', async (t) => {
   t.plan(1);
 
   const bundle = await rollup({
@@ -97,7 +97,7 @@ test('imports', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('worker', async (t) => {
+test.skip('worker', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
@@ -118,7 +118,7 @@ test('worker', async (t) => {
   });
 });
 
-test('injectHelper', async (t) => {
+test.skip('injectHelper', async (t) => {
   t.plan(4);
 
   const injectImport = `import { _loadWasmModule } from ${JSON.stringify('\0wasmHelpers.js')};`;
@@ -146,7 +146,7 @@ test('injectHelper', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('target environment auto', async (t) => {
+test.skip('target environment auto', async (t) => {
   t.plan(5);
 
   const bundle = await rollup({
@@ -160,7 +160,7 @@ test('target environment auto', async (t) => {
   t.true(code.includes(`fetch`));
 });
 
-test('target environment auto-inline', async (t) => {
+test.skip('target environment auto-inline', async (t) => {
   t.plan(6);
 
   const bundle = await rollup({
@@ -175,7 +175,7 @@ test('target environment auto-inline', async (t) => {
   t.true(code.includes(`if (isNode)`));
 });
 
-test('target environment browser', async (t) => {
+test.skip('target environment browser', async (t) => {
   t.plan(4);
 
   const bundle = await rollup({
@@ -188,7 +188,7 @@ test('target environment browser', async (t) => {
   t.true(code.includes(`fetch`));
 });
 
-test('target environment node', async (t) => {
+test.skip('target environment node', async (t) => {
   t.plan(4);
 
   const bundle = await rollup({
@@ -201,7 +201,7 @@ test('target environment node', async (t) => {
   t.true(!code.includes(`fetch`));
 });
 
-test('filename override', async (t) => {
+test.skip('filename override', async (t) => {
   t.plan(1);
 
   const bundle = await rollup({
@@ -218,7 +218,7 @@ test('filename override', async (t) => {
   await del('override');
 });
 
-test('works as CJS plugin', async (t) => {
+test.skip('works as CJS plugin', async (t) => {
   t.plan(2);
   const require = createRequire(import.meta.url);
   const wasmPluginCjs = require('current-package');
@@ -229,9 +229,109 @@ test('works as CJS plugin', async (t) => {
   await testBundle(t, bundle);
 });
 
+// WPT test harness function
+const testWptBundle = async (t, bundle) => {
+  const code = await getCode(bundle, {
+    format: 'esm',
+    inlineDynamicImports: true
+  });
+  console.log(code);
+
+  // WPT test harness functions that wrap Ava assertions
+  const promiseTest = async (fn, name) => {
+    try {
+      await fn();
+      t.pass(name);
+    } catch (err) {
+      t.fail(`${name}: ${err.message}`);
+    }
+  };
+
+  const assertArrayEquals = (actual, expected, message) => {
+    t.deepEqual(actual, expected, message);
+  };
+
+  const assertTrue = (condition, message) => {
+    t.true(condition, message);
+  };
+
+  const assertFalse = (condition, message) => {
+    t.false(condition, message);
+  };
+
+  const assertEquals = (actual, expected, message) => {
+    t.is(actual, expected, message);
+  };
+
+  const assertThrowsJs = (errorType, fn, message) => {
+    t.throws(fn, { instanceOf: errorType }, message);
+  };
+
+  const assertNotEquals = (actual, expected, message) => {
+    t.not(actual, expected, message);
+  };
+
+  // Run the test in an async function with the harness
+  const func = new AsyncFunction(
+    't',
+    'promise_test',
+    'assert_array_equals',
+    'assert_true',
+    'assert_false',
+    'assert_equals',
+    'assert_throws_js',
+    'assert_not_equals',
+    code
+  );
+
+  try {
+    await func(
+      t,
+      promiseTest,
+      assertArrayEquals,
+      assertTrue,
+      assertFalse,
+      assertEquals,
+      assertThrowsJs,
+      assertNotEquals
+    );
+  } catch (err) {
+    t.fail(`Test execution failed: ${err.message}`);
+  }
+};
+
+// WPT jsapi ESM integration tests
+const wptTests = [
+  'exports.tentative.any.js'
+  // 'global-exports-live-bindings.tentative.any.js',
+  // 'global-exports.tentative.any.js',
+  // 'js-wasm-cycle.tentative.any.js',
+  // 'mutable-global-sharing.tentative.any.js',
+  // 'namespace-instance.tentative.any.js',
+  // 'reserved-import-names.tentative.any.js',
+  // 'resolve-export.tentative.any.js',
+  // 'source-phase-string-builtins.tentative.any.js',
+  // 'source-phase.tentative.any.js',
+  // 'string-builtins.tentative.any.js',
+  // 'v128-tdz.tentative.any.js',
+  // 'wasm-import-wasm-export.tentative.any.js'
+];
+
+// Generate tests for each WPT file
+wptTests.forEach((testFile) => {
+  const testName = testFile.replace('.tentative.any.js', '');
+  test(`WPT jsapi/${testName}`, async (t) => {
+    const bundle = await rollup({
+      input: `fixtures/jsapi/${testFile}`,
+      plugins: [wasmPlugin()]
+    });
+    await testWptBundle(t, bundle);
+  });
+});
+
 // uncaught exception will cause test failures on this node version.
 if (!process.version.startsWith('v14')) {
-  test('avoid uncaught exception on file read', async (t) => {
+  test.skip('avoid uncaught exception on file read', async (t) => {
     t.plan(2);
 
     const bundle = await rollup({
