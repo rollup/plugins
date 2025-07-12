@@ -1,18 +1,18 @@
+import * as exporterModule from './resources/mutable-global-export.wasm';
+import * as reexporterModule from './resources/mutable-global-reexport.wasm';
+
 promise_test(async () => {
-  const exporterModule = await import("./resources/mutable-global-export.wasm");
-  const reexporterModule = await import(
-    "./resources/mutable-global-reexport.wasm"
-  );
+  // Hoisted into a static import to avoid TLA bug https://github.com/rollup/rollup/issues/6010.
+  // const exporterModule = await import("./resources/mutable-global-export.wasm");
+  // const reexporterModule = await import("./resources/mutable-global-reexport.wasm");
 
   assert_equals(exporterModule.mutableValue, 100);
   assert_equals(reexporterModule.reexportedMutableValue, 100);
 }, "WebAssembly modules should export shared mutable globals with correct initial values");
 
 promise_test(async () => {
-  const exporterModule = await import("./resources/mutable-global-export.wasm");
-  const reexporterModule = await import(
-    "./resources/mutable-global-reexport.wasm"
-  );
+  // const exporterModule = await import("./resources/mutable-global-export.wasm");
+  // const reexporterModule = await import("./resources/mutable-global-reexport.wasm");
 
   exporterModule.setGlobal(500);
 
@@ -42,10 +42,8 @@ promise_test(async () => {
 }, "Multiple JavaScript imports return the same WebAssembly module instance");
 
 promise_test(async () => {
-  const exporterModule = await import("./resources/mutable-global-export.wasm");
-  const reexporterModule = await import(
-    "./resources/mutable-global-reexport.wasm"
-  );
+  // const exporterModule = await import("./resources/mutable-global-export.wasm");
+  // const reexporterModule = await import("./resources/mutable-global-reexport.wasm");
 
   assert_equals(exporterModule.getV128Lane(0), 1);
   assert_equals(exporterModule.getV128Lane(1), 2);
@@ -59,10 +57,8 @@ promise_test(async () => {
 }, "v128 globals should work correctly in WebAssembly-to-WebAssembly imports");
 
 promise_test(async () => {
-  const exporterModule = await import("./resources/mutable-global-export.wasm");
-  const reexporterModule = await import(
-    "./resources/mutable-global-reexport.wasm"
-  );
+  // const exporterModule = await import("./resources/mutable-global-export.wasm");
+  // const reexporterModule = await import("./resources/mutable-global-reexport.wasm");
 
   exporterModule.setV128Global(10, 20, 30, 40);
 

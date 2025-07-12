@@ -1,7 +1,10 @@
 // META: global=window,dedicatedworker,jsshell,shadowrealm
 
+import source wasmModuleSource from './resources/js-string-builtins.wasm';
+
 promise_test(async () => {
-  const wasmModuleSource = await import.source("./resources/js-string-builtins.wasm");
+  // Hoisted into a static import to avoid TLA bug https://github.com/rollup/rollup/issues/6010.
+  // const wasmModuleSource = await import.source("./resources/js-string-builtins.wasm");
 
   assert_true(wasmModuleSource instanceof WebAssembly.Module);
 
@@ -19,7 +22,7 @@ promise_test(async () => {
 }, "String builtins should be supported in source phase imports");
 
 promise_test(async () => {
-  const wasmModuleSource = await import.source("./resources/js-string-builtins.wasm");
+  // const wasmModuleSource = await import.source("./resources/js-string-builtins.wasm");
 
   const exports = WebAssembly.Module.exports(wasmModuleSource);
   const exportNames = exports.map((exp) => exp.name);
@@ -31,7 +34,7 @@ promise_test(async () => {
 }, "Source phase import should properly expose string builtin exports");
 
 promise_test(async () => {
-  const wasmModuleSource = await import.source("./resources/js-string-builtins.wasm");
+  // const wasmModuleSource = await import.source("./resources/js-string-builtins.wasm");
 
   const imports = WebAssembly.Module.imports(wasmModuleSource);
 

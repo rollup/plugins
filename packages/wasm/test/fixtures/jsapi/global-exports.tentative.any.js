@@ -1,7 +1,10 @@
 // META: global=window,dedicatedworker,jsshell,shadowrealm
 
+import * as wasmModule from './resources/globals.wasm';
+
 promise_test(async () => {
-  const wasmModule = await import("./resources/globals.wasm");
+  // Hoisted into a static import to avoid TLA bug https://github.com/rollup/rollup/issues/6010.
+  // const wasmModule = await import("./resources/globals.wasm");
 
   assert_equals(wasmModule.importedI32, 42);
   assert_equals(wasmModule.importedI64, 9223372036854775807n);
@@ -12,7 +15,7 @@ promise_test(async () => {
 }, "WebAssembly module global values should be unwrapped when importing in ESM integration");
 
 promise_test(async () => {
-  const wasmModule = await import("./resources/globals.wasm");
+  // const wasmModule = await import("./resources/globals.wasm");
 
   assert_equals(wasmModule.importedMutI32, 100);
   assert_equals(wasmModule.importedMutI64, 200n);
@@ -26,7 +29,7 @@ promise_test(async () => {
 }, "WebAssembly mutable global values should be unwrapped when importing in ESM integration");
 
 promise_test(async () => {
-  const wasmModule = await import("./resources/globals.wasm");
+  // const wasmModule = await import("./resources/globals.wasm");
 
   assert_equals(wasmModule["🚀localI32"], 42);
   assert_equals(wasmModule.localMutI32, 100);
@@ -39,7 +42,7 @@ promise_test(async () => {
 }, "WebAssembly local global values should be unwrapped when exporting in ESM integration");
 
 promise_test(async () => {
-  const wasmModule = await import("./resources/globals.wasm");
+  // const wasmModule = await import("./resources/globals.wasm");
 
   assert_equals(wasmModule.depI32, 1001);
   assert_equals(wasmModule.depMutI32, 2001);
@@ -52,7 +55,7 @@ promise_test(async () => {
 }, "WebAssembly module globals from imported WebAssembly modules should be unwrapped");
 
 promise_test(async () => {
-  const wasmModule = await import("./resources/globals.wasm");
+  // const wasmModule = await import("./resources/globals.wasm");
 
   assert_equals(wasmModule.importedI32, 42);
   assert_equals(wasmModule.importedMutI32, 100);

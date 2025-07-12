@@ -26,7 +26,7 @@ const testBundle = async (t, bundle) => {
   return func(t);
 };
 
-test.skip('async compiling', async (t) => {
+test('async compiling', async (t) => {
   t.plan(2);
 
   const bundle = await rollup({
@@ -235,15 +235,25 @@ const testWptBundle = async (t, bundle) => {
     format: 'esm',
     inlineDynamicImports: true
   });
-  console.log(code);
 
   // WPT test harness functions that wrap Ava assertions
-  const promiseTest = async (fn, name) => {
+  let testResolve;
+  let testReject;
+  const testPromise = new Promise((resolve, reject) => {
+    testResolve = resolve;
+    testReject = reject;
+  });
+  let promiseCnt = 0;
+  const promiseTest = async (fn) => {
+    promiseCnt += 1;
     try {
       await fn();
-      t.pass(name);
+      promiseCnt -= 1;
+      if (promiseCnt === 0) {
+        testResolve();
+      }
     } catch (err) {
-      t.fail(`${name}: ${err.message}`);
+      testReject(err);
     }
   };
 
@@ -295,26 +305,89 @@ const testWptBundle = async (t, bundle) => {
       assertThrowsJs,
       assertNotEquals
     );
+    await testPromise;
   } catch (err) {
     t.fail(`Test execution failed: ${err.message}`);
   }
 };
 
+// Test that wasm: and wasm-js: reserved cases should cause WebAssembly.LinkError
+test.skip('wasm: reserved import names should cause WebAssembly.LinkError', async (t) => {
+  await t.throwsAsync(
+    () =>
+      rollup({
+        input: 'fixtures/jsapi/resources/invalid-import-name.wasm',
+        plugins: [wasmPlugin()]
+      }),
+    { instanceOf: WebAssembly.LinkError }
+  );
+});
+
+test.skip('wasm-js: reserved import names should cause WebAssembly.LinkError', async (t) => {
+  await t.throwsAsync(
+    () =>
+      rollup({
+        input: 'fixtures/jsapi/resources/invalid-import-name-wasm-js.wasm',
+        plugins: [wasmPlugin()]
+      }),
+    { instanceOf: WebAssembly.LinkError }
+  );
+});
+
+test.skip('wasm: reserved export names should cause WebAssembly.LinkError', async (t) => {
+  await t.throwsAsync(
+    () =>
+      rollup({
+        input: 'fixtures/jsapi/resources/invalid-export-name.wasm',
+        plugins: [wasmPlugin()]
+      }),
+    { instanceOf: WebAssembly.LinkError }
+  );
+});
+
+test.skip('wasm-js: reserved export names should cause WebAssembly.LinkError', async (t) => {
+  await t.throwsAsync(
+    () =>
+      rollup({
+        input: 'fixtures/jsapi/resources/invalid-export-name-wasm-js.wasm',
+        plugins: [wasmPlugin()]
+      }),
+    { instanceOf: WebAssembly.LinkError }
+  );
+});
+
+test.skip('wasm-js: reserved module names should cause WebAssembly.LinkError', async (t) => {
+  await t.throwsAsync(
+    () =>
+      rollup({
+        input: 'fixtures/jsapi/resources/invalid-import-module.wasm',
+        plugins: [wasmPlugin()]
+      }),
+    { instanceOf: WebAssembly.LinkError }
+  );
+});
+
 // WPT jsapi ESM integration tests
 const wptTests = [
-  'exports.tentative.any.js'
-  // 'global-exports-live-bindings.tentative.any.js',
+  // 'exports.tentative.any.js',
   // 'global-exports.tentative.any.js',
   // 'js-wasm-cycle.tentative.any.js',
   // 'mutable-global-sharing.tentative.any.js',
-  // 'namespace-instance.tentative.any.js',
-  // 'reserved-import-names.tentative.any.js',
-  // 'resolve-export.tentative.any.js',
+  // 'string-builtins.tentative.any.js',
+  // 'wasm-import-wasm-export.tentative.any.js'
+
+  // Source phase imports pending https://github.com/rollup/rollup/issues/6011.
   // 'source-phase-string-builtins.tentative.any.js',
   // 'source-phase.tentative.any.js',
-  // 'string-builtins.tentative.any.js',
+
+  // Ported instead to inlined error tests above
+  // 'reserved-import-names.tentative.any.js'
+  // Skipped as live bindings can't be supported
+  // 'global-exports-live-bindings.tentative.any.js',
+  // Skipped as WebAssembly.namespaceInstance isn't supported
+  // 'namespace-instance.tentative.any.js',
+  // Skipped as TDZ can't be supported
   // 'v128-tdz.tentative.any.js',
-  // 'wasm-import-wasm-export.tentative.any.js'
 ];
 
 // Generate tests for each WPT file

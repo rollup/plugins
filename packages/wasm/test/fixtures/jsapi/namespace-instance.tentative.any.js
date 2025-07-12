@@ -1,7 +1,13 @@
 // META: global=window,dedicatedworker,jsshell,shadowrealm
 
+import * as wasmNamespace from './resources/mutable-global-export.wasm';
+import * as jsModule from './resources/globals.js';
+import * as exportsModule from './resources/exports.wasm';
+import * as globalsModule from './resources/globals.wasm';
+
 promise_test(async () => {
-  const wasmNamespace = await import("./resources/mutable-global-export.wasm");
+  // Hoisted into a static import to avoid TLA bug https://github.com/rollup/rollup/issues/6010.
+  // const wasmNamespace = await import("./resources/mutable-global-export.wasm");
   const instance = WebAssembly.namespaceInstance(wasmNamespace);
 
   assert_true(instance instanceof WebAssembly.Instance);
@@ -26,13 +32,13 @@ promise_test(async () => {
     WebAssembly.namespaceInstance(function () {})
   );
 
-  const jsModule = await import("./resources/globals.js");
+  // const jsModule = await import("./resources/globals.js");
   assert_throws_js(TypeError, () => WebAssembly.namespaceInstance(jsModule));
 }, "WebAssembly.namespaceInstance() should throw TypeError for non-WebAssembly namespaces");
 
 promise_test(async () => {
-  const exportsModule = await import("./resources/exports.wasm");
-  const globalsModule = await import("./resources/globals.wasm");
+  // const exportsModule = await import("./resources/exports.wasm");
+  // const globalsModule = await import("./resources/globals.wasm");
 
   const exportsInstance = WebAssembly.namespaceInstance(exportsModule);
   const globalsInstance = WebAssembly.namespaceInstance(globalsModule);

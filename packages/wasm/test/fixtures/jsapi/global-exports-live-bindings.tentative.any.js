@@ -1,7 +1,10 @@
 // META: global=window,dedicatedworker,jsshell,shadowrealm
 
+import * as wasmExports from './resources/globals.wasm';
+
 promise_test(async () => {
-  const wasmExports = await import("./resources/globals.wasm");
+  // Hoisted into a static import to avoid TLA bug https://github.com/rollup/rollup/issues/6010.
+  // const wasmExports = await import("./resources/globals.wasm");
 
   wasmExports.setLocalMutI32(555);
   assert_equals(wasmExports.getLocalMutI32(), 555);
@@ -26,7 +29,7 @@ promise_test(async () => {
 }, "Local mutable global exports should be live bindings");
 
 promise_test(async () => {
-  const wasmExports = await import("./resources/globals.wasm");
+  // const wasmExports = await import("./resources/globals.wasm");
 
   wasmExports.setDepMutI32(3001);
   assert_equals(wasmExports.getDepMutI32(), 3001);

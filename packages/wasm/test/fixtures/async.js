@@ -1,4 +1,4 @@
-import fixture from './sample.wasm';
+import * as fixture from './sample.wasm';
 
 // eslint-disable-next-line no-undef
 globalThis.atob = (str) => Buffer.from(str, 'base64').toString('binary');

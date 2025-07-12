@@ -1,9 +1,12 @@
 // META: global=window,dedicatedworker,jsshell,shadowrealm
 
+import { logExec } from './resources/wasm-import-from-wasm.wasm';
+
 promise_test(async () => {
   globalThis.log = [];
 
-  const { logExec } = await import("./resources/wasm-import-from-wasm.wasm");
+  // Hoisted into a static import to avoid TLA bug https://github.com/rollup/rollup/issues/6010.
+  // const { logExec } = await import("./resources/wasm-import-from-wasm.wasm");
   logExec();
 
   assert_equals(globalThis.log.length, 1, "log should have one entry");

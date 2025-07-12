@@ -1,7 +1,11 @@
 // META: global=window,dedicatedworker,jsshell,shadowrealm
 
+import source exportedNamesSource from './resources/exports.wasm';
+import source wasmImportFromWasmSource from './resources/wasm-import-from-wasm.wasm';
+
 promise_test(async () => {
-  const exportedNamesSource = await import.source("./resources/exports.wasm");
+  // Hoisted into a static import to avoid TLA bug https://github.com/rollup/rollup/issues/6010.
+  // const exportedNamesSource = await import.source("./resources/exports.wasm");
 
   assert_true(exportedNamesSource instanceof WebAssembly.Module);
   const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module);
@@ -23,9 +27,9 @@ promise_test(async () => {
     ]
   );
 
-  const wasmImportFromWasmSource = await import.source(
-    "./resources/wasm-import-from-wasm.wasm"
-  );
+  // const wasmImportFromWasmSource = await import.source(
+  //   "./resources/wasm-import-from-wasm.wasm"
+  // );
 
   assert_true(wasmImportFromWasmSource instanceof WebAssembly.Module);
 
