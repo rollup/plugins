@@ -67,7 +67,7 @@ export function dataToEsm(data: unknown, options?: DataToEsmOptions): string;
  * @param str the string to match.
  * @param flags flags for the RegExp.
  */
-export function exactRegex(str: string, flags?: string): RegExp;
+export function exactRegex(str: string | string[], flags?: string): RegExp;
 
 /**
  * Extracts the names of all assignment targets based upon specified patterns.
@@ -90,7 +90,14 @@ export function normalizePath(filename: string): string;
  * @param str the string to match.
  * @param flags flags for the RegExp.
  */
-export function prefixRegex(str: string, flags?: string): RegExp;
+export function prefixRegex(str: string | string[], flags?: string): RegExp;
+
+/**
+ * Constructs a RegExp that matches a value that has the specified suffix.
+ * @param str the string to match.
+ * @param flags flags for the RegExp.
+ */
+export function suffixRegex(str: string | string[], flags?: string): RegExp;
 
 export type AddExtension = typeof addExtension;
 export type AttachScopes = typeof attachScopes;
@@ -101,6 +108,7 @@ export type MakeLegalIdentifier = typeof makeLegalIdentifier;
 export type NormalizePath = typeof normalizePath;
 export type DataToEsm = typeof dataToEsm;
 export type PrefixRegex = typeof prefixRegex;
+export type SuffixRegex = typeof suffixRegex;
 
 declare const defaultExport: {
   addExtension: AddExtension;
@@ -112,5 +120,6 @@ declare const defaultExport: {
   makeLegalIdentifier: MakeLegalIdentifier;
   normalizePath: NormalizePath;
   prefixRegex: PrefixRegex;
+  suffixRegex: SuffixRegex;
 };
 export default defaultExport;
