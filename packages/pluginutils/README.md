@@ -291,7 +291,7 @@ prefixRegex('foo(bar)', 'i'); // /^foo\(bar\)/i
 
 ### suffixRegex
 
-Constructs a RegExp that matches a value that has the specified prefix. This is useful for plugin hook filters.
+Constructs a RegExp that matches a value that has the specified suffix. This is useful for plugin hook filters.
 
 Parameters: `(str: String | Array[...String], flags?: String)`<br>
 Returns: `RegExp`
