@@ -366,7 +366,7 @@ export default async function transformCommonjs(
           }
           return;
         case 'ThisExpression':
-          // rewrite top-level `this` as `commonjsHelpers.commonjsGlobal`
+          // rewrite top-level `this` as `exportsName`
           if (lexicalDepth === 0 && !classBodyDepth) {
             uses.global = true;
             if (!ignoreGlobal) {
