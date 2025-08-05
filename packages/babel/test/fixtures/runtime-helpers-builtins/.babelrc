@@ -1,5 +1,5 @@
 {
-  "presets": [ "@babel/env" ],
+  "presets": [ ["@babel/env", { "targets": "firefox 2" } ] ],
   "plugins": [
     [ "@babel/transform-runtime" ]
   ]

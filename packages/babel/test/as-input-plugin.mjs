@@ -540,7 +540,7 @@ test('can be used as an input plugin while transforming the output', async (t) =
     input: `${FIXTURES}basic/main.js`,
     plugins: [
       getBabelOutputPlugin({
-        presets: ['@babel/env']
+        presets: [['@babel/env', { targets: 'firefox 2' }]],
       })
     ]
   });
@@ -556,7 +556,7 @@ test('works as a CJS plugin', async (t) => {
     input: `${FIXTURES}basic/main.js`,
     plugins: [
       babelPluginCjs({
-        presets: ['@babel/env']
+        presets: [['@babel/env', { targets: 'firefox 2' }]],
       })
     ]
   });

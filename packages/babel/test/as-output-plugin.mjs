@@ -63,7 +63,7 @@ async function generate(input, babelOptions = {}, generateOptions = {}, rollupOp
 
 test('allows running the plugin on the output via output options', async (t) => {
   const code = await generate('basic/main.js', {
-    presets: ['@babel/env']
+    presets: [['@babel/env', { targets: "firefox 2" }]]
   });
   t.false(code.includes('const'));
 });
@@ -73,12 +73,12 @@ test('ignores .babelrc when transforming the output by default', async (t) => {
   t.true(code.includes('const'));
 });
 
-test("allows transform-runtime to be used with `useESModules: false` (the default) and `format: 'cjs'`", async (t) => {
+test("allows transform-runtime to be used with `format: 'cjs'`", async (t) => {
   const code = await generate(
     'runtime-helpers/main.js',
     {
-      presets: ['@babel/env'],
-      plugins: [['@babel/transform-runtime', { useESModules: false }]]
+      presets: [['@babel/env', { targets: "firefox 2" }]],
+      plugins: [['@babel/transform-runtime']]
     },
     { format: 'cjs' }
   );
@@ -96,12 +96,12 @@ module.exports = Foo;
   );
 });
 
-test("allows transform-runtime to be used with `useESModules: true` and `format: 'es'`", async (t) => {
+test("allows transform-runtime to be used with `format: 'es'`", async (t) => {
   const code = await generate(
     'runtime-helpers/main.js',
     {
-      presets: ['@babel/env'],
-      plugins: [['@babel/transform-runtime', { useESModules: true }]]
+      presets: [['@babel/env', { targets: "firefox 2" }]],
+      plugins: [['@babel/transform-runtime']]
     },
     { format: 'es' }
   );
@@ -155,7 +155,7 @@ test('allows using external-helpers plugin even if the externalHelpers flag is n
   const code = await generate(
     'external-helpers/main.js',
     {
-      presets: ['@babel/env'],
+      presets: [['@babel/env', { targets: "firefox 2" }]],
       plugins: ['@babel/external-helpers']
     },
     {},
@@ -211,8 +211,7 @@ test('transforms all chunks in a code-splitting setup', async (t) => {
       format: 'es',
       plugins: [
         getBabelOutputPlugin({
-          plugins: ['@babel/syntax-dynamic-import'],
-          presets: ['@babel/env']
+          presets: [['@babel/env', { targets: "firefox 2" }]]
         })
       ]
     },
@@ -246,7 +245,7 @@ test('transforms all chunks when preserving modules', async (t) => {
       preserveModules: true,
       plugins: [
         getBabelOutputPlugin({
-          presets: ['@babel/env']
+          presets: [['@babel/env', { targets: "firefox 2" }]]
         })
       ]
     },
@@ -320,7 +319,7 @@ test('throws when using a Rollup output format other than esm or cjs', async (t)
 test('allows using a Rollup output format other than esm or cjs with allowAllFormats', async (t) => {
   const code = await generate(
     'basic/main.js',
-    { presets: ['@babel/env'], allowAllFormats: true },
+    { presets: [['@babel/env', { targets: "firefox 2" }]], allowAllFormats: true },
     { format: 'iife' }
   );
   t.is(
@@ -338,7 +337,7 @@ test('allows using a Rollup output format other than esm or cjs with allowAllFor
 test('allows using Babel to transform to other formats', async (t) => {
   const code = await generate(
     'basic/main.js',
-    { presets: [['@babel/env', { modules: 'umd' }]] },
+    { presets: [['@babel/env', { modules: 'umd', targets: 'firefox 2' }]] },
     { format: 'es' }
   );
   t.is(
