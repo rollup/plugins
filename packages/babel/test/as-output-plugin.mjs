@@ -86,8 +86,8 @@ test("allows transform-runtime to be used with `format: 'cjs'`", async (t) => {
     code,
     `'use strict';
 
-var _createClass = require("@babel/runtime/helpers/createClass");
-var _classCallCheck = require("@babel/runtime/helpers/classCallCheck");
+var _createClass = require("@babel/runtime/helpers/createClass").default;
+var _classCallCheck = require("@babel/runtime/helpers/classCallCheck").default;
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
 });
@@ -107,8 +107,8 @@ test("allows transform-runtime to be used with `format: 'es'`", async (t) => {
   );
   t.is(
     code,
-    `import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
+    `import _createClass from "@babel/runtime/helpers/createClass";
+import _classCallCheck from "@babel/runtime/helpers/classCallCheck";
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
 });
