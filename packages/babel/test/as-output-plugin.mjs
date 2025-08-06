@@ -63,7 +63,7 @@ async function generate(input, babelOptions = {}, generateOptions = {}, rollupOp
 
 test('allows running the plugin on the output via output options', async (t) => {
   const code = await generate('basic/main.js', {
-    presets: [['@babel/env', { targets: "firefox 2" }]]
+    presets: [['@babel/env', { targets: 'firefox 2' }]]
   });
   t.false(code.includes('const'));
 });
@@ -77,7 +77,7 @@ test("allows transform-runtime to be used with `format: 'cjs'`", async (t) => {
   const code = await generate(
     'runtime-helpers/main.js',
     {
-      presets: [['@babel/env', { targets: "firefox 2" }]],
+      presets: [['@babel/env', { targets: 'firefox 2' }]],
       plugins: [['@babel/transform-runtime']]
     },
     { format: 'cjs' }
@@ -100,7 +100,7 @@ test("allows transform-runtime to be used with `format: 'es'`", async (t) => {
   const code = await generate(
     'runtime-helpers/main.js',
     {
-      presets: [['@babel/env', { targets: "firefox 2" }]],
+      presets: [['@babel/env', { targets: 'firefox 2' }]],
       plugins: [['@babel/transform-runtime']]
     },
     { format: 'es' }
@@ -155,7 +155,7 @@ test('allows using external-helpers plugin even if the externalHelpers flag is n
   const code = await generate(
     'external-helpers/main.js',
     {
-      presets: [['@babel/env', { targets: "firefox 2" }]],
+      presets: [['@babel/env', { targets: 'firefox 2' }]],
       plugins: ['@babel/external-helpers']
     },
     {},
@@ -211,7 +211,7 @@ test('transforms all chunks in a code-splitting setup', async (t) => {
       format: 'es',
       plugins: [
         getBabelOutputPlugin({
-          presets: [['@babel/env', { targets: "firefox 2" }]]
+          presets: [['@babel/env', { targets: 'firefox 2' }]]
         })
       ]
     },
@@ -245,7 +245,7 @@ test('transforms all chunks when preserving modules', async (t) => {
       preserveModules: true,
       plugins: [
         getBabelOutputPlugin({
-          presets: [['@babel/env', { targets: "firefox 2" }]]
+          presets: [['@babel/env', { targets: 'firefox 2' }]]
         })
       ]
     },
@@ -319,7 +319,7 @@ test('throws when using a Rollup output format other than esm or cjs', async (t)
 test('allows using a Rollup output format other than esm or cjs with allowAllFormats', async (t) => {
   const code = await generate(
     'basic/main.js',
-    { presets: [['@babel/env', { targets: "firefox 2" }]], allowAllFormats: true },
+    { presets: [['@babel/env', { targets: 'firefox 2' }]], allowAllFormats: true },
     { format: 'iife' }
   );
   t.is(
