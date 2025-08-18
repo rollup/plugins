@@ -745,7 +745,7 @@ test('allow other plugins to take over resolution', async (t) => {
 });
 
 test('error message for invalid entry', async (t) => {
-  const error = await t.throwsAsync(async () => await rollup({
+  const error = await t.throwsAsync(() => rollup({
     input: "",
     onwarn: failOnWarn(t),
     plugins: [
