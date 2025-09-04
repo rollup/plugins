@@ -49,16 +49,23 @@ export const color = 'purple';
 Then, create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-import multi from '@rollup/plugin-multi-entry';
+import multiEntry from '@rollup/plugin-multi-entry';
 
 export default {
   input: ['batman.js', 'robin.js', 'joker.js'],
   output: {
     dir: 'output'
   },
-  plugins: [multi()]
+  plugins: [multiEntry()]
 };
 ```
+
+> [!NOTE]
+> If your editor complains that _"multiEntry is not a function"_, then use the named export instead:
+>
+> ```js
+> import { multiEntry } from '@rollup/plugin-multi-entry';
+> ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 

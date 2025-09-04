@@ -26,4 +26,5 @@ interface RollupDsvOptions {
 /**
  * Convert `.csv` and `.tsv `files into JavaScript modules with `d3-dsv`.
  */
-export default function dsv(options?: RollupDsvOptions): Plugin;
+declare function dsv(options?: RollupDsvOptions): Plugin;
+export { dsv, dsv as default };

@@ -63,4 +63,5 @@ interface RollupUrlOptions {
 /**
  * A Rollup plugin which imports files as data-URIs or ES Modules.
  */
-export default function url(options?: RollupUrlOptions): Plugin;
+declare function url(options?: RollupUrlOptions): Plugin;
+export { url, url as default };

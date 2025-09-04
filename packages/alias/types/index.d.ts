@@ -41,4 +41,5 @@ export interface RollupAliasOptions {
 /**
  * 🍣 A Rollup plugin for defining aliases when bundling packages.
  */
-export default function alias(options?: RollupAliasOptions): Plugin;
+declare function alias(options?: RollupAliasOptions): Plugin;
+export { alias, alias as default };

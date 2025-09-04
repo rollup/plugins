@@ -4,7 +4,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import type { RollupBubleOptions } from '../types';
 
-export default function buble(options: RollupBubleOptions = {}): Plugin {
+export function buble(options: RollupBubleOptions = {}): Plugin {
   const filter = createFilter(options.include, options.exclude);
   const transformOptions = { ...options, transforms: { ...options.transforms, modules: false } };
 
@@ -26,3 +26,4 @@ export default function buble(options: RollupBubleOptions = {}): Plugin {
     }
   };
 }
+export default buble;

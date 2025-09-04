@@ -43,4 +43,5 @@ export interface RollupEslintOptions extends ESLint.Options {
 /**
  * 🍣 A Rollup plugin for verifing entry points and all imported files with ESLint.
  */
-export default function eslint(options?: RollupEslintOptions | string): Plugin;
+declare function eslint(options?: RollupEslintOptions | string): Plugin;
+export { eslint, eslint as default };

@@ -40,6 +40,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"dsv is not a function"_, then use the named export instead:
+>
+> ```js
+> import { dsv } from '@rollup/plugin-dsv';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 ## Practical Example

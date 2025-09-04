@@ -41,4 +41,5 @@ interface RollupMultiEntryOptions {
  * _Note: `default` exports cannot be combined and exported by this plugin. Only named exports
  * will be exported._
  */
-export default function multiEntry(options?: RollupMultiEntryOptions): Plugin;
+declare function multiEntry(options?: RollupMultiEntryOptions): Plugin;
+export { multiEntry, multiEntry as default };

@@ -49,4 +49,5 @@ interface RollupYamlOptions {
 /**
  * A Rollup plugin which Converts YAML files to ES6 modules.
  */
-export default function yaml(options?: RollupYamlOptions): Plugin;
+declare function yaml(options?: RollupYamlOptions): Plugin;
+export { yaml, yaml as default };
