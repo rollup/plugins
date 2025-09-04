@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.3.0
+
+_2025-09-04_
+
+### Features
+
+- feat: add `suffixRegex` & support multiple string (#1886)
+
 ## v5.2.0
 
 _2025-06-17_
