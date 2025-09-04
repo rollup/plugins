@@ -131,3 +131,19 @@ test('makes a bundle with entryFileName as the output.entryFileName when preserv
   t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-0.js'));
   t.truthy(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-1.js'));
 });
+
+test('deterministic output, regardless of input order', async (t) => {
+  const bundle1 = await rollup({
+    input: 'test/fixtures/{0,1}.js',
+    plugins: [multiEntry()]
+  });
+  const code1 = await getCode(bundle1);
+
+  const bundle2 = await rollup({
+    input: 'test/fixtures/{1,0}.js',
+    plugins: [multiEntry()]
+  });
+  const code2 = await getCode(bundle2);
+
+  t.is(code1, code2);
+});
