@@ -5,7 +5,7 @@ import dataToEsm from './dataToEsm';
 import extractAssignedNames from './extractAssignedNames';
 import makeLegalIdentifier from './makeLegalIdentifier';
 import normalizePath from './normalizePath';
-import { exactRegex, prefixRegex } from './filterUtils';
+import { exactRegex, prefixRegex, suffixRegex } from './filterUtils';
 
 export {
   addExtension,
@@ -16,7 +16,8 @@ export {
   extractAssignedNames,
   makeLegalIdentifier,
   normalizePath,
-  prefixRegex
+  prefixRegex,
+  suffixRegex
 };
 
 // TODO: remove this in next major
@@ -29,5 +30,6 @@ export default {
   extractAssignedNames,
   makeLegalIdentifier,
   normalizePath,
-  prefixRegex
+  prefixRegex,
+  suffixRegex
 };

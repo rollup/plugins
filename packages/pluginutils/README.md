@@ -227,7 +227,7 @@ export default function myPlugin(options = {}) {
 
 Constructs a RegExp that matches the exact string specified. This is useful for plugin hook filters.
 
-Parameters: `(str: String, flags?: String)`<br>
+Parameters: `(str: String | Array[...String], flags?: String)`<br>
 Returns: `RegExp`
 
 #### Usage
@@ -236,6 +236,7 @@ Returns: `RegExp`
 import { exactRegex } from '@rollup/pluginutils';
 
 exactRegex('foobar'); // /^foobar$/
+exactRegex(['foo', 'bar']); // /^(?:foo|bar)$/
 exactRegex('foo(bar)', 'i'); // /^foo\(bar\)$/i
 ```
 
@@ -275,7 +276,7 @@ normalizePath('foo/bar'); // 'foo/bar'
 
 Constructs a RegExp that matches a value that has the specified prefix. This is useful for plugin hook filters.
 
-Parameters: `(str: String, flags?: String)`<br>
+Parameters: `(str: String | Array[...String], flags?: String)`<br>
 Returns: `RegExp`
 
 #### Usage
@@ -284,7 +285,25 @@ Returns: `RegExp`
 import { prefixRegex } from '@rollup/pluginutils';
 
 prefixRegex('foobar'); // /^foobar/
+prefixRegex(['foo', 'bar']); // /^(?:foo|bar)/
 prefixRegex('foo(bar)', 'i'); // /^foo\(bar\)/i
+```
+
+### suffixRegex
+
+Constructs a RegExp that matches a value that has the specified suffix. This is useful for plugin hook filters.
+
+Parameters: `(str: String | Array[...String], flags?: String)`<br>
+Returns: `RegExp`
+
+#### Usage
+
+```js
+import { suffixRegex } from '@rollup/pluginutils';
+
+suffixRegex('foobar'); // /foobar$/
+suffixRegex(['foo', 'bar']); // /(?:foo|bar)$/
+suffixRegex('foo(bar)', 'i'); // /foo\(bar\)$/i
 ```
 
 ## Meta
