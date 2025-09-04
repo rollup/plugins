@@ -42,6 +42,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"run is not a function"_, then use the named export instead:
+>
+> ```js
+> import { run } from '@rollup/plugin-run';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api). If the build produces any errors, the plugin will write a 'alias' character to stderr, which should be audible on most systems.
 
 The plugin `forks` a child process with the generated file, every time the bundle is rebuilt (after first closing the previous process, if it's not the first run).

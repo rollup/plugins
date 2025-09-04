@@ -7,7 +7,7 @@ const DEFAULT_OUTPUT = 'multi-entry.js';
 const AS_IMPORT = 'import';
 const AS_EXPORT = 'export * from';
 
-export default function multiEntry(conf = {}) {
+export function multiEntry(conf = {}) {
   const config = {
     include: [],
     exclude: [],
@@ -75,3 +75,4 @@ export default function multiEntry(conf = {}) {
     }
   };
 }
+export default multiEntry;

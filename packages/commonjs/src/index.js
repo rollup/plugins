@@ -35,7 +35,7 @@ import { getName, getStrictRequiresFilter, normalizePathSlashes } from './utils'
 
 const PLUGIN_NAME = 'commonjs';
 
-export default function commonjs(options = {}) {
+export function commonjs(options = {}) {
   const {
     ignoreGlobal,
     ignoreDynamicRequires,
@@ -324,3 +324,4 @@ export default function commonjs(options = {}) {
     }
   };
 }
+export default commonjs;

@@ -12,7 +12,7 @@ const fsReadFilePromise = util.promisify(fs.readFile);
 const { posix, sep } = path;
 const defaultInclude = ['**/*.svg', '**/*.png', '**/*.jp(e)?g', '**/*.gif', '**/*.webp'];
 
-export default function url(options = {}) {
+export function url(options = {}) {
   const {
     limit = 14 * 1024,
     include = defaultInclude,
@@ -87,6 +87,7 @@ export default function url(options = {}) {
     }
   };
 }
+export default url;
 
 function copy(src, dest) {
   return new Promise((resolve, reject) => {

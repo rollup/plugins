@@ -15,3 +15,4 @@ const beep = (opts) => {
 };
 
 module.exports = beep;
+module.exports.beep = beep;

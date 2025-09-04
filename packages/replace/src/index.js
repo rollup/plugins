@@ -52,7 +52,7 @@ function expandTypeofReplacements(replacements) {
   });
 }
 
-export default function replace(options = {}) {
+export function replace(options = {}) {
   const filter = createFilter(options.include, options.exclude);
   const { delimiters = ['\\b', '\\b(?!\\.)'], preventAssignment, objectGuards } = options;
   const replacements = getReplacements(options);
@@ -125,3 +125,4 @@ export default function replace(options = {}) {
     return options.sourceMap !== false && options.sourcemap !== false;
   }
 }
+export default replace;

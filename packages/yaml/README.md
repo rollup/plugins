@@ -40,6 +40,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"yaml is not a function"_, then use the named export instead:
+>
+> ```js
+> import { yaml } from '@rollup/plugin-yaml';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 With an accompanying file `src/index.js`, the local `heroes.yaml` file would now be importable as seen below:

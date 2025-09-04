@@ -16,7 +16,7 @@ type ElementType<T extends Array<any> | undefined> = T extends (infer U)[] ? U :
 
 export type TransformerStage = keyof CustomTransformers;
 type StagedTransformerFactory<T extends TransformerStage> = ElementType<CustomTransformers[T]>;
-type TransformerFactory<T extends TransformerStage> =
+export type TransformerFactory<T extends TransformerStage> =
   | StagedTransformerFactory<T>
   | ProgramTransformerFactory<T>
   | TypeCheckerTransformerFactory<T>;
@@ -112,4 +112,5 @@ export type RollupTypescriptOptions = RollupTypescriptPluginOptions & PartialCom
 /**
  * Seamless integration between Rollup and Typescript.
  */
-export default function typescript(options?: RollupTypescriptOptions): Plugin;
+declare function typescript(options?: RollupTypescriptOptions): Plugin;
+export { typescript, typescript as default };

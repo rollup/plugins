@@ -5,10 +5,12 @@ interface Output {
   map?: SourceMapInput;
 }
 
+export function provideCJSSyntax(code: string): Output | null;
+
 /**
  * A Rollup plugin to replace cjs syntax for esm output bundles.
  *
  * @returns Plugin instance.
  */
-export default function commonjsShim(): Plugin;
-export function provideCJSSyntax(code: string): Output | null;
+declare function esShim(): Plugin;
+export { esShim, esShim as default };

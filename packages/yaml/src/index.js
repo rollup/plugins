@@ -8,7 +8,7 @@ const defaults = {
   extensions: ['.yaml', '.yml']
 };
 
-export default function yaml(opts = {}) {
+export function yaml(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { documentMode, extensions } = options;
   const filter = createFilter(options.include, options.exclude);
@@ -54,3 +54,4 @@ export default function yaml(opts = {}) {
     }
   };
 }
+export default yaml;

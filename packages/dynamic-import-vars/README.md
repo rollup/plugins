@@ -45,6 +45,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"dynamicImportVars is not a function"_, then use the named export instead:
+>
+> ```js
+> import { dynamicImportVars } from '@rollup/plugin-dynamic-import-vars';
+> ```
+
 ### Options
 
 #### `include`

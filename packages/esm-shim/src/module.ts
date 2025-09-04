@@ -14,3 +14,4 @@ export function esmShim(): Plugin {
     }
   };
 }
+export default esmShim;

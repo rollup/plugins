@@ -47,4 +47,5 @@ interface RollupStripOptions {
  * A Rollup plugin to remove debugger statements and functions like `assert.equal` and
  * `console.log` from your code.
  */
-export default function strip(options?: RollupStripOptions): Plugin;
+declare function strip(options?: RollupStripOptions): Plugin;
+export { strip, strip as default };

@@ -7,4 +7,5 @@ export interface RollupVirtualOptions {
 /**
  * A Rollup plugin which loads virtual modules from memory.
  */
-export default function virtual(modules: RollupVirtualOptions): Plugin;
+declare function virtual(modules: RollupVirtualOptions): Plugin;
+export { virtual, virtual as default };

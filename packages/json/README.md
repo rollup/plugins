@@ -40,6 +40,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"json is not a function"_, then use the named export instead:
+>
+> ```js
+> import { json } from '@rollup/plugin-json';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 With an accompanying file `src/index.js`, the local `package.json` file would now be importable as seen below:

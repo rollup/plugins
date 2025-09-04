@@ -44,6 +44,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"inject is not a function"_, then use the named export instead:
+>
+> ```js
+> import { inject } from '@rollup/plugin-inject';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 This configuration above will scan all your files for global Promise usage and plugin will add import to desired module (`import { Promise } from 'es6-promise'` in this case).

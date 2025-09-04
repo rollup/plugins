@@ -28,9 +28,9 @@ npm install @rollup/plugin-beep --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-const beep = require('@rollup/plugin-beep');
+import beep from '@rollup/plugin-beep';
 
-module.exports = {
+export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
@@ -39,6 +39,13 @@ module.exports = {
   plugins: [beep()]
 };
 ```
+
+> [!NOTE]
+> If your editor complains that _"beep is not a function"_, then use the named export instead:
+>
+> ```javascript
+> import { alias } from '@rollup/plugin-alias';
+> ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api). If the build produces any errors, the plugin will write a "beep" character to stderr, which should be audible on most systems.
 
