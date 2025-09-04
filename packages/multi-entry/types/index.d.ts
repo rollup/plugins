@@ -1,19 +1,18 @@
-import type { FilterPattern } from '@rollup/pluginutils';
 import type { Plugin } from 'rollup';
 
-interface RollupMultiEntryOptions {
+export interface RollupMultiEntryOptions {
   /**
    * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin
    * should operate on.
    * By default all files are targeted.
    */
-  include?: FilterPattern;
+  include?: string | string[];
   /**
    * A minimatch pattern, or array of patterns, which specifies the files in the build the plugin
    * should _ignore_.
    * By default no files are ignored.
    */
-  exclude?: FilterPattern;
+  exclude?: string | string[];
   /**
    * - If `true`, instructs the plugin to export named exports to the bundle from all entries.
    * - If `false`, the plugin will not export any entry exports to the bundle.

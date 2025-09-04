@@ -1,11 +1,13 @@
 import { readFileSync } from 'fs';
 
+import typescript from '@rollup/plugin-typescript';
+
 import { createConfig } from '../../shared/rollup.config.mjs';
 
 export default {
   ...createConfig({
     pkg: JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
   }),
-  input: 'src/index.js',
-  plugins: []
+  input: 'src/index.ts',
+  plugins: [typescript()]
 };
