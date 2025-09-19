@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@rollup/plugin-virtual": "^3.0.0",
-    "matched": "^5.0.1"
+    "glob": "^11.0.3"
   },
   "devDependencies": {
     "rollup": "^4.0.0-24"
