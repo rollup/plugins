@@ -2,9 +2,14 @@ import { relative, resolve, sep } from 'path';
 
 import type { Plugin } from 'rollup';
 import { createFilter } from '@rollup/pluginutils';
-import { ESLint } from 'eslint';
+import { ESLint, loadESLint } from 'eslint';
 
 import type { RollupEslintOptions } from '../types';
+
+// New API introduced in v8.57 missing from @types/eslint
+declare module 'eslint' {
+  function loadESLint(): Promise<typeof ESLint>;
+}
 
 function normalizePath(id: string) {
   return relative(process.cwd(), id).split(sep).join('/');
@@ -29,12 +34,17 @@ export default function eslint(options = {} as RollupEslintOptions): Plugin {
     ...eslintOptions
   } = options;
 
-  const eslintInstance = new ESLint(eslintOptions);
+  let eslintInstance: ESLint | null = null;
   const filter = createFilter(include, exclude);
 
   return {
     name: 'eslint',
     async transform(_, id: string) {
+      if (!eslintInstance) {
+        const DefaultESLint = await loadESLint();
+        eslintInstance = new DefaultESLint(eslintOptions);
+      }
+
       const file = normalizePath(id);
       if (!filter(id) || (await eslintInstance.isPathIgnored(file))) {
         return null;

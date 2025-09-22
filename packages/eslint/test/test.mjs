@@ -11,7 +11,7 @@ import eslint from 'current-package';
 test('should lint files', async (t) => {
   let count = 0;
   await rollup({
-    input: './test/fixtures/undeclared.js',
+    input: './test/fixtures/legacy-config/undeclared.js',
     plugins: [
       eslint({
         formatter: (results) => {
@@ -29,7 +29,7 @@ test('should lint files', async (t) => {
 
 test('should not fail with default options', async (t) => {
   await rollup({
-    input: './test/fixtures/undeclared.js',
+    input: './test/fixtures/legacy-config/undeclared.js',
     plugins: [eslint()]
   });
 
@@ -39,11 +39,11 @@ test('should not fail with default options', async (t) => {
 test('should ignore node_modules with exclude option', async (t) => {
   let count = 0;
   await rollup({
-    input: './test/fixtures/modules.js',
+    input: './test/fixtures/legacy-config/modules.js',
     plugins: [
       nodeResolve({ jsnext: true }),
       eslint({
-        overrideConfigFile: './test/fixtures/.eslintrc-babel',
+        overrideConfigFile: './test/fixtures/legacy-config/.eslintrc-babel',
         formatter: () => {
           count += 1;
         }
@@ -57,7 +57,7 @@ test('should ignore node_modules with exclude option', async (t) => {
 test('should ignore files according .eslintignore', async (t) => {
   let count = 0;
   await rollup({
-    input: './test/fixtures/ignored.js',
+    input: './test/fixtures/legacy-config/ignored.js',
     plugins: [
       eslint({
         formatter: () => {
@@ -74,7 +74,7 @@ test('should fail with enabled throwOnWarning and throwOnError options', async (
   await t.throwsAsync(
     async () => {
       await rollup({
-        input: './test/fixtures/use-strict.js',
+        input: './test/fixtures/legacy-config/use-strict.js',
         plugins: [
           eslint({
             throwOnWarning: true,
@@ -92,7 +92,7 @@ test('should fail with enabled throwOnError option', async (t) => {
   await t.throwsAsync(
     async () => {
       await rollup({
-        input: './test/fixtures/use-strict.js',
+        input: './test/fixtures/legacy-config/use-strict.js',
         plugins: [
           eslint({
             throwOnError: true,
@@ -109,7 +109,7 @@ test('should fail with enabled throwOnWarning option', async (t) => {
   await t.throwsAsync(
     async () => {
       await rollup({
-        input: './test/fixtures/use-strict.js',
+        input: './test/fixtures/legacy-config/use-strict.js',
         plugins: [
           eslint({
             throwOnWarning: true,
@@ -124,7 +124,7 @@ test('should fail with enabled throwOnWarning option', async (t) => {
 
 test('should not fail with throwOnError and throwOnWarning disabled', async (t) => {
   await rollup({
-    input: './test/fixtures/use-strict.js',
+    input: './test/fixtures/legacy-config/use-strict.js',
     plugins: [
       eslint({
         throwOnError: false,
@@ -141,7 +141,7 @@ test('should fail with not found formatter', async (t) => {
   await t.throwsAsync(
     async () => {
       await rollup({
-        input: './test/fixtures/use-strict.js',
+        input: './test/fixtures/legacy-config/use-strict.js',
         plugins: [
           eslint({
             formatter: 'not-found-formatter'
@@ -155,7 +155,7 @@ test('should fail with not found formatter', async (t) => {
 
 test('should not fail with found formatter', async (t) => {
   rollup({
-    input: './test/fixtures/use-strict.js',
+    input: './test/fixtures/legacy-config/use-strict.js',
     plugins: [
       eslint({
         formatter: 'stylish'
@@ -168,7 +168,7 @@ test('should not fail with found formatter', async (t) => {
 
 test('should not fail with asynchronous formatter function', async (t) => {
   await rollup({
-    input: './test/fixtures/use-strict.js',
+    input: './test/fixtures/legacy-config/use-strict.js',
     plugins: [
       eslint({
         formatter: async () => 'json'
@@ -181,12 +181,12 @@ test('should not fail with asynchronous formatter function', async (t) => {
 
 test('should fix source code', async (t) => {
   fs.writeFileSync(
-    './test/fixtures/fixable-clone.js',
-    fs.readFileSync('./test/fixtures/fixable.js')
+    './test/fixtures/legacy-config/fixable-clone.js',
+    fs.readFileSync('./test/fixtures/legacy-config/fixable.js')
   );
 
   await rollup({
-    input: './test/fixtures/fixable-clone.js',
+    input: './test/fixtures/legacy-config/fixable-clone.js',
     plugins: [
       eslint({
         fix: true
@@ -195,11 +195,11 @@ test('should fix source code', async (t) => {
   });
 
   t.is(
-    fs.readFileSync('./test/fixtures/fixable-clone.js').toString(),
-    fs.readFileSync('./test/fixtures/fixed.js').toString()
+    fs.readFileSync('./test/fixtures/legacy-config/fixable-clone.js').toString(),
+    fs.readFileSync('./test/fixtures/legacy-config/fixed.js').toString()
   );
 
-  fs.unlinkSync('./test/fixtures/fixable-clone.js');
+  fs.unlinkSync('./test/fixtures/legacy-config/fixable-clone.js');
 });
 
 test('works with cjs plugin', async (t) => {
@@ -207,9 +207,28 @@ test('works with cjs plugin', async (t) => {
   const eslintPluginCjs = require('current-package');
   let count = 0;
   await rollup({
-    input: './test/fixtures/undeclared.js',
+    input: './test/fixtures/legacy-config/undeclared.js',
     plugins: [
       eslintPluginCjs({
+        formatter: (results) => {
+          count += results[0].messages.length;
+          // eslint-disable-next-line prefer-destructuring
+          const { message } = results[0].messages[0];
+          t.is(message, "'x' is not defined.");
+        }
+      })
+    ]
+  });
+
+  t.is(count, 1);
+});
+
+test('works with flat config', async (t) => {
+  let count = 0;
+  await rollup({
+    input: './test/fixtures/flat-config/undeclared.js',
+    plugins: [
+      eslint({
         formatter: (results) => {
           count += results[0].messages.length;
           // eslint-disable-next-line prefer-destructuring
