@@ -1,5 +1,13 @@
 # @rollup/plugin-multi-entry ChangeLog
 
+## v7.0.0
+
+_2025-10-04_
+
+### Breaking Changes
+
+- feat!: ensure deterministic order (#1879)
+
 ## v6.0.1
 
 _2023-10-05_
