@@ -152,7 +152,7 @@ export function nodeResolve(opts = {}) {
 
     const importSpecifierList = [importee];
 
-    if (importer === undefined && !importee[0].match(/^\.?\.?\//)) {
+    if (importer === undefined && importee[0] && !importee[0].match(/^\.?\.?\//)) {
       // For module graph roots (i.e. when importer is undefined), we
       // need to handle 'path fragments` like `foo/bar` that are commonly
       // found in rollup config files. If importee doesn't look like a
