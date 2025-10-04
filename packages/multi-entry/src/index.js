@@ -60,7 +60,9 @@ export default function multiEntry(conf = {}) {
     buildStart(options) {
       const patterns = config.include.concat(config.exclude.map((pattern) => `!${pattern}`));
       const entries = patterns.length
-        ? matched(patterns, { realpath: true }).then((paths) => paths.map(exporter).join('\n'))
+        ? matched(patterns, { realpath: true }).then((paths) =>
+            paths.sort().map(exporter).join('\n')
+          )
         : Promise.resolve('');
 
       virtualisedEntry = virtual({ [options.input]: entries });
