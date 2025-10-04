@@ -1,5 +1,13 @@
 # @rollup/plugin-eslint ChangeLog
 
+## v9.1.0
+
+_2025-10-04_
+
+### Features
+
+- feat: add support for flat configs (#1898)
+
 ## v9.0.5
 
 _2023-10-05_
