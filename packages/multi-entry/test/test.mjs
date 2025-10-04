@@ -9,6 +9,8 @@ import multiEntry from 'current-package';
 
 import { getCode } from '../../../util/test.js';
 
+console.log('kicking github to run workflows because its buggy has hell now thanks microsoft');
+
 test('takes a single file as input', async (t) => {
   const bundle = await rollup({ input: 'test/fixtures/0.js', plugins: [multiEntry()] });
   const code = await getCode(bundle);
