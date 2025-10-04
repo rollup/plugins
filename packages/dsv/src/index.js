@@ -7,7 +7,7 @@ import stripBom from 'strip-bom';
 
 const parsers = { '.csv': csvParse, '.tsv': tsvParse };
 
-export default function dsv(options = {}) {
+export function dsv(options = {}) {
   const filter = createFilter(options.include, options.exclude);
 
   return {
@@ -32,3 +32,4 @@ export default function dsv(options = {}) {
     }
   };
 }
+export default dsv;

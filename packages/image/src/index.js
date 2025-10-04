@@ -33,7 +33,7 @@ const constTemplate = ({ dataUri }) => `
 const getDataUri = ({ format, isSvg, mime, source }) =>
   isSvg ? svgToMiniDataURI(source) : `data:${mime};${format},${source}`;
 
-export default function image(opts = {}) {
+export function image(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const filter = createFilter(options.include, options.exclude);
 
@@ -62,3 +62,4 @@ export default function image(opts = {}) {
     }
   };
 }
+export default image;

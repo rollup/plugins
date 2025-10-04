@@ -122,4 +122,4 @@ ${`    default: return new Promise(function(resolve, reject) {
 }
 
 export default dynamicImportVariables;
-export { dynamicImportToGlob, VariableDynamicImportError };
+export { dynamicImportVariables, dynamicImportToGlob, VariableDynamicImportError };

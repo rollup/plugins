@@ -38,4 +38,5 @@ export interface RollupJsonOptions {
 /**
  * Convert .json files to ES6 modules
  */
-export default function json(options?: RollupJsonOptions): Plugin;
+declare function json(options?: RollupJsonOptions): Plugin;
+export { json, json as default };

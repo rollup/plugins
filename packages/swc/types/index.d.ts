@@ -8,4 +8,5 @@ import type { Options } from '../src';
  * @param options - Plugin options.
  * @returns Plugin instance.
  */
-export default function swc(options?: Options): Plugin;
+declare function swc(options?: Options): Plugin;
+export { swc, swc as default };

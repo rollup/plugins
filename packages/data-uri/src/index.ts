@@ -10,7 +10,7 @@ const mimeTypes = {
   json: 'application/json'
 };
 
-export default function dataUri(): Plugin {
+export function dataUri(): Plugin {
   const resolved: { [key: string]: { mime: string | null; content: string | null } } = {};
 
   return {
@@ -84,3 +84,4 @@ export default function dataUri(): Plugin {
     }
   };
 }
+export default dataUri;

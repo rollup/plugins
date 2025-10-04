@@ -10,7 +10,7 @@ import type { RollupAutoInstallOptions } from '../types';
 
 const execAsync = promisify(exec);
 
-export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin {
+function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin {
   const defaults = {
     // intentionally undocumented options. used for tests
     commands: {
@@ -73,3 +73,4 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
     }
   };
 }
+export { autoInstall, autoInstall as default };

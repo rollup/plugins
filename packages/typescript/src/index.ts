@@ -23,7 +23,7 @@ import { preflight } from './preflight';
 import createWatchProgram, { WatchProgramHelper } from './watchProgram';
 import TSCache from './tscache';
 
-export default function typescript(options: RollupTypescriptOptions = {}): Plugin {
+export function typescript(options: RollupTypescriptOptions = {}): Plugin {
   const {
     cacheDir,
     compilerOptions,
@@ -207,3 +207,4 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     }
   };
 }
+export default typescript;

@@ -230,4 +230,5 @@ interface RollupCommonJSOptions {
 /**
  * Convert CommonJS modules to ES6, so they can be included in a Rollup bundle
  */
-export default function commonjs(options?: RollupCommonJSOptions): Plugin;
+declare function commonjs(options?: RollupCommonJSOptions): Plugin;
+export { commonjs, commonjs as default };

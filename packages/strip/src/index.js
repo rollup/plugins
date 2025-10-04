@@ -31,7 +31,7 @@ function flatten(node) {
   return parts.join('.');
 }
 
-export default function strip(options = {}) {
+export function strip(options = {}) {
   const include = options.include || '**/*.js';
   const { exclude } = options;
   const filter = createFilter(include, exclude);
@@ -151,3 +151,4 @@ export default function strip(options = {}) {
     }
   };
 }
+export default strip;

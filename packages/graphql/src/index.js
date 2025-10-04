@@ -3,7 +3,7 @@ import loader from 'graphql-tag/loader.js';
 
 import { toESModules } from './toESModules';
 
-export default function graphql({ include, exclude } = {}) {
+export function graphql({ include, exclude } = {}) {
   // path filter
   const filter = createFilter(include, exclude);
   // only .graphql, .graphqls (schema), and .gql files
@@ -34,3 +34,4 @@ export default function graphql({ include, exclude } = {}) {
     }
   };
 }
+export default graphql;
