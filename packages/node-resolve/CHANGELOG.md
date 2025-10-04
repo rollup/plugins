@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v16.0.2
+
+_2025-10-04_
+
+### Bugfixes
+
+- fix: error thrown with empty entry (#1893)
+
 ## v16.0.1
 
 _2025-03-11_
