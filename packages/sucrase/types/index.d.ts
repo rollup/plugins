@@ -31,4 +31,5 @@ interface RollupSucraseOptions
  * A Rollup plugin which compiles TypeScript, Flow, JSX, etc with
  * [Sucrase](https://github.com/alangpierce/sucrase).
  */
-export default function sucrase(options?: RollupSucraseOptions): Plugin;
+declare function sucrase(options?: RollupSucraseOptions): Plugin;
+export { sucrase, sucrase as default };

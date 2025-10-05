@@ -30,9 +30,9 @@ npm install @rollup/plugin-html --save-dev
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
 
 ```js
-const html = require('@rollup/plugin-html');
+import html from '@rollup/plugin-html';
 
-module.exports = {
+export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
@@ -41,6 +41,13 @@ module.exports = {
   plugins: [html()]
 };
 ```
+
+> [!NOTE]
+> If your editor complains that _"html is not a function"_, then use the named export instead:
+>
+> ```js
+> import { html } from '@rollup/plugin-html';
+> ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 

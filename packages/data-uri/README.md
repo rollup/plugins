@@ -30,7 +30,7 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 ```js
 import dataUri from '@rollup/plugin-data-uri';
 
-module.exports = {
+export default {
   input: 'src/index.js',
   output: {
     dir: 'output',
@@ -39,6 +39,13 @@ module.exports = {
   plugins: [dataUri()]
 };
 ```
+
+> [!NOTE]
+> If your editor complains that _"dataUri is not a function"_, then use the named export instead:
+>
+> ```js
+> import { dataUri } from '@rollup/plugin-data-uri';
+> ```
 
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api). If the build produces any errors, the plugin will write a "data-uri" character to stderr, which should be audible on most systems.
 

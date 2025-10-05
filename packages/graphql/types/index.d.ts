@@ -17,4 +17,5 @@ export interface RollupGraphqlOptions {
 /**
  * Convert .gql/.graphql files to ES6 modules
  */
-export default function graphql(options?: RollupGraphqlOptions): Plugin;
+declare function graphql(options?: RollupGraphqlOptions): Plugin;
+export { graphql, graphql as default };

@@ -43,6 +43,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"swc is not a function"_, then use the named export instead:
+>
+> ```typescript
+> import { swc } from '@rollup/plugin-swc';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 ## Options

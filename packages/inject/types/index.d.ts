@@ -39,4 +39,5 @@ export interface RollupInjectOptions {
 /**
  * inject strings in files while bundling them.
  */
-export default function inject(options?: RollupInjectOptions): Plugin;
+declare function inject(options?: RollupInjectOptions): Plugin;
+export { inject, inject as default };

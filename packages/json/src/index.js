@@ -1,6 +1,6 @@
 import { createFilter, dataToEsm } from '@rollup/pluginutils';
 
-export default function json(options = {}) {
+export function json(options = {}) {
   const filter = createFilter(options.include, options.exclude);
   const indent = 'indent' in options ? options.indent : '\t';
 
@@ -31,3 +31,4 @@ export default function json(options = {}) {
     }
   };
 }
+export default json;

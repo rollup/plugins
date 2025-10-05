@@ -40,6 +40,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"eslint is not a function"_, then use the named export instead:
+>
+> ```js
+> import { eslint } from '@rollup/plugin-eslint';
+> ```
+
 ## Options
 
 This plugin takes a configuration object intended for the [ESLint constructor](https://eslint.org/docs/developer-guide/nodejs-api#-new-eslintoptions) with the addition of a `throwOnWarning`, `throwOnError`, `formatter`, `include` and `exclude` prop.

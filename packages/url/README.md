@@ -40,6 +40,12 @@ export default {
 };
 ```
 
+> If your editor complains that _"url is not a function"_, then use the named export instead:
+>
+> ```js
+> import { url } from '@rollup/plugin-url';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 With an accompanying file `src/index.js`, the local `image.svg` file would now be importable as seen below:

@@ -5,4 +5,4 @@ runWorker();
 
 export * from './type';
 
-export default terser;
+export { terser, terser as default };
