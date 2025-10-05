@@ -23,6 +23,7 @@ Using npm:
 npm install @rollup/plugin-json --save-dev
 ```
 
+
 ## Usage
 
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
