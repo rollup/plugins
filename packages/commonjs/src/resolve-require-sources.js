@@ -164,7 +164,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
         const requireTargets = await Promise.all(
           sources.map(async ({ source, isConditional }) => {
             // Never analyze or proxy internal modules
-            if (source.startsWith('\0')) {
+            if (source[0] === '\0') {
               return { id: source, allowProxy: false };
             }
             currentlyResolvingForParent.add(source);
