@@ -118,7 +118,7 @@ async function resolveWithExportMap({
   ignoreSideEffectsForRoot,
   allowExportsFolderMapping
 }) {
-  if (importSpecifier.startsWith('#')) {
+  if (importSpecifier[0] === '#') {
     // this is a package internal import, resolve using package imports field
     const resolveResult = await resolvePackageImports({
       importSpecifier,
