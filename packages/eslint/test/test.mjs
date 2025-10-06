@@ -1,7 +1,11 @@
 import fs from 'fs';
-
 import { createRequire } from 'module';
+import process from 'process';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+import eslint9 from 'eslint9';
+import esmock from 'esmock';
 import test from 'ava';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import { rollup } from 'rollup';
@@ -238,6 +242,39 @@ test('works with flat config', async (t) => {
       })
     ]
   });
+
+  t.is(count, 1);
+});
+
+test.serial('works with ESLint v9', async (t) => {
+  // Load the plugin with an override to route 'eslint' imports to ESLint v9
+  const eslint = await esmock('current-package', {
+    eslint: eslint9
+  });
+
+  // ESLint v9 needs to be invoked with a flat config file in the current dir
+  const cwd = process.cwd();
+  const testDir = path.dirname(fileURLToPath(import.meta.url));
+  process.chdir(path.join(testDir, 'fixtures', 'flat-config'));
+
+  let count = 0;
+  try {
+    await rollup({
+      input: './undeclared.js',
+      plugins: [
+        eslint({
+          formatter: (results) => {
+            count += results[0].messages.length;
+            // eslint-disable-next-line prefer-destructuring
+            const { message } = results[0].messages[0];
+            t.is(message, "'x' is not defined.");
+          }
+        })
+      ]
+    });
+  } finally {
+    process.chdir(cwd);
+  }
 
   t.is(count, 1);
 });
