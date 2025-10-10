@@ -378,3 +378,34 @@ console.log(\`the answer is \${answer}\`);
 `
   );
 });
+
+test('allows excluding manual chunks from output transform via `excludeChunks`', async (t) => {
+  const bundle = await rollup({
+    input: `${FIXTURES}chunks/main.js`
+  });
+
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      manualChunks(id) {
+        // Place the dependency into a named manual chunk
+        if (id.endsWith(`${nodePath.sep}chunks${nodePath.sep}dep.js`)) return 'vendor';
+        return undefined;
+      },
+      plugins: [
+        getBabelOutputPlugin({
+          // Transform generated code but skip the 'vendor' manual chunk
+          presets: ['@babel/env'],
+          excludeChunks: ['vendor']
+        })
+      ]
+    },
+    true
+  );
+
+  const codes = output.map(({ code }) => code);
+  // The vendor chunk should remain untransformed and contain the arrow function as-is
+  // Debug output intentionally omitted
+  t.true(codes.some((c) => c.includes('=> 42')));
+});

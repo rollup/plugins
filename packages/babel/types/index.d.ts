@@ -48,6 +48,16 @@ export interface RollupBabelOutputPluginOptions
    * @default false
    */
   allowAllFormats?: boolean;
+  /**
+   * Limit transforming of generated code to specific manual chunks by name.
+   * These patterns are matched against the `chunk.name` value in Rollup's `renderChunk` hook.
+   */
+  includeChunks?: FilterPattern;
+  /**
+   * Exclude specific manual chunks by name from transforming the generated code.
+   * These patterns are matched against the `chunk.name` value in Rollup's `renderChunk` hook.
+   */
+  excludeChunks?: FilterPattern;
 }
 
 export type RollupBabelCustomInputPluginOptions = (
