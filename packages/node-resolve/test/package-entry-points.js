@@ -349,6 +349,23 @@ test('can resolve a package import with a pattern', async (t) => {
   });
 });
 
+test('can resolve a package import pattern to a bare package that uses exports', async (t) => {
+  const bundle = await rollup({
+    input: 'imports-bare-pattern-exports.js',
+    onwarn: () => {
+      t.fail('No warnings were expected');
+    },
+    plugins: [nodeResolve()]
+  });
+  const { module } = await testBundle(t, bundle);
+
+  t.deepEqual(module.exports, {
+    a: 'exported-foo a',
+    b: 'exported-foo b',
+    c: 'exported-foo c'
+  });
+});
+
 test('can override a star pattern using null', async (t) => {
   const errors = [];
   const bundle = await rollup({
