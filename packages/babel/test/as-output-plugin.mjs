@@ -388,10 +388,10 @@ test('allows excluding manual chunks from output transform via `excludeChunks`',
     bundle,
     {
       format: 'es',
+      // eslint-disable-next-line consistent-return
       manualChunks(id) {
         // Place the dependency into a named manual chunk
         if (id.endsWith(`${nodePath.sep}chunks${nodePath.sep}dep.js`)) return 'vendor';
-        return undefined;
       },
       plugins: [
         getBabelOutputPlugin({
