@@ -237,7 +237,6 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
         /* eslint-disable no-unused-vars */
         const {
           allowAllFormats,
-          // new: allow filtering of generated chunks by name
           includeChunks,
           excludeChunks,
           exclude,
