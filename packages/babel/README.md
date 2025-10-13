@@ -200,6 +200,30 @@ export default {
 
 The `include`, `exclude` and `extensions` options are ignored when using `getBabelOutputPlugin` and `createBabelOutputPluginFactory` will produce warnings, and there are a few more points to note that users should be aware of.
 
+When transforming generated code, you can instead control which chunks are processed by matching their manual chunk names via the `includeChunks`/`excludeChunks` options. These patterns are matched against `chunk.name` as provided to Rollup's `renderChunk` hook and are especially useful to skip already-transpiled/minified vendor chunks:
+
+```js
+// rollup.config.js
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
+
+export default {
+  input: 'main.js',
+  manualChunks(id) {
+    if (id.includes('big-library')) return 'vendor';
+  },
+  output: {
+    format: 'es',
+    plugins: [
+      getBabelOutputPlugin({
+        presets: ['@babel/preset-env'],
+        // Do not transform the 'vendor' manual chunk
+        excludeChunks: ['vendor']
+      })
+    ]
+  }
+};
+```
+
 You can also run the plugin twice on the code, once when processing the input files to transpile special syntax to JavaScript and once on the output to transpile to a lower compatibility target:
 
 ```js

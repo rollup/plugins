@@ -209,6 +209,9 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
       overrides
     );
 
+    // cache for chunk name filter (includeChunks/excludeChunks)
+    let chunkNameFilter;
+
     return {
       name: 'babel',
 
@@ -234,6 +237,8 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
         /* eslint-disable no-unused-vars */
         const {
           allowAllFormats,
+          includeChunks,
+          excludeChunks,
           exclude,
           extensions,
           externalHelpers,
@@ -243,6 +248,16 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
           ...babelOptions
         } = unpackOutputPluginOptions(pluginOptionsWithOverrides, outputOptions);
         /* eslint-enable no-unused-vars */
+        // If includeChunks/excludeChunks are specified, filter by chunk.name
+        if (includeChunks != null || excludeChunks != null) {
+          if (!chunkNameFilter) {
+            chunkNameFilter = createFilter(includeChunks, excludeChunks, { resolve: false });
+          }
+          if (!chunkNameFilter(chunk.name)) {
+            // Skip transforming this chunk
+            return null;
+          }
+        }
 
         return transformCode(code, babelOptions, overrides, customOptions, this);
       }

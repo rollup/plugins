@@ -25,8 +25,11 @@ jobs:
 
       - name: Update Master
         run: |
-          git pull --force --no-tags origin master:master
-          git checkout master
+          set -euo pipefail
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          # Avoid implicit merges; update the remote-tracking ref explicitly
+          git fetch --no-tags --force origin "+refs/heads/${DEFAULT_BRANCH}:refs/remotes/origin/${DEFAULT_BRANCH}"
+          git checkout "${DEFAULT_BRANCH}"
           git fetch --tags
 
       - name: Setup Node
@@ -86,10 +89,12 @@ jobs:
 
       - name: Push Release and Cleanup
         run: |
+          set -euo pipefail
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
           pnpm lint:docs
           git checkout .npmrc
           git add . && git commit --amend --no-edit
-          git pull origin master --no-edit
+          git pull origin "${DEFAULT_BRANCH}" --no-edit
           git rebase
-          git push origin HEAD:master
-          git push origin HEAD:master --tags
+          git push origin HEAD:"${DEFAULT_BRANCH}"
+          git push origin HEAD:"${DEFAULT_BRANCH}" --tags
