@@ -28,7 +28,14 @@ jobs:
           fetch-depth: 2
 
       - name: Update Master
-        run: git pull --force --no-tags origin master:master
+        run: |
+          # Ensure the remote-tracking ref exists and is up-to-date without invoking an implicit merge
+           set -euo pipefail
+          # Ensure the remote-tracking ref and local branch ref are up-to-date without invoking an implicit merge
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          git fetch --no-tags --force origin \
+            "+refs/heads/${DEFAULT_BRANCH}:refs/remotes/origin/${DEFAULT_BRANCH}" \
+            "+refs/heads/${DEFAULT_BRANCH}:refs/heads/${DEFAULT_BRANCH}"
 
       - name: Setup Node
         uses: actions/setup-node@v3
