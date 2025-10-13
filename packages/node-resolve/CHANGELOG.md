@@ -1,5 +1,13 @@
 # @rollup/plugin-node-resolve ChangeLog
 
+## v16.0.3
+
+_2025-10-13_
+
+### Bugfixes
+
+- fix: resolve bare targets of package "imports" using export maps; avoid fileURLToPath(null) (#1908)
+
 ## v16.0.2
 
 _2025-10-04_

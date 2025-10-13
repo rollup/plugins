@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-node-resolve",
-  "version": "16.0.2",
+  "version": "16.0.3",
   "publishConfig": {
     "access": "public"
   },
