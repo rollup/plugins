@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v6.1.0
+
+_2025-10-13_
+
+### Features
+
+- feat: allow excluding manual chunks when transforming generated code (#1906)
+
 ## v6.0.4
 
 _2023-10-05_
