@@ -263,8 +263,7 @@ export default function commonjs(options = {}) {
 
       if (isWrappedId(id, EXTERNAL_SUFFIX)) {
         const actualId = unwrapId(id, EXTERNAL_SUFFIX);
-        const isNodeBuiltin = actualId.startsWith('node:');
-        if (isNodeBuiltin) {
+        if (actualId.startsWith('node:')) {
           return getExternalBuiltinRequireProxy(actualId);
         }
         return getUnknownRequireProxy(
