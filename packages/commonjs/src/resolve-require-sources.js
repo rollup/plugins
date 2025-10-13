@@ -5,6 +5,7 @@ import {
   isWrappedId,
   PROXY_SUFFIX,
   wrapId,
+  unwrapId,
   WRAPPED_SUFFIX
 } from './helpers';
 import { resolveExtensions } from './resolve-id';
@@ -190,8 +191,21 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
         fullyAnalyzedModules[parentId] = true;
         return requireTargets.map(({ id: dependencyId, allowProxy }, index) => {
           // eslint-disable-next-line no-multi-assign
-          const isCommonJS = (parentMeta.isRequiredCommonJS[dependencyId] =
+          let isCommonJS = (parentMeta.isRequiredCommonJS[dependencyId] =
             getTypeForFullyAnalyzedModule(dependencyId));
+          // Special-case external Node built-ins to be handled via a lazy __require
+          // helper instead of hoisted ESM imports when strict wrapping is used.
+          if (
+            parentMeta.initialCommonJSType === IS_WRAPPED_COMMONJS &&
+            !allowProxy &&
+            isWrappedId(dependencyId, EXTERNAL_SUFFIX)
+          ) {
+            const actualId = unwrapId(dependencyId, EXTERNAL_SUFFIX);
+            const isNodeBuiltin = actualId.startsWith('node:');
+            if (isNodeBuiltin) {
+              isCommonJS = IS_WRAPPED_COMMONJS;
+            }
+          }
           const isWrappedCommonJS = isCommonJS === IS_WRAPPED_COMMONJS;
           fullyAnalyzedModules[dependencyId] = true;
           return {

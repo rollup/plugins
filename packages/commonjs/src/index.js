@@ -25,7 +25,8 @@ import {
   getEntryProxy,
   getEsImportProxy,
   getStaticRequireProxy,
-  getUnknownRequireProxy
+  getUnknownRequireProxy,
+  getExternalBuiltinRequireProxy
 } from './proxies';
 import getResolveId from './resolve-id';
 import { getRequireResolver } from './resolve-require-sources';
@@ -262,6 +263,10 @@ export default function commonjs(options = {}) {
 
       if (isWrappedId(id, EXTERNAL_SUFFIX)) {
         const actualId = unwrapId(id, EXTERNAL_SUFFIX);
+        const isNodeBuiltin = actualId.startsWith('node:');
+        if (isNodeBuiltin) {
+          return getExternalBuiltinRequireProxy(actualId);
+        }
         return getUnknownRequireProxy(
           actualId,
           isEsmExternal(actualId) ? getRequireReturnsDefault(actualId) : true
