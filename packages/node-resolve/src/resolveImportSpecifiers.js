@@ -125,9 +125,18 @@ async function resolveWithExportMap({
       importer,
       moduleDirs: moduleDirectories,
       conditions: exportConditions,
+      // Resolve targets of "imports" mappings using the same algorithm
+      // we use for normal specifiers: try export maps first and then
+      // fall back to classic resolution. This is important for cases
+      // like "#foo/*": "@scope/pkg/*" where the target package relies
+      // on "exports" to expose subpaths. Using the classic resolver
+      // alone would fail to find those subpaths.
       resolveId(id /* , parent*/) {
-        return resolveIdClassic({
-          importSpecifier: id,
+        return resolveImportSpecifiers({
+          importer,
+          importSpecifierList: [id],
+          exportConditions,
+          // pass-through of the rest of the context
           packageInfoCache,
           extensions,
           mainFields,
@@ -135,11 +144,22 @@ async function resolveWithExportMap({
           useBrowserOverrides,
           baseDir,
           moduleDirectories,
-          modulePaths
+          modulePaths,
+          rootDir,
+          ignoreSideEffectsForRoot,
+          allowExportsFolderMapping
         });
       }
     });
 
+    if (resolveResult == null) {
+      // When the target of an "imports" mapping cannot be resolved,
+      // surface a proper resolve error instead of throwing from
+      // fileURLToPath(null).
+      throw new ResolveError(
+        `Could not resolve import "${importSpecifier}" in ${importer} using imports.`
+      );
+    }
     const location = fileURLToPath(resolveResult);
     return {
       location: preserveSymlinks ? location : await resolveSymlink(location),
