@@ -85,3 +85,16 @@ export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) 
     syntheticNamedExports: '__moduleExports'
   };
 }
+
+// For external Node built-ins required from wrapped CommonJS modules, we must not
+// hoist an ESM import of the built-in (which would eagerly load it). Instead,
+// expose a lazy `__require()` that resolves the built-in at runtime via
+// `createRequire(import.meta.url)`.
+export function getExternalBuiltinRequireProxy(id) {
+  const stringifiedId = JSON.stringify(id);
+  return (
+    `import { createRequire } from 'node:module';\n` +
+    `const require = createRequire(import.meta.url);\n` +
+    `export function __require() { return require(${stringifiedId}); }`
+  );
+}
