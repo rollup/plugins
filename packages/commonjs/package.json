@@ -1,6 +1,6 @@
 {
   "name": "@rollup/plugin-commonjs",
-  "version": "28.0.6",
+  "version": "28.0.7",
   "publishConfig": {
     "access": "public"
   },

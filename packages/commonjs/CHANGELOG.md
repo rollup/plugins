@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.7
+
+_2025-10-14_
+
+### Bugfixes
+
+- fix: avoid hoisting dynamically required node: builtins under strictRequires (#1909)
+
 ## v28.0.6
 
 _2025-06-17_
