@@ -210,7 +210,7 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
           fullyAnalyzedModules[dependencyId] = true;
           return {
             wrappedModuleSideEffects:
-              isWrappedCommonJS && rollupContext.getModuleInfo(dependencyId).moduleSideEffects,
+              isWrappedCommonJS && rollupContext.getModuleInfo(dependencyId)?.moduleSideEffects,
             source: sources[index].source,
             id: allowProxy
               ? wrapId(dependencyId, isWrappedCommonJS ? WRAPPED_SUFFIX : PROXY_SUFFIX)
