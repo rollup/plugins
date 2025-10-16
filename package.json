@@ -27,6 +27,7 @@
     "chalk": "^4.1.0",
     "codecov-lite": "2.0.0",
     "del-cli": "^5.0.0",
+    "eslint": "^8.57.1",
     "eslint-config-rollup": "^3.0.1",
     "esm": "^3.2.25",
     "execa": "^5.1.1",
