@@ -195,22 +195,35 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
             getTypeForFullyAnalyzedModule(dependencyId));
           // Special-case external Node built-ins to be handled via a lazy __require
           // helper instead of hoisted ESM imports when strict wrapping is used.
+          const isExternalWrapped = isWrappedId(dependencyId, EXTERNAL_SUFFIX);
           if (
             parentMeta.initialCommonJSType === IS_WRAPPED_COMMONJS &&
             !allowProxy &&
-            isWrappedId(dependencyId, EXTERNAL_SUFFIX)
+            isExternalWrapped
           ) {
-            const actualId = unwrapId(dependencyId, EXTERNAL_SUFFIX);
-            const isNodeBuiltin = actualId.startsWith('node:');
-            if (isNodeBuiltin) {
+            const actualExternalId = unwrapId(dependencyId, EXTERNAL_SUFFIX);
+            if (actualExternalId.startsWith('node:')) {
               isCommonJS = IS_WRAPPED_COMMONJS;
+              parentMeta.isRequiredCommonJS[dependencyId] = isCommonJS;
             }
           }
           const isWrappedCommonJS = isCommonJS === IS_WRAPPED_COMMONJS;
           fullyAnalyzedModules[dependencyId] = true;
+          const moduleInfo =
+            isWrappedCommonJS && !isExternalWrapped
+              ? rollupContext.getModuleInfo(dependencyId)
+              : null;
+          // For wrapped dependencies, annotate the generated require call as pure only
+          // when Rollup has module info and it explicitly reports no side effects.
+          // Note: For external Node built-ins (handled via EXTERNAL_SUFFIX), the module
+          // has not been loaded yet at this point and getModuleInfo returns null.
+          // Default to side effects = true in that case to be safe.
+          // Preserve Rollup's tri-state semantics (true | false | 'no-treeshake') when available.
+          const wrappedModuleSideEffects = !isWrappedCommonJS
+            ? false
+            : moduleInfo?.moduleSideEffects ?? true;
           return {
-            wrappedModuleSideEffects:
-              isWrappedCommonJS && rollupContext.getModuleInfo(dependencyId).moduleSideEffects,
+            wrappedModuleSideEffects,
             source: sources[index].source,
             id: allowProxy
               ? wrapId(dependencyId, isWrappedCommonJS ? WRAPPED_SUFFIX : PROXY_SUFFIX)
