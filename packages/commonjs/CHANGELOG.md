@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.8
+
+_2025-10-16_
+
+### Bugfixes
+
+- fix: guard moduleSideEffects for wrapped externals (#1914)
+
 ## v28.0.7
 
 _2025-10-14_
