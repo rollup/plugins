@@ -35,7 +35,7 @@ export function isUrl(str: string) {
  * Conditions is an export object where all keys are conditions like 'node' (aka do not with '.')
  */
 export function isConditions(exports: any) {
-  return typeof exports === 'object' && Object.keys(exports).every((k) => !k.startsWith('.'));
+  return typeof exports === 'object' && Object.keys(exports).every((k) => k[0] !== '.');
 }
 
 /**
@@ -50,7 +50,7 @@ export function isMappings(exports: any) {
  */
 export function isMixedExports(exports: Record<string, any>) {
   const keys = Object.keys(exports);
-  return keys.some((k) => k.startsWith('.')) && keys.some((k) => !k.startsWith('.'));
+  return keys.some((k) => k[0] === '.') && keys.some((k) => k[0] !== '.');
 }
 
 export function createBaseErrorMsg(importSpecifier: string, importer: string) {
