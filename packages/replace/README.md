@@ -46,6 +46,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"replace is not a function"_, then use the named export instead:
+>
+> ```js
+> import { replace } from '@rollup/plugin-replace';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 The configuration above will replace every instance of `process.env.NODE_ENV` with `"production"` and `__buildDate__` with the result of the given function in any file included in the build.

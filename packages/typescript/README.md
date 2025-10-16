@@ -47,6 +47,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"typescript is not a function"_, then use the named export instead:
+>
+> ```js
+> import { typescript } from '@rollup/plugin-typescript';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 ## Options

@@ -92,7 +92,7 @@ const defaults: Required<RollupHtmlOptions> = {
   addScriptsToHead: false
 };
 
-export default function html(opts: RollupHtmlOptions = {}): Plugin {
+export function html(opts: RollupHtmlOptions = {}): Plugin {
   const {
     addScriptsToHead,
     attributes,
@@ -145,3 +145,4 @@ export default function html(opts: RollupHtmlOptions = {}): Plugin {
     }
   };
 }
+export default html;

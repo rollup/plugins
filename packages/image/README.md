@@ -50,6 +50,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"image is not a function"_, then use the named export instead:
+>
+> ```js
+> import { image } from '@rollup/plugin-image';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 Once the bundle is executed, the `console.log` will display the Base64 encoded representation of the image.

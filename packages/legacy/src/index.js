@@ -4,7 +4,7 @@ import { normalizePath } from '@rollup/pluginutils';
 
 const validName = /^[a-zA-Z_$][a-zA-Z$_0-9]*$/;
 
-export default function legacy(options) {
+export function legacy(options) {
   const exports = {};
   Object.keys(options).forEach((file) => {
     exports[normalizePath(resolve(file))] = options[file];
@@ -50,3 +50,4 @@ export default function legacy(options) {
     }
   };
 }
+export default legacy;

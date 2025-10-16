@@ -19,4 +19,5 @@ export interface RollupAutoInstallOptions {
 /**
  * 🍣 A Rollup plugin which automatically installs dependencies that are imported by a bundle, even if not yet in `package.json`.
  */
-export default function auto(options?: RollupAutoInstallOptions): Plugin;
+declare function autoInstall(options?: RollupAutoInstallOptions): Plugin;
+export { autoInstall, autoInstall as default };

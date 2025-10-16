@@ -6,7 +6,7 @@ import type { Plugin, RenderedChunk } from 'rollup';
 
 import type { RollupRunOptions } from '../types';
 
-export default function run(opts: RollupRunOptions = {}): Plugin {
+export function run(opts: RollupRunOptions = {}): Plugin {
   let input: string;
   let proc: ChildProcess;
 
@@ -82,3 +82,4 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
     }
   };
 }
+export default run;

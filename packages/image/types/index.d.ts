@@ -31,4 +31,5 @@ interface RollupImageOptions {
   dom?: boolean;
 }
 
-export default function image(options?: RollupImageOptions): Plugin;
+declare function image(options?: RollupImageOptions): Plugin;
+export { image, image as default };

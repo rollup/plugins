@@ -13,4 +13,5 @@ export interface RollupRunOptions extends ForkOptions {
  * Run your bundles in Node once they're built
  * @param options These are passed through to `child_process.fork(..)`
  */
-export default function run(options?: RollupRunOptions): Plugin;
+declare function run(options?: RollupRunOptions): Plugin;
+export { run, run as default };

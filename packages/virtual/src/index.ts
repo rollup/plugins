@@ -6,7 +6,7 @@ import type { RollupVirtualOptions } from '../types';
 
 const PREFIX = `\0virtual:`;
 
-export default function virtual(modules: RollupVirtualOptions): Plugin {
+export function virtual(modules: RollupVirtualOptions): Plugin {
   const resolvedIds = new Map<string, string>();
 
   Object.keys(modules).forEach((id) => {
@@ -41,3 +41,4 @@ export default function virtual(modules: RollupVirtualOptions): Plugin {
     }
   };
 }
+export default virtual;

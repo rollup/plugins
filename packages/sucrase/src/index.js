@@ -4,7 +4,7 @@ import path from 'path';
 import { transform } from 'sucrase';
 import { createFilter } from '@rollup/pluginutils';
 
-export default function sucrase(opts = {}) {
+export function sucrase(opts = {}) {
   const filter = createFilter(opts.include, opts.exclude);
 
   return {
@@ -60,3 +60,4 @@ export default function sucrase(opts = {}) {
     }
   };
 }
+export default sucrase;

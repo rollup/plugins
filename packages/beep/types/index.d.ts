@@ -3,4 +3,5 @@ import type { Plugin } from 'rollup';
 /**
  * 🍣 A Rollup plugin that beeps when a build ends with errors.
  */
-export default function beep(): Plugin;
+declare function beep(): Plugin;
+export { beep, beep as default };

@@ -46,6 +46,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"esmShim is not a function"_, then use the named export instead:
+>
+> ```typescript
+> import { esmShim } from '@rollup/plugin-esm-shim';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api).
 
 ## Meta

@@ -15,7 +15,7 @@ function normalizePath(id: string) {
   return relative(process.cwd(), id).split(sep).join('/');
 }
 
-export default function eslint(options = {} as RollupEslintOptions): Plugin {
+export function eslint(options = {} as RollupEslintOptions): Plugin {
   if (typeof options === 'string') {
     const configFile = resolve(process.cwd(), options);
     // eslint-disable-next-line global-require, import/no-dynamic-require, no-param-reassign
@@ -91,3 +91,4 @@ export default function eslint(options = {} as RollupEslintOptions): Plugin {
     }
   };
 }
+export default eslint;

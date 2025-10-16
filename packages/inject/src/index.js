@@ -51,7 +51,7 @@ const flatten = (startNode) => {
   return { name, keypath: parts.join('.') };
 };
 
-export default function inject(options) {
+export function inject(options) {
   if (!options) throw new Error('Missing options');
 
   const filter = createFilter(options.include, options.exclude);
@@ -207,3 +207,4 @@ export default function inject(options) {
     }
   };
 }
+export default inject;

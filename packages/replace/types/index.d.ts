@@ -54,4 +54,5 @@ export interface RollupReplaceOptions {
 /**
  * Replace strings in files while bundling them.
  */
-export default function replace(options?: RollupReplaceOptions): Plugin;
+declare function replace(options?: RollupReplaceOptions): Plugin;
+export { replace, replace as default };

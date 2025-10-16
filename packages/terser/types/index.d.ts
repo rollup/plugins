@@ -12,4 +12,5 @@ export interface Options extends MinifyOptions {
  * @param options - Plugin options.
  * @returns Plugin instance.
  */
-export default function terser(options?: Options): Plugin;
+declare function terser(options?: Options): Plugin;
+export { terser, terser as default };

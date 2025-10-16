@@ -62,7 +62,7 @@ function resolveCustomResolver(
   return null;
 }
 
-export default function alias(options: RollupAliasOptions = {}): Plugin {
+function alias(options: RollupAliasOptions = {}): Plugin {
   const entries = getEntries(options);
 
   if (entries.length === 0) {
@@ -114,3 +114,4 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
     }
   };
 }
+export { alias, alias as default };

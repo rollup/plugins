@@ -67,6 +67,13 @@ export default {
 };
 ```
 
+> [!NOTE]
+> If your editor complains that _"alias is not a function"_, then use the named export instead:
+>
+> ```js
+> import { alias } from '@rollup/plugin-alias';
+> ```
+
 Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#command-line-reference) or the [API](https://www.rollupjs.org/guide/en/#javascript-api). If the build produces any errors, the plugin will write a 'alias' character to stderr, which should be audible on most systems.
 
 ## Options

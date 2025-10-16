@@ -17,4 +17,5 @@ export interface RollupBubleOptions extends TransformOptions {
 /**
  * Convert ES2015 with buble.
  */
-export default function buble(options?: RollupBubleOptions): Plugin;
+declare function buble(options?: RollupBubleOptions): Plugin;
+export { buble, buble as default };
