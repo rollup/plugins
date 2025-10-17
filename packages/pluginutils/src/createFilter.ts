@@ -2,7 +2,7 @@ import { resolve, posix, isAbsolute } from 'path';
 
 import pm from 'picomatch';
 
-import type { CreateFilter } from '../types';
+import type { CreateFilter, CreateHookFilter } from '../types';
 
 import ensureArray from './utils/ensureArray';
 import normalizePath from './normalizePath';
@@ -23,53 +23,60 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
   return posix.join(basePath, normalizePath(id));
 }
 
-const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
+const createHookFilter: CreateHookFilter = function createHookFilter(include?, exclude?, options?) {
   const resolutionBase = options && options.resolve;
 
-  const getMatcher = (id: string | RegExp) =>
-    id instanceof RegExp
-      ? id
-      : {
-          test: (what: string) => {
-            // this refactor is a tad overly verbose but makes for easy debugging
-            const pattern = getMatcherString(id, resolutionBase);
-            const fn = pm(pattern, { dot: true });
-            const result = fn(what);
-
-            return result;
-          }
-        };
+  const getMatcher = (id: string | RegExp) => {
+    if (id instanceof RegExp) {
+      // Copy to avoid modifying user-provided regexps
+      return new RegExp(id);
+    }
+    // Convert the pattern to a RegExp, so that rollup doesn't resolve and
+    // normalize patterns. We want to control that logic ourselves via the user
+    // provided options.resolve value.
+    return pm.makeRe(getMatcherString(id, resolutionBase), { dot: true });
+  };
 
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
-  if (!includeMatchers.length && !excludeMatchers.length)
-    return (id) => typeof id === 'string' && !id.includes('\0');
+  excludeMatchers.push(/\0/);
+
+  return {
+    include: includeMatchers,
+    exclude: excludeMatchers
+  };
+};
+
+const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
+  const { include: includeMatchers, exclude: excludeMatchers } = createHookFilter(
+    include,
+    exclude,
+    options
+  ) as {
+    include: RegExp[];
+    exclude: RegExp[];
+  };
 
   return function result(id: string | unknown): boolean {
     if (typeof id !== 'string') return false;
-    if (id.includes('\0')) return false;
 
     const pathId = normalizePath(id);
 
     for (let i = 0; i < excludeMatchers.length; ++i) {
-      const matcher = excludeMatchers[i];
-      if (matcher instanceof RegExp) {
-        matcher.lastIndex = 0;
-      }
-      if (matcher.test(pathId)) return false;
+      const excludeMatcher = excludeMatchers[i];
+      excludeMatcher.lastIndex = 0;
+      if (excludeMatcher.test(pathId)) return false;
     }
 
     for (let i = 0; i < includeMatchers.length; ++i) {
-      const matcher = includeMatchers[i];
-      if (matcher instanceof RegExp) {
-        matcher.lastIndex = 0;
-      }
-      if (matcher.test(pathId)) return true;
+      const includeMatcher = includeMatchers[i];
+      includeMatcher.lastIndex = 0;
+      if (includeMatcher.test(pathId)) return true;
     }
 
     return !includeMatchers.length;
   };
 };
 
-export { createFilter as default };
+export { createFilter, createHookFilter };

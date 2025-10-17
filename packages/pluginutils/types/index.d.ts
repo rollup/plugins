@@ -56,6 +56,32 @@ export function createFilter(
   options?: { resolve?: string | false | null }
 ): (id: string | unknown) => boolean;
 
+export type StringFilter<Value = string | RegExp> =
+  | (Value | Value[])
+  | {
+      include?: Value | Value[];
+      exclude?: Value | Value[];
+    };
+
+/**
+ * Constructs a StringFilter object which can be passed to Rollup for module filtering.
+ * Provides the same filtering behavior as `createFilter()` but returns a declarative
+ * filter object instead of a function.
+ *
+ * @param include If omitted or empty, all modules are included by default.
+ * @param exclude ID must not match any of the `exclude` patterns.
+ * @param options Optionally resolves patterns against a directory other than `process.cwd()`.
+ * If a `string` is specified, it will be used as the base directory.
+ * Relative paths are resolved against `process.cwd()` first.
+ * If `false`, patterns will not be resolved (useful for virtual module names).
+ * @returns A StringFilter object compatible with Rollup's filter configuration.
+ */
+export function createHookFilter(
+  include?: FilterPattern,
+  exclude?: FilterPattern,
+  options?: { resolve?: string | false | null }
+): StringFilter;
+
 /**
  * Transforms objects into tree-shakable ES Module imports.
  * @param data An object to transform into an ES module.
@@ -102,6 +128,7 @@ export function suffixRegex(str: string | string[], flags?: string): RegExp;
 export type AddExtension = typeof addExtension;
 export type AttachScopes = typeof attachScopes;
 export type CreateFilter = typeof createFilter;
+export type CreateHookFilter = typeof createHookFilter;
 export type ExactRegex = typeof exactRegex;
 export type ExtractAssignedNames = typeof extractAssignedNames;
 export type MakeLegalIdentifier = typeof makeLegalIdentifier;
@@ -114,6 +141,7 @@ declare const defaultExport: {
   addExtension: AddExtension;
   attachScopes: AttachScopes;
   createFilter: CreateFilter;
+  createHookFilter: CreateHookFilter;
   dataToEsm: DataToEsm;
   exactRegex: ExactRegex;
   extractAssignedNames: ExtractAssignedNames;

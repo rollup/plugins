@@ -2,7 +2,7 @@ import { resolve as rawResolve } from 'path';
 
 import test from 'ava';
 
-import { createFilter, normalizePath } from '../';
+import { createFilter, normalizePath, createHookFilter } from '../';
 
 const resolve = (...parts: string[]) => normalizePath(rawResolve(...parts));
 
@@ -188,6 +188,12 @@ test('pass a regular expression to the include parameter with g flag', (t) => {
   t.truthy(filter(resolve('zxcvbnmasdfg')));
 });
 
+test('pass a regular expression to the include parameter with y flag', (t) => {
+  const filter = createFilter([/zxcvbnmasdfg/y]);
+  t.truthy(filter('zxcvbnmasdfg'));
+  t.truthy(filter('zxcvbnmasdfg'));
+});
+
 test('pass a regular expression to the exclude parameter', (t) => {
   const filter = createFilter(null, [/zxcvbnmasdfg/]);
   t.falsy(filter(resolve('zxcvbnmasdfg')));
@@ -198,4 +204,43 @@ test('pass a regular expression to the exclude parameter with g flag', (t) => {
   const filter = createFilter(null, [/zxcvbnmasdfg/g]);
   t.falsy(filter(resolve('zxcvbnmasdfg')));
   t.falsy(filter(resolve('zxcvbnmasdfg')));
+});
+
+test('pass a regular expression to the exclude parameter with y flag', (t) => {
+  const filter = createFilter(null, [/zxcvbnmasdfg/y]);
+  t.falsy(filter('zxcvbnmasdfg'));
+  t.falsy(filter('zxcvbnmasdfg'));
+});
+
+interface StringFilterSubset {
+  include: RegExp[];
+  exclude: RegExp[];
+}
+
+test('createHookFilter always returns an object with include and exclude arrays', (t) => {
+  const filter = createHookFilter() as StringFilterSubset;
+  t.true(Array.isArray((filter as any).include));
+  t.is((filter as any).include.length, 0);
+  t.true(Array.isArray((filter as any).exclude));
+});
+
+test('createHookFilter populates include and exclude from provided patterns', (t) => {
+  const filter = createHookFilter(['*.js'], ['*.test.js'], {
+    resolve: false
+  }) as StringFilterSubset;
+  t.true(filter.include.some((re) => re.test('foo.js')));
+  t.true(filter.exclude.some((re) => re.test('foo.test.js')));
+});
+
+test('createHookFilter resolves patterns using resolve base path', (t) => {
+  const filter = createHookFilter(['*.js'], ['*.test.js'], {
+    resolve: '/basedir'
+  }) as StringFilterSubset;
+  t.true(filter.include.some((re) => re.test('/basedir/foo.js')));
+  t.true(filter.exclude.some((re) => re.test('/basedir/foo.test.js')));
+});
+
+test('createHookFilter passes through RegExp', (t) => {
+  const filter = createHookFilter([/zxcvbnmasdfg/]) as StringFilterSubset;
+  t.true(filter.include.some((re) => re.source === 'zxcvbnmasdfg'));
 });
