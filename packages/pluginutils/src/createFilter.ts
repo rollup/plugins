@@ -2,7 +2,7 @@ import { resolve, posix, isAbsolute } from 'path';
 
 import pm from 'picomatch';
 
-import type { CreateFilter } from '../types';
+import type { CreateFilter, CreateHookFilter } from '../types';
 
 import ensureArray from './utils/ensureArray';
 import normalizePath from './normalizePath';
@@ -23,53 +23,71 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
   return posix.join(basePath, normalizePath(id));
 }
 
-const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
+const createHookFilter: CreateHookFilter = function createHookFilter(include?, exclude?, options?) {
   const resolutionBase = options && options.resolve;
 
-  const getMatcher = (id: string | RegExp) =>
-    id instanceof RegExp
-      ? id
-      : {
-          test: (what: string) => {
-            // this refactor is a tad overly verbose but makes for easy debugging
-            const pattern = getMatcherString(id, resolutionBase);
-            const fn = pm(pattern, { dot: true });
-            const result = fn(what);
-
-            return result;
-          }
-        };
+  const getMatcher = (id: string | RegExp) => {
+    if (id instanceof RegExp) {
+      return new RegExp(id);
+    }
+    return getMatcherString(id, resolutionBase);
+  };
 
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
 
-  if (!includeMatchers.length && !excludeMatchers.length)
-    return (id) => typeof id === 'string' && !id.includes('\0');
+  excludeMatchers.push(/\0/);
+
+  return {
+    include: includeMatchers,
+    exclude: excludeMatchers
+  };
+};
+
+const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
+  const { include: includeFilters, exclude: excludeFilters } = createHookFilter(
+    include,
+    exclude,
+    options
+  ) as {
+    include: (string | RegExp)[];
+    exclude: (string | RegExp)[];
+  };
+
+  const getMatcher = (id: string | RegExp) => {
+    if (id instanceof RegExp) {
+      const reg = new RegExp(id);
+      return {
+        test: (what: string) => {
+          reg.lastIndex = 0;
+          return reg.test(what);
+        }
+      };
+    }
+    const fn = pm(id, { dot: true });
+    return {
+      test: (what: string) => fn(what)
+    };
+  };
+
+  const includeMatchers = includeFilters.map((id) => getMatcher(id));
+  const excludeMatchers = excludeFilters.map((id) => getMatcher(id));
 
   return function result(id: string | unknown): boolean {
     if (typeof id !== 'string') return false;
-    if (id.includes('\0')) return false;
 
     const pathId = normalizePath(id);
 
     for (let i = 0; i < excludeMatchers.length; ++i) {
-      const matcher = excludeMatchers[i];
-      if (matcher instanceof RegExp) {
-        matcher.lastIndex = 0;
-      }
-      if (matcher.test(pathId)) return false;
+      if (excludeMatchers[i].test(pathId)) return false;
     }
 
     for (let i = 0; i < includeMatchers.length; ++i) {
-      const matcher = includeMatchers[i];
-      if (matcher instanceof RegExp) {
-        matcher.lastIndex = 0;
-      }
-      if (matcher.test(pathId)) return true;
+      if (includeMatchers[i].test(pathId)) return true;
     }
 
     return !includeMatchers.length;
   };
 };
 
-export { createFilter as default };
+export { createFilter, createHookFilter };

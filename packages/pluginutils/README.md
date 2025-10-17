@@ -139,6 +139,54 @@ export default function myPlugin(options = {}) {
 }
 ```
 
+### createHookFilter
+
+Constructs a StringFilter object which can be passed to Rollup for module filtering. Provides the same filtering behavior as `createFilter()` but returns a declarative filter object instead of a function. The content of the
+returned object is not guaranteed to be stable between versions.
+
+Parameters: `(include?: <picomatch>, exclude?: <picomatch>, options?: Object)`<br>
+Returns: `StringFilter`
+
+_Note: Please see the TypeScript definition for complete documentation of the return type_
+
+#### `include` and `exclude`
+
+Type: `String | RegExp | Array[...String|RegExp]`<br>
+
+A valid [`picomatch`](https://github.com/micromatch/picomatch#globbing-features) pattern, or array of patterns. If `options.include` is omitted or has zero length, filter will return `true` by default. Otherwise, an ID must match one or more of the `picomatch` patterns, and must not match any of the `options.exclude` patterns.
+
+Note that `picomatch` patterns are very similar to [`minimatch`](https://github.com/isaacs/minimatch#readme) patterns, and in most use cases, they are interchangeable. If you have more specific pattern matching needs, you can view [this comparison table](https://github.com/micromatch/picomatch#library-comparisons) to learn more about where the libraries differ.
+
+#### `options`
+
+##### `resolve`
+
+Type: `String | Boolean | null`
+
+Optionally resolves the patterns against a directory other than `process.cwd()`. If a `String` is specified, then the value will be used as the base directory. Relative paths will be resolved against `process.cwd()` first. If `false`, then the patterns will not be resolved against any directory. This can be useful if you want to create a filter for virtual module names.
+
+#### Usage
+
+```js
+import { createHookFilter } from '@rollup/pluginutils';
+
+export default function myPlugin(options = {}) {
+  return {
+    transform: {
+      filter: {
+        // assume that the myPlugin accepts options of `options.include` and `options.exclude`
+        id: createHookFilter(options.include, options.exclude, {
+          resolve: '/my/base/dir'
+        })
+      },
+      handler(code) {
+        // implement the transformation...
+      }
+    }
+  };
+}
+```
+
 ### dataToEsm
 
 Transforms objects into tree-shakable ES Module imports.

@@ -1,6 +1,6 @@
 import addExtension from './addExtension';
 import attachScopes from './attachScopes';
-import createFilter from './createFilter';
+import { createFilter, createHookFilter } from './createFilter';
 import dataToEsm from './dataToEsm';
 import extractAssignedNames from './extractAssignedNames';
 import makeLegalIdentifier from './makeLegalIdentifier';
@@ -11,6 +11,7 @@ export {
   addExtension,
   attachScopes,
   createFilter,
+  createHookFilter,
   dataToEsm,
   exactRegex,
   extractAssignedNames,
@@ -25,6 +26,7 @@ export default {
   addExtension,
   attachScopes,
   createFilter,
+  createHookFilter,
   dataToEsm,
   exactRegex,
   extractAssignedNames,
