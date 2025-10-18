@@ -1,5 +1,13 @@
 # @rollup/plugin-multi-entry ChangeLog
 
+## v7.1.0
+
+_2025-10-18_
+
+### Features
+
+- feat: support watch mode (#1883)
+
 ## v7.0.0
 
 _2025-10-04_
