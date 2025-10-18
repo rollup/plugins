@@ -147,3 +147,40 @@ test('deterministic output, regardless of input order', async (t) => {
 
   t.is(code1, code2);
 });
+
+test('correctly extracts watch directories from glob patterns', async (t) => {
+  const plugin = multiEntry();
+  const options = plugin.options({
+    input: ['test/fixtures/*.js', 'src/**/*.js', './lib/{util,helper}.js']
+  });
+
+  const watchedDirs = [];
+  await plugin.buildStart.call(
+    {
+      meta: { watchMode: true },
+      addWatchFile: (dir) => {
+        watchedDirs.push(dir);
+      }
+    },
+    options
+  );
+
+  t.deepEqual(watchedDirs, ['test/fixtures', 'src', './lib']);
+});
+
+test('does not watch directories when not in watch mode', async (t) => {
+  const plugin = multiEntry();
+  const options = plugin.options({ input: 'test/fixtures/*.js' });
+
+  await plugin.buildStart.call(
+    {
+      meta: { watchMode: false },
+      addWatchFile: () => {
+        t.fail('Should not call addWatchFile when not in watch mode');
+      }
+    },
+    options
+  );
+
+  t.pass('Should not attempt to watch files when not in watch mode');
+});
