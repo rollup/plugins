@@ -69,18 +69,26 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const effectiveOutDir = parsedOptions.options.outDir
     ? path.resolve(parsedOptions.options.outDir)
     : null;
-  const filterBase = (filterRoot ?? parsedOptions.options.rootDir) || null;
+  // Determine the base directory used for containment checks. When
+  // `filterRoot === false`, Rollup's pattern resolver does not resolve
+  // include/exclude patterns against a directory. In that edge case,
+  // use CWD as a sensible fallback to avoid over-excluding sources
+  // (e.g., when outDir='.'), while still preventing feedback loops.
+  const willResolvePatterns = filterRoot !== false;
+  const filterBase = willResolvePatterns ? filterRoot ?? parsedOptions.options.rootDir : null;
   const filterBaseAbs = filterBase ? path.resolve(filterBase) : null;
   if (effectiveOutDir) {
-    // Avoid excluding sources: skip when the filter base (rootDir) lives inside outDir
-    // Use path.relative for a robust cross-platform containment check.
-    const outDirContainsFilterBase = filterBaseAbs
-      ? (() => {
-          const rel = path.relative(effectiveOutDir, filterBaseAbs);
-          // rel === '' -> same dir; rel starts with '..' -> outside
-          return rel === '' || !(rel === '..' || rel.startsWith(`..${path.sep}`));
-        })()
-      : false;
+    // Avoid excluding sources: skip when the filter base (rootDir) lives inside outDir.
+    // Use a robust cross-platform containment check that handles Windows
+    // different-drive cases where path.relative may return an absolute path.
+    const baseForContainment = filterBaseAbs ?? process.cwd();
+    const outDirContainsFilterBase = (() => {
+      // Different roots (e.g., Windows drive letters) can never be parent/child
+      if (path.parse(effectiveOutDir).root !== path.parse(baseForContainment).root) return false;
+      const rel = path.relative(effectiveOutDir, baseForContainment);
+      // rel === '' => same dir; if absolute or starts with '..', it's outside
+      return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
+    })();
     if (!outDirContainsFilterBase) {
       filterExclude.push(normalizePath(path.join(effectiveOutDir, '**')));
     }
@@ -146,7 +154,20 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         // ESLint doesn't understand optional chaining
         // eslint-disable-next-line
         program?.close();
+        if (autoOutDir) {
+          try {
+            fs.rmSync(autoOutDir, { recursive: true, force: true });
+          } catch {
+            // ignore cleanup failures
+          }
+          autoOutDir = null;
+        }
       }
+    },
+
+    // Ensure we clean up any auto-created outDir exactly once when a watch
+    // session ends, avoiding churn during incremental rebuilds.
+    closeWatcher() {
       if (autoOutDir) {
         try {
           fs.rmSync(autoOutDir, { recursive: true, force: true });
