@@ -1685,7 +1685,8 @@ test.serial('excludes user-configured outDir from processing when allowJs is tru
     const outDirAbs = normalizeForCompare(outDir);
     const isInside = (parent, child) => {
       const rel = path.relative(parent, normalizeForCompare(child));
-      return rel && !rel.startsWith('..') && !path.isAbsolute(rel);
+      // same dir or within parent
+      return !rel.startsWith('..') && !path.isAbsolute(rel);
     };
     t.true(bundle.watchFiles.every((f) => !isInside(outDirAbs, f)));
   } finally {
