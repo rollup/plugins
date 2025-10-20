@@ -1663,9 +1663,7 @@ test.serial('downlevels JS imported by TS when allowJs is true', async (t) => {
 
 test.serial('excludes user-configured outDir from processing when allowJs is true', async (t) => {
   const outDir = path.join(__dirname, 'fixtures/allow-js-from-ts/.out');
-  if (fs.existsSync(outDir)) {
-    fs.rmSync(outDir, { recursive: true, force: true });
-  }
+  fs.rmSync(outDir, { recursive: true, force: true });
 
   const bundle = await rollup({
     input: 'fixtures/allow-js-from-ts/src/main.ts',
@@ -1678,12 +1676,20 @@ test.serial('excludes user-configured outDir from processing when allowJs is tru
     onwarn
   });
 
-  // Ensure Rollup did not pull any files from the outDir into the graph
-  const normalizedOutDir = path.normalize(outDir + path.sep);
-  t.true(bundle.watchFiles.every((f) => !path.normalize(f).startsWith(normalizedOutDir)));
-
-  // Cleanup
-  if (fs.existsSync(outDir)) {
+  try {
+    // Ensure Rollup did not pull any files from the outDir into the graph
+    const normalizeForCompare = (p) => {
+      const r = path.resolve(p);
+      return process.platform === 'win32' ? r.toLowerCase() : r;
+    };
+    const outDirAbs = normalizeForCompare(outDir);
+    const isInside = (parent, child) => {
+      const rel = path.relative(parent, normalizeForCompare(child));
+      return rel && !rel.startsWith('..') && !path.isAbsolute(rel);
+    };
+    t.true(bundle.watchFiles.every((f) => !isInside(outDirAbs, f)));
+  } finally {
+    await bundle.close();
     fs.rmSync(outDir, { recursive: true, force: true });
   }
 });
