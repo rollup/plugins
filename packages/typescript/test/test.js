@@ -1629,3 +1629,34 @@ test.serial('observes included declarations', async (t) => {
   const files = await getCode(bundle, { format: 'es' }, true);
   t.is(files.length, 1);
 });
+
+test.serial('downlevels JS when allowJs is true (default include)', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/allow-js-downlevel/src/main.js',
+    plugins: [typescript({ tsconfig: 'fixtures/allow-js-downlevel/tsconfig.json' })],
+    onwarn
+  });
+  const code = await getCode(bundle, { format: 'es' });
+
+  // Optional chaining and nullish coalescing assignment should be transformed
+  t.false(code.includes('?.'), code);
+  t.false(code.includes('??='), code);
+
+  const result = await evaluateBundle(bundle);
+  t.deepEqual(result(), [1, 123]);
+});
+
+test.serial('downlevels JS imported by TS when allowJs is true', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/allow-js-from-ts/src/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json' })],
+    onwarn
+  });
+  const code = await getCode(bundle, { format: 'es' });
+
+  t.false(code.includes('?.'), code);
+  t.false(code.includes('??='), code);
+
+  const result = await evaluateBundle(bundle);
+  t.deepEqual(result(), [7, 9]);
+});

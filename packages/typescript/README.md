@@ -77,7 +77,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 Type: `String` | `Array[...String]`<br>
 Default: `null`
 
-A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted.
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted. If your `tsconfig.json` (or plugin `compilerOptions`) sets `allowJs: true`, the default include expands to also cover `.js`, `.jsx`, `.mjs`, and `.cjs` files so that JavaScript sources are downleveled by TypeScript as well.
 
 ### `filterRoot`
 

@@ -42,7 +42,23 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const watchProgramHelper = new WatchProgramHelper();
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
-  const filter = createFilter(include || '{,**/}*.(cts|mts|ts|tsx)', exclude, {
+
+  // When processing JS via allowJs, redirect emit output away from source files
+  // to avoid TS5055 (cannot write file because it would overwrite input file).
+  // We only set a temp outDir if the user did not configure one.
+  if (parsedOptions.options.allowJs && !parsedOptions.options.outDir) {
+    parsedOptions.options.outDir = path.join(process.cwd(), '.rpt2_allowjs');
+  }
+
+  // Determine default include pattern. By default we only process TS files.
+  // When the consumer enables `allowJs` in their tsconfig/compiler options,
+  // also include common JS extensions so modern JS syntax in .js files is
+  // downleveled by TypeScript as expected.
+  const defaultInclude = parsedOptions.options.allowJs
+    ? '{,**/}*.(cts|mts|ts|tsx|js|jsx|mjs|cjs)'
+    : '{,**/}*.(cts|mts|ts|tsx)';
+
+  const filter = createFilter(include || defaultInclude, exclude, {
     resolve: filterRoot ?? parsedOptions.options.rootDir
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
