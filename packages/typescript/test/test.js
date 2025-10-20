@@ -1660,3 +1660,30 @@ test.serial('downlevels JS imported by TS when allowJs is true', async (t) => {
   const result = await evaluateBundle(bundle);
   t.deepEqual(result(), [7, 9]);
 });
+
+test.serial('excludes user-configured outDir from processing when allowJs is true', async (t) => {
+  const outDir = path.join(__dirname, 'fixtures/allow-js-from-ts/.out');
+  if (fs.existsSync(outDir)) {
+    fs.rmSync(outDir, { recursive: true, force: true });
+  }
+
+  const bundle = await rollup({
+    input: 'fixtures/allow-js-from-ts/src/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json',
+        compilerOptions: { outDir }
+      })
+    ],
+    onwarn
+  });
+
+  // Ensure Rollup did not pull any files from the outDir into the graph
+  const normalizedOutDir = path.normalize(outDir + path.sep);
+  t.true(bundle.watchFiles.every((f) => !path.normalize(f).startsWith(normalizedOutDir)));
+
+  // Cleanup
+  if (fs.existsSync(outDir)) {
+    fs.rmSync(outDir, { recursive: true, force: true });
+  }
+});
