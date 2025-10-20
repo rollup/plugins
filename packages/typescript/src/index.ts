@@ -63,9 +63,22 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     ? '{,**/}*.{cts,mts,ts,tsx,js,jsx,mjs,cjs}'
     : '{,**/}*.{cts,mts,ts,tsx}';
 
+  // Build filter exclusions, ensuring we never re-process TypeScript emit outputs.
+  // Always exclude the effective outDir (user-provided or the auto-created temp dir).
   const filterExclude = Array.isArray(exclude) ? [...exclude] : exclude ? [exclude] : [];
-  if (autoOutDir) {
-    filterExclude.push(normalizePath(path.join(autoOutDir, '**')));
+  const effectiveOutDir = parsedOptions.options.outDir
+    ? path.resolve(parsedOptions.options.outDir)
+    : null;
+  const filterBase = (filterRoot ?? parsedOptions.options.rootDir) || null;
+  const filterBaseAbs = filterBase ? path.resolve(filterBase) : null;
+  if (effectiveOutDir) {
+    // Avoid excluding sources: skip when the filter base (rootDir) lives inside outDir
+    const outDirContainsFilterBase =
+      filterBaseAbs &&
+      (filterBaseAbs === effectiveOutDir || filterBaseAbs.startsWith(effectiveOutDir + path.sep));
+    if (!outDirContainsFilterBase) {
+      filterExclude.push(normalizePath(path.join(effectiveOutDir, '**')));
+    }
   }
   const filter = createFilter(include || defaultInclude, filterExclude, {
     resolve: filterRoot ?? parsedOptions.options.rootDir
