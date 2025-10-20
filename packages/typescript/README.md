@@ -79,6 +79,8 @@ Default: `null`
 
 A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should operate on. By default all `.ts` and `.tsx` files are targeted. If your `tsconfig.json` (or plugin `compilerOptions`) sets `allowJs: true`, the default include expands to also cover `.js`, `.jsx`, `.mjs`, and `.cjs` files so that JavaScript sources are downleveled by TypeScript as well.
 
+> Note: When `allowJs` is enabled and no `outDir` is configured, this plugin creates a temporary output directory for TypeScript emit to avoid TS5055 (overwriting input files). The directory is excluded from processing and removed after the build.
+
 ### `filterRoot`
 
 Type: `String` | `Boolean`<br>

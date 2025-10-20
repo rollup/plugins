@@ -1,4 +1,6 @@
 import * as path from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -40,6 +42,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
+  let autoOutDir: string | null = null;
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
 
@@ -47,7 +50,9 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   // to avoid TS5055 (cannot write file because it would overwrite input file).
   // We only set a temp outDir if the user did not configure one.
   if (parsedOptions.options.allowJs && !parsedOptions.options.outDir) {
-    parsedOptions.options.outDir = path.join(process.cwd(), '.rpt2_allowjs');
+    // Create a unique temporary outDir to avoid TS5055 when emitting JS
+    autoOutDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rollup-plugin-typescript-allowjs-'));
+    parsedOptions.options.outDir = autoOutDir;
   }
 
   // Determine default include pattern. By default we only process TS files.
@@ -55,10 +60,14 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   // also include common JS extensions so modern JS syntax in .js files is
   // downleveled by TypeScript as expected.
   const defaultInclude = parsedOptions.options.allowJs
-    ? '{,**/}*.(cts|mts|ts|tsx|js|jsx|mjs|cjs)'
-    : '{,**/}*.(cts|mts|ts|tsx)';
+    ? '{,**/}*.{cts,mts,ts,tsx,js,jsx,mjs,cjs}'
+    : '{,**/}*.{cts,mts,ts,tsx}';
 
-  const filter = createFilter(include || defaultInclude, exclude, {
+  const filterExclude = Array.isArray(exclude) ? [...exclude] : exclude ? [exclude] : [];
+  if (autoOutDir) {
+    filterExclude.push(normalizePath(path.join(autoOutDir, '**')));
+  }
+  const filter = createFilter(include || defaultInclude, filterExclude, {
     resolve: filterRoot ?? parsedOptions.options.rootDir
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
@@ -119,6 +128,14 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         // ESLint doesn't understand optional chaining
         // eslint-disable-next-line
         program?.close();
+      }
+      if (autoOutDir) {
+        try {
+          fs.rmSync(autoOutDir, { recursive: true, force: true });
+        } catch {
+          // ignore cleanup failures
+        }
+        autoOutDir = null;
       }
     },
 
