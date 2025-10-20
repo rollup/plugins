@@ -73,9 +73,14 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const filterBaseAbs = filterBase ? path.resolve(filterBase) : null;
   if (effectiveOutDir) {
     // Avoid excluding sources: skip when the filter base (rootDir) lives inside outDir
-    const outDirContainsFilterBase =
-      filterBaseAbs &&
-      (filterBaseAbs === effectiveOutDir || filterBaseAbs.startsWith(effectiveOutDir + path.sep));
+    // Use path.relative for a robust cross-platform containment check.
+    const outDirContainsFilterBase = filterBaseAbs
+      ? (() => {
+          const rel = path.relative(effectiveOutDir, filterBaseAbs);
+          // rel === '' -> same dir; rel starts with '..' -> outside
+          return rel === '' || !(rel === '..' || rel.startsWith(`..${path.sep}`));
+        })()
+      : false;
     if (!outDirContainsFilterBase) {
       filterExclude.push(normalizePath(path.join(effectiveOutDir, '**')));
     }
