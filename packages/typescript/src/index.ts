@@ -69,24 +69,21 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const effectiveOutDir = parsedOptions.options.outDir
     ? path.resolve(parsedOptions.options.outDir)
     : null;
-  // Determine the base directory used for containment checks. When
-  // `filterRoot === false`, Rollup's pattern resolver does not resolve
-  // include/exclude patterns against a directory. In that edge case,
-  // use CWD as a sensible fallback to avoid over-excluding sources
-  // (e.g., when outDir='.'), while still preventing feedback loops.
+  // Determine the base used for containment checks. If pattern resolution is disabled
+  // (filterRoot === false), fall back to process.cwd() so we don't accidentally
+  // exclude sources when e.g. outDir='.'.
   const willResolvePatterns = filterRoot !== false;
-  const filterBase = willResolvePatterns ? filterRoot ?? parsedOptions.options.rootDir : null;
-  const filterBaseAbs = filterBase ? path.resolve(filterBase) : null;
+  const configuredBase = willResolvePatterns ? filterRoot ?? parsedOptions.options.rootDir : null;
+  const filterBaseAbs = configuredBase ? path.resolve(configuredBase) : null;
   if (effectiveOutDir) {
-    // Avoid excluding sources: skip when the filter base (rootDir) lives inside outDir.
-    // Use a robust cross-platform containment check that handles Windows
-    // different-drive cases where path.relative may return an absolute path.
+    // Avoid excluding sources: skip when the filter base (or cwd fallback) lives inside outDir.
+    // Use path.relative with root equality guard for cross-platform correctness.
     const baseForContainment = filterBaseAbs ?? process.cwd();
     const outDirContainsFilterBase = (() => {
-      // Different roots (e.g., Windows drive letters) can never be parent/child
+      // Different roots (e.g., drive letters on Windows) cannot be in a parent/child relationship
       if (path.parse(effectiveOutDir).root !== path.parse(baseForContainment).root) return false;
       const rel = path.relative(effectiveOutDir, baseForContainment);
-      // rel === '' => same dir; if absolute or starts with '..', it's outside
+      // rel === '' -> same dir; absolute or '..' => outside
       return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
     })();
     if (!outDirContainsFilterBase) {
@@ -165,8 +162,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       }
     },
 
-    // Ensure we clean up any auto-created outDir exactly once when a watch
-    // session ends, avoiding churn during incremental rebuilds.
+    // Ensure temp outDir is removed exactly once when watch stops
     closeWatcher() {
       if (autoOutDir) {
         try {
