@@ -26,19 +26,16 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
 const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
   const resolutionBase = options && options.resolve;
 
-  const getMatcher = (id: string | RegExp) =>
-    id instanceof RegExp
-      ? id
-      : {
-          test: (what: string) => {
-            // this refactor is a tad overly verbose but makes for easy debugging
-            const pattern = getMatcherString(id, resolutionBase);
-            const fn = pm(pattern, { dot: true });
-            const result = fn(what);
-
-            return result;
-          }
-        };
+  const getMatcher = (id: string | RegExp) => {
+    if (id instanceof RegExp) {
+      return id;
+    }
+    const pattern = getMatcherString(id, resolutionBase);
+    const fn = pm(pattern, { dot: true });
+    return {
+      test: (what: string) => fn(what)
+    };
+  };
 
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
