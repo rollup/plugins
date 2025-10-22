@@ -115,7 +115,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         ? filterRoot
         : filterRoot === false
         ? false
-        : parsedOptions.options.rootDir
+        : parsedOptions.options.rootDir || process.cwd()
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
