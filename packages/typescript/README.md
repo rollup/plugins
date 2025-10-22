@@ -150,7 +150,9 @@ Supported transformer factories:
   ```js
   {
     type: 'program',
-    factory: (program: Program) => TransformerFactory | CustomTransformerFactory
+    // In watch mode, the optional `getProgram` returns the latest Program
+    factory: (program: Program, getProgram?: () => Program) =>
+      TransformerFactory | CustomTransformerFactory
   }
   ```
 
@@ -167,10 +169,11 @@ typescript({
   transformers: {
     before: [
       {
-        // Allow the transformer to get a Program reference in it's factory
+        // Allow the transformer to get a Program reference in its factory
+        // and, in watch mode, access the latest Program via `getProgram()`
         type: 'program',
-        factory: (program) => {
-          return ProgramRequiringTransformerFactory(program);
+        factory: (program, getProgram) => {
+          return ProgramRequiringTransformerFactory(getProgram ? getProgram() : program);
         }
       },
       {
@@ -244,6 +247,10 @@ typescript({
   }
 });
 ```
+
+Note on watch mode
+
+When running Rollup in watch mode, this plugin recreates custom transformer factories after each TypeScript program rebuild so they receive the current Program and TypeChecker. If your transformer needs to query the latest type information across rebuilds, prefer using the optional `getProgram()` parameter provided to `program`-based transformer factories.
 
 ### `cacheDir`
 

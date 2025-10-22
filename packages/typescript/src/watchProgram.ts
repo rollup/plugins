@@ -162,6 +162,10 @@ function createWatchHost(
     ...baseHost,
     /** Override the created program so an in-memory emit is used */
     afterProgramCreate(program) {
+      // Ensure we recompute custom transformers for each new builder program in watch mode
+      // so factories capture the current Program/TypeChecker and any provided getters return
+      // the latest values. This avoids freezing the initial Program across rebuilds.
+      createdTransformers = undefined;
       const origEmit = program.emit;
       // eslint-disable-next-line no-param-reassign
       program.emit = (

@@ -1694,3 +1694,81 @@ test.serial('excludes user-configured outDir from processing when allowJs is tru
     fs.rmSync(outDir, { recursive: true, force: true });
   }
 });
+
+test.serial(
+  'recreates transformers per rebuild and exposes getProgram in watch mode',
+  async (t) => {
+    const observations = [];
+
+    const dirName = path.join(__dirname, 'fixtures', 'transformers');
+    const outputJs = path.join(dirName, 'main.js');
+
+    // ensure a clean slate for emitted file
+    if (fs.existsSync(outputJs)) {
+      fs.unlinkSync(outputJs);
+    }
+
+    const bundle = await rollup({
+      input: 'fixtures/transformers/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: false,
+          compilerOptions: { module: 'esnext' },
+          // Use a fake TS that simulates two watch rebuilds by calling afterProgramCreate twice
+          typescript: fakeTypescript({
+            createWatchProgram(host) {
+              const makeBuilder = (id, value) => {
+                const innerProgram = { id };
+                return {
+                  getProgram() {
+                    return innerProgram;
+                  },
+                  emit(_, writeFile) {
+                    writeFile(outputJs, `export default ${value};`);
+                  }
+                };
+              };
+
+              const p1 = makeBuilder('one', 101);
+              host.afterProgramCreate(p1);
+              p1.emit();
+
+              const p2 = makeBuilder('two', 202);
+              host.afterProgramCreate(p2);
+              p2.emit();
+
+              return { close() {} };
+            }
+          }),
+          transformers: {
+            before: [
+              {
+                type: 'program',
+                factory(program, getProgram) {
+                  observations.push({
+                    p: program && program.id,
+                    gp: getProgram ? getProgram().id : undefined
+                  });
+                  // no-op transformer
+                  return function passthroughFactory(context) {
+                    return function passthrough(source) {
+                      return ts.visitEachChild(source, (n) => n, context);
+                    };
+                  };
+                }
+              }
+            ]
+          }
+        })
+      ],
+      onwarn
+    });
+
+    await getCode(bundle, { format: 'esm', dir: dirName }, true);
+
+    t.deepEqual(observations, [
+      { p: 'one', gp: 'one' },
+      { p: 'two', gp: 'two' }
+    ]);
+  }
+);

@@ -28,7 +28,12 @@ export type CustomTransformerFactories = {
 interface ProgramTransformerFactory<T extends TransformerStage> {
   type: 'program';
 
-  factory(program: Program): StagedTransformerFactory<T>;
+  /**
+   * Factory that may receive a getter for the latest Program when running in watch mode.
+   * The second parameter is optional to preserve backwards compatibility with existing
+   * transformer factories.
+   */
+  factory(program: Program, getProgram?: () => Program): StagedTransformerFactory<T>;
 }
 
 interface TypeCheckerTransformerFactory<T extends TransformerStage> {

@@ -37,14 +37,14 @@ export function mergeTransformers(
           if (typeof transformer.factory === 'function') {
             // Allow custom factories to grab the extra information required
             program = program || builder.getProgram();
-            typeChecker = typeChecker || program.getTypeChecker();
 
             let factory: ReturnType<typeof transformer.factory>;
 
             if (transformer.type === 'program') {
               program = program || builder.getProgram();
 
-              factory = transformer.factory(program);
+              // Pass a getter so transformers can access the latest Program in watch mode
+              factory = transformer.factory(program, () => builder.getProgram());
             } else {
               program = program || builder.getProgram();
               typeChecker = typeChecker || program.getTypeChecker();
