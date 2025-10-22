@@ -1747,7 +1747,7 @@ test.serial(
                 factory(program, getProgram) {
                   observations.push({
                     p: program && program.id,
-                    gp: getProgram ? getProgram().id : undefined
+                    gp: getProgram ? getProgram().id : void 0
                   });
                   // no-op transformer
                   return function passthroughFactory(context) {

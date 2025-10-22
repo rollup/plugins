@@ -165,7 +165,7 @@ function createWatchHost(
       // Ensure we recompute custom transformers for each new builder program in watch mode
       // so factories capture the current Program/TypeChecker and any provided getters return
       // the latest values. This avoids freezing the initial Program across rebuilds.
-      createdTransformers = undefined;
+      createdTransformers = void 0;
       const origEmit = program.emit;
       // eslint-disable-next-line no-param-reassign
       program.emit = (
