@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.2.0
+
+_2025-10-22_
+
+### Features
+
+- feat: process .js when allowJs is enabled (#1920)
+
 ## v12.1.4
 
 _2025-06-28_
