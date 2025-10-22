@@ -66,6 +66,12 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   // Build filter exclusions, ensuring we never re-process TypeScript emit outputs.
   // Always exclude the effective outDir (user-provided or the auto-created temp dir).
   const filterExclude = Array.isArray(exclude) ? [...exclude] : exclude ? [exclude] : [];
+  // When auto-expanding to include JS (allowJs) and the user did not provide
+  // custom include/exclude patterns, avoid transforming third-party code by
+  // default by excluding node_modules.
+  if (parsedOptions.options.allowJs && !include && !exclude) {
+    filterExclude.push('**/node_modules/**');
+  }
   const effectiveOutDir = parsedOptions.options.outDir
     ? path.resolve(parsedOptions.options.outDir)
     : null;
@@ -86,8 +92,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     // Use path.relative with root equality guard for cross-platform correctness.
     const baseForContainment = filterBaseAbs ?? process.cwd();
     const outDirContainsFilterBase = (() => {
-      // Different roots (e.g., drive letters on Windows) cannot be in a parent/child relationship
-      if (path.parse(effectiveOutDir).root !== path.parse(baseForContainment).root) return false;
+      // Different roots (e.g., drive letters on Windows) cannot be in a parent/child relationship.
+      // Normalize Windows drive-letter case before comparison to avoid false mismatches.
+      const getRoot = (p: string) => {
+        const r = path.parse(p).root;
+        return process.platform === 'win32' ? r.toLowerCase() : r;
+      };
+      if (getRoot(effectiveOutDir) !== getRoot(baseForContainment)) return false;
       const rel = path.relative(effectiveOutDir, baseForContainment);
       // rel === '' -> same dir; absolute or '..' => outside
       return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
