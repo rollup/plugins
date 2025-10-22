@@ -1764,11 +1764,14 @@ test.serial(
       onwarn
     });
 
-    await getCode(bundle, { format: 'esm', dir: dirName }, true);
-
-    t.deepEqual(observations, [
-      { p: 'one', gp: 'one' },
-      { p: 'two', gp: 'two' }
-    ]);
+    try {
+      await getCode(bundle, { format: 'esm', dir: dirName }, true);
+      t.deepEqual(observations, [
+        { p: 'one', gp: 'one' },
+        { p: 'two', gp: 'two' }
+      ]);
+    } finally {
+      await bundle.close();
+    }
   }
 );
