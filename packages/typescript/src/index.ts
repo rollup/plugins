@@ -43,6 +43,16 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
   let autoOutDir: string | null = null;
+  // Centralize temp outDir cleanup to avoid duplication/drift across hooks
+  const cleanupAutoOutDir = () => {
+    if (!autoOutDir) return;
+    try {
+      fs.rmSync(autoOutDir, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup failures
+    }
+    autoOutDir = null;
+  };
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
 
@@ -175,14 +185,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
         // ESLint doesn't understand optional chaining
         // eslint-disable-next-line
         program?.close();
-        if (autoOutDir) {
-          try {
-            fs.rmSync(autoOutDir, { recursive: true, force: true });
-          } catch {
-            // ignore cleanup failures
-          }
-          autoOutDir = null;
-        }
+        cleanupAutoOutDir();
       }
     },
 
@@ -190,14 +193,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     closeWatcher() {
       // eslint-disable-next-line
       program?.close();
-      if (autoOutDir) {
-        try {
-          fs.rmSync(autoOutDir, { recursive: true, force: true });
-        } catch {
-          // ignore cleanup failures
-        }
-        autoOutDir = null;
-      }
+      cleanupAutoOutDir();
     },
 
     renderStart(outputOptions) {
