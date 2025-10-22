@@ -1772,6 +1772,87 @@ test.serial(
       ]);
     } finally {
       await bundle.close();
+      // tidy emitted file to avoid cross-test interference if ordering changes
+      if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
     }
   }
 );
+
+test.serial('recreates typeChecker-based transformers per rebuild in watch mode', async (t) => {
+  const observations = [];
+
+  const dirName = path.join(__dirname, 'fixtures', 'transformers');
+  const outputJs = path.join(dirName, 'main.js');
+
+  // ensure a clean slate for emitted file
+  if (fs.existsSync(outputJs)) {
+    fs.unlinkSync(outputJs);
+  }
+
+  const bundle = await rollup({
+    input: 'fixtures/transformers/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: false,
+        compilerOptions: { module: 'esnext' },
+        // Fake TS that simulates two watch rebuilds, each returning a distinct TypeChecker
+        typescript: fakeTypescript({
+          createWatchProgram(host) {
+            const makeBuilder = (id, value) => {
+              const innerTypeChecker = { id: `tc-${id}` };
+              const innerProgram = {
+                getTypeChecker() {
+                  return innerTypeChecker;
+                }
+              };
+              return {
+                getProgram() {
+                  return innerProgram;
+                },
+                emit(_, writeFile) {
+                  writeFile(outputJs, `export default ${value};`);
+                }
+              };
+            };
+
+            const p1 = makeBuilder('one', 101);
+            host.afterProgramCreate(p1);
+            p1.emit();
+
+            const p2 = makeBuilder('two', 202);
+            host.afterProgramCreate(p2);
+            p2.emit();
+
+            return { close() {} };
+          }
+        }),
+        transformers: {
+          before: [
+            {
+              type: 'typeChecker',
+              factory(typeChecker) {
+                observations.push(typeChecker && typeChecker.id);
+                // no-op transformer
+                return function passthroughFactory(context) {
+                  return function passthrough(source) {
+                    return ts.visitEachChild(source, (n) => n, context);
+                  };
+                };
+              }
+            }
+          ]
+        }
+      })
+    ],
+    onwarn
+  });
+
+  try {
+    await getCode(bundle, { format: 'esm', dir: dirName }, true);
+    t.deepEqual(observations, ['tc-one', 'tc-two']);
+  } finally {
+    await bundle.close();
+    // tidy emitted file to avoid cross-test interference if ordering changes
+    if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
+  }
+});
