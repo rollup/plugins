@@ -53,6 +53,17 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     }
     autoOutDir = null;
   };
+  // Ensure the TypeScript watch program is closed and temp outDir is cleaned
+  // even if closing throws. Call this from lifecycle hooks that need teardown.
+  const closeProgramAndCleanup = () => {
+    try {
+      // ESLint doesn't understand optional chaining
+      // eslint-disable-next-line
+      program?.close();
+    } finally {
+      cleanupAutoOutDir();
+    }
+  };
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
 
@@ -182,18 +193,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     buildEnd() {
       if (this.meta.watchMode !== true) {
-        // ESLint doesn't understand optional chaining
-        // eslint-disable-next-line
-        program?.close();
-        cleanupAutoOutDir();
+        closeProgramAndCleanup();
       }
     },
 
     // Ensure program is closed and temp outDir is removed exactly once when watch stops
     closeWatcher() {
-      // eslint-disable-next-line
-      program?.close();
-      cleanupAutoOutDir();
+      closeProgramAndCleanup();
     },
 
     renderStart(outputOptions) {
