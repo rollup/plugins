@@ -1,4 +1,6 @@
 import * as path from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
 
 import { createFilter } from '@rollup/pluginutils';
 
@@ -40,10 +42,101 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
   const watchProgramHelper = new WatchProgramHelper();
+  let autoOutDir: string | null = null;
+  // Centralize temp outDir cleanup to avoid duplication/drift across hooks
+  const cleanupAutoOutDir = () => {
+    if (!autoOutDir) return;
+    try {
+      fs.rmSync(autoOutDir, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup failures
+    }
+    autoOutDir = null;
+  };
+  // Ensure the TypeScript watch program is closed and temp outDir is cleaned
+  // even if closing throws. Call this from lifecycle hooks that need teardown.
+  const closeProgramAndCleanup = () => {
+    try {
+      // ESLint doesn't understand optional chaining
+      // eslint-disable-next-line
+      program?.close();
+    } finally {
+      cleanupAutoOutDir();
+    }
+  };
 
   const parsedOptions = parseTypescriptConfig(ts, tsconfig, compilerOptions, noForceEmit);
-  const filter = createFilter(include || '{,**/}*.(cts|mts|ts|tsx)', exclude, {
-    resolve: filterRoot ?? parsedOptions.options.rootDir
+
+  // When processing JS via allowJs, redirect emit output away from source files
+  // to avoid TS5055 (cannot write file because it would overwrite input file).
+  // We only set a temp outDir if the user did not configure one.
+  if (parsedOptions.options.allowJs && !parsedOptions.options.outDir) {
+    // Create a unique temporary outDir to avoid TS5055 when emitting JS
+    autoOutDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rollup-plugin-typescript-allowjs-'));
+    parsedOptions.options.outDir = autoOutDir;
+  }
+
+  // Determine default include pattern. By default we only process TS files.
+  // When the consumer enables `allowJs` in their tsconfig/compiler options,
+  // also include common JS extensions so modern JS syntax in .js files is
+  // downleveled by TypeScript as expected.
+  const defaultInclude = parsedOptions.options.allowJs
+    ? '{,**/}*.{cts,mts,ts,tsx,js,jsx,mjs,cjs}'
+    : '{,**/}*.{cts,mts,ts,tsx}';
+
+  // Build filter exclusions, ensuring we never re-process TypeScript emit outputs.
+  // Always exclude the effective outDir (user-provided or the auto-created temp dir).
+  const filterExclude = Array.isArray(exclude) ? [...exclude] : exclude ? [exclude] : [];
+  // When auto-expanding to include JS (allowJs) and the user did not provide
+  // custom include/exclude patterns, avoid transforming third-party code by
+  // default by excluding node_modules.
+  if (parsedOptions.options.allowJs && !include && !exclude) {
+    filterExclude.push('**/node_modules/**');
+  }
+  const effectiveOutDir = parsedOptions.options.outDir
+    ? path.resolve(parsedOptions.options.outDir)
+    : null;
+  // Determine the base used for containment checks. If pattern resolution is disabled
+  // (filterRoot === false), fall back to process.cwd() so we don't accidentally
+  // exclude sources when e.g. outDir='.'.
+  const willResolvePatterns = filterRoot !== false;
+  // Only treat string values of `filterRoot` as a base directory; booleans (e.g., true)
+  // should not flow into path resolution. Fallback to the tsconfig `rootDir` when not set.
+  const configuredBase = willResolvePatterns
+    ? typeof filterRoot === 'string'
+      ? filterRoot
+      : parsedOptions.options.rootDir
+    : null;
+  const filterBaseAbs = configuredBase ? path.resolve(configuredBase) : null;
+  if (effectiveOutDir) {
+    // Avoid excluding sources: skip when the filter base (or cwd fallback) lives inside outDir.
+    // Use path.relative with root equality guard for cross-platform correctness.
+    const baseForContainment = filterBaseAbs ?? process.cwd();
+    const outDirContainsFilterBase = (() => {
+      // Different roots (e.g., drive letters on Windows) cannot be in a parent/child relationship.
+      // Normalize Windows drive-letter case before comparison to avoid false mismatches.
+      const getRoot = (p: string) => {
+        const r = path.parse(p).root;
+        return process.platform === 'win32' ? r.toLowerCase() : r;
+      };
+      if (getRoot(effectiveOutDir) !== getRoot(baseForContainment)) return false;
+      const rel = path.relative(effectiveOutDir, baseForContainment);
+      // rel === '' -> same dir; absolute or '..' => outside
+      return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
+    })();
+    if (!outDirContainsFilterBase) {
+      filterExclude.push(normalizePath(path.join(effectiveOutDir, '**')));
+    }
+  }
+  const filter = createFilter(include || defaultInclude, filterExclude, {
+    // Guard against non-string truthy values (e.g., boolean true). Only strings are valid
+    // for `resolve`; `false` disables resolution. Otherwise, fall back to `rootDir`.
+    resolve:
+      typeof filterRoot === 'string'
+        ? filterRoot
+        : filterRoot === false
+        ? false
+        : parsedOptions.options.rootDir || process.cwd()
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
@@ -100,10 +193,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
 
     buildEnd() {
       if (this.meta.watchMode !== true) {
-        // ESLint doesn't understand optional chaining
-        // eslint-disable-next-line
-        program?.close();
+        closeProgramAndCleanup();
       }
+    },
+
+    // Ensure program is closed and temp outDir is removed exactly once when watch stops
+    closeWatcher() {
+      closeProgramAndCleanup();
     },
 
     renderStart(outputOptions) {
