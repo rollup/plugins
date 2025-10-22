@@ -73,7 +73,13 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   // (filterRoot === false), fall back to process.cwd() so we don't accidentally
   // exclude sources when e.g. outDir='.'.
   const willResolvePatterns = filterRoot !== false;
-  const configuredBase = willResolvePatterns ? filterRoot ?? parsedOptions.options.rootDir : null;
+  // Only treat string values of `filterRoot` as a base directory; booleans (e.g., true)
+  // should not flow into path resolution. Fallback to the tsconfig `rootDir` when not set.
+  const configuredBase = willResolvePatterns
+    ? typeof filterRoot === 'string'
+      ? filterRoot
+      : parsedOptions.options.rootDir
+    : null;
   const filterBaseAbs = configuredBase ? path.resolve(configuredBase) : null;
   if (effectiveOutDir) {
     // Avoid excluding sources: skip when the filter base (or cwd fallback) lives inside outDir.
@@ -91,7 +97,14 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     }
   }
   const filter = createFilter(include || defaultInclude, filterExclude, {
-    resolve: filterRoot ?? parsedOptions.options.rootDir
+    // Guard against non-string truthy values (e.g., boolean true). Only strings are valid
+    // for `resolve`; `false` disables resolution. Otherwise, fall back to `rootDir`.
+    resolve:
+      typeof filterRoot === 'string'
+        ? filterRoot
+        : filterRoot === false
+        ? false
+        : parsedOptions.options.rootDir
   });
   parsedOptions.fileNames = parsedOptions.fileNames.filter(filter);
 
@@ -162,8 +175,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       }
     },
 
-    // Ensure temp outDir is removed exactly once when watch stops
+    // Ensure program is closed and temp outDir is removed exactly once when watch stops
     closeWatcher() {
+      // eslint-disable-next-line
+      program?.close();
       if (autoOutDir) {
         try {
           fs.rmSync(autoOutDir, { recursive: true, force: true });
