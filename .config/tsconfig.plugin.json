@@ -6,9 +6,7 @@
     "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "baseUrl": ".",
-    "paths": { "~package": ["./"] }
+    "sourceMap": true
   },
   "include": ["src/**/*"]
 }

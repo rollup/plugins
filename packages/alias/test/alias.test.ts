@@ -467,7 +467,7 @@ describe('plugin-alias', () => {
         })
       ],
       onwarn(log) {
-        const formattedLog = { ...log, message: (log as any).message.replace(/\\\\/g, '/') } as any;
+        const formattedLog = { ...log, message: (log as any).message.replace(/\\/g, '/') } as any;
         warnList.push(formattedLog);
       }
     });
