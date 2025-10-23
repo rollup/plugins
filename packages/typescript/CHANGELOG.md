@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.3.0
+
+_2025-10-23_
+
+### Features
+
+- feat: expose latest Program to transformers in watch mode (#1923)
+
 ## v12.2.0
 
 _2025-10-22_
