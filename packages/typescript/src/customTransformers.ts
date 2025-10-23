@@ -35,21 +35,19 @@ export function mergeTransformers(
 
         if ('type' in transformer) {
           if (typeof transformer.factory === 'function') {
-            // Allow custom factories to grab the extra information required
-            program = program || builder.getProgram();
-            typeChecker = typeChecker || program.getTypeChecker();
-
             let factory: ReturnType<typeof transformer.factory>;
 
             if (transformer.type === 'program') {
-              program = program || builder.getProgram();
-
-              factory = transformer.factory(program);
+              const currentProgram = program ?? builder.getProgram();
+              // Pass a getter so transformers can access the latest Program in watch mode
+              factory = transformer.factory(currentProgram, () => builder.getProgram());
+              program = currentProgram;
             } else {
-              program = program || builder.getProgram();
-              typeChecker = typeChecker || program.getTypeChecker();
-
-              factory = transformer.factory(typeChecker);
+              const currentProgram = program ?? builder.getProgram();
+              const currentTypeChecker = typeChecker ?? currentProgram.getTypeChecker();
+              factory = transformer.factory(currentTypeChecker);
+              program = currentProgram;
+              typeChecker = currentTypeChecker;
             }
 
             // Forward the requested reference to the custom transformer factory

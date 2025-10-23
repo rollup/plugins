@@ -42,6 +42,12 @@ interface CreateProgramOptions {
   resolveModule: Resolver;
   /** Custom TypeScript transformers */
   transformers?: CustomTransformerFactories | ((program: Program) => CustomTransformers);
+  /**
+   * Advanced: when true, recreate custom transformer factories on each
+   * TypeScript watch rebuild. Defaults to legacy behavior (false), which
+   * reuses the same factories for the lifetime of the watch session.
+   */
+  recreateTransformersOnRebuild?: boolean;
 }
 
 type DeferredResolve = ((value: boolean | PromiseLike<boolean>) => void) | (() => void);
@@ -142,7 +148,8 @@ function createWatchHost(
     writeFile,
     status,
     resolveModule,
-    transformers
+    transformers,
+    recreateTransformersOnRebuild
   }: CreateProgramOptions
 ): WatchCompilerHostOfFilesAndCompilerOptions<BuilderProgram> {
   const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
@@ -162,6 +169,13 @@ function createWatchHost(
     ...baseHost,
     /** Override the created program so an in-memory emit is used */
     afterProgramCreate(program) {
+      // Optionally recompute custom transformers for each new builder program in watch mode
+      // so factories capture the current Program/TypeChecker and any provided getters can
+      // return the latest values. When disabled (default), legacy behavior reuses the
+      // same factories across rebuilds.
+      if (recreateTransformersOnRebuild) {
+        createdTransformers = void 0;
+      }
       const origEmit = program.emit;
       // eslint-disable-next-line no-param-reassign
       program.emit = (

@@ -142,15 +142,20 @@ Supported transformer factories:
 
 - all **built-in** TypeScript custom transformer factories:
 
-  - `import('typescript').TransformerFactory` annotated **TransformerFactory** bellow
-  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+  - `import('typescript').TransformerFactory` annotated **TransformerFactory** below
+  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** below
 
 - **ProgramTransformerFactory** represents a transformer factory allowing the resulting transformer to grab a reference to the **Program** instance
 
   ```js
   {
     type: 'program',
-    factory: (program: Program) => TransformerFactory | CustomTransformerFactory
+    // An optional `getProgram` getter is provided in all modes. In non‑watch it returns
+    // the same Program as the first argument. In watch mode, when the
+    // `recreateTransformersOnRebuild` option is enabled, the getter reflects the latest
+    // Program across rebuilds; otherwise it refers to the initial Program.
+    factory: (program: Program, getProgram?: () => Program) =>
+      TransformerFactory | CustomTransformerFactory
   }
   ```
 
@@ -167,16 +172,24 @@ typescript({
   transformers: {
     before: [
       {
-        // Allow the transformer to get a Program reference in it's factory
+        // Allow the transformer to get a Program reference in its factory.
+        // Prefer deferring `getProgram()` usage to transformation time so watch
+        // mode can see the freshest Program when `recreateTransformersOnRebuild`
+        // is enabled.
         type: 'program',
-        factory: (program) => {
-          return ProgramRequiringTransformerFactory(program);
+        factory: (program, getProgram) => {
+          const get = getProgram ?? (() => program);
+          return (context) => (source) => {
+            const latest = get();
+            // use `latest` here
+            return ts.visitEachChild(source, (n) => n, context);
+          };
         }
       },
       {
         type: 'typeChecker',
         factory: (typeChecker) => {
-          // Allow the transformer to get a TypeChecker reference in it's factory
+          // Allow the transformer to get a TypeChecker reference in its factory
           return TypeCheckerRequiringTransformerFactory(typeChecker);
         }
       }
@@ -209,8 +222,8 @@ Supported transformer factories:
 
 - all **built-in** TypeScript custom transformer factories:
 
-  - `import('typescript').TransformerFactory` annotated **TransformerFactory** bellow
-  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+  - `import('typescript').TransformerFactory` annotated **TransformerFactory** below
+  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** below
 
 The example above could be written like this:
 
@@ -241,6 +254,34 @@ typescript({
         }
       ]
     };
+  }
+});
+```
+
+Note on watch mode
+
+By default (legacy behavior), this plugin reuses the same custom transformer factories for the lifetime of a watch session. Advanced users can opt into recreating factories on every TypeScript rebuild by enabling the `recreateTransformersOnRebuild` option. When enabled, both `program`- and `typeChecker`-based factories are rebuilt per watch cycle, and `getProgram()` (when used) reflects the latest Program across rebuilds.
+
+### `recreateTransformersOnRebuild`
+
+Type: `Boolean`<br>
+Default: `false` (legacy behavior)
+
+When `true`, the plugin recreates custom transformer factories on each TypeScript watch rebuild. This ensures factories capture the current `Program`/`TypeChecker` per cycle and that the optional `getProgram()` getter provided to `program`-based factories reflects the latest `Program` across rebuilds. Most users do not need this; enable it if your transformers depend on up‑to‑date Program/TypeChecker identities.
+
+```js
+// Opt-in to per-rebuild transformer recreation in watch mode
+typescript({
+  recreateTransformersOnRebuild: true,
+  transformers: {
+    before: [
+      {
+        type: 'program',
+        factory(program, getProgram) {
+          /* ... */
+        }
+      }
+    ]
   }
 });
 ```

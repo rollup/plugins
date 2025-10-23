@@ -1694,3 +1694,231 @@ test.serial('excludes user-configured outDir from processing when allowJs is tru
     fs.rmSync(outDir, { recursive: true, force: true });
   }
 });
+
+test.serial(
+  'recreates transformers per rebuild and exposes getProgram in watch mode',
+  async (t) => {
+    const observations = [];
+
+    const dirName = path.join(__dirname, 'fixtures', 'transformers');
+    const outputJs = path.join(dirName, 'main.js');
+
+    // ensure a clean slate for emitted file
+    if (fs.existsSync(outputJs)) {
+      fs.unlinkSync(outputJs);
+    }
+
+    const bundle = await rollup({
+      input: 'fixtures/transformers/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: false,
+          compilerOptions: { module: 'esnext' },
+          recreateTransformersOnRebuild: true,
+          // Use a fake TS that simulates two watch rebuilds by calling afterProgramCreate twice
+          typescript: fakeTypescript({
+            createWatchProgram(host) {
+              const makeBuilder = (id, value) => {
+                const innerProgram = { id };
+                return {
+                  getProgram() {
+                    return innerProgram;
+                  },
+                  emit(_, writeFile) {
+                    writeFile(outputJs, `export default ${value};`);
+                  }
+                };
+              };
+
+              const p1 = makeBuilder('one', 101);
+              host.afterProgramCreate(p1);
+              p1.emit();
+
+              const p2 = makeBuilder('two', 202);
+              host.afterProgramCreate(p2);
+              p2.emit();
+
+              return { close() {} };
+            }
+          }),
+          transformers: {
+            before: [
+              {
+                type: 'program',
+                factory(program, getProgram) {
+                  observations.push({
+                    p: program && program.id,
+                    gp: getProgram ? getProgram().id : void 0
+                  });
+                  // no-op transformer
+                  return function passthroughFactory(context) {
+                    return function passthrough(source) {
+                      return ts.visitEachChild(source, (n) => n, context);
+                    };
+                  };
+                }
+              }
+            ]
+          }
+        })
+      ],
+      onwarn
+    });
+
+    try {
+      await getCode(bundle, { format: 'esm', dir: dirName }, true);
+      t.deepEqual(observations, [
+        { p: 'one', gp: 'one' },
+        { p: 'two', gp: 'two' }
+      ]);
+    } finally {
+      await bundle.close();
+      // tidy emitted file to avoid cross-test interference if ordering changes
+      if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
+    }
+  }
+);
+
+test.serial('recreates typeChecker-based transformers per rebuild in watch mode', async (t) => {
+  const observations = [];
+
+  const dirName = path.join(__dirname, 'fixtures', 'transformers');
+  const outputJs = path.join(dirName, 'main.js');
+
+  // ensure a clean slate for emitted file
+  if (fs.existsSync(outputJs)) {
+    fs.unlinkSync(outputJs);
+  }
+
+  const bundle = await rollup({
+    input: 'fixtures/transformers/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: false,
+        compilerOptions: { module: 'esnext' },
+        recreateTransformersOnRebuild: true,
+        // Fake TS that simulates two watch rebuilds, each returning a distinct TypeChecker
+        typescript: fakeTypescript({
+          createWatchProgram(host) {
+            const makeBuilder = (id, value) => {
+              const innerTypeChecker = { id: `tc-${id}` };
+              const innerProgram = {
+                getTypeChecker() {
+                  return innerTypeChecker;
+                }
+              };
+              return {
+                getProgram() {
+                  return innerProgram;
+                },
+                emit(_, writeFile) {
+                  writeFile(outputJs, `export default ${value};`);
+                }
+              };
+            };
+
+            const p1 = makeBuilder('one', 101);
+            host.afterProgramCreate(p1);
+            p1.emit();
+
+            const p2 = makeBuilder('two', 202);
+            host.afterProgramCreate(p2);
+            p2.emit();
+
+            return { close() {} };
+          }
+        }),
+        transformers: {
+          before: [
+            {
+              type: 'typeChecker',
+              factory(typeChecker) {
+                observations.push(typeChecker && typeChecker.id);
+                // no-op transformer
+                return function passthroughFactory(context) {
+                  return function passthrough(source) {
+                    return ts.visitEachChild(source, (n) => n, context);
+                  };
+                };
+              }
+            }
+          ]
+        }
+      })
+    ],
+    onwarn
+  });
+
+  try {
+    await getCode(bundle, { format: 'esm', dir: dirName }, true);
+    t.deepEqual(observations, ['tc-one', 'tc-two']);
+  } finally {
+    await bundle.close();
+    // tidy emitted file to avoid cross-test interference if ordering changes
+    if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
+  }
+});
+
+test.serial('defaults to legacy behavior: reuses factories across watch rebuilds', async (t) => {
+  const dirName = path.join(__dirname, 'fixtures', 'transformers');
+  const outputJs = path.join(dirName, 'main.js');
+  if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
+
+  const seen = [];
+  const bundle = await rollup({
+    input: 'fixtures/transformers/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: false,
+        compilerOptions: { module: 'esnext' },
+        // Intentionally omit recreateTransformersOnRebuild (defaults to legacy)
+        typescript: fakeTypescript({
+          createWatchProgram(host) {
+            const makeBuilder = (id, value) => {
+              const innerProgram = { id };
+              return {
+                getProgram() {
+                  return innerProgram;
+                },
+                emit(_, writeFile) {
+                  writeFile(outputJs, `export default ${value};`);
+                }
+              };
+            };
+
+            const p1 = makeBuilder('first', 1);
+            host.afterProgramCreate(p1);
+            p1.emit();
+
+            const p2 = makeBuilder('second', 2);
+            host.afterProgramCreate(p2);
+            p2.emit();
+
+            return { close() {} };
+          }
+        }),
+        transformers: {
+          before: [
+            {
+              type: 'program',
+              factory(program, getProgram) {
+                seen.push({ p: program.id, gp: getProgram ? getProgram().id : void 0 });
+                return (context) => (source) => ts.visitEachChild(source, (n) => n, context);
+              }
+            }
+          ]
+        }
+      })
+    ],
+    onwarn
+  });
+
+  try {
+    await getCode(bundle, { format: 'esm', dir: dirName }, true);
+    // Only one factory invocation; both references point to the initial program
+    t.deepEqual(seen, [{ p: 'first', gp: 'first' }]);
+  } finally {
+    await bundle.close();
+    if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
+  }
+});
