@@ -42,7 +42,8 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     typescript: typescript || defaultTs,
     tslib: tslib || getTsLibPath(),
     transformers,
-    recreateTransformersOnRebuild: Boolean(recreateTransformersOnRebuild),
+    // Only enable when explicitly set to true to avoid truthy string pitfalls in JS configs
+    recreateTransformersOnRebuild: recreateTransformersOnRebuild === true,
     outputToFilesystem
   };
 };
