@@ -142,15 +142,15 @@ Supported transformer factories:
 
 - all **built-in** TypeScript custom transformer factories:
 
-  - `import('typescript').TransformerFactory` annotated **TransformerFactory** bellow
-  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+  - `import('typescript').TransformerFactory` annotated **TransformerFactory** below
+  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** below
 
 - **ProgramTransformerFactory** represents a transformer factory allowing the resulting transformer to grab a reference to the **Program** instance
 
   ```js
   {
     type: 'program',
-    // An optional `getProgram` getter may be provided. In non‑watch it returns
+    // An optional `getProgram` getter is provided in all modes. In non‑watch it returns
     // the same Program as the first argument. In watch mode, when the
     // `recreateTransformersOnRebuild` option is enabled, the getter reflects the latest
     // Program across rebuilds; otherwise it refers to the initial Program.
@@ -189,7 +189,7 @@ typescript({
       {
         type: 'typeChecker',
         factory: (typeChecker) => {
-          // Allow the transformer to get a TypeChecker reference in it's factory
+          // Allow the transformer to get a TypeChecker reference in its factory
           return TypeCheckerRequiringTransformerFactory(typeChecker);
         }
       }
@@ -222,8 +222,8 @@ Supported transformer factories:
 
 - all **built-in** TypeScript custom transformer factories:
 
-  - `import('typescript').TransformerFactory` annotated **TransformerFactory** bellow
-  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** bellow
+  - `import('typescript').TransformerFactory` annotated **TransformerFactory** below
+  - `import('typescript').CustomTransformerFactory` annotated **CustomTransformerFactory** below
 
 The example above could be written like this:
 
