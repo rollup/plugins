@@ -150,7 +150,10 @@ Supported transformer factories:
   ```js
   {
     type: 'program',
-    // In watch mode, the optional `getProgram` returns the latest Program
+    // An optional `getProgram` getter is always provided. In non‑watch it returns
+    // the same Program as the first argument. In watch mode, enabling the
+    // `recreateTransformersOnRebuild` option makes the getter reflect the latest
+    // Program across rebuilds; otherwise it refers to the initial Program.
     factory: (program: Program, getProgram?: () => Program) =>
       TransformerFactory | CustomTransformerFactory
   }
@@ -169,11 +172,18 @@ typescript({
   transformers: {
     before: [
       {
-        // Allow the transformer to get a Program reference in its factory
-        // and, in watch mode, access the latest Program via `getProgram()`
+        // Allow the transformer to get a Program reference in its factory.
+        // Prefer deferring `getProgram()` usage to transformation time so watch
+        // mode can see the freshest Program when `recreateTransformersOnRebuild`
+        // is enabled.
         type: 'program',
         factory: (program, getProgram) => {
-          return ProgramRequiringTransformerFactory(getProgram ? getProgram() : program);
+          const get = getProgram ?? (() => program);
+          return (context) => (source) => {
+            const latest = get();
+            // use `latest` here
+            return ts.visitEachChild(source, (n) => n, context);
+          };
         }
       },
       {
@@ -250,7 +260,31 @@ typescript({
 
 Note on watch mode
 
-When running Rollup in watch mode, this plugin recreates custom transformer factories after each TypeScript program rebuild so they receive the current Program and TypeChecker. If your transformer needs to query the latest type information across rebuilds, prefer using the optional `getProgram()` parameter provided to `program`-based transformer factories.
+By default (legacy behavior), this plugin reuses the same custom transformer factories for the lifetime of a watch session. Advanced users can opt into recreating factories on every TypeScript rebuild by enabling the `recreateTransformersOnRebuild` option. When enabled, both `program`- and `typeChecker`-based factories are rebuilt per watch cycle, and `getProgram()` (when used) reflects the latest Program across rebuilds.
+
+### `recreateTransformersOnRebuild`
+
+Type: `Boolean`<br>
+Default: `false` (legacy behavior)
+
+When `true`, the plugin recreates custom transformer factories on each TypeScript watch rebuild. This ensures factories capture the current `Program`/`TypeChecker` per cycle and that the optional `getProgram()` getter provided to `program`-based factories reflects the latest `Program` across rebuilds. Most users do not need this; enable it if your transformers depend on up‑to‑date Program/TypeChecker identities.
+
+```js
+// Opt-in to per-rebuild transformer recreation in watch mode
+typescript({
+  recreateTransformersOnRebuild: true,
+  transformers: {
+    before: [
+      {
+        type: 'program',
+        factory(program, getProgram) {
+          /* ... */
+        }
+      }
+    ]
+  }
+});
+```
 
 ### `cacheDir`
 

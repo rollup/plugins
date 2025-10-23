@@ -35,6 +35,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
     outputToFilesystem,
     noForceEmit,
     transformers,
+    recreateTransformersOnRebuild,
     tsconfig,
     tslib,
     typescript: ts
@@ -180,7 +181,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           status(diagnostic) {
             watchProgramHelper.handleStatus(diagnostic);
           },
-          transformers
+          transformers,
+          recreateTransformersOnRebuild
         });
       }
     },

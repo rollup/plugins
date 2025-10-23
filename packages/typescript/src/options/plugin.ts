@@ -21,6 +21,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     filterRoot,
     noForceEmit,
     transformers,
+    recreateTransformersOnRebuild,
     tsconfig,
     tslib,
     typescript,
@@ -41,6 +42,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     typescript: typescript || defaultTs,
     tslib: tslib || getTsLibPath(),
     transformers,
+    recreateTransformersOnRebuild,
     outputToFilesystem
   };
 };

@@ -29,8 +29,14 @@ interface ProgramTransformerFactory<T extends TransformerStage> {
   type: 'program';
 
   /**
-   * Factory that may receive a getter for the latest Program when running in watch mode.
-   * The second parameter is optional to preserve backwards compatibility with existing
+   * Factory receives the current Program and may also receive a getter for retrieving
+   * the Program at call time. The getter is provided in all modes. In non-watch it
+   * returns the same Program as the first argument. In watch mode:
+   *  - When `recreateTransformersOnRebuild` is enabled (plugin option), the getter
+   *    reflects the latest Program across rebuilds.
+   *  - When disabled (default, legacy behavior), factories are reused and the getter
+   *    refers to the initial Program from when the factory was created.
+   * The second parameter remains optional for backwards compatibility with existing
    * transformer factories.
    */
   factory(program: Program, getProgram?: () => Program): StagedTransformerFactory<T>;
@@ -94,6 +100,14 @@ export interface RollupTypescriptPluginOptions {
    * Override force setting of `noEmit` and `emitDeclarationOnly` and use what is defined in `tsconfig.json`
    */
   noForceEmit?: boolean;
+  /**
+   * Advanced: when true, recreate custom transformer factories on each TypeScript
+   * watch rebuild so that `program`/`typeChecker`-based factories are rebuilt and
+   * `getProgram()` (when used) reflects the latest Program across rebuilds.
+   * Defaults to false (legacy behavior), which reuses factories for the lifetime
+   * of the watch session.
+   */
+  recreateTransformersOnRebuild?: boolean;
 }
 
 export interface FlexibleCompilerOptions extends CompilerOptions {

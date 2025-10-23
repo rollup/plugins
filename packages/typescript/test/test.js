@@ -1714,6 +1714,7 @@ test.serial(
         typescript({
           tsconfig: false,
           compilerOptions: { module: 'esnext' },
+          recreateTransformersOnRebuild: true,
           // Use a fake TS that simulates two watch rebuilds by calling afterProgramCreate twice
           typescript: fakeTypescript({
             createWatchProgram(host) {
@@ -1795,6 +1796,7 @@ test.serial('recreates typeChecker-based transformers per rebuild in watch mode'
       typescript({
         tsconfig: false,
         compilerOptions: { module: 'esnext' },
+        recreateTransformersOnRebuild: true,
         // Fake TS that simulates two watch rebuilds, each returning a distinct TypeChecker
         typescript: fakeTypescript({
           createWatchProgram(host) {
