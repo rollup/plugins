@@ -150,9 +150,9 @@ Supported transformer factories:
   ```js
   {
     type: 'program',
-    // An optional `getProgram` getter is always provided. In non‑watch it returns
-    // the same Program as the first argument. In watch mode, enabling the
-    // `recreateTransformersOnRebuild` option makes the getter reflect the latest
+    // An optional `getProgram` getter may be provided. In non‑watch it returns
+    // the same Program as the first argument. In watch mode, when the
+    // `recreateTransformersOnRebuild` option is enabled, the getter reflects the latest
     // Program across rebuilds; otherwise it refers to the initial Program.
     factory: (program: Program, getProgram?: () => Program) =>
       TransformerFactory | CustomTransformerFactory

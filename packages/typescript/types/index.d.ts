@@ -30,7 +30,7 @@ interface ProgramTransformerFactory<T extends TransformerStage> {
 
   /**
    * Factory receives the current Program and may also receive a getter for retrieving
-   * the Program at call time. The getter is provided in all modes. In non-watch it
+   * the Program at call time. The getter may be provided in all modes. In non-watch it
    * returns the same Program as the first argument. In watch mode:
    *  - When `recreateTransformersOnRebuild` is enabled (plugin option), the getter
    *    reflects the latest Program across rebuilds.

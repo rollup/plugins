@@ -42,7 +42,7 @@ export const getPluginOptions = (options: RollupTypescriptOptions) => {
     typescript: typescript || defaultTs,
     tslib: tslib || getTsLibPath(),
     transformers,
-    recreateTransformersOnRebuild,
+    recreateTransformersOnRebuild: Boolean(recreateTransformersOnRebuild),
     outputToFilesystem
   };
 };
