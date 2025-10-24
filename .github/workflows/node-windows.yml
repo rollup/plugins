@@ -6,10 +6,6 @@ on:
       - edited
       - opened
       - synchronize
-  push:
-    branches:
-      - '*'
-      - '!master'
 
 jobs:
   build:
