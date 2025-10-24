@@ -1,4 +1,6 @@
 {
+  // Important: this config is symlinked into package directories as `tsconfig.json`.
+  // The `extends` path must therefore be relative to the symlink location (e.g. packages/<pkg>/).
   "extends": "../../.config/tsconfig.base.json",
   "compilerOptions": {
     "noEmit": false,

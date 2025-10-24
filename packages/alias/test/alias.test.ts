@@ -489,7 +489,7 @@ describe('plugin-alias', () => {
     expect(warnList).toMatchObject([
       {
         message:
-          '[plugin alias] rewrote @/warn-importee.js to test/fixtures/folder/warn-importee.js but was not an abolute path and was not handled by other plugins. ' +
+          '[plugin alias] rewrote @/warn-importee.js to test/fixtures/folder/warn-importee.js but was not an absolute path and was not handled by other plugins. ' +
           'This will lead to duplicated modules for the same path. ' +
           'To avoid duplicating modules, you should resolve to an absolute path.',
         code: 'PLUGIN_WARNING',
