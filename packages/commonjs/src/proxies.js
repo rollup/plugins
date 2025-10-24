@@ -103,11 +103,11 @@ export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) 
  *   runtimes when the path is dead, and fails loudly if executed.
  */
 export function getExternalBuiltinRequireProxy(id, strategy = 'create-require') {
-  const stringifiedId = JSON.stringify(id);
   if (strategy === 'stub') {
-    const msg = `Node built-in ${stringifiedId} is not available in this environment`;
+    const msg = `Node built-in ${id} is not available in this environment`;
     return `export function __require() { throw new Error(${JSON.stringify(msg)}); }`;
   }
+  const stringifiedId = JSON.stringify(id);
   return (
     `import { createRequire } from 'node:module';\n` +
     `const require = createRequire(import.meta.url);\n` +
