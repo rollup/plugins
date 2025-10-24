@@ -196,15 +196,20 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
           // Special-case external Node built-ins to be handled via a lazy __require
           // helper instead of hoisted ESM imports when strict wrapping is used.
           const isExternalWrapped = isWrappedId(dependencyId, EXTERNAL_SUFFIX);
-          if (
-            parentMeta.initialCommonJSType === IS_WRAPPED_COMMONJS &&
-            !allowProxy &&
-            isExternalWrapped
-          ) {
+          let resolvedDependencyId = dependencyId;
+          if (parentMeta.isCommonJS === IS_WRAPPED_COMMONJS && !allowProxy && isExternalWrapped) {
             const actualExternalId = unwrapId(dependencyId, EXTERNAL_SUFFIX);
             if (actualExternalId.startsWith('node:')) {
               isCommonJS = IS_WRAPPED_COMMONJS;
               parentMeta.isRequiredCommonJS[dependencyId] = isCommonJS;
+            }
+          } else if (isExternalWrapped && !allowProxy) {
+            // If the parent is not wrapped but the dependency is a node: builtin external,
+            // unwrap the EXTERNAL_SUFFIX so it's treated as a normal external.
+            // This avoids trying to load the lazy __require proxy for non-wrapped contexts.
+            const actualExternalId = unwrapId(dependencyId, EXTERNAL_SUFFIX);
+            if (actualExternalId.startsWith('node:')) {
+              resolvedDependencyId = actualExternalId;
             }
           }
           const isWrappedCommonJS = isCommonJS === IS_WRAPPED_COMMONJS;
@@ -226,8 +231,8 @@ export function getRequireResolver(extensions, detectCyclesAndConditional, curre
             wrappedModuleSideEffects,
             source: sources[index].source,
             id: allowProxy
-              ? wrapId(dependencyId, isWrappedCommonJS ? WRAPPED_SUFFIX : PROXY_SUFFIX)
-              : dependencyId,
+              ? wrapId(resolvedDependencyId, isWrappedCommonJS ? WRAPPED_SUFFIX : PROXY_SUFFIX)
+              : resolvedDependencyId,
             isCommonJS
           };
         });
