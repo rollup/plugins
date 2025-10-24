@@ -6,6 +6,7 @@ on:
       - edited
       - opened
       - synchronize
+  workflow_dispatch:
 
 jobs:
   build:
