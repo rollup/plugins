@@ -10,6 +10,11 @@ function unused() {
 
 try {
   unused();
-} catch {}
+} catch (_err) {
+  // Expected: in this fixture we configure `externalBuiltinsRequire: 'stub'`,
+  // so calling the proxy's `__require()` throws. We swallow the error so the
+  // test can assert on the generated code (no `node:module` import) without
+  // failing at runtime.
+}
 
 module.exports = 1;
