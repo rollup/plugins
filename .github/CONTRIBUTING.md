@@ -26,6 +26,20 @@ Any code change should be submitted as a pull request. Our guidelines for Pull R
 - Before submitting your Pull Request, please lint your changes by running `pnpm lint` in the root directory
 - If any checks fail for your Pull Request, please resolve them. Always feel free to ask for help if unable to resolve issues with checks
 
+## Testing packages
+
+Some packages use Vitest for tests. When converting or running tests locally inside a package directory (e.g. `packages/alias`):
+
+- Tests import the package under test via `~package`. A shared config at `.config/vitest.config.mts` provides a runtime alias that resolves `~package` to the current working directory.
+- Snapshots are written alongside each test under a local `.snapshots` directory.
+
+Example (from a package directory):
+
+```
+pnpm build
+pnpm test
+```
+
 ## Code review process
 
 The bigger the pull request, the longer it will take to review and merge. Try to break down large pull requests in smaller chunks that are easier to review and merge.

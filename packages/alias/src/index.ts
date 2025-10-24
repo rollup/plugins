@@ -1,8 +1,46 @@
-import path from 'path';
+import path from 'node:path';
 
-import type { Plugin } from 'rollup';
+// Public types are exported directly from source so tsc can emit declarations
+import type { Plugin, PluginHooks } from 'rollup';
 
-import type { ResolvedAlias, ResolverFunction, ResolverObject, RollupAliasOptions } from '../types';
+// Narrow to explicit callable form instead of the global `Function` type.
+type MapToFunction<T> = T extends (...args: any[]) => any ? T : never;
+
+export type ResolverFunction = MapToFunction<PluginHooks['resolveId']>;
+
+export interface ResolverObject {
+  buildStart?: PluginHooks['buildStart'];
+  resolveId: ResolverFunction;
+}
+
+export interface Alias {
+  find: string | RegExp;
+  replacement: string;
+  customResolver?: ResolverFunction | ResolverObject | null;
+}
+
+export interface ResolvedAlias {
+  find: string | RegExp;
+  replacement: string;
+  resolverFunction: ResolverFunction | null;
+}
+
+export interface RollupAliasOptions {
+  /**
+   * Instructs the plugin to use an alternative resolving algorithm,
+   * rather than the Rollup's resolver.
+   * @default null
+   */
+  customResolver?: ResolverFunction | ResolverObject | null;
+
+  /**
+   * Specifies an `Object`, or an `Array` of `Object`,
+   * which defines aliases used to replace values in `import` or `require` statements.
+   * With either format, the order of the entries is important,
+   * in that the first defined rules are applied first.
+   */
+  entries?: readonly Alias[] | { [find: string]: string };
+}
 
 function matches(pattern: string | RegExp, importee: string) {
   if (pattern instanceof RegExp) {
@@ -40,7 +78,7 @@ function getEntries({ entries, customResolver }: RollupAliasOptions): readonly R
   });
 }
 
-function getHookFunction<T extends Function>(hook: T | { handler?: T }): T | null {
+function getHookFunction<T extends (...args: any[]) => any>(hook: T | { handler?: T }): T | null {
   if (typeof hook === 'function') {
     return hook;
   }
@@ -104,7 +142,7 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
 
         if (!path.isAbsolute(updatedId)) {
           this.warn(
-            `rewrote ${importee} to ${updatedId} but was not an abolute path and was not handled by other plugins. ` +
+            `rewrote ${importee} to ${updatedId} but was not an absolute path and was not handled by other plugins. ` +
               `This will lead to duplicated modules for the same path. ` +
               `To avoid duplicating modules, you should resolve to an absolute path.`
           );
