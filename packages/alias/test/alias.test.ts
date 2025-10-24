@@ -25,37 +25,52 @@ function resolveWithRollup(
   if (!plugins.find((p) => p.name === 'alias')) {
     throw new Error('`plugins` should include the alias plugin.');
   }
-  return new Promise<string[] | (string | null)[]>((resolve, reject) => {
-    rollup({
-      input: 'dummy-input',
-      plugins: [
-        {
-          name: 'test-plugin',
-          buildStart() {
-            resolve(
-              Promise.all(
-                tests.map(({ source, importer, options }) =>
-                  // @ts-expect-error - this context is provided by Rollup
-                  this.resolve(source, importer, options).then((result: any) =>
-                    result ? result.id : null
-                  )
-                )
+
+  // Coordinate between the Rollup build lifecycle and our test assertions.
+  let settle!: (value: (string | null)[]) => void;
+  let settleErr!: (reason?: unknown) => void;
+  const resultsPromise = new Promise<(string | null)[]>((res, rej) => {
+    settle = res;
+    settleErr = rej;
+  });
+
+  return rollup({
+    input: 'dummy-input',
+    plugins: [
+      {
+        name: 'test-plugin',
+        buildStart() {
+          // Resolve the requested ids using Rollup's resolver in the proper context.
+          Promise.all(
+            tests.map(({ source, importer, options }) =>
+              // @ts-expect-error - this context is provided by Rollup
+              this.resolve(source, importer, options).then((result: any) =>
+                result ? result.id : null
               )
-            );
-          },
-          resolveId(id: string) {
-            if (id === 'dummy-input') return id;
-            if (externalIds.includes(id)) return { id, external: true } as any;
-            return null;
-          },
-          load(id: string) {
-            if (id === 'dummy-input') return 'console.log("test");';
-            return null;
-          }
+            )
+          )
+            .then(settle)
+            .catch(settleErr);
         },
-        ...plugins
-      ]
-    }).catch(reject);
+        resolveId(id: string) {
+          if (id === 'dummy-input') return id;
+          if (externalIds.includes(id)) return { id, external: true } as any;
+          return null;
+        },
+        load(id: string) {
+          if (id === 'dummy-input') return 'console.log("test");';
+          return null;
+        }
+      },
+      ...plugins
+    ]
+  }).then(async (bundle) => {
+    try {
+      const results = await resultsPromise;
+      return results;
+    } finally {
+      await bundle.close();
+    }
   });
 }
 

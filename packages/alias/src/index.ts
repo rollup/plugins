@@ -3,7 +3,8 @@ import path from 'node:path';
 // Public types are exported directly from source so tsc can emit declarations
 import type { Plugin, PluginHooks } from 'rollup';
 
-type MapToFunction<T> = T extends Function ? T : never;
+// Narrow to explicit callable form instead of the global `Function` type.
+type MapToFunction<T> = T extends (...args: any[]) => any ? T : never;
 
 export type ResolverFunction = MapToFunction<PluginHooks['resolveId']>;
 
