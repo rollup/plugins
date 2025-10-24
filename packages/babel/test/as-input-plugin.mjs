@@ -258,13 +258,13 @@ test('allows transform-runtime to inject esm version of helpers', async (t) => {
     }
   );
   t.deepEqual(warnings, [
-    `"@babel/runtime/helpers/esm/createClass" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`,
-    `"@babel/runtime/helpers/esm/classCallCheck" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`
+    `"@babel/runtime/helpers/createClass" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`,
+    `"@babel/runtime/helpers/classCallCheck" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`
   ]);
   t.is(
     code,
-    `import _createClass from '@babel/runtime/helpers/esm/createClass';
-import _classCallCheck from '@babel/runtime/helpers/esm/classCallCheck';
+    `import _createClass from '@babel/runtime/helpers/createClass';
+import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
 
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
@@ -540,7 +540,7 @@ test('can be used as an input plugin while transforming the output', async (t) =
     input: `${FIXTURES}basic/main.js`,
     plugins: [
       getBabelOutputPlugin({
-        presets: ['@babel/env']
+        presets: [['@babel/env', { targets: 'firefox 2' }]]
       })
     ]
   });
@@ -556,7 +556,7 @@ test('works as a CJS plugin', async (t) => {
     input: `${FIXTURES}basic/main.js`,
     plugins: [
       babelPluginCjs({
-        presets: ['@babel/env']
+        presets: [['@babel/env', { targets: 'firefox 2' }]]
       })
     ]
   });
