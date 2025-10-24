@@ -44,6 +44,9 @@ export default function commonjs(options = {}) {
     defaultIsModuleExports: defaultIsModuleExportsOption,
     esmExternals
   } = options;
+  const rawExternalBuiltinsRequire = options.externalBuiltinsRequire;
+  const externalBuiltinsRequireStrategy =
+    rawExternalBuiltinsRequire === 'stub' ? 'stub' : 'create-require';
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
   const isPossibleCjsId = (id) => {
@@ -212,6 +215,15 @@ export default function commonjs(options = {}) {
           'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
         );
       }
+      if (
+        rawExternalBuiltinsRequire != null &&
+        rawExternalBuiltinsRequire !== 'create-require' &&
+        rawExternalBuiltinsRequire !== 'stub'
+      ) {
+        this.warn(
+          `${PLUGIN_NAME}: invalid externalBuiltinsRequire "${rawExternalBuiltinsRequire}", using "create-require"`
+        );
+      }
       requireResolver = getRequireResolver(
         extensions,
         detectCyclesAndConditional,
@@ -264,7 +276,7 @@ export default function commonjs(options = {}) {
       if (isWrappedId(id, EXTERNAL_SUFFIX)) {
         const actualId = unwrapId(id, EXTERNAL_SUFFIX);
         if (actualId.startsWith('node:')) {
-          return getExternalBuiltinRequireProxy(actualId);
+          return getExternalBuiltinRequireProxy(actualId, externalBuiltinsRequireStrategy);
         }
         return getUnknownRequireProxy(
           actualId,

@@ -225,6 +225,18 @@ interface RollupCommonJSOptions {
    * home directory name. By default, it uses the current working directory.
    */
   dynamicRequireRoot?: string;
+
+  /**
+   * Controls how `require('node:*')` dependencies of wrapped CommonJS modules are
+   * handled. The default uses Node's `module.createRequire` lazily to resolve the
+   * built-in at runtime. Set to `'stub'` to avoid importing from `node:module` and
+   * instead emit a tiny proxy whose `__require()` throws at runtime. This can be
+   * useful for edge runtimes that do not support Node built-ins when those code paths
+   * are never executed.
+   *
+   * @default 'create-require'
+   */
+  externalBuiltinsRequire?: 'create-require' | 'stub';
 }
 
 /**
