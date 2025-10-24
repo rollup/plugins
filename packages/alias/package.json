@@ -32,7 +32,7 @@
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "vitest --config ../../.config/vitest.config.ts run"
+    "test": "vitest --config ../../.config/vitest.config.mts run"
   },
   "files": [
     "dist",

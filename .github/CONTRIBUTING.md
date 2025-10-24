@@ -30,7 +30,7 @@ Any code change should be submitted as a pull request. Our guidelines for Pull R
 
 Some packages use Vitest for tests. When converting or running tests locally inside a package directory (e.g. `packages/alias`):
 
-- Tests import the package under test via `~package`. A shared config at `.config/vitest.config.ts` provides a runtime alias that resolves `~package` to the current working directory.
+- Tests import the package under test via `~package`. A shared config at `.config/vitest.config.mts` provides a runtime alias that resolves `~package` to the current working directory.
 - Snapshots are written alongside each test under a local `.snapshots` directory.
 
 Example (from a package directory):
