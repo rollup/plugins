@@ -90,8 +90,24 @@ export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) 
 // hoist an ESM import of the built-in (which would eagerly load it). Instead,
 // expose a lazy `__require()` that resolves the built-in at runtime via
 // `createRequire(import.meta.url)`.
-export function getExternalBuiltinRequireProxy(id) {
+/**
+ * Generate the proxy module used for external Node built-ins that are
+ * `require()`d from wrapped CommonJS modules.
+ *
+ * Strategy:
+ * - 'create-require' (default): import `createRequire` from 'node:module' and
+ *   lazily resolve the built-in at runtime. This keeps Node behaviour and
+ *   avoids hoisting, but hard-depends on Node's `module` API.
+ * - 'stub': emit a tiny proxy that exports a throwing `__require()` without
+ *   importing from 'node:module'. This makes output parse/run in edge
+ *   runtimes when the path is dead, and fails loudly if executed.
+ */
+export function getExternalBuiltinRequireProxy(id, strategy = 'create-require') {
   const stringifiedId = JSON.stringify(id);
+  if (strategy === 'stub') {
+    const msg = `Node built-in ${stringifiedId} is not available in this environment`;
+    return `export function __require() { throw new Error(${JSON.stringify(msg)}); }`;
+  }
   return (
     `import { createRequire } from 'node:module';\n` +
     `const require = createRequire(import.meta.url);\n` +

@@ -183,6 +183,33 @@ When this option is set to `false`, the generated code will either directly thro
 
 Setting this option to `true` will instead leave the `require` call in the code or use it as a fallback for `dynamicRequireTargets`.
 
+### `externalBuiltinsRequire`
+
+Type: `'create-require' | 'stub'`  
+Default: `'create-require'`
+
+Controls how external Node built-ins (e.g. `require('node:fs')`) that are required from wrapped CommonJS modules are handled.
+
+- `'create-require'` (default): lazily resolve the built-in at runtime using `module.createRequire(import.meta.url)`. This matches Node behaviour and avoids hoisting, but introduces a hard dependency on `node:module` in the generated output.
+- `'stub'`: emit a tiny proxy that exports a throwing `__require()` without importing from `node:module`. This avoids the `node:module` import so bundles can parse/run in edge runtimes when those code paths are never executed. If the path is executed at runtime, it will throw with a clear error message.
+
+Example (avoid `node:module` for edge targets):
+
+```js
+import commonjs from '@rollup/plugin-commonjs';
+
+export default {
+  input: 'src/index.js',
+  output: { format: 'es' },
+  plugins: [
+    commonjs({
+      strictRequires: true,
+      externalBuiltinsRequire: 'stub'
+    })
+  ]
+};
+```
+
 ### `esmExternals`
 
 Type: `boolean | string[] | ((id: string) => boolean)`

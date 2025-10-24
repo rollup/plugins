@@ -44,6 +44,8 @@ export default function commonjs(options = {}) {
     defaultIsModuleExports: defaultIsModuleExportsOption,
     esmExternals
   } = options;
+  const externalBuiltinsRequireStrategy =
+    options.externalBuiltinsRequire === 'stub' ? 'stub' : 'create-require';
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
   const isPossibleCjsId = (id) => {
@@ -264,7 +266,7 @@ export default function commonjs(options = {}) {
       if (isWrappedId(id, EXTERNAL_SUFFIX)) {
         const actualId = unwrapId(id, EXTERNAL_SUFFIX);
         if (actualId.startsWith('node:')) {
-          return getExternalBuiltinRequireProxy(actualId);
+          return getExternalBuiltinRequireProxy(actualId, externalBuiltinsRequireStrategy);
         }
         return getUnknownRequireProxy(
           actualId,
