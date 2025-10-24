@@ -23,6 +23,7 @@ Using npm:
 npm install @rollup/plugin-json --save-dev
 ```
 
+
 ## Usage
 
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
@@ -67,6 +68,12 @@ Type: `String` | `Array[...String]`<br>
 Default: `null`
 
 A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files in the build the plugin should _ignore_. By default no files are ignored.
+
+### `extensions`
+
+Type: `Array[...String]`<br>
+Default: `['.json']`
+A list of file extensions to be handled by the plugin. By default, only `.json` files are handled.
 
 ### `include`
 
