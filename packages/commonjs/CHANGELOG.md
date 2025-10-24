@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v28.0.9
+
+_2025-10-24_
+
+### Bugfixes
+
+- fix: handle `node:` builtins with `strictRequires: auto` (#1930)
+
 ## v28.0.8
 
 _2025-10-16_
