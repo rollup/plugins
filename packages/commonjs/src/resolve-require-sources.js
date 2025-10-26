@@ -203,7 +203,7 @@ export function getRequireResolver(
           // Only apply this when requireNodeBuiltins option is enabled.
           const isExternalWrapped = isWrappedId(dependencyId, EXTERNAL_SUFFIX);
           let resolvedDependencyId = dependencyId;
-          if (requireNodeBuiltins) {
+          if (requireNodeBuiltins === true) {
             if (parentMeta.isCommonJS === IS_WRAPPED_COMMONJS && !allowProxy && isExternalWrapped) {
               const actualExternalId = unwrapId(dependencyId, EXTERNAL_SUFFIX);
               if (actualExternalId.startsWith('node:')) {

@@ -43,7 +43,7 @@ export default function commonjs(options = {}) {
     requireReturnsDefault: requireReturnsDefaultOption,
     defaultIsModuleExports: defaultIsModuleExportsOption,
     esmExternals,
-    requireNodeBuiltins
+    requireNodeBuiltins = false
   } = options;
   const extensions = options.extensions || ['.js'];
   const filter = createFilter(options.include, options.exclude);
@@ -265,7 +265,7 @@ export default function commonjs(options = {}) {
 
       if (isWrappedId(id, EXTERNAL_SUFFIX)) {
         const actualId = unwrapId(id, EXTERNAL_SUFFIX);
-        if (requireNodeBuiltins && actualId.startsWith('node:')) {
+        if (requireNodeBuiltins === true && actualId.startsWith('node:')) {
           return getExternalBuiltinRequireProxy(actualId);
         }
         return getUnknownRequireProxy(
