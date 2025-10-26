@@ -225,6 +225,17 @@ interface RollupCommonJSOptions {
    * home directory name. By default, it uses the current working directory.
    */
   dynamicRequireRoot?: string;
+  /**
+   * When enabled, external Node built-ins (e.g., `node:fs`) required from wrapped CommonJS modules
+   * will use `createRequire(import.meta.url)` instead of being hoisted as ESM imports. This prevents
+   * eager loading of Node built-ins at module initialization time.
+   *
+   * Note: This option adds a dependency on `node:module` in the output, which may not be available
+   * in some environments like edge runtimes (Cloudflare Workers, Vercel Edge Runtime).
+   *
+   * @default false
+   */
+  requireNodeBuiltins?: boolean;
 }
 
 /**

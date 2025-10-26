@@ -1,7 +1,8 @@
 module.exports = {
   description: 'handles node: builtins correctly with strictRequires: auto',
   pluginOptions: {
-    strictRequires: 'auto'
+    strictRequires: 'auto',
+    requireNodeBuiltins: true
   },
   exports: (exports, t) => {
     // Should be able to access properties of node:stream
