@@ -1,5 +1,13 @@
 # @rollup/plugin-eslint ChangeLog
 
+## v9.2.0
+
+_2025-10-28_
+
+### Features
+
+- feat: add support for ESLint v9 (#1905)
+
 ## v9.1.0
 
 _2025-10-04_
