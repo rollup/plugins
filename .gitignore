@@ -16,3 +16,5 @@ coverage.lcov
 !packages/commonjs/test/**/node_modules
 !packages/typescript/test/fixtures/**/node_modules
 !packages/typescript/test/fixtures/**/dist
+
+!packages/*/test-typings/node_modules

@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./esm-node16" },
+    { "path": "./cjs-node16" },
+    { "path": "./node10-esnext" },
+    { "path": "./node10-commonjs" }
+  ]
+}
