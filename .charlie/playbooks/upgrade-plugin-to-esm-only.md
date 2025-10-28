@@ -85,11 +85,19 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
    - Use `node:` specifiers for built-ins (e.g., `import path from 'node:path'`).
    - Prefer URL utilities where needed (`fileURLToPath(new URL('.', import.meta.url))`).
    - Inline and export public types from `src/index.ts`; avoid separate `types/` unless unavoidable.
+   - Conversion rules for file types:
+     - Always convert any `.js` in `src/` to `.ts`.
+     - Never convert files in test `fixtures/` to TypeScript—keep fixtures exactly as authored.
+     - Always convert any `.js` in `test/` to `.ts` (test sources only; exclude `test/**/fixtures/**`).
 
-6. Tests: drop CJS branches; ESM everywhere
+6. Tests: order of operations (AVA → Vitest) and ESM
 
    - Remove CJS-specific branches/assertions from tests.
-   - Keep the existing runner (AVA) if it already handles ESM in Node 20. If the package already uses Vitest in this repo, keep that pattern.
+   - Follow this sequence for reliability:
+     1. After JS→TS conversion in `src/` and `test/` and after any `package.json` changes, always run the AVA test suite.
+     2. Only after verifying AVA tests run without modifications, convert the AVA tests to Vitest.
+     3. After converting tests to Vitest, always run the Vitest suite after any subsequent `src/` change.
+   - Note: If a package already uses Vitest, start at step 3 and skip AVA‑specific steps.
    - Ensure Rollup bundles created in tests are `await bundle.close()`-d to avoid leaks.
 
 7. Clean up package artifacts
