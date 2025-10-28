@@ -46,6 +46,8 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
 
      If you must disable map emission, either update the shared `.config/tsconfig.plugin.json` (affects all packages) or create a package-local `tsconfig.build.json` that extends it with `"sourceMap": false` and `"declarationMap": false`, then change the build script to `tsc --project tsconfig.build.json`.
 
+     If an existing `package.json` contains `"files": [ ..., "!dist/**/*.map", ... ]`, remove the negated entry—negation is not supported and will be ignored.
+
 3. Build scripts: TypeScript emit to dist
 
    - Prefer a tsc-only build for packages that do not need bundling:
@@ -121,9 +123,8 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
 
 ## Rollback
 
-- Revert the package directory to the previous commit:
+- Revert the package directory to the previous commit (modern Git):
   ```bash
-  git checkout -- $PKG
   git restore -SW $PKG
   ```
 - If needed, `git reset --hard HEAD~1` when this package’s change is isolated on a feature branch.
