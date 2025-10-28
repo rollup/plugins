@@ -81,7 +81,7 @@ importers:
         specifier: 10.9.1
         version: 10.9.1(@swc/core@1.3.78)(@types/node@20.19.23)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
         specifier: ^4.0.2
