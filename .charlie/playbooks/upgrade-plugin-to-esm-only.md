@@ -38,15 +38,9 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
        ```json
        "files": ["dist", "README.md", "LICENSE"]
        ```
-       Note: `package.json` `files` does not support negation patterns. To exclude maps from the published package, add an `.npmignore` entry:
-
-     ```
-     dist/**/*.map
-     ```
-
-     If you must disable map emission, either update the shared `.config/tsconfig.plugin.json` (affects all packages) or create a package-local `tsconfig.build.json` that extends it with `"sourceMap": false` and `"declarationMap": false`, then change the build script to `tsc --project tsconfig.build.json`.
-
-     If an existing `package.json` contains `"files": [ ..., "!dist/**/*.map", ... ]`, remove the negated entry—negation is not supported and will be ignored.
+       Notes:
+       - `package.json` `files` does not support negation patterns. If an existing `package.json` contains "files": [ ..., "!dist/**/*.map", ... ], remove the negated entry—negation is not supported and will be ignored.
+       - Always publish source maps. Do not exclude `dist/**/*.map` via `.npmignore`, and do not disable `sourceMap`/`declarationMap` for published packages. If a package currently excludes maps (via `.npmignore` or tsconfig), remove those exclusions so maps are included.
 
 3. Build scripts: TypeScript emit to dist
 
@@ -84,6 +78,7 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
    - Replace `require`, `module.exports`, and `__dirname` patterns with ESM equivalents.
    - Use `node:` specifiers for built-ins (e.g., `import path from 'node:path'`).
    - Prefer the latest ES APIs: use `import.meta.dirname` and `import.meta.filename` (Node ≥20.11) instead of re‑creating them via `fileURLToPath`.
+
      ```ts
      import path from 'node:path';
 
@@ -91,7 +86,9 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
      // const file = import.meta.filename;
      const pkgJson = path.join(here, 'package.json');
      ```
+
      Use URL utilities only when specifically needed (e.g., for non‑file module URLs): `fileURLToPath(new URL('.', import.meta.url))`.
+
    - Inline and export public types from `src/index.ts`; avoid separate `types/` unless unavoidable.
    - Conversion rules for file types:
      - Always convert any `.js` in `src/` to `.ts`.
