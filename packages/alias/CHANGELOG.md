@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v6.0.0
+
+_2025-10-28_
+
+### Breaking Changes
+
+- feat!: ESM only. Update Node and Rollup minimum versions (#1926)
+
 ## v5.1.1
 
 _2024-09-22_
