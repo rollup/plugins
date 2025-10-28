@@ -83,7 +83,15 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
 
    - Replace `require`, `module.exports`, and `__dirname` patterns with ESM equivalents.
    - Use `node:` specifiers for built-ins (e.g., `import path from 'node:path'`).
-   - Prefer URL utilities where needed (`fileURLToPath(new URL('.', import.meta.url))`).
+   - Prefer the latest ES APIs: use `import.meta.dirname` and `import.meta.filename` (Node ≥20.11) instead of re‑creating them via `fileURLToPath`.
+     ```ts
+     import path from 'node:path';
+
+     const here = import.meta.dirname;
+     // const file = import.meta.filename;
+     const pkgJson = path.join(here, 'package.json');
+     ```
+     Use URL utilities only when specifically needed (e.g., for non‑file module URLs): `fileURLToPath(new URL('.', import.meta.url))`.
    - Inline and export public types from `src/index.ts`; avoid separate `types/` unless unavoidable.
    - Conversion rules for file types:
      - Always convert any `.js` in `src/` to `.ts`.
