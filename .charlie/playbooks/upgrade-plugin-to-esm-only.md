@@ -11,24 +11,43 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
 ## Steps
 
 1. Identify the target package
+
    - Set a shell variable for reuse: `PKG=packages/<name>`.
 
 2. Package metadata: ESM-only and minimums
+
    - Edit `$PKG/package.json`:
+
      - Set `"type": "module"`.
-     - Replace legacy `main/module/exports.require` with ESM-only exports:
+     - Replace legacy `main/module/exports.require` with an ESM-only export mapped via the explicit `"."` entry for broad tooling compatibility:
        ```json
-       "exports": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-       "types": "./dist/index.d.ts"
+       {
+         "exports": {
+           ".": {
+             "types": "./dist/index.d.ts",
+             "import": "./dist/index.js",
+             "default": "./dist/index.js"
+           }
+         },
+         "types": "./dist/index.d.ts"
+       }
        ```
      - Set minimums: `"engines": { "node": ">=20.19.0" }` and `"peerDependencies": { "rollup": ">=4.0.0" }`.
      - Keep `rollup` as a devDependency only if tests use it. Otherwise remove it.
-     - Ensure published files include dist but exclude maps:
+     - Ensure published files include build output and standard docs:
        ```json
-       "files": ["dist", "!dist/**/*.map", "README.md", "LICENSE"]
+       "files": ["dist", "README.md", "LICENSE"]
        ```
+       Note: `package.json` `files` does not support negation patterns. To exclude maps from the published package, add an `.npmignore` entry:
+
+     ```
+     dist/**/*.map
+     ```
+
+     If you must disable map emission, either update the shared `.config/tsconfig.plugin.json` (affects all packages) or create a package-local `tsconfig.build.json` that extends it with `"sourceMap": false` and `"declarationMap": false`, then change the build script to `tsc --project tsconfig.build.json`.
 
 3. Build scripts: TypeScript emit to dist
+
    - Prefer a tsc-only build for packages that do not need bundling:
      - In `$PKG/package.json`, set scripts:
        ```json
@@ -40,30 +59,33 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
        ```
    - If this package still needs bundling for tests/examples, keep its Rollup config but point inputs at the TypeScript output in `dist/` instead of sources.
 
-4. TypeScript config: emit ESM to `dist/`
-   - Create or update `$PKG/tsconfig.json` to extend the shared plugin config and emit declarations:
-     ```json
-     {
-       "extends": "../../.config/tsconfig.base.json",
-       "compilerOptions": {
-         "noEmit": false,
-         "outDir": "dist",
-         "rootDir": "src",
-         "declaration": true,
-         "declarationMap": true
-       },
-       "include": ["src/**/*"]
-     }
+4. TypeScript config: use the shared plugin config (symlink)
+
+   - Replace any existing `$PKG/tsconfig.json` with a symlink to the shared plugin config (`.config/tsconfig.plugin.json`), which already enables emit to `dist/` and declaration maps:
+     ```bash
+     # from repo root
+     ln -snf ../../.config/tsconfig.plugin.json "$PKG/tsconfig.json"
+     git add "$PKG/tsconfig.json"
      ```
+     On Windows PowerShell, you can run:
+     ```powershell
+     # from repo root
+     $pkg = 'packages/<name>'
+     New-Item -ItemType SymbolicLink -Path "$pkg/tsconfig.json" -Target (Resolve-Path ".config/tsconfig.plugin.json") -Force
+     git add "$pkg/tsconfig.json"
+     ```
+     The shared config content lives at `.config/tsconfig.plugin.json`.
    - Delete any package-local `rollup` build scripts that produced CJS, and remove any `types/` folder if declarations were hand-authored (they will now be generated).
 
 5. Source: convert to pure ESM and modern Node APIs
+
    - Replace `require`, `module.exports`, and `__dirname` patterns with ESM equivalents.
    - Use `node:` specifiers for built-ins (e.g., `import path from 'node:path'`).
    - Prefer URL utilities where needed (`fileURLToPath(new URL('.', import.meta.url))`).
    - Inline and export public types from `src/index.ts`; avoid separate `types/` unless unavoidable.
 
 6. Tests: drop CJS branches; ESM everywhere
+
    - Remove CJS-specific branches/assertions from tests.
    - Keep the existing runner (AVA) if it already handles ESM in Node 20. If the package already uses Vitest in this repo, keep that pattern.
    - Ensure Rollup bundles created in tests are `await bundle.close()`-d to avoid leaks.
@@ -80,9 +102,13 @@ Upgrade a single plugin under `packages/<name>` to publish ESM-only output with 
   pnpm -C $PKG build
   tree $PKG/dist | sed -n '1,80p'
   ```
+- Symlink exists and points at the shared config:
+  ```bash
+  test -L "$PKG/tsconfig.json" && ls -l "$PKG/tsconfig.json" || (echo "tsconfig.json symlink missing" && exit 1)
+  ```
 - Type declarations resolve for consumers:
   ```bash
-  jq -r '.types, .exports.types, .exports.import' $PKG/package.json
+  jq -r '.types, .exports["."].types, .exports["."].import' $PKG/package.json
   ```
 - Runtime smoke (Node ESM import works):
   ```bash
