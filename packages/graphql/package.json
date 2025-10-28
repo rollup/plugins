@@ -30,7 +30,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm test -- --verbose && pnpm test:ts",
     "lint:graphql": "prettier --write \"test/fixtures/**/*.graphql\"",
-    "prebuild": "del-cli dist && pnpm lint:graphql",
+    "prebuild": "rm -rf dist && pnpm lint:graphql",
     "prepare": "[ ! -d 'dist' ] && pnpm build || true",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
