@@ -19,7 +19,7 @@
   "devDependencies": {
     "@dot/versioner": "^0.3.1",
     "@rollup/plugin-typescript": "^9.0.1",
-    "@types/node": "14.18.30",
+    "@types/node": "^20.19.0",
     "@types/source-map-support": "^0.5.4",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
@@ -39,7 +39,8 @@
     "prettier-plugin-package": "^1.3.0",
     "source-map-support": "^0.5.21",
     "ts-node": "10.9.1",
-    "typescript": "^4.8.3"
+    "typescript": "catalog:",
+    "vitest": "^4.0.2"
   },
   "ava": {
     "files": [
@@ -77,5 +78,5 @@
       "test/"
     ]
   },
-  "packageManager": "pnpm@9.4.0"
+  "packageManager": "pnpm@9.5.0"
 }

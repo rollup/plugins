@@ -1,2 +1,9 @@
 packages:
   - 'packages/*'
+
+# Align critical tooling versions across the workspace.
+# With the default catalog, packages can declare e.g.:
+#   "typescript": "catalog:"
+# and resolve to the range below.
+catalog:
+  typescript: ^5.9.3
