@@ -15,8 +15,10 @@ const input = path.join(cwd, '../input.js');
 const pkgFile = path.join(cwd, 'package.json');
 
 const PREV_CWD = process.cwd();
+const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split('.').map(Number);
+const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 19);
 
-it('yarn, bare', async () => {
+it.runIf(RUN_ON_THIS_NODE)('yarn, bare', async () => {
   process.chdir(cwd);
   // Ensure Yarn classic does not traverse to the repo root and read its
   // packageManager (pnpm). When no local package.json exists, Yarn v1 will

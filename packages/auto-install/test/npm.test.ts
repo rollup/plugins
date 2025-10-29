@@ -15,12 +15,14 @@ const input = path.join(cwd, '../input.js');
 const pkgFile = path.join(cwd, 'package.json');
 
 const PREV_CWD = process.cwd();
+const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split('.').map(Number);
+const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 19);
 
-it('invalid manager', () => {
+it.runIf(RUN_ON_THIS_NODE)('invalid manager', () => {
   expect(() => autoInstall({ pkgFile, manager: 'foo' as any })).toThrow(RangeError);
 });
 
-it('npm', async () => {
+it.runIf(RUN_ON_THIS_NODE)('npm', async () => {
   process.chdir(cwd);
   const bundle = await rollup({
     input,

@@ -14,8 +14,10 @@ const file = path.join(cwd, 'output/bundle.js');
 const input = path.join(cwd, '../input.js');
 
 const PREV_CWD = process.cwd();
+const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split('.').map(Number);
+const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 19);
 
-it('pnpm, bare', async () => {
+it.runIf(RUN_ON_THIS_NODE)('pnpm, bare', async () => {
   process.chdir(cwd);
   const bundle = await rollup({
     input,

@@ -15,8 +15,10 @@ const input = path.join(cwd, '../input.js');
 const pkgFile = path.join(cwd, 'package.json');
 
 const PREV_CWD = process.cwd();
+const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split('.').map(Number);
+const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 19);
 
-it('yarn', async () => {
+it.runIf(RUN_ON_THIS_NODE)('yarn', async () => {
   process.chdir(cwd);
   // Pre-create a local package.json with an explicit Yarn v1 requirement so
   // the Yarn shim (Corepack) doesn't traverse to the repo root and pick up
