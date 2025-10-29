@@ -1,5 +1,13 @@
 # @rollup/plugin-replace ChangeLog
 
+## v6.0.3
+
+_2025-10-29_
+
+### Bugfixes
+
+- fix: update delimiters to respect valid js identifier chars (#1938)
+
 ## v6.0.2
 
 _2024-12-15_
