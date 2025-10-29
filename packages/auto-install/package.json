@@ -13,34 +13,33 @@
   "author": "Rich Harris",
   "homepage": "https://github.com/rollup/plugins/tree/master/packages/auto-install/#readme",
   "bugs": "https://github.com/rollup/plugins/issues",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/es/index.js",
+  "type": "module",
   "exports": {
-    "types": "./types/index.d.ts",
-    "import": "./dist/es/index.js",
-    "default": "./dist/cjs/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=20.19.0"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc --project tsconfig.json",
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm test -- --verbose",
+    "ci:test": "pnpm test -- --reporter=verbose",
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "ava",
+    "test": "vitest --config ../../.config/vitest.config.mts run",
     "test:ts": "tsc --noEmit"
   },
   "files": [
     "dist",
-    "!dist/**/*.map",
-    "types",
     "README.md",
     "LICENSE"
   ],
@@ -53,7 +52,7 @@
     "modules"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0"
+    "rollup": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -62,13 +61,13 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.0",
-    "@rollup/plugin-typescript": "^9.0.1",
     "del": "^6.1.1",
+    "del-cli": "^5.0.0",
     "node-noop": "^1.0.0",
-    "rollup": "^4.0.0-24",
-    "typescript": "^4.8.3"
+    "rollup": "^4.0.0",
+    "typescript": "catalog:"
   },
-  "types": "./types/index.d.ts",
+  "types": "./dist/index.d.ts",
   "ava": {
     "workerThreads": false,
     "files": [
