@@ -12,11 +12,25 @@ const DIR = import.meta.dirname;
 const cwd = path.join(DIR, 'fixtures/yarn');
 const file = path.join(cwd, 'output/bundle.js');
 const input = path.join(cwd, '../input.js');
+const pkgFile = path.join(cwd, 'package.json');
 
 const PREV_CWD = process.cwd();
 
 it('yarn', async () => {
   process.chdir(cwd);
+  // Pre-create a local package.json with an explicit Yarn v1 requirement so
+  // the Yarn shim (Corepack) doesn't traverse to the repo root and pick up
+  // the root packageManager (pnpm), which would cause a usage error.
+  if (!fs.existsSync(pkgFile)) {
+    fs.writeFileSync(
+      pkgFile,
+      JSON.stringify(
+        { name: 'auto-install-yarn-fixture', private: true, packageManager: 'yarn@1.22.22' },
+        null,
+        2
+      )
+    );
+  }
   const bundle = await rollup({
     input,
     // @ts-expect-error - rollup() ignores output here but tests kept it historically
