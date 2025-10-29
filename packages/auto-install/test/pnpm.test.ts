@@ -1,14 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import del from 'del';
 import { it, afterAll } from 'vitest';
 import { rollup } from 'rollup';
 import nodeResolve from '@rollup/plugin-node-resolve';
 
-import autoInstall from '~package';
+// Dynamically import the plugin within gated tests to avoid Node <20 execution
 
-const DIR = import.meta.dirname;
+const DIR = fileURLToPath(new URL('.', import.meta.url));
 const cwd = path.join(DIR, 'fixtures/pnpm');
 const file = path.join(cwd, 'output/bundle.js');
 const input = path.join(cwd, '../input.js');
@@ -19,6 +20,7 @@ const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 
 
 it.runIf(RUN_ON_THIS_NODE)('pnpm', async () => {
   process.chdir(cwd);
+  const { default: autoInstall } = await import('~package');
   const bundle = await rollup({
     input,
     // @ts-expect-error - rollup() ignores output here but tests kept it historically
