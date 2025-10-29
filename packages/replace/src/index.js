@@ -54,7 +54,11 @@ function expandTypeofReplacements(replacements) {
 
 export default function replace(options = {}) {
   const filter = createFilter(options.include, options.exclude);
-  const { delimiters = ['\\b', '\\b(?!\\.)'], preventAssignment, objectGuards } = options;
+  const {
+    delimiters = ['(?<![_$a-zA-Z0-9\\xA0-\\uFFFF])', '(?![_$a-zA-Z0-9\\xA0-\\uFFFF])(?!\\.)'],
+    preventAssignment,
+    objectGuards
+  } = options;
   const replacements = getReplacements(options);
   if (objectGuards) expandTypeofReplacements(replacements);
   const functionValues = mapToFunctions(replacements);
