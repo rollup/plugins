@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v29.0.0
+
+_2025-10-30_
+
+### Breaking Changes
+
+- feat!: revert #1909 and add `requireNodeBuiltins` option (#1937)
+
 ## v28.0.9
 
 _2025-10-24_
