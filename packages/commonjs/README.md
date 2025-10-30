@@ -63,6 +63,34 @@ You can also provide a [picomatch pattern](https://github.com/micromatch/picomat
 
 `"debug"` works like `"auto"` but after bundling, it will display a warning containing a list of ids that have been wrapped which can be used as picomatch pattern for fine-tuning or to avoid the potential race conditions mentioned for `"auto"`.
 
+### `requireNodeBuiltins`
+
+Type: `boolean`<br>
+Default: `false`
+
+When enabled, external Node built-ins (e.g., `node:fs`, `node:path`) required from wrapped CommonJS modules will use `createRequire(import.meta.url)` instead of being hoisted as ESM imports. This prevents eager loading of Node built-ins at module initialization time and preserves the lazy execution semantics of `require()`.
+
+**Important:** Enabling this option adds a dependency on `node:module` in the output bundle, which may not be available in some environments like edge runtimes (Cloudflare Workers, Vercel Edge Runtime). Only enable this option if you are targeting Node.js environments and need the lazy loading behavior for Node built-ins.
+
+Example:
+
+```js
+commonjs({
+  strictRequires: true,
+  requireNodeBuiltins: true
+});
+```
+
+With `requireNodeBuiltins: true`, code like:
+
+```js
+if (condition) {
+  require('node:fs');
+}
+```
+
+will generate output using `createRequire` instead of hoisting the import to the top of the file.
+
 ### `dynamicRequireTargets`
 
 Type: `string | string[]`<br>
