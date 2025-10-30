@@ -88,13 +88,13 @@ export function dynamicImportToGlob(node, sourceString) {
 
   glob = glob.replace(/\*\*/g, '*');
 
-  if (glob.startsWith('*')) {
+  if (glob[0] === '*') {
     throw new VariableDynamicImportError(
       `invalid import "${sourceString}". It cannot be statically analyzed. Variable dynamic imports must start with ./ and be limited to a specific directory. ${example}`
     );
   }
 
-  if (glob.startsWith('/')) {
+  if (glob[0] === '/') {
     throw new VariableDynamicImportError(
       `invalid import "${sourceString}". Variable absolute imports are not supported, imports must start with ./ in the static part of the import. ${example}`
     );
