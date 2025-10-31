@@ -28,7 +28,7 @@ const execAsync = promisify(exec);
 export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin {
   const commands = {
     npm: 'npm install',
-    pnpm: 'pnpm install',
+    pnpm: 'pnpm add',
     yarn: 'yarn add'
   } as const;
   type PackageManager = keyof typeof commands;
