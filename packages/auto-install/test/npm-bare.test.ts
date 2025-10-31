@@ -12,7 +12,10 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 const DIR = fileURLToPath(new URL('.', import.meta.url));
 const cwd = path.join(DIR, 'fixtures/npm-bare');
 const file = path.join(cwd, 'output/bundle.js');
-const input = path.join(cwd, '../input.js');
+// Use a local input inside the cwd so Node resolution finds packages installed
+// by the test (e.g., on Windows where upward-only resolution won't see
+// `npm-bare/node_modules` from `fixtures/input.js`).
+const input = path.join(cwd, 'input.local.js');
 const pkgFile = path.join(cwd, 'package.json');
 
 // Helper to temporarily disable slow npm features during the test
@@ -48,6 +51,8 @@ it.runIf(RUN_ON_THIS_NODE)(
   async () => {
     const restoreEnv = stubNpmQuietEnv();
     const prevCwd = process.cwd();
+    // Create a local copy of the shared input so resolution starts from `cwd`.
+    fs.copyFileSync(path.join(cwd, '../input.js'), input);
     process.chdir(cwd);
     try {
       const { default: autoInstall } = await import('~package');
@@ -65,6 +70,11 @@ it.runIf(RUN_ON_THIS_NODE)(
       }
     } finally {
       process.chdir(prevCwd);
+      try {
+        fs.unlinkSync(input);
+      } catch {
+        /* ignore cleanup errors */
+      }
       restoreEnv();
     }
   },
@@ -72,5 +82,5 @@ it.runIf(RUN_ON_THIS_NODE)(
 );
 
 afterAll(async () => {
-  await del(['node_modules', 'package.json', 'package-lock.json']);
+  await del(['node_modules', 'package.json', 'package-lock.json'], { cwd });
 });
