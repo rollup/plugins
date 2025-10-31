@@ -52,8 +52,7 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
     ...defaults,
     ...opts,
     commands: { ...defaults.commands, ...(opts.commands || {}) }
-  } satisfies Required<Pick<typeof defaults, 'commands' | 'manager' | 'pkgFile'>> &
-    RollupAutoInstallOptions;
+  };
 
   const { manager } = options;
   const pkgFile = path.resolve(options.pkgFile);
