@@ -6,6 +6,8 @@ import { promisify } from 'node:util';
 
 import type { Plugin } from 'rollup';
 
+type PackageManager = 'npm' | 'yarn' | 'pnpm';
+
 export interface RollupAutoInstallOptions {
   /**
    * Specifies the location on disk of the target `package.json` file.
@@ -20,30 +22,44 @@ export interface RollupAutoInstallOptions {
    * If not specified, the plugin will default to `yarn` if `yarn.lock` exists,
    * to `pnpm` if `pnpm-lock.yaml` exists, or `npm` otherwise.
    */
-  manager?: 'npm' | 'yarn' | 'pnpm';
+  manager?: PackageManager;
+
+  /**
+   * Test-only override of package manager commands.
+   * @internal
+   */
+  commands?: Partial<Record<PackageManager, string>>;
 }
 
 const execAsync = promisify(exec);
 
 export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin {
-  const commands = {
-    npm: 'npm install',
-    pnpm: 'pnpm add',
-    yarn: 'yarn add'
-  } as const;
-  type PackageManager = keyof typeof commands;
-  const validManagers = Object.keys(commands) as PackageManager[];
-
-  // Keep the project-wide `defaults` pattern for option handling.
+  // Restore the historic `defaults` object (including `commands`) so tests can
+  // optionally override command strings via options.
   const defaults = {
+    // intentionally undocumented options. used for tests
+    commands: {
+      npm: 'npm install',
+      pnpm: 'pnpm add',
+      yarn: 'yarn add'
+    } as Record<PackageManager, string>,
     manager: fs.existsSync('yarn.lock') ? 'yarn' : fs.existsSync('pnpm-lock.yaml') ? 'pnpm' : 'npm',
-    pkgFile: 'package.json'
+    // keep resolved path in defaults like the original implementation
+    pkgFile: path.resolve(opts.pkgFile || 'package.json')
   } as const;
 
-  const options = { ...defaults, ...opts };
+  // Shallow-merge, with a one-level deep merge for `commands` to allow partial overrides in tests
+  const options = {
+    ...defaults,
+    ...opts,
+    commands: { ...defaults.commands, ...(opts.commands || {}) }
+  } satisfies Required<Pick<typeof defaults, 'commands' | 'manager' | 'pkgFile'>> &
+    RollupAutoInstallOptions;
 
   const { manager } = options;
-  const pkgFile = path.resolve(options.pkgFile);
+  const { pkgFile } = options;
+
+  const validManagers: PackageManager[] = ['npm', 'yarn', 'pnpm'];
 
   if (!validManagers.includes(manager)) {
     throw new RangeError(
@@ -69,7 +85,7 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
   ]);
 
   const installed = new Set([...Object.keys(pkg.dependencies || {}), ...coreModules]);
-  const cmd = commands[manager];
+  const cmd = options.commands[manager];
 
   return {
     name: 'auto-install',
