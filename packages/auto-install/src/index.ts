@@ -44,8 +44,7 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
       yarn: 'yarn add'
     } as Record<PackageManager, string>,
     manager: fs.existsSync('yarn.lock') ? 'yarn' : fs.existsSync('pnpm-lock.yaml') ? 'pnpm' : 'npm',
-    // keep resolved path in defaults like the original implementation
-    pkgFile: path.resolve(opts.pkgFile || 'package.json')
+    pkgFile: 'package.json'
   } as const;
 
   // Shallow-merge, with a one-level deep merge for `commands` to allow partial overrides in tests
@@ -57,7 +56,7 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
     RollupAutoInstallOptions;
 
   const { manager } = options;
-  const { pkgFile } = options;
+  const pkgFile = path.resolve(options.pkgFile);
 
   const validManagers: PackageManager[] = ['npm', 'yarn', 'pnpm'];
 
