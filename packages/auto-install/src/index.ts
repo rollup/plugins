@@ -26,22 +26,24 @@ export interface RollupAutoInstallOptions {
 const execAsync = promisify(exec);
 
 export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin {
-  const commands: Record<'npm' | 'yarn' | 'pnpm', string> = {
+  const commands = {
     npm: 'npm install',
     pnpm: 'pnpm install',
     yarn: 'yarn add'
-  };
+  } as const;
+  type PackageManager = keyof typeof commands;
+  const validManagers = Object.keys(commands) as PackageManager[];
 
-  const manager = opts.manager
-    ? opts.manager
-    : fs.existsSync('yarn.lock')
-    ? 'yarn'
-    : fs.existsSync('pnpm-lock.yaml')
-    ? 'pnpm'
-    : 'npm';
+  // Keep the project-wide `defaults` pattern for option handling.
+  const defaults = {
+    manager: fs.existsSync('yarn.lock') ? 'yarn' : fs.existsSync('pnpm-lock.yaml') ? 'pnpm' : 'npm',
+    pkgFile: 'package.json'
+  } as const;
 
-  const pkgFile = path.resolve(opts.pkgFile || 'package.json');
-  const validManagers: Array<RollupAutoInstallOptions['manager']> = ['npm', 'yarn', 'pnpm'];
+  const options = { ...defaults, ...opts };
+
+  const { manager } = options;
+  const pkgFile = path.resolve(options.pkgFile);
 
   if (!validManagers.includes(manager)) {
     throw new RangeError(
