@@ -106,22 +106,22 @@ importers:
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
-        version: 15.0.0(rollup@4.0.0-24)
-      '@rollup/plugin-typescript':
-        specifier: ^9.0.1
-        version: 9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)
+        version: 15.0.0(rollup@4.52.5)
       del:
         specifier: ^6.1.1
         version: 6.1.1
+      del-cli:
+        specifier: ^5.0.0
+        version: 5.0.0
       node-noop:
         specifier: ^1.0.0
         version: 1.0.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: ^4.0.0
+        version: 4.52.5
       typescript:
-        specifier: ^4.8.3
-        version: 4.8.4
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/babel:
     dependencies:
@@ -8051,7 +8051,7 @@ snapshots:
 
   estree-walker@3.0.3:
     dependencies:
-      '@types/estree': 1.0.0
+      '@types/estree': 1.0.8
 
   esutils@2.0.3: {}
 

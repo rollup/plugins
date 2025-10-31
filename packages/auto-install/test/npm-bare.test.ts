@@ -1,0 +1,86 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import del from 'del';
+import { it, afterAll } from 'vitest';
+import { rollup } from 'rollup';
+import nodeResolve from '@rollup/plugin-node-resolve';
+
+// Dynamically import the plugin within gated tests to avoid Node <20 execution
+
+const DIR = fileURLToPath(new URL('.', import.meta.url));
+const cwd = path.join(DIR, 'fixtures/npm-bare');
+const file = path.join(cwd, 'output/bundle.js');
+// Use a local input inside the cwd so Node resolution finds packages installed
+// by the test (e.g., on Windows where upward-only resolution won't see
+// `npm-bare/node_modules` from `fixtures/input.js`).
+const input = path.join(cwd, 'input.local.js');
+const pkgFile = path.join(cwd, 'package.json');
+
+// Helper to temporarily disable slow npm features during the test
+function stubNpmQuietEnv() {
+  const keys = [
+    'npm_config_audit',
+    'npm_config_fund',
+    'npm_config_progress',
+    'npm_config_update_notifier',
+    'npm_config_loglevel'
+  ] as const;
+  const prev: Record<string, string | undefined> = {};
+  for (const k of keys) prev[k] = process.env[k];
+  process.env.npm_config_audit = 'false';
+  process.env.npm_config_fund = 'false';
+  process.env.npm_config_progress = 'false';
+  process.env.npm_config_update_notifier = 'false';
+  process.env.npm_config_loglevel = 'error';
+  return () => {
+    for (const k of keys) {
+      const v = prev[k];
+      if (v == null) delete (process.env as any)[k];
+      else (process.env as any)[k] = v;
+    }
+  };
+}
+const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split('.').map(Number);
+const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 19);
+
+// npm installs can be slower than pnpm/yarn on CI; allow extra time.
+it.runIf(RUN_ON_THIS_NODE)(
+  'npm, bare',
+  async () => {
+    const restoreEnv = stubNpmQuietEnv();
+    const prevCwd = process.cwd();
+    // Create a local copy of the shared input so resolution starts from `cwd`.
+    fs.copyFileSync(path.join(cwd, '../input.js'), input);
+    process.chdir(cwd);
+    try {
+      const { default: autoInstall } = await import('~package');
+      const bundle = await rollup({
+        input,
+        // @ts-expect-error - rollup() ignores output here but tests kept it historically
+        output: { file, format: 'es' },
+        plugins: [autoInstall({ pkgFile, manager: 'npm' }), nodeResolve()]
+      });
+      await bundle.close();
+
+      const json = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+      if (!json.dependencies || !json.dependencies['node-noop']) {
+        throw new Error('Expected node-noop to be added to dependencies');
+      }
+    } finally {
+      process.chdir(prevCwd);
+      try {
+        fs.unlinkSync(input);
+      } catch {
+        /* ignore cleanup errors */
+      }
+      restoreEnv();
+    }
+  },
+  60000
+);
+
+afterAll(async () => {
+  await del(['node_modules', 'package.json', 'package-lock.json'], { cwd });
+});
