@@ -58,7 +58,7 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
   const { manager } = options;
   const pkgFile = path.resolve(options.pkgFile);
 
-  const validManagers: PackageManager[] = ['npm', 'yarn', 'pnpm'];
+  const validManagers = Object.keys(options.commands) as PackageManager[];
 
   if (!validManagers.includes(manager)) {
     throw new RangeError(
