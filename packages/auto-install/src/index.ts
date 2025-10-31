@@ -58,7 +58,15 @@ export default function autoInstall(opts: RollupAutoInstallOptions = {}): Plugin
     pkg = {};
   }
 
-  const installed = new Set(Object.keys(pkg.dependencies || {}).concat(builtinModules));
+  // Normalize core module names to include both `fs` and `node:fs` forms so we never try to
+  // install built-ins regardless of how Rollup reports them or how they are imported.
+  const coreModules = new Set<string>([
+    ...builtinModules,
+    ...builtinModules.filter((m) => m.startsWith('node:')).map((m) => m.slice(5)),
+    ...builtinModules.filter((m) => !m.startsWith('node:')).map((m) => `node:${m}`)
+  ]);
+
+  const installed = new Set([...Object.keys(pkg.dependencies || {}), ...coreModules]);
   const cmd = commands[manager];
 
   return {
