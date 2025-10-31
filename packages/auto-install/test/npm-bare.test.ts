@@ -15,20 +15,30 @@ const file = path.join(cwd, 'output/bundle.js');
 const input = path.join(cwd, '../input.js');
 const pkgFile = path.join(cwd, 'package.json');
 
-const PREV_CWD = process.cwd();
-// Reduce npm noise/network overhead to avoid slow installs on CI.
-const PREV_ENV: Record<string, string | undefined> = {
-  npm_config_audit: process.env.npm_config_audit,
-  npm_config_fund: process.env.npm_config_fund,
-  npm_config_progress: process.env.npm_config_progress,
-  npm_config_update_notifier: process.env.npm_config_update_notifier,
-  npm_config_loglevel: process.env.npm_config_loglevel
-};
-process.env.npm_config_audit = 'false';
-process.env.npm_config_fund = 'false';
-process.env.npm_config_progress = 'false';
-process.env.npm_config_update_notifier = 'false';
-process.env.npm_config_loglevel = 'error';
+// Helper to temporarily disable slow npm features during the test
+function stubNpmQuietEnv() {
+  const keys = [
+    'npm_config_audit',
+    'npm_config_fund',
+    'npm_config_progress',
+    'npm_config_update_notifier',
+    'npm_config_loglevel'
+  ] as const;
+  const prev: Record<string, string | undefined> = {};
+  for (const k of keys) prev[k] = process.env[k];
+  process.env.npm_config_audit = 'false';
+  process.env.npm_config_fund = 'false';
+  process.env.npm_config_progress = 'false';
+  process.env.npm_config_update_notifier = 'false';
+  process.env.npm_config_loglevel = 'error';
+  return () => {
+    for (const k of keys) {
+      const v = prev[k];
+      if (v == null) delete (process.env as any)[k];
+      else (process.env as any)[k] = v;
+    }
+  };
+}
 const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split('.').map(Number);
 const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 19);
 
@@ -36,19 +46,26 @@ const RUN_ON_THIS_NODE = NODE_MAJOR > 20 || (NODE_MAJOR === 20 && NODE_MINOR >= 
 it.runIf(RUN_ON_THIS_NODE)(
   'npm, bare',
   async () => {
+    const restoreEnv = stubNpmQuietEnv();
+    const prevCwd = process.cwd();
     process.chdir(cwd);
-    const { default: autoInstall } = await import('~package');
-    const bundle = await rollup({
-      input,
-      // @ts-expect-error - rollup() ignores output here but tests kept it historically
-      output: { file, format: 'es' },
-      plugins: [autoInstall({ pkgFile, manager: 'npm' }), nodeResolve()]
-    });
-    await bundle.close();
+    try {
+      const { default: autoInstall } = await import('~package');
+      const bundle = await rollup({
+        input,
+        // @ts-expect-error - rollup() ignores output here but tests kept it historically
+        output: { file, format: 'es' },
+        plugins: [autoInstall({ pkgFile, manager: 'npm' }), nodeResolve()]
+      });
+      await bundle.close();
 
-    const json = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
-    if (!json.dependencies || !json.dependencies['node-noop']) {
-      throw new Error('Expected node-noop to be added to dependencies');
+      const json = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+      if (!json.dependencies || !json.dependencies['node-noop']) {
+        throw new Error('Expected node-noop to be added to dependencies');
+      }
+    } finally {
+      process.chdir(prevCwd);
+      restoreEnv();
     }
   },
   60000
@@ -56,10 +73,4 @@ it.runIf(RUN_ON_THIS_NODE)(
 
 afterAll(async () => {
   await del(['node_modules', 'package.json', 'package-lock.json']);
-  process.chdir(PREV_CWD);
-  // restore env
-  Object.entries(PREV_ENV).forEach(([k, v]) => {
-    if (v == null) delete (process.env as any)[k];
-    else (process.env as any)[k] = v;
-  });
 });
