@@ -74,7 +74,7 @@
     "@types/resolve": "^1.20.2",
     "buble": "^0.20.0",
     "rollup": "^4.0.0-24",
-    "typescript": "^4.8.3"
+    "typescript": "^5.9.3"
   },
   "types": "./types/index.d.ts"
 }
