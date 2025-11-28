@@ -38,7 +38,7 @@ export function isTypeScriptMapOutputFile(name: string): boolean {
  * Checks if the given OutputFile represents some declaration
  */
 export function isDeclarationOutputFile(name: string): boolean {
-  return /\.d\.[cm]?ts$/.test(name);
+  return /\.d(\..+)?\.[cm]?ts$/.test(name);
 }
 
 /**
