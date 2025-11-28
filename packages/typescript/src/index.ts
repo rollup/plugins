@@ -224,7 +224,6 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const mode =
         typeof ts.getImpliedNodeFormatForFile === 'function'
           ? ts.getImpliedNodeFormatForFile(
-              // @ts-expect-error
               containingFile,
               undefined, // eslint-disable-line no-undefined
               { ...ts.sys, ...formatHost },

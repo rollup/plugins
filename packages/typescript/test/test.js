@@ -316,7 +316,7 @@ test.serial('warns for invalid module types', async (t) => {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
       pluginCode: 'TS6046',
-      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
+      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'node18', 'node20', 'nodenext', 'preserve'.`
     }
   ]);
 });
@@ -1537,7 +1537,7 @@ test.serial('correctly resolves types with nodenext moduleResolution', async (t)
   });
   const code = await getCode(bundle, outputOptions);
 
-  t.true(code.includes('var bar = foo'), code);
+  t.true(code.includes('const bar = foo'), code);
   t.is(warnings.length, 1);
   t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
 });
