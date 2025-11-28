@@ -574,6 +574,18 @@ test.sequential('should not resolve .d.ts files', async () => {
   const imports = bundle.cache.modules[0].dependencies;
   expect(imports).toEqual(['an-import']);
 });
+
+test.sequential('should not resolve arbitrary .d.<ext>.ts files', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/arbitrary-dts/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/arbitrary-dts/tsconfig.json' })],
+    onwarn
+  });
+  const arbitraryDeclarationModules = bundle.cache.modules.filter((module) =>
+    module.id.includes('.d.custom.ts')
+  );
+  expect(arbitraryDeclarationModules.length).toBe(0);
+});
 test.sequential('should transpile JSX if enabled', async () => {
   process.chdir('fixtures/jsx');
   const bundle = await rollup({
