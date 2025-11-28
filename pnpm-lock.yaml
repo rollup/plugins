@@ -740,8 +740,8 @@ importers:
         specifier: ^4.0.0-24
         version: 4.0.0-24
       typescript:
-        specifier: ^4.8.3
-        version: 4.8.4
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/url:
     dependencies:

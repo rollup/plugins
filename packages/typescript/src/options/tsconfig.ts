@@ -122,7 +122,7 @@ function setModuleResolutionKind(parsedConfig: ParsedCommandLine): ParsedCommand
   };
 }
 
-const configCache = new Map() as typescript.ESMap<string, ExtendedConfigCacheEntry>;
+const configCache = new Map<string, ExtendedConfigCacheEntry>();
 
 /**
  * Parse the Typescript config to use with the plugin.
