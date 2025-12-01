@@ -12,3 +12,4 @@ packages/node-resolve/test/fixtures/package-json-in-path
 # temporary workaround for TypeScript as it doesn't support "Arbitrary module namespace identifier names"
 # https://github.com/microsoft/TypeScript/issues/40594
 packages/json/test/fixtures/arbitrary/main.js
+util/test.js

@@ -23,7 +23,7 @@ test.serial('supports overriding tslib with a custom path', async (t) => {
   });
   const code = await evaluateBundle(bundle);
 
-  t.is((code as any).myParent.baseMethod(), 'base method');
+  t.is(code.myParent.baseMethod(), 'base method');
 });
 
 test.serial('supports overriding tslib with a custom path in a promise', async (t) => {
@@ -38,7 +38,7 @@ test.serial('supports overriding tslib with a custom path in a promise', async (
   });
   const code = await evaluateBundle(bundle);
 
-  t.is((code as any).myParent.baseMethod(), 'base method');
+  t.is(code.myParent.baseMethod(), 'base method');
 });
 
 test.serial('fails on bad tslib path', async (t) => {
