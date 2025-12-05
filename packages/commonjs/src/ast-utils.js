@@ -13,7 +13,18 @@ const operators = {
 
   '&&': (x) => isTruthy(x.left) && isTruthy(x.right),
 
-  '||': (x) => isTruthy(x.left) || isTruthy(x.right)
+  '||': (x) => {
+    const leftTruthy = isTruthy(x.left);
+    const rightTruthy = isTruthy(x.right);
+    // If left is definitely truthy, the whole expression is truthy
+    if (leftTruthy === true) return true;
+    // If both are definitely falsy, the whole expression is falsy
+    if (leftTruthy === false && rightTruthy === false) return false;
+    // If left is falsy but right is truthy, the whole expression is truthy
+    if (leftTruthy === false && rightTruthy === true) return true;
+    // Otherwise it's conditional
+    return null;
+  }
 };
 
 function not(value) {
