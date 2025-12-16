@@ -122,10 +122,46 @@ console.log("the answer is ".concat(foo()));
   );
 });
 
+test('does not babelify excluded code with code-based filter', async (t) => {
+  const filter = (id, code) => code.includes('the answer is');
+  const code = await generate('exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.false(code.includes('${foo()}'));
+  t.true(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+const foo = () => 42;
+
+console.log("the answer is ".concat(foo()));
+`
+  );
+});
+
 test('does babelify included code with custom filter', async (t) => {
   const filter = createFilter('**/foo.js', [], {
     resolve: DIRNAME
   });
+  const code = await generate('exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.true(code.includes('${foo()}'));
+  t.false(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+var foo = function foo() {
+  return 42;
+};
+
+console.log(\`the answer is \${foo()}\`);
+`
+  );
+});
+
+test('does babelify excluded code with code-based filter', async (t) => {
+  const filter = (id, code) => !code.includes('the answer is');
   const code = await generate('exclusions/main.js', { filter });
   // eslint-disable-next-line no-template-curly-in-string
   t.true(code.includes('${foo()}'));
