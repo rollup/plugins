@@ -44,7 +44,8 @@
     "rollup",
     "plugin",
     "resolve",
-    "alias"
+    "alias",
+    "rollup-plugin"
   ],
   "peerDependencies": {
     "rollup": ">=4.0.0"
