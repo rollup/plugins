@@ -135,6 +135,15 @@ Default: `false`
 
 Before transpiling your input files this plugin also transpile a short piece of code **for each** input file. This is used to validate some misconfiguration errors, but for sufficiently big projects it can slow your build times so if you are confident about your configuration then you might disable those checks with this option.
 
+### `parallel`
+
+Type: `Boolean | number`
+Default: `false`
+
+Enable parallel processing of files in worker threads. This has a setup cost, so is best suited for larger projects. Pass an integer to set the number of workers. Set `true` for the default number of workers (4).
+
+This option cannot be used alongside custom overrides or non-serializable Babel options.
+
 ### External dependencies
 
 Ideally, you should only be transforming your source code, rather than running all of your external dependencies through Babel (to ignore external dependencies from being handled by this plugin you might use `exclude: 'node_modules/**'` option). If you have a dependency that exposes untranspiled ES6 source code that doesn't run in your target environment, then you may need to break this rule, but it often causes problems with unusual `.babelrc` files or mismatched versions of Babel.

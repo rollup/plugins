@@ -600,3 +600,68 @@ test('works as a CJS plugin', async (t) => {
 
   t.false(code.includes('const'));
 });
+
+test('works in parallel', async (t) => {
+  const bundle = await rollup({
+    input: `${FIXTURES}proposal-decorators/main.js`,
+    plugins: [babelPlugin({ parallel: true })]
+  });
+  const code = await getCode(bundle);
+
+  t.true(code.includes('_createClass'), 'decorator was applied');
+});
+
+test('works in parallel with specified worker count', async (t) => {
+  const code = await generate('basic/main.js', { parallel: 2 });
+  t.false(code.includes('const'));
+  t.true(code.includes('var answer = 42'));
+});
+
+test('throws when using parallel with non-serializable babel options', async (t) => {
+  await t.throwsAsync(
+    () =>
+      generate('basic/main.js', {
+        parallel: true,
+        plugins: [
+          // Functions are not serializable
+          function customPlugin() {
+            return { visitor: {} };
+          }
+        ]
+      }),
+    {
+      message:
+        /Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options/
+    }
+  );
+});
+
+test('throws when using parallel with config override', (t) => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
+    return {
+      config(cfg) {
+        return cfg.options;
+      }
+    };
+  });
+
+  t.throws(() => customBabelPlugin({ babelHelpers: 'bundled', parallel: true }), {
+    message:
+      /Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options/
+  });
+});
+
+test('throws when using parallel with result override', (t) => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
+    return {
+      result(result) {
+        return result;
+      }
+    };
+  });
+
+  t.throws(() => customBabelPlugin({ babelHelpers: 'bundled', parallel: true }), {
+    message:
+      /Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options/
+  });
+});

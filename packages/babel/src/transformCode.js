@@ -1,13 +1,19 @@
 import * as babel from '@babel/core';
 
-export default async function transformCode(
+import bundledHelpersPlugin from './bundledHelpersPlugin.js';
+import preflightCheck from './preflightCheck.js';
+import { BUNDLED } from './constants.js';
+import { addBabelPlugin } from './utils.js';
+
+export default async function transformCode({
   inputCode,
   babelOptions,
   overrides,
   customOptions,
-  ctx,
-  finalizeOptions
-) {
+  error,
+  runPreflightCheck,
+  babelHelpers
+}) {
   // loadPartialConfigAsync has become available in @babel/core@7.8.0
   const config = await (babel.loadPartialConfigAsync || babel.loadPartialConfig)(babelOptions);
 
@@ -16,18 +22,23 @@ export default async function transformCode(
     return null;
   }
 
-  let transformOptions = !overrides.config
+  let transformOptions = !overrides?.config
     ? config.options
-    : await overrides.config.call(ctx, config, {
+    : await overrides.config(config, {
         code: inputCode,
         customOptions
       });
 
-  if (finalizeOptions) {
-    transformOptions = await finalizeOptions(transformOptions);
+  if (runPreflightCheck) {
+    await preflightCheck(error, babelHelpers, transformOptions);
   }
 
-  if (!overrides.result) {
+  transformOptions =
+    babelHelpers === BUNDLED
+      ? addBabelPlugin(transformOptions, bundledHelpersPlugin)
+      : transformOptions;
+
+  if (!overrides?.result) {
     const { code, map } = await babel.transformAsync(inputCode, transformOptions);
     return {
       code,
@@ -36,7 +47,7 @@ export default async function transformCode(
   }
 
   const result = await babel.transformAsync(inputCode, transformOptions);
-  const { code, map } = await overrides.result.call(ctx, result, {
+  const { code, map } = await overrides.result(result, {
     code: inputCode,
     customOptions,
     config,

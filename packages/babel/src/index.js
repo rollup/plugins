@@ -2,10 +2,9 @@ import * as babel from '@babel/core';
 import { createFilter } from '@rollup/pluginutils';
 
 import { BUNDLED, HELPERS } from './constants.js';
-import bundledHelpersPlugin from './bundledHelpersPlugin.js';
-import preflightCheck from './preflightCheck.js';
 import transformCode from './transformCode.js';
-import { addBabelPlugin, escapeRegExpCharacters, warnOnce } from './utils.js';
+import { escapeRegExpCharacters, warnOnce } from './utils.js';
+import WorkerPool from './workerPool.js';
 
 const unpackOptions = ({
   extensions = babel.DEFAULT_EXTENSIONS,
@@ -100,6 +99,24 @@ const returnObject = () => {
   return {};
 };
 
+function isSerializable(value) {
+  if (value === null) {
+    return true;
+  } else if (Array.isArray(value)) {
+    return value.every(isSerializable);
+  }
+  switch (typeof value) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+      return true;
+    case 'object':
+      return Object.keys(value).every((key) => isSerializable(value[key]));
+    default:
+      return false;
+  }
+}
+
 function createBabelInputPluginFactory(customCallback = returnObject) {
   const overrides = customCallback(babel);
 
@@ -109,6 +126,8 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
       overrides
     );
 
+    let workerPool;
+
     const {
       exclude,
       extensions,
@@ -116,6 +135,7 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
       include,
       filter: customFilter,
       skipPreflightCheck,
+      parallel,
       ...babelOptions
     } = unpackInputPluginOptions(pluginOptionsWithOverrides);
 
@@ -128,6 +148,23 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
     const userDefinedFilter =
       typeof customFilter === 'function' ? customFilter : createFilter(include, exclude);
     const filter = (id, code) => extensionRegExp.test(id) && userDefinedFilter(id, code);
+
+    if (parallel) {
+      const parallelAllowed =
+        isSerializable(babelOptions) && !overrides?.config && !overrides?.result;
+
+      if (!parallelAllowed) {
+        throw new Error(
+          'Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options.'
+        );
+      }
+
+      const parallelWorkerCount = typeof parallel === 'number' ? parallel : 4;
+      workerPool = new WorkerPool(
+        new URL('./worker.js', import.meta.url).pathname,
+        parallelWorkerCount
+      );
+    }
 
     const helpersFilter = { id: new RegExp(`^${escapeRegExpCharacters(HELPERS)}$`) };
 
@@ -162,22 +199,39 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
           if (!(await filter(filename, code))) return null;
           if (filename === HELPERS) return null;
 
-          return transformCode(
-            code,
-            { ...babelOptions, filename },
-            overrides,
-            customOptions,
-            this,
-            async (transformOptions) => {
-              if (!skipPreflightCheck) {
-                await preflightCheck(this, babelHelpers, transformOptions);
-              }
+          if (parallel) {
+            return workerPool.runTask({
+              inputCode: code,
+              babelOptions: { ...babelOptions, filename },
+              runPreflightCheck: !skipPreflightCheck,
+              babelHelpers
+            });
+          }
 
-              return babelHelpers === BUNDLED
-                ? addBabelPlugin(transformOptions, bundledHelpersPlugin)
-                : transformOptions;
-            }
-          );
+          return transformCode({
+            inputCode: code,
+            babelOptions: { ...babelOptions, filename },
+            overrides: {
+              config: overrides.config?.bind(this),
+              result: overrides.result?.bind(this)
+            },
+            customOptions,
+            error: this.error.bind(this),
+            runPreflightCheck: !skipPreflightCheck,
+            babelHelpers
+          });
+        }
+      },
+
+      async closeBundle() {
+        if (parallel && !this.meta.watchMode) {
+          await workerPool.terminate();
+        }
+      },
+
+      async closeWatcher() {
+        if (parallel) {
+          await workerPool.terminate();
         }
       }
     };
@@ -257,7 +311,16 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
           }
         }
 
-        return transformCode(code, babelOptions, overrides, customOptions, this);
+        return transformCode({
+          inputCode: code,
+          babelOptions,
+          overrides: {
+            config: overrides.config?.bind(this),
+            result: overrides.result?.bind(this)
+          },
+          customOptions,
+          error: this.error.bind(this)
+        });
       }
     };
   };

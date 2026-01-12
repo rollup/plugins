@@ -39,6 +39,14 @@ export interface RollupBabelInputPluginOptions
    * @default false
    */
   skipPreflightCheck?: boolean;
+  /**
+   * Enable parallel processing of files in worker threads. This has a setup cost, so is best suited for larger projects.
+   * Pass an integer to set the number of workers. Set `true` for the default number of workers (4).
+   *
+   * This option cannot be used alongside custom overrides or non-serializable Babel options.
+   * @default false
+   */
+  parallel?: boolean | number;
 }
 
 export interface RollupBabelOutputPluginOptions
