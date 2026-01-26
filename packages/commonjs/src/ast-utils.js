@@ -113,6 +113,10 @@ export function isShorthandProperty(parent) {
   return parent && parent.type === 'Property' && parent.shorthand;
 }
 
+export function isPropertyDefinitionKey(parent, node) {
+  return parent && parent.type === 'PropertyDefinition' && parent.key === node;
+}
+
 export function hasDefineEsmProperty(node) {
   return node.properties.some((property) => {
     if (
