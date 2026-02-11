@@ -693,8 +693,8 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2
       smob:
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.1
+        version: 1.6.1
       terser:
         specifier: ^5.46.0
         version: 5.46.0
@@ -4792,9 +4792,9 @@ packages:
   smob@1.4.0:
     resolution: {integrity: sha512-MqR3fVulhjWuRNSMydnTlweu38UhQ0HXM4buStD/S3mc/BzX3CuM9OmhyQpmtYCvoYdl5ris6TI0ZqH355Ymqg==}
 
-  smob@1.6.0:
-    resolution: {integrity: sha512-m/Bpm2tsx68FEr4zgGaMdcjHSkq7x7uOPJIQudT/gS7slXH5y2VatJru4POV0dKbmk7ZYntX29fKgwWCXJKwvQ==}
-    engines: {node: '>=22.0.0'}
+  smob@1.6.1:
+    resolution: {integrity: sha512-KAkBqZl3c2GvNgNhcoyJae1aKldDW0LO279wF9bk1PnluRTETKBq0WyzRXxEhoQLk56yHaOY4JCBEKDuJIET5g==}
+    engines: {node: '>=20.0.0'}
 
   sort-keys@2.0.0:
     resolution: {integrity: sha512-/dPCrG1s3ePpWm6yBbxZq5Be1dXGLyLn9Z791chDC3NFrpkVbWGzkBwPN1knaciexFXgRJ7hzdnwZ4stHSDmjg==}
@@ -9676,7 +9676,7 @@ snapshots:
 
   smob@1.4.0: {}
 
-  smob@1.6.0: {}
+  smob@1.6.1: {}
 
   sort-keys@2.0.0:
     dependencies:
