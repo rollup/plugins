@@ -41,6 +41,24 @@ test('converts jsx with custom jsxPragma', async (t) => {
   return testBundle(t, bundle);
 });
 
+test('converts jsx with jsxRuntime automatic', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/jsx-runtime/main.js',
+    external: ['react/jsx-dev-runtime'],
+    plugins: [
+      sucrase({
+        transforms: ['jsx'],
+        jsxRuntime: 'automatic'
+      })
+    ]
+  });
+  const { output } = await bundle.generate({ format: 'cjs', exports: 'auto' });
+  const [{ code }] = output;
+  // Check that the code uses the automatic runtime instead of React.createElement
+  t.regex(code, /require\(['"]react\/jsx-dev-runtime['"]\)/);
+  t.notRegex(code, /React\.createElement/);
+});
+
 test('converts typescript', async (t) => {
   const bundle = await rollup({
     input: 'fixtures/typescript/main.js',
