@@ -55,10 +55,15 @@ Then call `rollup` either via the [CLI](https://www.rollupjs.org/guide/en/#comma
 
 The following [Sucrase options](https://github.com/alangpierce/sucrase#transforms) may be passed as options for this plugin:
 
+- `disableESTransforms`
 - `enableLegacyBabel5ModuleInterop`
 - `enableLegacyTypeScriptModuleInterop`
+- `injectCreateRequireForImportRequire`
 - `jsxFragmentPragma`
+- `jsxImportSource`
 - `jsxPragma`
+- `jsxRuntime`
+- `preserveDynamicImport`
 - `production`
 - `transforms`
 
