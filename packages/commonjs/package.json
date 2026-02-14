@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^5.0.1",
+    "cjs-module-lexer": "^2.2.0",
     "commondir": "^1.0.1",
     "estree-walker": "^2.0.2",
     "fdir": "^6.2.0",

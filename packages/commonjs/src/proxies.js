@@ -57,14 +57,15 @@ export function getEntryProxy(id, defaultIsModuleExports, getModuleInfo, shebang
     }
     return shebang + code;
   }
-  const result = getEsImportProxy(id, defaultIsModuleExports, true);
+  const lexerExports = commonjsMeta?.lexerExports || [];
+  const result = getEsImportProxy(id, defaultIsModuleExports, true, lexerExports);
   return {
     ...result,
     code: shebang + result.code
   };
 }
 
-export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) {
+export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects, lexerExports = []) {
   const name = getName(id);
   const exportsName = `${name}Exports`;
   const requireModule = `require${capitalize(name)}`;
@@ -80,6 +81,17 @@ export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) 
   } else {
     code += `\nexport default /*@__PURE__*/getDefaultExportFromCjs(${exportsName});`;
   }
+
+  // Add explicit named re-exports detected by cjs-module-lexer
+  const namedExports = lexerExports.filter(
+    (e) => e !== 'default' && e !== '__esModule' && /^[$_a-zA-Z][$_a-zA-Z0-9]*$/.test(e)
+  );
+  if (namedExports.length > 0) {
+    for (const exportName of namedExports) {
+      code += `\nvar _cjsExport_${exportName} = ${exportsName}["${exportName}"];\nexport { _cjsExport_${exportName} as ${exportName} };`;
+    }
+  }
+
   return {
     code,
     syntheticNamedExports: '__moduleExports'
