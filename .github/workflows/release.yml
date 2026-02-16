@@ -5,12 +5,22 @@ on:
     branches:
       - master
 
+permissions:
+  # Jobs requiring OIDC (e.g., npm publish) must request `id-token: write` at the job level.
+  contents: read
+  pages: write
+
 jobs:
   publish:
     # let's ignore release commits, otherwise it'll try to run twice
     if: |
       !startsWith(github.event.head_commit.message , 'chore(release):') &&
       !startsWith(github.event.head_commit.message , 'chore(repo):')
+
+    permissions:
+      # Required for `versioner` to push release commits/tags and for npm OIDC publish.
+      contents: write
+      id-token: write
 
     runs-on: ubuntu-latest
 
@@ -80,6 +90,17 @@ jobs:
 
       - name: Run Tests
         run: pnpm --filter [HEAD^] test
+
+      - name: OIDC Preflight
+        shell: bash
+        run: |
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ] || [ -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]; then
+            echo "Missing GitHub Actions OIDC env vars (ACTIONS_ID_TOKEN_REQUEST_URL/TOKEN)." >&2
+            echo "Ensure the job requests permissions: id-token: write." >&2
+            exit 1
+          fi
+
+          echo "OIDC env vars detected."
 
       - name: Release and Publish Packages
         run: pnpm --filter [HEAD^] --workspace-concurrency=1 release
