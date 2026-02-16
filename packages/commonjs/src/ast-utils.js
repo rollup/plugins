@@ -1,5 +1,19 @@
 export { default as isReference } from 'is-reference';
 
+function triStateAnd(a, b) {
+  if (a === false) return false;
+  if (b === false) return false;
+  if (a === true && b === true) return true;
+  return null;
+}
+
+function triStateOr(a, b) {
+  if (a === true) return true;
+  if (b === true) return true;
+  if (a === false && b === false) return false;
+  return null;
+}
+
 const operators = {
   '==': (x) => equals(x.left, x.right, false),
 
@@ -11,9 +25,9 @@ const operators = {
 
   '!': (x) => isFalsy(x.argument),
 
-  '&&': (x) => isTruthy(x.left) && isTruthy(x.right),
+  '&&': (x) => triStateAnd(isTruthy(x.left), isTruthy(x.right)),
 
-  '||': (x) => isTruthy(x.left) || isTruthy(x.right)
+  '||': (x) => triStateOr(isTruthy(x.left), isTruthy(x.right))
 };
 
 function not(value) {
@@ -126,3 +140,4 @@ export function hasDefineEsmProperty(node) {
     return false;
   });
 }
+
