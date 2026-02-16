@@ -94,7 +94,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
 ### `filter`
 
-Type: (id: string) => boolean<br>
+Type: `(id: string, code: string) => Promise<boolean> | boolean`<br>
 
 Custom [filter function](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter) can be used to determine whether or not certain modules should be operated upon.
 
