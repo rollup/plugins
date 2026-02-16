@@ -208,6 +208,9 @@ importers:
       '@rollup/pluginutils':
         specifier: ^5.0.1
         version: 5.0.1(rollup@4.0.0-24)
+      cjs-module-lexer:
+        specifier: ^2.2.0
+        version: 2.2.0
       commondir:
         specifier: ^1.0.1
         version: 1.0.1
@@ -2632,6 +2635,9 @@ packages:
 
   ci-parallel-vars@1.0.1:
     resolution: {integrity: sha512-uvzpYrpmidaoxvIQHM+rKSrigjOe9feHYbw4uOI2gdfe1C3xIlxO+kVXq83WQWNniTf8bAxVpy+cQeFQsMERKg==}
+
+  cjs-module-lexer@2.2.0:
+    resolution: {integrity: sha512-4bHTS2YuzUvtoLjdy+98ykbNB5jS0+07EvFNXerqZQJ89F7DI6ET7OQo/HJuW6K0aVsKA9hj9/RVb2kQVOrPDQ==}
 
   clean-stack@2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
@@ -7327,6 +7333,8 @@ snapshots:
   ci-info@3.5.0: {}
 
   ci-parallel-vars@1.0.1: {}
+
+  cjs-module-lexer@2.2.0: {}
 
   clean-stack@2.2.0: {}
 

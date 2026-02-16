@@ -531,7 +531,7 @@ export default async function transformCommonjs(
     commonjsMeta
   );
   const usesRequireWrapper = commonjsMeta.isCommonJS === IS_WRAPPED_COMMONJS;
-  const exportBlock = isEsModule
+  let exportBlock = isEsModule
     ? ''
     : rewriteExportsAndGetExportsBlock(
         magicString,
@@ -552,6 +552,29 @@ export default async function transformCommonjs(
         usesRequireWrapper,
         requireName
       );
+
+  // Enhance export block with cjs-module-lexer detected exports
+  // that were not already found by the AST walk
+  if (!isEsModule && !usesRequireWrapper) {
+    const lexerExports = commonjsMeta.lexerExports || [];
+    const astDetectedExports = new Set(exportsAssignmentsByName.keys());
+    const additionalExports = lexerExports.filter(
+      (name) =>
+        !astDetectedExports.has(name) &&
+        name !== 'default' &&
+        name !== '__esModule' &&
+        /^[$_a-zA-Z][$_a-zA-Z0-9]*$/.test(name)
+    );
+    if (additionalExports.length > 0) {
+      const sourceObj = exportMode === 'module' ? exportedExportsName : exportsName;
+      for (const name of additionalExports) {
+        const deconflictedName = deconflict([scope], globals, name);
+        exportBlock += `\nvar ${deconflictedName} = ${sourceObj}["${name}"];\nexport { ${
+          deconflictedName === name ? name : `${deconflictedName} as ${name}`
+        } };`;
+      }
+    }
+  }
 
   if (shouldWrap) {
     wrapCode(magicString, uses, moduleName, exportsName, indentExclusionRanges);
