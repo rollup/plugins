@@ -2,10 +2,9 @@ import * as babel from '@babel/core';
 import { createFilter } from '@rollup/pluginutils';
 
 import { BUNDLED, HELPERS } from './constants.js';
-import bundledHelpersPlugin from './bundledHelpersPlugin.js';
-import preflightCheck from './preflightCheck.js';
 import transformCode from './transformCode.js';
-import { addBabelPlugin, escapeRegExpCharacters, warnOnce, stripQuery } from './utils.js';
+import { escapeRegExpCharacters, warnOnce } from './utils.js';
+import WorkerPool from './workerPool.js';
 
 const unpackOptions = ({
   extensions = babel.DEFAULT_EXTENSIONS,
@@ -37,7 +36,7 @@ const warnAboutDeprecatedHelpersOption = ({ deprecatedOption, suggestion }) => {
   );
 };
 
-const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }, rollupVersion) => {
+const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
   if ('runtimeHelpers' in rest) {
     warnAboutDeprecatedHelpersOption({
       deprecatedOption: 'runtimeHelpers',
@@ -63,8 +62,7 @@ const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }, rollu
       supportsStaticESM: true,
       supportsDynamicImport: true,
       supportsTopLevelAwait: true,
-      // todo: remove version checks for 1.20 - 1.25 when we bump peer deps
-      supportsExportNamespaceFrom: !rollupVersion.match(/^1\.2[0-5]\./),
+      supportsExportNamespaceFrom: true,
       ...rest.caller
     }
   });
@@ -101,6 +99,24 @@ const returnObject = () => {
   return {};
 };
 
+function isSerializable(value) {
+  if (value === null) {
+    return true;
+  } else if (Array.isArray(value)) {
+    return value.every(isSerializable);
+  }
+  switch (typeof value) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+      return true;
+    case 'object':
+      return Object.keys(value).every((key) => isSerializable(value[key]));
+    default:
+      return false;
+  }
+}
+
 function createBabelInputPluginFactory(customCallback = returnObject) {
   const overrides = customCallback(babel);
 
@@ -110,77 +126,113 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
       overrides
     );
 
-    let babelHelpers;
-    let babelOptions;
-    let filter;
-    let skipPreflightCheck;
+    let workerPool;
+
+    const {
+      exclude,
+      extensions,
+      babelHelpers,
+      include,
+      filter: customFilter,
+      skipPreflightCheck,
+      parallel,
+      ...babelOptions
+    } = unpackInputPluginOptions(pluginOptionsWithOverrides);
+
+    const extensionRegExp = new RegExp(
+      `(${extensions.map(escapeRegExpCharacters).join('|')})(\\?.*)?(#.*)?$`
+    );
+    if (customFilter && (include || exclude)) {
+      throw new Error('Could not handle include or exclude with custom filter together');
+    }
+    const userDefinedFilter =
+      typeof customFilter === 'function' ? customFilter : createFilter(include, exclude);
+    const filter = (id, code) => extensionRegExp.test(id) && userDefinedFilter(id, code);
+
+    if (parallel) {
+      const parallelAllowed =
+        isSerializable(babelOptions) && !overrides?.config && !overrides?.result;
+
+      if (!parallelAllowed) {
+        throw new Error(
+          'Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options.'
+        );
+      }
+
+      const parallelWorkerCount = typeof parallel === 'number' ? parallel : 4;
+      workerPool = new WorkerPool(
+        new URL('./worker.js', import.meta.url).pathname,
+        parallelWorkerCount
+      );
+    }
+
+    const helpersFilter = { id: new RegExp(`^${escapeRegExpCharacters(HELPERS)}$`) };
+
     return {
       name: 'babel',
 
-      options() {
-        // todo: remove options hook and hoist declarations when version checks are removed
-        let exclude;
-        let include;
-        let extensions;
-        let customFilter;
-
-        ({
-          exclude,
-          extensions,
-          babelHelpers,
-          include,
-          filter: customFilter,
-          skipPreflightCheck,
-          ...babelOptions
-        } = unpackInputPluginOptions(pluginOptionsWithOverrides, this.meta.rollupVersion));
-
-        const extensionRegExp = new RegExp(
-          `(${extensions.map(escapeRegExpCharacters).join('|')})$`
-        );
-        if (customFilter && (include || exclude)) {
-          throw new Error('Could not handle include or exclude with custom filter together');
-        }
-        const userDefinedFilter =
-          typeof customFilter === 'function' ? customFilter : createFilter(include, exclude);
-        filter = (id) => extensionRegExp.test(stripQuery(id).bareId) && userDefinedFilter(id);
-
-        return null;
-      },
-
-      resolveId(id) {
-        if (id !== HELPERS) {
-          return null;
-        }
-        return id;
-      },
-
-      load(id) {
-        if (id !== HELPERS) {
-          return null;
-        }
-        return babel.buildExternalHelpers(null, 'module');
-      },
-
-      transform(code, filename) {
-        if (!filter(filename)) return null;
-        if (filename === HELPERS) return null;
-
-        return transformCode(
-          code,
-          { ...babelOptions, filename },
-          overrides,
-          customOptions,
-          this,
-          async (transformOptions) => {
-            if (!skipPreflightCheck) {
-              await preflightCheck(this, babelHelpers, transformOptions);
-            }
-
-            return babelHelpers === BUNDLED
-              ? addBabelPlugin(transformOptions, bundledHelpersPlugin)
-              : transformOptions;
+      resolveId: {
+        filter: helpersFilter,
+        handler(id) {
+          if (id !== HELPERS) {
+            return null;
           }
-        );
+          return id;
+        }
+      },
+
+      load: {
+        filter: helpersFilter,
+        handler(id) {
+          if (id !== HELPERS) {
+            return null;
+          }
+          return babel.buildExternalHelpers(null, 'module');
+        }
+      },
+
+      transform: {
+        filter: {
+          id: extensionRegExp
+        },
+        async handler(code, filename) {
+          if (!(await filter(filename, code))) return null;
+          if (filename === HELPERS) return null;
+
+          if (parallel) {
+            return workerPool.runTask({
+              inputCode: code,
+              babelOptions: { ...babelOptions, filename },
+              runPreflightCheck: !skipPreflightCheck,
+              babelHelpers
+            });
+          }
+
+          return transformCode({
+            inputCode: code,
+            babelOptions: { ...babelOptions, filename },
+            overrides: {
+              config: overrides.config?.bind(this),
+              result: overrides.result?.bind(this)
+            },
+            customOptions,
+            error: this.error.bind(this),
+            runPreflightCheck: !skipPreflightCheck,
+            babelHelpers
+          });
+        }
+      },
+
+      async closeBundle() {
+        if (parallel && !this.meta.watchMode) {
+          await workerPool.terminate();
+        }
+      },
+
+      async closeWatcher() {
+        if (parallel) {
+          await workerPool.terminate();
+        }
       }
     };
   };
@@ -259,7 +311,16 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
           }
         }
 
-        return transformCode(code, babelOptions, overrides, customOptions, this);
+        return transformCode({
+          inputCode: code,
+          babelOptions,
+          overrides: {
+            config: overrides.config?.bind(this),
+            result: overrides.result?.bind(this)
+          },
+          customOptions,
+          error: this.error.bind(this)
+        });
       }
     };
   };

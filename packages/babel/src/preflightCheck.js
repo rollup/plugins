@@ -37,27 +37,27 @@ const mismatchError = (actual, expected, filename) =>
 // Revert to /\/helpers\/(esm\/)?inherits/ when Babel 8 gets released, this was fixed in https://github.com/babel/babel/issues/14185
 const inheritsHelperRe = /[\\/]+helpers[\\/]+(esm[\\/]+)?inherits/;
 
-export default async function preflightCheck(ctx, babelHelpers, transformOptions) {
+export default async function preflightCheck(error, babelHelpers, transformOptions) {
   const finalOptions = addBabelPlugin(transformOptions, helpersTestTransform);
   const check = (await babel.transformAsync(PREFLIGHT_INPUT, finalOptions)).code;
 
   // Babel sometimes splits ExportDefaultDeclaration into 2 statements, so we also check for ExportNamedDeclaration
   if (!/export (d|{)/.test(check)) {
-    ctx.error(MODULE_ERROR);
+    error(MODULE_ERROR);
   }
 
   if (inheritsHelperRe.test(check)) {
     if (babelHelpers === RUNTIME) {
       return;
     }
-    ctx.error(mismatchError(RUNTIME, babelHelpers, transformOptions.filename));
+    error(mismatchError(RUNTIME, babelHelpers, transformOptions.filename));
   }
 
   if (check.includes('babelHelpers.inherits')) {
     if (babelHelpers === EXTERNAL) {
       return;
     }
-    ctx.error(mismatchError(EXTERNAL, babelHelpers, transformOptions.filename));
+    error(mismatchError(EXTERNAL, babelHelpers, transformOptions.filename));
   }
 
   // test unminifiable string content
@@ -66,12 +66,12 @@ export default async function preflightCheck(ctx, babelHelpers, transformOptions
       return;
     }
     if (babelHelpers === RUNTIME && !transformOptions.plugins.length) {
-      ctx.error(
+      error(
         `You must use the \`@babel/plugin-transform-runtime\` plugin when \`babelHelpers\` is "${RUNTIME}".\n`
       );
     }
-    ctx.error(mismatchError(INLINE, babelHelpers, transformOptions.filename));
+    error(mismatchError(INLINE, babelHelpers, transformOptions.filename));
   }
 
-  ctx.error(UNEXPECTED_ERROR);
+  error(UNEXPECTED_ERROR);
 }

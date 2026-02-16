@@ -122,10 +122,46 @@ console.log("the answer is ".concat(foo()));
   );
 });
 
+test('does not babelify excluded code with code-based filter', async (t) => {
+  const filter = (id, code) => code.includes('the answer is');
+  const code = await generate('exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.false(code.includes('${foo()}'));
+  t.true(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+const foo = () => 42;
+
+console.log("the answer is ".concat(foo()));
+`
+  );
+});
+
 test('does babelify included code with custom filter', async (t) => {
   const filter = createFilter('**/foo.js', [], {
     resolve: DIRNAME
   });
+  const code = await generate('exclusions/main.js', { filter });
+  // eslint-disable-next-line no-template-curly-in-string
+  t.true(code.includes('${foo()}'));
+  t.false(code.includes('=> 42'));
+  t.is(
+    code,
+    `'use strict';
+
+var foo = function foo() {
+  return 42;
+};
+
+console.log(\`the answer is \${foo()}\`);
+`
+  );
+});
+
+test('does babelify excluded code with code-based filter', async (t) => {
+  const filter = (id, code) => !code.includes('the answer is');
   const code = await generate('exclusions/main.js', { filter });
   // eslint-disable-next-line no-template-curly-in-string
   t.true(code.includes('${foo()}'));
@@ -563,4 +599,69 @@ test('works as a CJS plugin', async (t) => {
   const code = await getCode(bundle);
 
   t.false(code.includes('const'));
+});
+
+test('works in parallel', async (t) => {
+  const bundle = await rollup({
+    input: `${FIXTURES}proposal-decorators/main.js`,
+    plugins: [babelPlugin({ parallel: true })]
+  });
+  const code = await getCode(bundle);
+
+  t.true(code.includes('_createClass'), 'decorator was applied');
+});
+
+test('works in parallel with specified worker count', async (t) => {
+  const code = await generate('basic/main.js', { parallel: 2 });
+  t.false(code.includes('const'));
+  t.true(code.includes('var answer = 42'));
+});
+
+test('throws when using parallel with non-serializable babel options', async (t) => {
+  await t.throwsAsync(
+    () =>
+      generate('basic/main.js', {
+        parallel: true,
+        plugins: [
+          // Functions are not serializable
+          function customPlugin() {
+            return { visitor: {} };
+          }
+        ]
+      }),
+    {
+      message:
+        /Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options/
+    }
+  );
+});
+
+test('throws when using parallel with config override', (t) => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
+    return {
+      config(cfg) {
+        return cfg.options;
+      }
+    };
+  });
+
+  t.throws(() => customBabelPlugin({ babelHelpers: 'bundled', parallel: true }), {
+    message:
+      /Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options/
+  });
+});
+
+test('throws when using parallel with result override', (t) => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
+    return {
+      result(result) {
+        return result;
+      }
+    };
+  });
+
+  t.throws(() => customBabelPlugin({ babelHelpers: 'bundled', parallel: true }), {
+    message:
+      /Cannot use "parallel" mode alongside custom overrides or non-serializable Babel options/
+  });
 });
