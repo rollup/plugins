@@ -17,7 +17,6 @@ process.chdir(__dirname);
 function getBundle(input, sucraseOptions, rollupOptions) {
   return rollup({
     input,
-    context: 'this',
     plugins: [sucrase(sucraseOptions)],
     ...rollupOptions
   });
@@ -107,4 +106,40 @@ test('converts typescript jsx ("tsx")', async (t) => {
   t.plan(5);
 
   return testBundle(t, bundle);
+});
+
+test('converts jsx with jsxImportSource', async (t) => {
+  const bundle = await getBundle(
+    'fixtures/jsx-import-source/main.js',
+    { transforms: ['jsx'], jsxRuntime: 'automatic', jsxImportSource: 'preact' },
+    { external: ['preact/jsx-dev-runtime'] }
+  );
+  const { output } = await bundle.generate({ format: 'cjs', exports: 'auto' });
+  const [{ code }] = output;
+  t.regex(code, /require\(['"]preact\/jsx-dev-runtime['"]\)/);
+  t.notRegex(code, /['"]react\/jsx-dev-runtime['"]/);
+});
+
+test('preserveDynamicImport keeps import() expression', async (t) => {
+  const bundle = await getBundle('fixtures/preserve-dynamic-import/main.js', {
+    transforms: ['imports'],
+    preserveDynamicImport: true
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+  const [{ code }] = output;
+  t.regex(code, /import\(/);
+});
+
+test('injectCreateRequireForImportRequire emits createRequire', async (t) => {
+  const bundle = await getBundle(
+    'fixtures/inject-create-require/main.ts',
+    {
+      transforms: ['typescript'],
+      injectCreateRequireForImportRequire: true
+    },
+    { external: ['foo', 'module'] }
+  );
+  const { output } = await bundle.generate({ format: 'es' });
+  const [{ code }] = output;
+  t.regex(code, /createRequire/);
 });
