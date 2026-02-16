@@ -120,3 +120,27 @@ test('converts jsx with jsxImportSource', async (t) => {
   t.regex(code, /require\(['"]preact\/jsx-dev-runtime['"]\)/);
   t.notRegex(code, /['"]react\/jsx-dev-runtime['"]/);
 });
+
+test('preserveDynamicImport keeps import() expression', async (t) => {
+  const bundle = await getBundle('fixtures/preserve-dynamic-import/main.js', {
+    transforms: ['imports'],
+    preserveDynamicImport: true
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+  const [{ code }] = output;
+  t.regex(code, /import\(/);
+});
+
+test('injectCreateRequireForImportRequire emits createRequire', async (t) => {
+  const bundle = await getBundle(
+    'fixtures/inject-create-require/main.ts',
+    {
+      transforms: ['typescript'],
+      injectCreateRequireForImportRequire: true
+    },
+    { external: ['foo', 'module'] }
+  );
+  const { output } = await bundle.generate({ format: 'es' });
+  const [{ code }] = output;
+  t.regex(code, /createRequire/);
+});
