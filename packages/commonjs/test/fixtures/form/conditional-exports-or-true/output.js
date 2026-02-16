@@ -14,7 +14,7 @@ function requireInput () {
 	if (condition || true) {
 	  input.handler = prodHandler;
 	} else {
-	  input.handler = defaultHandler;
+	  exports.handler = defaultHandler;
 	}
 	return input;
 }
