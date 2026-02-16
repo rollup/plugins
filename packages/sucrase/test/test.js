@@ -16,6 +16,11 @@ process.chdir(__dirname);
 
 function getBundle(input, sucraseOptions, rollupOptions) {
   return rollup({
+    /**
+     * Explicitly set Rollup's top-level `this` context to silence build-time warnings about `this` being undefined in ES modules.
+     * This is a bundler-level concern only and does not affect the plugin's transform behavior, which runs before bundling.
+     */
+    context: 'this',
     input,
     plugins: [sucrase(sucraseOptions)],
     ...rollupOptions
