@@ -13,7 +13,8 @@ import {
   isReference,
   isShorthandProperty,
   isTruthy,
-  KEY_COMPILED_ESM
+  KEY_COMPILED_ESM,
+  isPropertyDefinitionKey
 } from './ast-utils';
 import { COMMONJS_REQUIRE_EXPORT, CREATE_COMMONJS_REQUIRE_EXPORT } from './dynamic-modules';
 import { rewriteExportsAndGetExportsBlock, wrapCode } from './generate-exports';
@@ -295,7 +296,7 @@ export default async function transformCommonjs(
           if (
             !isReference(node, parent) ||
             scope.contains(name) ||
-            (parent.type === 'PropertyDefinition' && parent.key === node)
+            isPropertyDefinitionKey(parent, node)
           )
             return;
           switch (name) {
@@ -322,6 +323,10 @@ export default async function transformCommonjs(
             case 'global':
               uses.global = true;
               if (!ignoreGlobal) {
+                if (isShorthandProperty(parent)) {
+                  skippedNodes.add(parent.value);
+                  magicString.prependRight(node.start, 'global: ');
+                }
                 replacedGlobal.push(node);
               }
               return;
@@ -442,6 +447,7 @@ export default async function transformCommonjs(
 
   for (const node of replacedGlobal) {
     magicString.overwrite(node.start, node.end, `${helpersName}.commonjsGlobal`, {
+      contentOnly: true,
       storeName: true
     });
   }
