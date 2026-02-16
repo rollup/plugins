@@ -17,7 +17,6 @@ process.chdir(__dirname);
 function getBundle(input, sucraseOptions, rollupOptions) {
   return rollup({
     input,
-    context: 'this',
     plugins: [sucrase(sucraseOptions)],
     ...rollupOptions
   });
