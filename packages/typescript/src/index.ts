@@ -224,7 +224,6 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const mode =
         typeof ts.getImpliedNodeFormatForFile === 'function'
           ? ts.getImpliedNodeFormatForFile(
-              // @ts-expect-error
               containingFile,
               undefined, // eslint-disable-line no-undefined
               { ...ts.sys, ...formatHost },
@@ -236,7 +235,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       const resolved = resolveModule(importee, containingFile, undefined, mode);
 
       if (resolved) {
-        if (/\.d\.[cm]?ts/.test(resolved.extension)) return null;
+        if (isDeclarationOutputFile(resolved.extension)) return null;
         if (!filter(resolved.resolvedFileName)) return null;
         return path.normalize(resolved.resolvedFileName);
       }

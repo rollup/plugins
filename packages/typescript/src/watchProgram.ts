@@ -210,12 +210,12 @@ function createWatchHost(
       containingFile,
       _reusedNames,
       redirectedReference,
-      _optionsOnlyWithNewerTsVersions,
+      compilerOptions,
       containingSourceFile
     ) {
       return moduleNames.map((moduleName, i) => {
         const mode = containingSourceFile
-          ? ts.getModeForResolutionAtIndex?.(containingSourceFile, i)
+          ? ts.getModeForResolutionAtIndex?.(containingSourceFile, i, compilerOptions)
           : undefined; // eslint-disable-line no-undefined
 
         return resolveModule(moduleName, containingFile, redirectedReference, mode);
