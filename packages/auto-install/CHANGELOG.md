@@ -1,5 +1,13 @@
 # @rollup/plugin-auto-install ChangeLog
 
+## v4.0.0
+
+_2026-02-16_
+
+### Breaking Changes
+
+- feat!: ESM only. Update Node and Rollup minimum versions ([#1935](https://github.com/rollup/plugins/issues/1935))
+
 ## v3.0.5
 
 _2023-10-05_
