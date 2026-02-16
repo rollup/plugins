@@ -108,3 +108,15 @@ test('converts typescript jsx ("tsx")', async (t) => {
 
   return testBundle(t, bundle);
 });
+
+test('converts jsx with jsxImportSource', async (t) => {
+  const bundle = await getBundle(
+    'fixtures/jsx-import-source/main.js',
+    { transforms: ['jsx'], jsxRuntime: 'automatic', jsxImportSource: 'preact' },
+    { external: ['preact/jsx-dev-runtime'] }
+  );
+  const { output } = await bundle.generate({ format: 'cjs', exports: 'auto' });
+  const [{ code }] = output;
+  t.regex(code, /require\(['"]preact\/jsx-dev-runtime['"]\)/);
+  t.notRegex(code, /['"]react\/jsx-dev-runtime['"]/);
+});
