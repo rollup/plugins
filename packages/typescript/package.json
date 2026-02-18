@@ -48,7 +48,8 @@
     "rollup",
     "plugin",
     "typescript",
-    "es2015"
+    "es2015",
+    "rollup-plugin"
   ],
   "peerDependencies": {
     "rollup": "^2.14.0||^3.0.0||^4.0.0",
