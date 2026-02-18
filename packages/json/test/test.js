@@ -164,3 +164,24 @@ test('handles empty keys', async (t) => {
     'export var b = "c";\nexport default {\n\t"": "a",\n\tb: b\n};\n'
   );
 });
+
+test('uses extensions option', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/custom-file-extension/main.js',
+    plugins: [
+      json({
+        extensions: ['.customjson']
+      })
+    ]
+  });
+  t.plan(1);
+  return testBundle(t, bundle);
+});
+
+test('does not process non-custom extensions', async (t) => {
+  const content = 'some content';
+  const id = 'testfile.json';
+  const plugin = json({ extensions: ['.custom'] });
+  const output = plugin.transform(content, id);
+  t.is(output, null, 'Should return null for files without custom extensions');
+});

@@ -1,15 +1,19 @@
 import { createFilter, dataToEsm } from '@rollup/pluginutils';
+import { extname } from 'path';
 
 export default function json(options = {}) {
   const filter = createFilter(options.include, options.exclude);
   const indent = 'indent' in options ? options.indent : '\t';
+  const extensions = new Set('extensions' in options ? options.extensions : ['.json']);
 
   return {
     name: 'json',
 
     // eslint-disable-next-line no-shadow
     transform(code, id) {
-      if (id.slice(-5) !== '.json' || !filter(id)) return null;
+      const extension = extname(id);
+
+      if (!extensions.has(extension) || !filter(id)) return null;
 
       try {
         const parsed = JSON.parse(code);

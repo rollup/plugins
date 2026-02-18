@@ -13,6 +13,11 @@ export interface RollupJsonOptions {
    */
   exclude?: FilterPattern;
   /**
+   * Specify the file extensions to be parsed as JSON
+   * @default ['.json']
+   */
+  extensions?: string[];
+  /**
    * For tree-shaking, properties will be declared as variables, using
    * either `var` or `const`.
    * @default false
