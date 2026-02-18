@@ -36,7 +36,7 @@ export function getDynamicRequireModules(patterns, dynamicRequireRoot) {
   const dynamicRequireModules = new Map();
   const dirNames = new Set();
   for (const pattern of !patterns || Array.isArray(patterns) ? patterns || [] : [patterns]) {
-    const isNegated = pattern.startsWith('!');
+    const isNegated = pattern[0] === '!';
     const modifyMap = (targetPath, resolvedPath) =>
       isNegated
         ? dynamicRequireModules.delete(targetPath)

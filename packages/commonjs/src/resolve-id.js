@@ -120,7 +120,7 @@ export default function getResolveId(extensions, isPossibleCjsId) {
         }
       }
 
-      if (importee.startsWith('\0')) {
+      if (importee[0] === '\0') {
         return null;
       }
 

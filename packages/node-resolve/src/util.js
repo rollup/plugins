@@ -6,7 +6,7 @@ import { realpathSync } from './fs';
 
 // returns the imported package name for bare module imports
 export function getPackageName(id) {
-  if (id.startsWith('.') || id.startsWith('/')) {
+  if (id[0] === '.' || id[0] === '/') {
     return null;
   }
 
