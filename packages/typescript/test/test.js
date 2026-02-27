@@ -710,6 +710,95 @@ test.serial('should not emit sourceContent that references a non-existent file',
   t.false(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map'));
 });
 
+test.serial(
+  'should correctly resolve sourcemap sources when outDir is outside source directory',
+  async (t) => {
+    // This test verifies the fix for issue #1966
+    // When TypeScript's outDir places emitted files in a different directory tree than
+    // the source files (e.g., outDir: "../dist"), TypeScript emits sourcemaps with
+    // sources relative to the output map file location. Rollup's getCollapsedSourcemap
+    // resolves those paths relative to the original source file's directory instead.
+    // The fix rebases the sourcemap sources to be relative to the source file directory.
+    const bundle = await rollup({
+      input: 'fixtures/outdir-outside-source/src/main.ts',
+      output: {
+        sourcemap: true
+      },
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/outdir-outside-source/tsconfig.json'
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(bundle, { format: 'es', sourcemap: true }, true);
+    const sourcemap = output[0].map;
+
+    // Debug: log the sourcemap structure
+    // console.log('sourcemap:', JSON.stringify(sourcemap, null, 2));
+
+    // Verify sourcemap has the correct sources
+    t.is(sourcemap.sources.length, 1, 'Should have exactly one source');
+
+    // The source path should be relative to the source file's directory
+    // and should NOT point multiple levels above the project root
+    const [sourcePath] = sourcemap.sources;
+
+    // Before the fix, this would be something like "../../../outdir-outside-source/src/main.ts"
+    // After the fix, it should be just "main.ts" (relative to src/ directory)
+    t.false(
+      sourcePath.startsWith('../../../'),
+      `Source path should not go above project root: ${sourcePath}`
+    );
+
+    // The source should correctly point to main.ts
+    t.true(
+      sourcePath === 'main.ts' || sourcePath.endsWith('main.ts'),
+      `Source path should reference main.ts: ${sourcePath}`
+    );
+
+    // Verify sourceRoot has been cleared (no longer needed after path rebasing)
+    t.is(sourcemap.sourceRoot, undefined, 'sourceRoot should be cleared after path rebasing');
+  }
+);
+
+test.serial('should correctly resolve sourcemap sources with mapRoot option', async (t) => {
+  // This test verifies that the fix works correctly even when mapRoot is set
+  const bundle = await rollup({
+    input: 'fixtures/outdir-with-sourceroot/src/greet.ts',
+    output: {
+      sourcemap: true
+    },
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/outdir-with-sourceroot/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const output = await getCode(bundle, { format: 'es', sourcemap: true }, true);
+  const sourcemap = output[0].map;
+
+  // Verify sourcemap has the correct sources
+  t.is(sourcemap.sources.length, 1, 'Should have exactly one source');
+
+  const [sourcePath] = sourcemap.sources;
+
+  // The source path should correctly reference greet.ts without going above project root
+  t.false(
+    sourcePath.startsWith('../../../'),
+    `Source path should not go above project root: ${sourcePath}`
+  );
+
+  t.true(
+    sourcePath === 'greet.ts' || sourcePath.endsWith('greet.ts'),
+    `Source path should reference greet.ts: ${sourcePath}`
+  );
+
+  // Verify sourceRoot has been cleared
+  t.is(sourcemap.sourceRoot, undefined, 'sourceRoot should be cleared after path rebasing');
+});
+
 test.serial('should not fail if source maps are off', async (t) => {
   await t.notThrowsAsync(
     rollup({

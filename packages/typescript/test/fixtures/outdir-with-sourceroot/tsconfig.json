@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["es2020"],
+    "outDir": "../output",
+    "target": "es2020",
+    "sourceMap": true,
+    "mapRoot": "./maps",
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true
+  },
+  "include": ["src/**/*"]
+}
+
