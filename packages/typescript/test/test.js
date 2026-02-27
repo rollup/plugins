@@ -710,6 +710,47 @@ test.serial('should not emit sourceContent that references a non-existent file',
   t.false(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map'));
 });
 
+test.only('should correctly resolve sourcemap sources when outDir is outside source directory', async (t) => {
+  // This test verifies the fix for issue #1966
+  // When TypeScript's outDir places emitted files in a different directory tree than
+  // the source files (e.g., outDir: "../dist"), TypeScript emits sourcemaps with
+  // sources relative to the output map file location. Rollup's getCollapsedSourcemap
+  // resolves those paths relative to the original source file's directory instead.
+  // The fix rebases the sourcemap sources to be relative to the source file directory.
+  const bundle = await rollup({
+    input: './fixtures/outdir-outside-source/my-project-1/src/index.ts',
+    output: {
+      dir: './fixtures/outdir-outside-source/dist/project-1',
+      format: 'es',
+      entryFileNames: '[name].js',
+      chunkFileNames: '[name]-[hash].js',
+      sourcemap: true
+    },
+    plugins: [
+      typescript({
+        tsconfig: './fixtures/outdir-outside-source/my-project-1/tsconfig.json'
+      })
+    ],
+    onwarn
+  });
+  const [indexJsOutput] = await getCode(bundle, { format: 'es', sourcemap: true }, true);
+
+  const sourcemap = indexJsOutput.map;
+
+  // Verify sourcemap has the correct sources
+  t.is(sourcemap.sources.length, 2, 'Should have exactly 2 sources');
+
+  // The source path should be relative to the source file's directory
+  // and should NOT point multiple levels above the project root
+  const [testSourcePath, nestedSourcePath] = sourcemap.sources;
+
+  t.is(testSourcePath, 'fixtures/outdir-outside-source/my-project-1/src/test.ts');
+  t.is(nestedSourcePath, 'fixtures/outdir-outside-source/my-project-1/src/nested/test-nested.ts');
+
+  // Verify sourceRoot has been cleared (no longer needed after path rebasing)
+  t.is(sourcemap.sourceRoot, undefined, 'sourceRoot should be cleared after path rebasing');
+});
+
 test.serial('should not fail if source maps are off', async (t) => {
   await t.notThrowsAsync(
     rollup({
