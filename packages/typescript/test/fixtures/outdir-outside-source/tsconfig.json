@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["es2020"],
+    "outDir": "../dist-outside",
+    "target": "es2020",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "noErrorTruncation": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true
+  },
+  "include": ["src/**/*"]
+}
+
