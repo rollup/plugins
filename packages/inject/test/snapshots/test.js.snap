@@ -9,15 +9,6 @@ $(() => {
 "
 `;
 
-exports[`escapes backslashes in module name 1`] = `
-"import { default as $ } from 'slash\\\\back';
-
-$(() => {
-  console.log('ready');
-});
-"
-`;
-
 exports[`generates * imports 1`] = `
 "import * as foo from 'foo';
 

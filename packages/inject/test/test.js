@@ -6,7 +6,7 @@ const acorn = require('acorn');
 
 const inject = require('..');
 
-const compare = (fixture, options) => {
+const transform = (fixture, options) => {
   const filename = path.resolve(`test/fixtures/${fixture}/input.js`);
   const input = fs.readFileSync(filename, 'utf-8');
   const output = inject(options).transform.call(
@@ -21,7 +21,11 @@ const compare = (fixture, options) => {
     filename
   );
 
-  expect(output ? output.code : input).toMatchSnapshot();
+  return output ? output.code : input;
+};
+
+const compare = (fixture, options) => {
+  expect(transform(fixture, options)).toMatchSnapshot();
 };
 
 test('inserts a default import statement', () => {
@@ -43,7 +47,9 @@ if (os.platform() === 'win32') {
   // so it cannot appear within filename
 } else {
   test('escapes backslashes in module name', () => {
-    compare('basic', { $: 'slash\\back' });
+    expect(transform('basic', { $: 'slash\\back' })).toContain(
+      "import { default as $ } from 'slash\\\\back';"
+    );
   });
 }
 
