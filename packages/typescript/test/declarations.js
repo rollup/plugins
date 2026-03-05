@@ -1,12 +1,9 @@
 import { rollup } from 'rollup';
 
 import typescript from '..';
-import { getCode } from '../../../util/test';
+import { getCode, onwarn } from '../../../util/test';
 
 beforeEach(() => process.chdir(__dirname));
-
-// eslint-disable-next-line no-console
-const onwarn = (warning) => console.warn(warning.toString());
 
 const captureThrownError = async (valueOrFactory) => {
   try {
