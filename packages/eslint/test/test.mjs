@@ -206,28 +206,24 @@ test('works with cjs plugin', async () => {
   expect(count).toBe(1);
 });
 
-test(
-  'works with flat config',
-  async () => {
-    let count = 0;
-    await rollup({
-      input: './test/fixtures/flat-config/undeclared.js',
-      plugins: [
-        eslint({
-          formatter: (results) => {
-            count += results[0].messages.length;
-            // eslint-disable-next-line prefer-destructuring
-            const { message } = results[0].messages[0];
-            expect(message).toBe("'x' is not defined.");
-          }
-        })
-      ]
-    });
+test('works with flat config', async () => {
+  let count = 0;
+  await rollup({
+    input: './test/fixtures/flat-config/undeclared.js',
+    plugins: [
+      eslint({
+        formatter: (results) => {
+          count += results[0].messages.length;
+          // eslint-disable-next-line prefer-destructuring
+          const { message } = results[0].messages[0];
+          expect(message).toBe("'x' is not defined.");
+        }
+      })
+    ]
+  });
 
-    expect(count).toBe(1);
-  },
-  15_000
-);
+  expect(count).toBe(1);
+}, 15_000);
 
 test('works with ESLint v9', async () => {
   // Load the plugin with an override to route 'eslint' imports to ESLint v9

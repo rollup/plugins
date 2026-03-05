@@ -35,7 +35,10 @@ test('bad json', async () => {
       input: 'bad-json.js',
       plugins: [dataUri()]
     });
-  const error = await fn().then(() => null, (caught) => caught);
+  const error = await fn().then(
+    () => null,
+    (caught) => caught
+  );
   expect(error).not.toBeNull();
   const { code, plugin, pluginCode } = error;
   expect({ code, plugin, pluginCode }).toMatchSnapshot();
