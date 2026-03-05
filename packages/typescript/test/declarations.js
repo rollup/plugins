@@ -147,7 +147,7 @@ test.sequential(
       // 'types/should-not-be-emitted-types.d.ts' should not be emitted because 'main.ts' does not import/export from it.
       ['main.js', 'types/should-be-emitted-types.d.ts', 'types/main.d.ts']
     );
-    expect(declaration.includes('export declare type MyNumber = number;'), declaration).toBe(true);
+    expect(declaration.includes('export type MyNumber = number;'), declaration).toBe(true);
   }
 );
 test.sequential('supports creating declaration files in declarationDir', async () => {
