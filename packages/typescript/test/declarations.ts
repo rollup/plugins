@@ -4,12 +4,9 @@ import { rollup } from 'rollup';
 
 import typescript from '..';
 
-import { getCode } from '../../../util/test';
+import { getCode, onwarn } from '../../../util/test';
 
 test.beforeEach(() => process.chdir(__dirname));
-
-// eslint-disable-next-line no-console
-const onwarn = (warning: any) => console.warn(warning.toString());
 
 test.serial('supports creating declaration files', async (t) => {
   const bundle = await rollup({
