@@ -1,3 +1,3 @@
 import config from './config.yaml';
 
-t.is(config.answer, 42);
+expect(config.answer).toBe(42);

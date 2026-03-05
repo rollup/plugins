@@ -1,6 +1,6 @@
 import fruit from './fruit.tsv';
 
-t.deepEqual(fruit, [
+expect(fruit).toEqual([
   { type: 'apples', count: '7' },
   { type: 'pears', count: '4' },
   { type: 'bananas', count: '5' }

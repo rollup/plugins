@@ -1,4 +1,3 @@
-const test = require('ava');
 const rollup = require('rollup');
 
 const buble = require('..');
@@ -22,12 +21,14 @@ function getChunksFromBundle(bundle) {
     .then(getChunksFromGenerated);
 }
 
-test('transforms files', async (t) => {
+test('transforms files', async () => {
   const bundle = await rollup.rollup({
     input: `${__dirname}/fixtures/basic/main.js`,
     plugins: [buble()]
   });
   const generated = await getChunksFromBundle(bundle);
-  t.is(generated.length, 1);
-  t.is(generated[0].code, 'function main () { return 42; }\n\nexport { main as default };\n');
+  expect(generated.length).toBe(1);
+  expect(generated[0].code).toBe(
+    'function main () { return 42; }\n\nexport { main as default };\n'
+  );
 });

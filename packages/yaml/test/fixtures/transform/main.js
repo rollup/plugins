@@ -3,11 +3,11 @@
 import array from './array.yaml';
 import object from './object.yaml';
 
-t.is(array.length, 2);
-t.is(array[0].name, 'bob');
-t.is(array[1].name, 'carl');
+expect(array.length).toBe(2);
+expect(array[0].name).toBe('bob');
+expect(array[1].name).toBe('carl');
 
-t.is(Object.keys(object).length, 2);
-t.falsy(object.hasOwnProperty('alice'));
-t.truthy(object.hasOwnProperty('bob'));
-t.truthy(object.hasOwnProperty('carl'));
+expect(Object.keys(object).length).toBe(2);
+expect(object.hasOwnProperty('alice')).toBeFalsy();
+expect(object.hasOwnProperty('bob')).toBeTruthy();
+expect(object.hasOwnProperty('carl')).toBeTruthy();

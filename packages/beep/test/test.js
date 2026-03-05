@@ -1,20 +1,24 @@
-const test = require('ava');
 const execa = require('execa');
 
 const options = { cwd: __dirname };
 
-test('pass', async (t) => {
+test('pass', async () => {
   const args = '--config fixtures/pass.config.js'.split(' ');
   const { stderr } = await execa('rollup', args, options);
   const { default: strip } = await import('strip-ansi');
 
-  t.snapshot(strip(stderr.replace(/\d+ms|[\d.]+s/, '<time>ms')));
+  expect(strip(stderr.replace(/\d+ms|[\d.]+s/, '<time>ms'))).toMatchSnapshot();
 });
 
-test('error', async (t) => {
+test('error', async () => {
   const args = '--config fixtures/error.config.js'.split(' ');
   const throws = async () => execa('rollup', args, options);
 
-  const { stderr } = await t.throwsAsync(throws);
-  t.truthy(stderr.indexOf('\x07'));
+  const error = await throws().then(
+    () => null,
+    (caught) => caught
+  );
+  expect(error).not.toBeNull();
+  const { stderr } = error;
+  expect(stderr.indexOf('\x07')).toBeTruthy();
 });
