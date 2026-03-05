@@ -5,7 +5,7 @@ import { BUNDLED, HELPERS } from './constants.js';
 import bundledHelpersPlugin from './bundledHelpersPlugin.js';
 import preflightCheck from './preflightCheck.js';
 import transformCode from './transformCode.js';
-import { addBabelPlugin, escapeRegExpCharacters, warnOnce, stripQuery } from './utils.js';
+import { addBabelPlugin, escapeRegExpCharacters, warnOnce } from './utils.js';
 
 const unpackOptions = ({
   extensions = babel.DEFAULT_EXTENSIONS,
@@ -37,7 +37,7 @@ const warnAboutDeprecatedHelpersOption = ({ deprecatedOption, suggestion }) => {
   );
 };
 
-const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }, rollupVersion) => {
+const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
   if ('runtimeHelpers' in rest) {
     warnAboutDeprecatedHelpersOption({
       deprecatedOption: 'runtimeHelpers',
@@ -63,8 +63,7 @@ const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }, rollu
       supportsStaticESM: true,
       supportsDynamicImport: true,
       supportsTopLevelAwait: true,
-      // todo: remove version checks for 1.20 - 1.25 when we bump peer deps
-      supportsExportNamespaceFrom: !rollupVersion.match(/^1\.2[0-5]\./),
+      supportsExportNamespaceFrom: true,
       ...rest.caller
     }
   });
@@ -110,77 +109,76 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
       overrides
     );
 
-    let babelHelpers;
-    let babelOptions;
-    let filter;
-    let skipPreflightCheck;
+    const {
+      exclude,
+      extensions,
+      babelHelpers,
+      include,
+      filter: customFilter,
+      skipPreflightCheck,
+      ...babelOptions
+    } = unpackInputPluginOptions(pluginOptionsWithOverrides);
+
+    const extensionRegExp = new RegExp(
+      `(${extensions.map(escapeRegExpCharacters).join('|')})(\\?.*)?(#.*)?$`
+    );
+    if (customFilter && (include || exclude)) {
+      throw new Error('Could not handle include or exclude with custom filter together');
+    }
+    const userDefinedFilter =
+      typeof customFilter === 'function' ? customFilter : createFilter(include, exclude);
+    const filter = (id, code) => extensionRegExp.test(id) && userDefinedFilter(id, code);
+
+    const helpersFilter = { id: new RegExp(`^${escapeRegExpCharacters(HELPERS)}$`) };
+
     return {
       name: 'babel',
 
-      options() {
-        // todo: remove options hook and hoist declarations when version checks are removed
-        let exclude;
-        let include;
-        let extensions;
-        let customFilter;
-
-        ({
-          exclude,
-          extensions,
-          babelHelpers,
-          include,
-          filter: customFilter,
-          skipPreflightCheck,
-          ...babelOptions
-        } = unpackInputPluginOptions(pluginOptionsWithOverrides, this.meta.rollupVersion));
-
-        const extensionRegExp = new RegExp(
-          `(${extensions.map(escapeRegExpCharacters).join('|')})$`
-        );
-        if (customFilter && (include || exclude)) {
-          throw new Error('Could not handle include or exclude with custom filter together');
-        }
-        const userDefinedFilter =
-          typeof customFilter === 'function' ? customFilter : createFilter(include, exclude);
-        filter = (id) => extensionRegExp.test(stripQuery(id).bareId) && userDefinedFilter(id);
-
-        return null;
-      },
-
-      resolveId(id) {
-        if (id !== HELPERS) {
-          return null;
-        }
-        return id;
-      },
-
-      load(id) {
-        if (id !== HELPERS) {
-          return null;
-        }
-        return babel.buildExternalHelpers(null, 'module');
-      },
-
-      transform(code, filename) {
-        if (!filter(filename)) return null;
-        if (filename === HELPERS) return null;
-
-        return transformCode(
-          code,
-          { ...babelOptions, filename },
-          overrides,
-          customOptions,
-          this,
-          async (transformOptions) => {
-            if (!skipPreflightCheck) {
-              await preflightCheck(this, babelHelpers, transformOptions);
-            }
-
-            return babelHelpers === BUNDLED
-              ? addBabelPlugin(transformOptions, bundledHelpersPlugin)
-              : transformOptions;
+      resolveId: {
+        filter: helpersFilter,
+        handler(id) {
+          if (id !== HELPERS) {
+            return null;
           }
-        );
+          return id;
+        }
+      },
+
+      load: {
+        filter: helpersFilter,
+        handler(id) {
+          if (id !== HELPERS) {
+            return null;
+          }
+          return babel.buildExternalHelpers(null, 'module');
+        }
+      },
+
+      transform: {
+        filter: {
+          id: extensionRegExp
+        },
+        async handler(code, filename) {
+          if (!(await filter(filename, code))) return null;
+          if (filename === HELPERS) return null;
+
+          return transformCode(
+            code,
+            { ...babelOptions, filename },
+            overrides,
+            customOptions,
+            this,
+            async (transformOptions) => {
+              if (!skipPreflightCheck) {
+                await preflightCheck(this, babelHelpers, transformOptions);
+              }
+
+              return babelHelpers === BUNDLED
+                ? addBabelPlugin(transformOptions, bundledHelpersPlugin)
+                : transformOptions;
+            }
+          );
+        }
       }
     };
   };
