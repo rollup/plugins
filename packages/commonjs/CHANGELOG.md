@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v29.0.1
+
+_2026-03-05_
+
+### Bugfixes
+
+- commonjs: correctly replaces shorthand "global" property in object ([#1957](https://github.com/rollup/plugins/issues/1957))
+
 ## v29.0.0
 
 _2025-10-30_
