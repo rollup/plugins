@@ -64,8 +64,8 @@ export default function commonjs(options = {}) {
     typeof esmExternals === 'function'
       ? esmExternals
       : Array.isArray(esmExternals)
-        ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
-        : () => esmExternals;
+      ? ((esmExternalIds = new Set(esmExternals)), (id) => esmExternalIds.has(id))
+      : () => esmExternals;
 
   const getDefaultIsModuleExports =
     typeof defaultIsModuleExportsOption === 'function'
@@ -87,18 +87,18 @@ export default function commonjs(options = {}) {
     typeof options.ignore === 'function'
       ? options.ignore
       : Array.isArray(options.ignore)
-        ? (id) => options.ignore.includes(id)
-        : () => false;
+      ? (id) => options.ignore.includes(id)
+      : () => false;
 
   const getIgnoreTryCatchRequireStatementMode = (id) => {
     const mode =
       typeof options.ignoreTryCatch === 'function'
         ? options.ignoreTryCatch(id)
         : Array.isArray(options.ignoreTryCatch)
-          ? options.ignoreTryCatch.includes(id)
-          : typeof options.ignoreTryCatch !== 'undefined'
-            ? options.ignoreTryCatch
-            : true;
+        ? options.ignoreTryCatch.includes(id)
+        : typeof options.ignoreTryCatch !== 'undefined'
+        ? options.ignoreTryCatch
+        : true;
 
     return {
       canConvertRequire: mode !== 'remove' && mode !== true,
@@ -193,8 +193,8 @@ export default function commonjs(options = {}) {
       const plugins = Array.isArray(rawOptions.plugins)
         ? [...rawOptions.plugins]
         : rawOptions.plugins
-          ? [rawOptions.plugins]
-          : [];
+        ? [rawOptions.plugins]
+        : [];
       plugins.unshift({
         name: 'commonjs--resolver',
         resolveId

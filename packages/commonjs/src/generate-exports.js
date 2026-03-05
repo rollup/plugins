@@ -166,8 +166,8 @@ function getDefaultExportDeclaration(exportedExportsName, defaultIsModuleExports
     defaultIsModuleExports === true
       ? exportedExportsName
       : defaultIsModuleExports === false
-        ? `${exportedExportsName}.default`
-        : `/*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportedExportsName})`
+      ? `${exportedExportsName}.default`
+      : `/*@__PURE__*/${HELPERS_NAME}.getDefaultExportFromCjs(${exportedExportsName})`
   }`;
 }
 

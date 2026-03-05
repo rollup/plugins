@@ -10,10 +10,10 @@ export function getUnknownRequireProxy(id, requireReturnsDefault) {
     requireReturnsDefault === 'auto'
       ? `import { getDefaultExportFromNamespaceIfNotNamed } from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(${name});`
       : requireReturnsDefault === 'preferred'
-        ? `import { getDefaultExportFromNamespaceIfPresent } from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfPresent(${name});`
-        : !requireReturnsDefault
-          ? `import { getAugmentedNamespace } from "${HELPERS_ID}"; export default /*@__PURE__*/getAugmentedNamespace(${name});`
-          : `export default ${name};`;
+      ? `import { getDefaultExportFromNamespaceIfPresent } from "${HELPERS_ID}"; export default /*@__PURE__*/getDefaultExportFromNamespaceIfPresent(${name});`
+      : !requireReturnsDefault
+      ? `import { getAugmentedNamespace } from "${HELPERS_ID}"; export default /*@__PURE__*/getAugmentedNamespace(${name});`
+      : `export default ${name};`;
   return `import * as ${name} from ${JSON.stringify(id)}; ${exported}`;
 }
 

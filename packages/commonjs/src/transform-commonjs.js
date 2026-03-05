@@ -499,16 +499,16 @@ export default async function transformCommonjs(
   const exportMode = isEsModule
     ? 'none'
     : shouldWrap
-      ? uses.module
-        ? 'module'
-        : 'exports'
-      : firstTopLevelModuleExportsAssignment
-        ? exportsAssignmentsByName.size === 0 && topLevelDefineCompiledEsmExpressions.length === 0
-          ? 'replace'
-          : 'module'
-        : moduleExportsAssignments.length === 0
-          ? 'exports'
-          : 'module';
+    ? uses.module
+      ? 'module'
+      : 'exports'
+    : firstTopLevelModuleExportsAssignment
+    ? exportsAssignmentsByName.size === 0 && topLevelDefineCompiledEsmExpressions.length === 0
+      ? 'replace'
+      : 'module'
+    : moduleExportsAssignments.length === 0
+    ? 'exports'
+    : 'module';
 
   const exportedExportsName =
     exportMode === 'module' ? deconflict([], globals, `${nameBase}Exports`) : exportsName;

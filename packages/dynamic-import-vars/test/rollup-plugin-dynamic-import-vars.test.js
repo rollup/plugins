@@ -228,7 +228,9 @@ test('throws if no files in dir when `errorWhenNoFilesFound` is set', async (t) 
   } catch (error) {
     t.deepEqual(
       error.message,
-      `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve('./fixtures/fixture-no-files.js')}`
+      `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
+        './fixtures/fixture-no-files.js'
+      )}`
     );
     thrown = true;
   }
@@ -243,7 +245,9 @@ test('warns if no files in dir when `errorWhenNoFilesFound` and `warnOnError` ar
     onwarn(warning) {
       t.deepEqual(
         warning.message,
-        `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve('./fixtures/fixture-no-files.js')}`
+        `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
+          './fixtures/fixture-no-files.js'
+        )}`
       );
       warningEmitted = true;
     }
