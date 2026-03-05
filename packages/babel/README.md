@@ -94,7 +94,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
 ### `filter`
 
-Type: (id: string) => boolean<br>
+Type: (id: string, code: string) => boolean<br>
 
 Custom [filter function](https://github.com/rollup/plugins/tree/master/packages/pluginutils#createfilter) can be used to determine whether or not certain modules should be operated upon.
 
@@ -134,6 +134,15 @@ Type: `Boolean`<br>
 Default: `false`
 
 Before transpiling your input files this plugin also transpile a short piece of code **for each** input file. This is used to validate some misconfiguration errors, but for sufficiently big projects it can slow your build times so if you are confident about your configuration then you might disable those checks with this option.
+
+### `parallel`
+
+Type: `Boolean | number`
+Default: `false`
+
+Enable parallel processing of files in worker threads. This has a setup cost, so is best suited for larger projects. Pass an integer to set the number of workers. Set `true` for the default number of workers (4).
+
+This option cannot be used alongside custom overrides or non-serializable Babel options.
 
 ### External dependencies
 
