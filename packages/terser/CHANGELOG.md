@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v1.0.0
+
+_2026-03-05_
+
+### Breaking Changes
+
+- terser!: upgrade serialize-javascript to v7 and node to v20 ([#1968](https://github.com/rollup/plugins/issues/1968))
+
 ## v0.4.4
 
 _2023-10-05_
