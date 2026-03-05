@@ -146,9 +146,7 @@ export function getRequireResolver(
               if (isWrappedId(resolved.id, ES_IMPORT_SUFFIX)) {
                 return (
                   (await getTypeForImportedModule(
-                    (
-                      await this.load(resolved)
-                    ).meta.commonjs.resolved,
+                    (await this.load(resolved)).meta.commonjs.resolved,
                     this.load
                   )) !== IS_WRAPPED_COMMONJS
                 );
@@ -234,7 +232,7 @@ export function getRequireResolver(
           // Preserve Rollup's tri-state semantics (true | false | 'no-treeshake') when available.
           const wrappedModuleSideEffects = !isWrappedCommonJS
             ? false
-            : moduleInfo?.moduleSideEffects ?? true;
+            : (moduleInfo?.moduleSideEffects ?? true);
           return {
             wrappedModuleSideEffects,
             source: sources[index].source,
