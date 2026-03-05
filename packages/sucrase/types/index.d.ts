@@ -6,8 +6,12 @@ interface RollupSucraseOptions
   extends Pick<
     SucraseOptions,
     | 'transforms'
+    | 'jsxRuntime'
+    | 'jsxImportSource'
     | 'jsxPragma'
     | 'jsxFragmentPragma'
+    | 'preserveDynamicImport'
+    | 'injectCreateRequireForImportRequire'
     | 'enableLegacyTypeScriptModuleInterop'
     | 'enableLegacyBabel5ModuleInterop'
     | 'production'

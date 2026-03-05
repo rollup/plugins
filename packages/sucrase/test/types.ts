@@ -16,6 +16,10 @@ const config: RollupOptions = {
       enableLegacyTypeScriptModuleInterop: true,
       jsxFragmentPragma: 'React.fragment',
       jsxPragma: 'React',
+      jsxRuntime: 'automatic',
+      jsxImportSource: 'preact',
+      preserveDynamicImport: true,
+      injectCreateRequireForImportRequire: true,
       production: true,
       disableESTransforms: true,
       transforms: ['jsx']

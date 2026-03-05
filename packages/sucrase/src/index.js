@@ -13,7 +13,7 @@ export default function sucrase(opts = {}) {
     // eslint-disable-next-line consistent-return
     resolveId(importee, importer) {
       if (importer && /^[./]/.test(importee)) {
-        const resolved = path.resolve(importer ? path.dirname(importer) : process.cwd(), importee);
+        const resolved = path.resolve(path.dirname(importer), importee);
         // resolve in the same order that TypeScript resolves modules
         const resolvedFilenames = [
           `${resolved}.ts`,
@@ -42,8 +42,12 @@ export default function sucrase(opts = {}) {
 
       const result = transform(code, {
         transforms: opts.transforms,
+        jsxRuntime: opts.jsxRuntime,
+        jsxImportSource: opts.jsxImportSource,
         jsxPragma: opts.jsxPragma,
         jsxFragmentPragma: opts.jsxFragmentPragma,
+        preserveDynamicImport: opts.preserveDynamicImport,
+        injectCreateRequireForImportRequire: opts.injectCreateRequireForImportRequire,
         enableLegacyTypeScriptModuleInterop: opts.enableLegacyTypeScriptModuleInterop,
         enableLegacyBabel5ModuleInterop: opts.enableLegacyBabel5ModuleInterop,
         production: opts.production,
