@@ -1,0 +1,251 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`can be configured to make no changes 1`] = `
+"/* eslint-disable */
+export default function foo() {
+  before();
+  debugger;
+  logging:
+    console.log('a');
+    console.error('b');
+  after();
+}
+"
+`;
+
+exports[`does not remove debugger statements with debugger: false 1`] = `
+"export default function foo() {
+  before();
+  debugger;
+  after();
+}
+"
+`;
+
+exports[`empty functions list leaves assert statements 1`] = `
+"/* eslint-disable */
+function foo(message) {
+  assert.equal(arguments.length, 1);
+  assert.equal(typeof arguments[0], 'string');
+  bar(message);
+}
+"
+`;
+
+exports[`empty functions list leaves console statements 1`] = `
+"/* eslint-disable */
+export default function foo() {
+  before();
+  logging:
+    console.log('a');
+    console.error('b');
+  after();
+}
+"
+`;
+
+exports[`excluded files do not get changed 1`] = `
+"/* eslint-disable */
+export default function foo() {
+  before();
+  debugger;
+  logging:
+    console.log('a');
+    console.error('b');
+  after();
+}
+"
+`;
+
+exports[`function calls without object are replaced with (void 0) 1`] = `
+"/* eslint-disable */
+  before();
+  (void 0).t();
+  after();
+"
+`;
+
+exports[`leaves console statements if custom functions are provided 1`] = `
+"foo(123);
+console.error('b');
+bar(789);
+"
+`;
+
+exports[`only removes specified blocks 1`] = `
+"before();
+first: {
+  things();
+}
+after();
+again();
+"
+`;
+
+exports[`removes assert statements 1`] = `
+"/* eslint-disable */
+function foo(message) {
+  bar(message);
+}
+"
+`;
+
+exports[`removes console statements 1`] = `
+"foo(123);
+bar(789);
+"
+`;
+
+exports[`removes custom functions 1`] = `
+"a();
+b();
+c();
+"
+`;
+
+exports[`removes debugger statements 1`] = `
+"export default function foo() {
+  before();
+  after();
+}
+"
+`;
+
+exports[`removes expressions in if blocks 1`] = `
+"if (DEBUG) {
+}
+"
+`;
+
+exports[`removes labeled blocks 1`] = `
+"before();
+unittest: {
+  test('some test', (assert) => {
+  });
+}
+after();
+"
+`;
+
+exports[`removes labeled blocks when filtered function is present 1`] = `
+"before();
+after();
+"
+`;
+
+exports[`removes labeled blocks when functions list is empty 1`] = `
+"before();
+after();
+"
+`;
+
+exports[`removes labeled even with awkward spacing 1`] = `
+"/* eslint-disable */
+  before();
+  again();
+  after();
+"
+`;
+
+exports[`removes methods of this 1`] = `
+"a();
+b();
+"
+`;
+
+exports[`removes multiple labeled blocks 1`] = `
+"before();
+after();
+again();
+"
+`;
+
+exports[`removes super calls 1`] = `
+"/* eslint-disable */
+class Foo {
+  bar() {
+    a();
+    b();
+  }
+}
+"
+`;
+
+exports[`removing a lable also works for expressions 1`] = `
+"/* eslint-disable */
+  before();after();
+"
+`;
+
+exports[`replaces case body with void 0 1`] = `
+"switch (a) {
+  case 1:
+    (void 0);
+}
+"
+`;
+
+exports[`rewrites expressions as void 0 in lambdas 1`] = `
+"/* eslint-disable */
+console.log(['h', 'e', 'y'].forEach((letter) => (void 0)))
+"
+`;
+
+exports[`rewrtestes inline call expressions (not expression statements) as void 0 1`] = `
+"DEBUG && (void 0);
+"
+`;
+
+exports[`rewrtestes inline if expessions as void 0 1`] = `
+"if (DEBUG) (void 0);
+"
+`;
+
+exports[`rewrtestes inline while expressions as void 0 1`] = `
+"while (test()) (void 0);
+"
+`;
+
+exports[`spaces around . in function calls are accepted 1`] = `
+"/* eslint-disable */
+  before();
+  function f() {
+    return {
+      g: function () {
+        return {
+          hello: function () {
+            console.log('hello');
+          }
+        };
+      }
+    };
+  }
+
+  (void 0)
+    .  g()  .
+  hello();
+  after();
+"
+`;
+
+exports[`supports object destructuring assignments with default values 1`] = `
+"export function fn({ foo = (void 0), bar } = {}) {
+  const { baz = (void 0) } = bar;
+}
+"
+`;
+
+exports[`the same label can occur multiple times and all are removed 1`] = `
+"/* eslint-disable */
+  before();
+  again();
+  after();
+"
+`;
+
+exports[`whitespace between label and colon is accepted 1`] = `
+"/* eslint-disable */
+  before();
+  after();
+"
+`;

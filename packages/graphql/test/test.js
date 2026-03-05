@@ -1,7 +1,8 @@
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const graphql = require('current-package');
+
+const test = require('../../../util/vitest-ava-compat');
 
 const { testBundle } = require('../../../util/test');
 

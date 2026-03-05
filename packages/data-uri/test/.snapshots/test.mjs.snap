@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`bad json 1`] = `
+{
+  "code": "PLUGIN_ERROR",
+  "plugin": "dataUri",
+  "pluginCode": "DU$JSON",
+}
+`;
+
+exports[`base64 1`] = `
+{
+  "batman": "true",
+}
+`;
+
+exports[`base64 2`] = `
+"'use strict';
+
+const batman = "true";
+var batman$1 = {
+  batman: batman
+};
+
+t.truthy(batman$1.batman);
+t.snapshot(batman$1);
+"
+`;
+
+exports[`import 1`] = `true`;
+
+exports[`import 2`] = `
+"'use strict';
+
+t.truthy(true);
+
+const batman = true;
+
+t.snapshot(batman);
+"
+`;
+
+exports[`json 1`] = `
+{
+  "batman": "true",
+}
+`;
+
+exports[`json 2`] = `
+"'use strict';
+
+const batman = "true";
+var batman$1 = {
+  batman: batman
+};
+
+t.truthy(batman$1.batman);
+t.snapshot(batman$1);
+"
+`;
+
+exports[`works as CJS plugin 1`] = `
+{
+  "batman": "true",
+}
+`;
+
+exports[`works as CJS plugin 2`] = `
+"'use strict';
+
+const batman = "true";
+var batman$1 = {
+  batman: batman
+};
+
+t.truthy(batman$1.batman);
+t.snapshot(batman$1);
+"
+`;

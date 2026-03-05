@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pass 1`] = `
+"
+fixtures/pass.js → output/bundle.js...
+created output/bundle.js in <time>ms"
+`;

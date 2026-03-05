@@ -1,9 +1,10 @@
 const path = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { normalizePath } = require('@rollup/pluginutils');
+
+const test = require('../../../util/vitest-ava-compat');
 
 const { testBundle } = require('../../../util/test');
 

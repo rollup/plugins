@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`converts jsx 1`] = `"() => React.createElement('div', { id: "foo", __self: this, __source: {fileName: _jsxFileName, lineNumber: 1}}, "hello world" )"`;
+
+exports[`converts jsx with custom jsxPragma 1`] = `"() => FakeReactCreateElement('div', { id: "foo", __self: this, __source: {fileName: _jsxFileName, lineNumber: 1}}, "hello world" )"`;
+
+exports[`converts typescript 1`] = `"(a, b) => a * b"`;
+
+exports[`converts typescript 2`] = `"(a, b) => a * b"`;
+
+exports[`converts typescript 3`] = `"(a, b) => a * b"`;
+
+exports[`converts typescript 4`] = `"(a, b) => a * b"`;
+
+exports[`converts typescript jsx ("tsx") 1`] = `"() => React.createElement('div', { id: "foo", __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 1}}, "hello world" )"`;
+
+exports[`converts typescript jsx ("tsx") 2`] = `"() => React.createElement('div', { id: "example-b", __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 1}}, "hello world (a second time)"    )"`;
+
+exports[`converts typescript jsx ("tsx") 3`] = `"() => React.createElement('div', { id: "foo", __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 1}}, "hello world" )"`;
+
+exports[`converts typescript jsx ("tsx") 4`] = `"() => React.createElement('div', { id: "foo", __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 1}}, "hello world" )"`;
+
+exports[`converts typescript jsx ("tsx") 5`] = `"() => React.createElement('div', { id: "foo", __self: this, __source: {fileName: _jsxFileName, lineNumber: 1}}, "hello world" )"`;
+
+exports[`converts typescript with aliases 1`] = `"(a, b) => a * b"`;
+
+exports[`resolves typescript directory imports 1`] = `"(a, b) => a * b"`;
+
+exports[`resolves typescript directory imports 2`] = `"(c, d) => c * d"`;

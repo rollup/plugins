@@ -1,5 +1,6 @@
-const test = require('ava');
 const execa = require('execa');
+
+const test = require('../../../util/vitest-ava-compat');
 
 const options = { cwd: __dirname };
 

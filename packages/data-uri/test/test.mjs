@@ -1,7 +1,7 @@
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 
-import test from 'ava';
+import test from '../../../util/vitest-ava-compat.js';
 import { rollup } from 'rollup';
 
 import dataUri from 'current-package';

@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'url';
 
-import test from 'ava';
+import test from '../../../util/vitest-ava-compat.js';
 import { rollup } from 'rollup';
 
 import graphql from 'current-package';

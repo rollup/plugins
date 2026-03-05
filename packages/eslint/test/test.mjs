@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 
 import eslint9 from 'eslint9';
 import esmock from 'esmock';
-import test from 'ava';
+import test from '../../../util/vitest-ava-compat.js';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import { rollup } from 'rollup';
 

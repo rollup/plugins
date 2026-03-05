@@ -1,5 +1,6 @@
-const test = require('ava');
 const rollup = require('rollup');
+
+const test = require('../../../util/vitest-ava-compat');
 
 const { getCode } = require('../../../util/test');
 

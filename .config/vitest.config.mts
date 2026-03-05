@@ -3,6 +3,8 @@ import path from 'node:path';
 
 export default defineConfig({
   test: {
+    globals: true,
+    include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)', 'test/test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     // Store snapshots next to each test in a .snapshots folder
     resolveSnapshotPath: (testPath, snapExt) =>
       path.join(path.dirname(testPath), '.snapshots', path.basename(testPath) + snapExt)

@@ -21,9 +21,9 @@
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "ava --verbose",
+    "ci:test": "pnpm test -- --reporter=verbose",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "ava"
+    "test": "vitest --config ../../.config/vitest.config.mts run"
   },
   "files": [
     "lib/",

@@ -1,6 +1,6 @@
 const path = require('path');
 
-const test = require('ava');
+const test = require('../../../util/vitest-ava-compat');
 
 const virtual = require('..');
 

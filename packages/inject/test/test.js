@@ -3,7 +3,8 @@ const path = require('path');
 const os = require('os');
 
 const acorn = require('acorn');
-const test = require('ava');
+
+const test = require('../../../util/vitest-ava-compat');
 
 const inject = require('..');
 

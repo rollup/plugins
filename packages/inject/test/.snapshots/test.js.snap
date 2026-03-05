@@ -1,0 +1,146 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`escapes apostrophes in module name 1`] = `
+"import { default as $ } from 'd\\'oh';
+
+$(() => {
+  console.log('ready');
+});
+"
+`;
+
+exports[`escapes backslashes in module name 1`] = `
+"import { default as $ } from 'slash\\\\back';
+
+$(() => {
+  console.log('ready');
+});
+"
+`;
+
+exports[`generates * imports 1`] = `
+"import * as foo from 'foo';
+
+console.log(foo.bar);
+console.log(foo.baz);
+"
+`;
+
+exports[`handles redundant keys 1`] = `
+"import { default as $inject_Buffer_isBuffer } from 'is-buffer';
+
+$inject_Buffer_isBuffer('foo');
+"
+`;
+
+exports[`handles shadowed variables 1`] = `
+"function launch($) {
+  $(() => {
+    console.log('ready');
+  });
+}
+
+launch((fn) => fn());
+"
+`;
+
+exports[`handles shorthand properties (as assignment) 1`] = `
+"const { Promise = "fallback" } = foo;
+console.log(Promise);
+
+"
+`;
+
+exports[`handles shorthand properties 1`] = `
+"import { Promise as Promise } from 'es6-promise';
+
+const polyfills = { Promise };
+polyfills.Promise.resolve().then(() => 'it works');
+"
+`;
+
+exports[`handles shorthand properties in function (as fallback value) 1`] = `
+"import { Promise as Promise } from 'es6-promise';
+
+function foo({bar = Promise}) {
+  console.log(bar);
+}
+foo();
+
+"
+`;
+
+exports[`handles shorthand properties in function 1`] = `
+"function foo({Promise}) {
+  console.log(Promise);
+}
+foo();
+
+"
+`;
+
+exports[`ignores check isReference is false 1`] = `
+"import { bar as foo } from 'path';
+
+console.log({ bar: foo });
+class Foo {
+  bar() {
+    console.log(this);
+  }
+}
+export { Foo };
+export { foo as bar };
+"
+`;
+
+exports[`ignores existing imports 1`] = `
+"import $ from 'jquery';
+
+$(() => {
+  console.log('ready');
+});
+"
+`;
+
+exports[`inserts a default import statement 1`] = `
+"import { default as $ } from 'jquery';
+
+$(() => {
+  console.log('ready');
+});
+"
+`;
+
+exports[`inserts a named import statement 1`] = `
+"import { Promise as Promise } from 'es6-promise';
+
+Promise.all([thisThing, thatThing]).then(() => someOtherThing);
+"
+`;
+
+exports[`overwrites keypaths 1`] = `
+"import { default as $inject_Object_assign } from 'fixtures/keypaths/polyfills/object-assign.js';
+
+const original = { foo: 'bar' };
+const clone = $inject_Object_assign({}, original);
+
+export default clone;
+"
+`;
+
+exports[`transpiles non-JS files but handles failures to parse 1`] = `
+"import './styles.css';
+import foo from './foo.es6';
+
+assert.equal(foo, path.join('..', 'baz'));
+"
+`;
+
+exports[`uses the modules property 1`] = `
+"import { default as $ } from 'jquery';
+
+$(() => {
+  console.log('ready');
+});
+"
+`;
