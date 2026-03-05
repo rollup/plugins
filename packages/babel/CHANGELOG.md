@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v7.0.0
+
+_2026-03-05_
+
+### Breaking Changes
+
+- babel!: improve filtering capability & performance ([#1954](https://github.com/rollup/plugins/issues/1954))
+
 ## v6.1.0
 
 _2025-10-13_
