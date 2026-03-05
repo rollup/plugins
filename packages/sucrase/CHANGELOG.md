@@ -1,5 +1,13 @@
 # @rollup/plugin-sucrase ChangeLog
 
+## v5.1.0
+
+_2026-03-05_
+
+### Features
+
+- sucrase: add support for jsxRuntime and other missing Sucrase options ([#1961](https://github.com/rollup/plugins/issues/1961))
+
 ## v5.0.2
 
 _2023-10-05_
