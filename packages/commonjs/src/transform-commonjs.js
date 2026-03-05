@@ -322,6 +322,12 @@ export default async function transformCommonjs(
             case 'global':
               uses.global = true;
               if (!ignoreGlobal) {
+                if (isShorthandProperty(parent)) {
+                  // as key and value are the same object, isReference regards
+                  // both as references, so we need to skip now
+                  skippedNodes.add(parent.value);
+                  magicString.prependRight(node.start, 'global: ');
+                }
                 replacedGlobal.push(node);
               }
               return;
