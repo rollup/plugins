@@ -42,16 +42,15 @@ test('escapes apostrophes in module name', () => {
   compare('basic', { $: "d'oh" });
 });
 
-if (os.platform() === 'win32') {
-  // backslash is path separator on Windows,
-  // so it cannot appear within filename
-} else {
-  test('escapes backslashes in module name', () => {
-    expect(transform('basic', { $: 'slash\\back' })).toContain(
-      "import { default as $ } from 'slash\\\\back';"
-    );
-  });
-}
+// backslash is path separator on Windows,
+// so it cannot appear within filename
+const testIfNotWindows = os.platform() === 'win32' ? test.skip : test;
+
+testIfNotWindows('escapes backslashes in module name', () => {
+  expect(transform('basic', { $: 'slash\\back' })).toContain(
+    "import { default as $ } from 'slash\\\\back';"
+  );
+});
 
 test('inserts a named import statement', () => {
   compare('named', { Promise: ['es6-promise', 'Promise'] });
