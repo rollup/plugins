@@ -9,7 +9,6 @@ export default defineConfig({
     globals: true,
     // Phase 1/2/3 packages use runtime-style, top-level test files, *.test, and a few named entrypoints.
     include: [
-      'test/test.{js,mjs,cjs,ts,mts,cts}',
       'test/*.{js,mjs,cjs,ts,mts,cts}',
       'test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}',
       'test/{as-input-plugin,as-output-plugin,form,function,misc,sourcemaps}.{js,mjs,cjs,ts,mts,cts}'
