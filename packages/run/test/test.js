@@ -9,7 +9,6 @@ const writeFile = require('util').promisify(fs.writeFile);
 
 const del = require('del');
 const { rollup } = require('rollup');
-const test = require('ava');
 const sinon = require('sinon');
 
 const run = require('../');
@@ -25,22 +24,22 @@ const outputOptions = { file, format: 'cjs' };
 const outputDirOptions = { dir: outputDir, format: 'cjs' };
 
 let mockChildProcess;
-test.before(() => {
+beforeAll(() => {
   mockChildProcess = sinon
     .stub(childProcess, ['fork'])
     .returns({ ...new EventEmitter(), kill: sinon.fake() });
 });
 
-test('builds the bundle and forks a child process', async (t) => {
+test('builds the bundle and forks a child process', async () => {
   const bundle = await rollup({
     input,
     plugins: [run()]
   });
   await bundle.write(outputOptions);
-  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+  expect(mockChildProcess.calledWithExactly(outputOptions.file, [], {})).toBe(true);
 });
 
-test('takes input from the latest options', async (t) => {
+test('takes input from the latest options', async () => {
   const bundle = await rollup({
     input: 'incorrect',
     plugins: [
@@ -55,20 +54,20 @@ test('takes input from the latest options', async (t) => {
     ]
   });
   await bundle.write(outputOptions);
-  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+  expect(mockChildProcess.calledWithExactly(outputOptions.file, [], {})).toBe(true);
 });
 
-test('checks entry point facade module', async (t) => {
+test('checks entry point facade module', async () => {
   const bundle = await rollup({
     input: join(cwd, 'facade-entry/index.js'),
     preserveEntrySignatures: 'strict',
     plugins: [run()]
   });
   await bundle.write(outputDirOptions);
-  t.true(mockChildProcess.calledWithExactly(join(outputDir, 'index.js'), [], {}));
+  expect(mockChildProcess.calledWithExactly(join(outputDir, 'index.js'), [], {})).toBe(true);
 });
 
-test('allows pass-through options for child_process.fork', async (t) => {
+test('allows pass-through options for child_process.fork', async () => {
   const forkOptions = {
     cwd,
     detached: false,
@@ -79,60 +78,51 @@ test('allows pass-through options for child_process.fork', async (t) => {
     plugins: [run(forkOptions)]
   });
   await bundle.write(outputOptions);
-  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], forkOptions));
+  expect(mockChildProcess.calledWithExactly(outputOptions.file, [], forkOptions)).toBe(true);
 });
 
-test('throws an error when bundle is not written to disk', async (t) => {
+test('throws an error when bundle is not written to disk', async () => {
   const bundle = await rollup({
     input,
     plugins: [run()]
   });
-  await t.throwsAsync(
-    async () => {
-      await bundle.generate(outputOptions);
-    },
-    {
-      instanceOf: Error,
-      message: '@rollup/plugin-run currently only works with bundles that are written to disk'
-    }
+
+  const error = await bundle.generate(outputOptions).catch((caught) => caught);
+
+  expect(error).toBeInstanceOf(Error);
+  expect(error.message).toBe(
+    '@rollup/plugin-run currently only works with bundles that are written to disk'
   );
 });
 
-test('throws an error when input option is invalid', async (t) => {
+test('throws an error when input option is invalid', async () => {
   const testInput = join(cwd, 'change-detect-input.js');
   const bundle = await rollup({
     input: [input, testInput],
     plugins: [run({ input: 'something that is not an input' })]
   });
-  await t.throwsAsync(
-    async () => {
-      await bundle.write(outputDirOptions);
-    },
-    {
-      instanceOf: Error,
-      message: '@rollup/plugin-run could not find output chunk'
-    }
-  );
+
+  const error = await bundle.write(outputDirOptions).catch((caught) => caught);
+
+  expect(error).toBeInstanceOf(Error);
+  expect(error.message).toBe('@rollup/plugin-run could not find output chunk');
 });
 
-test('throws an error when there are multiple entry points', async (t) => {
+test('throws an error when there are multiple entry points', async () => {
   const testInput = join(cwd, 'change-detect-input.js');
-  await t.throwsAsync(
-    async () => {
-      await rollup({
-        input: [input, testInput],
-        plugins: [run()]
-      });
-    },
-    {
-      instanceOf: Error,
-      message:
-        '@rollup/plugin-run must have a single entry point; consider setting the `input` option'
-    }
+
+  const error = await rollup({
+    input: [input, testInput],
+    plugins: [run()]
+  }).catch((caught) => caught);
+
+  expect(error).toBeInstanceOf(Error);
+  expect(error.message).toBe(
+    '@rollup/plugin-run must have a single entry point; consider setting the `input` option'
   );
 });
 
-test('detects changes - forks a new child process and kills older process', async (t) => {
+test('detects changes - forks a new child process and kills older process', async () => {
   // eslint-disable-next-line no-shadow
   const testInput = join(cwd, 'change-detect-input.js');
   const bundle = await rollup({
@@ -142,29 +132,29 @@ test('detects changes - forks a new child process and kills older process', asyn
   await bundle.write(outputOptions);
   await writeFile(testInput, "export const Greeting = () => 'Hola';  // eslint-disable-line");
   await bundle.write(outputOptions);
-  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
-  t.is(mockChildProcess().kill.callCount, 1);
+  expect(mockChildProcess.calledWithExactly(outputOptions.file, [], {})).toBe(true);
+  expect(mockChildProcess().kill.callCount).toBe(1);
 });
 
-test('allow the allowRestart option', async (t) => {
+test('allow the allowRestart option', async () => {
   const bundle = await rollup({
     input,
     plugins: [run({ allowRestarts: true })]
   });
   await bundle.write(outputOptions);
-  t.true(mockChildProcess.calledWithExactly(outputOptions.file, [], {}));
+  expect(mockChildProcess.calledWithExactly(outputOptions.file, [], {})).toBe(true);
 });
 
-test('allow the input option', async (t) => {
+test('allow the input option', async () => {
   const testInput = join(cwd, 'change-detect-input.js');
   const bundle = await rollup({
     input: [input, testInput],
     plugins: [run({ input })]
   });
   await bundle.write(outputDirOptions);
-  t.true(mockChildProcess.calledWithExactly(join(outputDir, 'input.js'), [], { input }));
+  expect(mockChildProcess.calledWithExactly(join(outputDir, 'input.js'), [], { input })).toBe(true);
 });
 
-test.after(async () => {
+afterAll(async () => {
   await del(['output']);
 });

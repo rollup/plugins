@@ -1,7 +1,6 @@
 const { readFileSync, writeFileSync } = require('fs');
 const { join } = require('path');
 
-const test = require('ava');
 const del = require('del');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const { rollup } = require('rollup');
@@ -16,10 +15,9 @@ const pkgFile = join(cwd, 'package.json');
 
 process.chdir(cwd);
 
-test('invalid manager', (t) => {
-  t.timeout(50000);
-  const error = t.throws(
-    () =>
+test('invalid manager', () => {
+  const error = (() => {
+    try {
       rollup({
         input,
         output: {
@@ -27,16 +25,19 @@ test('invalid manager', (t) => {
           format: 'cjs'
         },
         plugins: [autoInstall({ pkgFile, manager: 'foo' }), nodeResolve()]
-      }),
-    {
-      instanceOf: RangeError
+      });
+    } catch (caught) {
+      return caught;
     }
-  );
-  t.snapshot(error.message);
-});
 
-test('npm', async (t) => {
-  t.timeout(50000);
+    return null;
+  })();
+
+  expect(error).toBeInstanceOf(RangeError);
+  expect(error.message).toMatchSnapshot();
+}, 50000);
+
+test('npm', async () => {
   await rollup({
     input,
     output: {
@@ -45,10 +46,10 @@ test('npm', async (t) => {
     },
     plugins: [autoInstall({ pkgFile, manager }), nodeResolve()]
   });
-  t.snapshot(readFileSync('package.json', 'utf-8'));
-});
+  expect(readFileSync('package.json', 'utf-8')).toMatchSnapshot();
+}, 50000);
 
-test.after(async () => {
+afterAll(async () => {
   await del(['node_modules', 'package-lock.json']);
   writeFileSync(pkgFile, '{}');
 });

@@ -1,7 +1,6 @@
 const { readFileSync } = require('fs');
 const { join } = require('path');
 
-const test = require('ava');
 const del = require('del');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const { rollup } = require('rollup');
@@ -14,8 +13,7 @@ const input = join(cwd, '../input.js');
 
 process.chdir(cwd);
 
-test('npm, bare', async (t) => {
-  t.timeout(50000);
+test('npm, bare', async () => {
   await rollup({
     input,
     output: {
@@ -24,10 +22,10 @@ test('npm, bare', async (t) => {
     },
     plugins: [autoInstall(), nodeResolve()]
   });
-  t.snapshot(readFileSync('package.json', 'utf-8'));
-  t.truthy(readFileSync('package-lock.json', 'utf-8').includes('"node-noop"'));
-});
+  expect(readFileSync('package.json', 'utf-8')).toMatchSnapshot();
+  expect(readFileSync('package-lock.json', 'utf-8').includes('"node-noop"')).toBeTruthy();
+}, 50000);
 
-test.after(async () => {
+afterAll(async () => {
   await del(['node_modules', 'package.json', 'package-lock.json']);
 });

@@ -1,13 +1,16 @@
 import { defineConfig } from 'vitest/config';
 import path from 'node:path';
 
+const isAutoInstallPackage = path.basename(process.cwd()) === 'auto-install';
+
 export default defineConfig({
   test: {
     // Enable global APIs for CommonJS test files.
     globals: true,
-    // Phase 1/2 packages use runtime-style, *.test, and a few named entrypoints.
+    // Phase 1/2/3 packages use runtime-style, top-level test files, *.test, and a few named entrypoints.
     include: [
       'test/test.{js,mjs,cjs,ts,mts,cts}',
+      'test/*.{js,mjs,cjs,ts,mts,cts}',
       'test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}',
       'test/{as-input-plugin,as-output-plugin,form,function,misc,sourcemaps}.{js,mjs,cjs,ts,mts,cts}'
     ],
@@ -20,6 +23,8 @@ export default defineConfig({
       '**/test/snapshots/**',
       '**/test/types.ts'
     ],
+    // These tests switch process cwd and invoke package managers; run files serially there.
+    fileParallelism: !isAutoInstallPackage,
     // Keep snapshots in the same location used by Ava.
     resolveSnapshotPath: (testPath, snapExt) =>
       path.join(path.dirname(testPath), 'snapshots', path.basename(testPath) + snapExt)

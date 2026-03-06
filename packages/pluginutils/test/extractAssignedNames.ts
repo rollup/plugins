@@ -1,8 +1,6 @@
-import test from 'ava';
-
 import { extractAssignedNames } from '../';
 
-test('extracts an Identifier', (t) => {
+test('extracts an Identifier', () => {
   const node = {
     type: 'Identifier',
     start: 6,
@@ -10,10 +8,10 @@ test('extracts an Identifier', (t) => {
     name: 'x'
   };
 
-  t.deepEqual(extractAssignedNames(node), ['x']);
+  expect(extractAssignedNames(node)).toEqual(['x']);
 });
 
-test('extracts from array patterns', (t) => {
+test('extracts from array patterns', () => {
   const node = {
     type: 'ArrayPattern',
     start: 6,
@@ -70,10 +68,10 @@ test('extracts from array patterns', (t) => {
     ]
   };
 
-  t.deepEqual(extractAssignedNames(node), ['a', 'b', 'd', 'e']);
+  expect(extractAssignedNames(node)).toEqual(['a', 'b', 'd', 'e']);
 });
 
-test('extracts from object patterns', (t) => {
+test('extracts from object patterns', () => {
   const node = {
     type: 'ObjectPattern',
     start: 6,
@@ -211,10 +209,10 @@ test('extracts from object patterns', (t) => {
     ]
   };
 
-  t.deepEqual(extractAssignedNames(node), ['a', 'c', 'f', 'h', 'i']);
+  expect(extractAssignedNames(node)).toEqual(['a', 'c', 'f', 'h', 'i']);
 });
 
-test('ignores updated member expressions', (t) => {
+test('ignores updated member expressions', () => {
   const node = {
     type: 'ArrayPattern',
     start: 0,
@@ -259,5 +257,5 @@ test('ignores updated member expressions', (t) => {
     ]
   };
 
-  t.deepEqual(extractAssignedNames(node), []);
+  expect(extractAssignedNames(node)).toEqual([]);
 });
