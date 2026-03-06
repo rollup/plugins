@@ -1,92 +1,109 @@
 const { readFileSync } = require('fs');
 const { join, posix, sep, resolve } = require('path');
 
-const test = require('ava');
 const del = require('del');
 const globby = require('globby');
 const { rollup } = require('rollup');
 
 const url = require('..');
-
 require('source-map-support').install();
 
 process.chdir(__dirname);
-
 const outputFile = 'output/bundle.js';
 const outputDir = 'output/';
-
-const run = async (t, type, opts) => {
-  const defaults = { emitFiles: false, publicPath: '' };
-  const options = { ...defaults, ...opts };
+const run = async (type, opts) => {
+  const defaults = {
+    emitFiles: false,
+    publicPath: ''
+  };
+  const options = {
+    ...defaults,
+    ...opts
+  };
   const bundle = await rollup({
     input: `fixtures/${type}.js`,
     plugins: [url(options)]
   });
-  await bundle.write({ format: 'es', file: outputFile });
+  await bundle.write({
+    format: 'es',
+    file: outputFile
+  });
   const code = readFileSync(outputFile, 'utf-8');
   // Windows fix, glob paths must be in unix format
   const glob = join(outputDir, `**/*.${type}`).split(sep).join(posix.sep);
-
-  t.snapshot(code);
-  t.snapshot(await globby(glob));
+  expect(code).toMatchSnapshot();
+  expect(await globby(glob)).toMatchSnapshot();
 };
-
-test.beforeEach(() => del(outputDir));
-
-test.serial('inline png files', async (t) => {
-  await run(t, 'png', { limit: 10 * 1024 });
+beforeEach(() => del(outputDir));
+test.sequential('inline png files', async () => {
+  await run('png', {
+    limit: 10 * 1024
+  });
 });
-
-test.serial('inline jpg files', async (t) => {
-  await run(t, 'jpg', { limit: 10 * 1024 });
+test.sequential('inline jpg files', async () => {
+  await run('jpg', {
+    limit: 10 * 1024
+  });
 });
-
-test.serial('inline jpeg files', async (t) => {
-  await run(t, 'jpeg', { limit: 10 * 1024 });
+test.sequential('inline jpeg files', async () => {
+  await run('jpeg', {
+    limit: 10 * 1024
+  });
 });
-
-test.serial('inline gif files', async (t) => {
-  await run(t, 'gif', { limit: 10 * 1024 });
+test.sequential('inline gif files', async () => {
+  await run('gif', {
+    limit: 10 * 1024
+  });
 });
-
-test.serial('inline webp files', async (t) => {
-  await run(t, 'webp', { limit: 10 * 1024 });
+test.sequential('inline webp files', async () => {
+  await run('webp', {
+    limit: 10 * 1024
+  });
 });
-
-test.serial('inline text files', async (t) => {
-  await run(t, 'svg', { limit: 10 * 1024 });
+test.sequential('inline text files', async () => {
+  await run('svg', {
+    limit: 10 * 1024
+  });
 });
-
-test.serial('inline "large" files', async (t) => {
-  await run(t, 'svg', { limit: 10 });
+test.sequential('inline "large" files', async () => {
+  await run('svg', {
+    limit: 10
+  });
 });
-
-test.serial('limit: 0, emitFiles: false, publicPath: empty', async (t) => {
-  await run(t, 'svg', { limit: 0, publicPath: '', emitFiles: false });
+test.sequential('limit: 0, emitFiles: false, publicPath: empty', async () => {
+  await run('svg', {
+    limit: 0,
+    publicPath: '',
+    emitFiles: false
+  });
 });
-
-test.serial('copy files, limit: 0', async (t) => {
-  await run(t, 'svg', { limit: 0, emitFiles: true });
+test.sequential('copy files, limit: 0', async () => {
+  await run('svg', {
+    limit: 0,
+    emitFiles: true
+  });
 });
-
-test.serial('copy "large" binary files, limit: 10', async (t) => {
-  await run(t, 'svg', { limit: 10, emitFiles: true });
+test.sequential('copy "large" binary files, limit: 10', async () => {
+  await run('svg', {
+    limit: 10,
+    emitFiles: true
+  });
 });
-
-test.serial('copy files with include by absolute path, limit: 0', async (t) => {
-  await run(t, 'svg', {
+test.sequential('copy files with include by absolute path, limit: 0', async () => {
+  await run('svg', {
     limit: 0,
     emitFiles: true,
     include: [resolve('.', 'fixtures', '*.svg')]
   });
 });
-
-test.serial('use publicPath', async (t) => {
-  await run(t, 'png', { limit: 10, publicPath: '/batman/' });
+test.sequential('use publicPath', async () => {
+  await run('png', {
+    limit: 10,
+    publicPath: '/batman/'
+  });
 });
-
-test.serial('use publicPath with file that has empty dirname', async (t) => {
-  await run(t, 'png', {
+test.sequential('use publicPath with file that has empty dirname', async () => {
+  await run('png', {
     limit: 10,
     publicPath: '/batman/',
     emitFiles: true,
@@ -94,27 +111,38 @@ test.serial('use publicPath with file that has empty dirname', async (t) => {
     sourceDir: join(__dirname, './fixtures')
   });
 });
-
-test.serial('create a nested directory for the output, if required', async (t) => {
-  await run(t, 'png', { limit: 10, emitFiles: true, fileName: 'joker/[hash][extname]' });
+test.sequential('create a nested directory for the output, if required', async () => {
+  await run('png', {
+    limit: 10,
+    emitFiles: true,
+    fileName: 'joker/[hash][extname]'
+  });
 });
-
-test.serial('create a file with the name and extension of the file', async (t) => {
-  await run(t, 'png', { limit: 10, emitFiles: true, fileName: '[name][extname]' });
+test.sequential('create a file with the name and extension of the file', async () => {
+  await run('png', {
+    limit: 10,
+    emitFiles: true,
+    fileName: '[name][extname]'
+  });
 });
-
-test.serial('create a file with the name, hash and extension of the file', async (t) => {
-  await run(t, 'png', { limit: 10, emitFiles: true, fileName: '[name]-[hash][extname]' });
+test.sequential('create a file with the name, hash and extension of the file', async () => {
+  await run('png', {
+    limit: 10,
+    emitFiles: true,
+    fileName: '[name]-[hash][extname]'
+  });
 });
-
-test.serial('prefix the file with the parent directory of the source file', async (t) => {
-  await run(t, 'png', { limit: 10, emitFiles: true, fileName: '[dirname][hash][extname]' });
+test.sequential('prefix the file with the parent directory of the source file', async () => {
+  await run('png', {
+    limit: 10,
+    emitFiles: true,
+    fileName: '[dirname][hash][extname]'
+  });
 });
-
-test.serial(
+test.sequential(
   'prefix the file with the parent directory of the source file, relative to the sourceDir option',
-  async (t) => {
-    await run(t, 'png', {
+  async () => {
+    await run('png', {
       limit: 10,
       emitFiles: true,
       fileName: '[dirname][hash][extname]',
@@ -122,9 +150,8 @@ test.serial(
     });
   }
 );
-
-test.serial('copy the file according to destDir option', async (t) => {
-  await run(t, 'png', {
+test.sequential('copy the file according to destDir option', async () => {
+  await run('png', {
     limit: 10,
     emitFiles: true,
     fileName: '[dirname][hash][extname]',

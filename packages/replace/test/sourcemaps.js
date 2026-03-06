@@ -1,6 +1,5 @@
 /* eslint-disable consistent-return */
 
-const test = require('ava');
 const { rollup } = require('rollup');
 const { getLocator } = require('locate-character');
 // source-map uses the presence of fetch to detect browser environments which
@@ -14,19 +13,19 @@ const replace = require('..');
 
 const { getOutputFromGenerated } = require('./helpers/util');
 
-function verifySourcemap(code, map, t) {
+function verifySourcemap(code, map) {
   return SourceMapConsumer.with(map, null, async (smc) => {
-    const locator = getLocator(code, { offsetLine: 1 });
-
+    const locator = getLocator(code, {
+      offsetLine: 1
+    });
     let generatedLoc = locator('42');
     let loc = smc.originalPositionFor(generatedLoc);
-    t.snapshot(generatedLoc);
-    t.snapshot(loc);
-
+    expect(generatedLoc).toMatchSnapshot();
+    expect(loc).toMatchSnapshot();
     generatedLoc = locator('log');
     loc = smc.originalPositionFor(generatedLoc);
-    t.snapshot(generatedLoc);
-    t.snapshot(loc);
+    expect(generatedLoc).toMatchSnapshot();
+    expect(loc).toMatchSnapshot();
   });
 }
 
@@ -42,24 +41,7 @@ const testPlugin = {
     }
   }
 };
-
-test('generates sourcemaps by default', async (t) => {
-  const bundle = await rollup({
-    input: 'main.js',
-    onwarn(warning) {
-      throw new Error(warning.message);
-    },
-    plugins: [replace({ values: { ANSWER: '42' }, preventAssignment: true }), testPlugin]
-  });
-
-  const { code, map } = getOutputFromGenerated(
-    await bundle.generate({ format: 'es', sourcemap: true })
-  );
-
-  await verifySourcemap(code, map, t);
-});
-
-test('generates sourcemaps if enabled in plugin', async (t) => {
+test('generates sourcemaps by default', async () => {
   const bundle = await rollup({
     input: 'main.js',
     onwarn(warning) {
@@ -67,22 +49,48 @@ test('generates sourcemaps if enabled in plugin', async (t) => {
     },
     plugins: [
       replace({
-        values: { ANSWER: '42' },
+        values: {
+          ANSWER: '42'
+        },
+        preventAssignment: true
+      }),
+      testPlugin
+    ]
+  });
+  const { code, map } = getOutputFromGenerated(
+    await bundle.generate({
+      format: 'es',
+      sourcemap: true
+    })
+  );
+  await verifySourcemap(code, map);
+});
+test('generates sourcemaps if enabled in plugin', async () => {
+  const bundle = await rollup({
+    input: 'main.js',
+    onwarn(warning) {
+      throw new Error(warning.message);
+    },
+    plugins: [
+      replace({
+        values: {
+          ANSWER: '42'
+        },
         sourcemap: true,
         preventAssignment: true
       }),
       testPlugin
     ]
   });
-
   const { code, map } = getOutputFromGenerated(
-    await bundle.generate({ format: 'es', sourcemap: true })
+    await bundle.generate({
+      format: 'es',
+      sourcemap: true
+    })
   );
-
-  await verifySourcemap(code, map, t);
+  await verifySourcemap(code, map);
 });
-
-test('generates sourcemaps if enabled in plugin (camelcase)', async (t) => {
+test('generates sourcemaps if enabled in plugin (camelcase)', async () => {
   const bundle = await rollup({
     input: 'main.js',
     onwarn(warning) {
@@ -90,71 +98,76 @@ test('generates sourcemaps if enabled in plugin (camelcase)', async (t) => {
     },
     plugins: [
       replace({
-        values: { ANSWER: '42' },
+        values: {
+          ANSWER: '42'
+        },
         sourceMap: true,
         preventAssignment: true
       }),
       testPlugin
     ]
   });
-
   const { code, map } = getOutputFromGenerated(
-    await bundle.generate({ format: 'es', sourcemap: true })
+    await bundle.generate({
+      format: 'es',
+      sourcemap: true
+    })
   );
-
-  await verifySourcemap(code, map, t);
+  await verifySourcemap(code, map);
 });
-
-test('does not generate sourcemaps if disabled in plugin', async (t) => {
+test('does not generate sourcemaps if disabled in plugin', async () => {
   let warned = false;
-
   const bundle = await rollup({
     input: 'main.js',
     onwarn(warning) {
-      t.is(
-        warning.message,
+      expect(warning.message).toBe(
         "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },
     plugins: [
       replace({
-        values: { ANSWER: '42' },
+        values: {
+          ANSWER: '42'
+        },
         sourcemap: false,
         preventAssignment: true
       }),
       testPlugin
     ]
   });
-
-  t.truthy(!warned);
-  await bundle.generate({ format: 'es', sourcemap: true });
-  t.truthy(warned);
+  expect(!warned).toBeTruthy();
+  await bundle.generate({
+    format: 'es',
+    sourcemap: true
+  });
+  expect(warned).toBeTruthy();
 });
-
-test('does not generate sourcemaps if disabled in plugin (camelcase)', async (t) => {
+test('does not generate sourcemaps if disabled in plugin (camelcase)', async () => {
   let warned = false;
-
   const bundle = await rollup({
     input: 'main.js',
     onwarn(warning) {
-      t.is(
-        warning.message,
+      expect(warning.message).toBe(
         "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },
     plugins: [
       replace({
-        values: { ANSWER: '42' },
+        values: {
+          ANSWER: '42'
+        },
         sourceMap: false,
         preventAssignment: true
       }),
       testPlugin
     ]
   });
-
-  t.truthy(!warned);
-  await bundle.generate({ format: 'es', sourcemap: true });
-  t.truthy(warned);
+  expect(!warned).toBeTruthy();
+  await bundle.generate({
+    format: 'es',
+    sourcemap: true
+  });
+  expect(warned).toBeTruthy();
 });
