@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v29.0.2
+
+_2026-03-06_
+
+### Bugfixes
+
+- commonjs: conditional exports ([#1952](https://github.com/rollup/plugins/issues/1952))
+
 ## v29.0.1
 
 _2026-03-05_
