@@ -141,7 +141,7 @@ test.serial(
       ['main.js', 'types/should-be-emitted-types.d.ts', 'types/main.d.ts']
     );
 
-    t.true(declaration.includes('export declare type MyNumber = number;'), declaration);
+    t.true(declaration.includes('export type MyNumber = number;'), declaration);
   }
 );
 
