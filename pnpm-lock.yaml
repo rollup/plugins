@@ -785,6 +785,9 @@ importers:
       '@rollup/pluginutils':
         specifier: ^5.0.2
         version: 5.0.4(rollup@4.0.0-24)
+      types-registry:
+        specifier: ^0.1.759
+        version: 0.1.759
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
@@ -5116,6 +5119,9 @@ packages:
 
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
+
+  types-registry@0.1.759:
+    resolution: {integrity: sha512-eXwqLYxOd1PNI3ABaX7DsQTB1O0rcRURpzYnwiWw6x0J1o7XNQM2Pp+26YVrKbHrZQfHRq33Ixq/kh8hO6Ux3Q==}
 
   typescript@4.8.4:
     resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}
@@ -9983,6 +9989,8 @@ snapshots:
   typedarray-to-buffer@3.1.5:
     dependencies:
       is-typedarray: 1.0.0
+
+  types-registry@0.1.759: {}
 
   typescript@4.8.4: {}
 
