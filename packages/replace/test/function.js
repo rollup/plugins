@@ -1,26 +1,30 @@
 /* eslint-disable consistent-return, global-require, import/no-dynamic-require */
 
 process.chdir(__dirname);
-
 const { readdirSync } = require('fs');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const replace = require('..');
 
 const { execute, getCodeFromBundle } = require('./helpers/util');
 
+const avaAssertions = {
+  is(actual, expected) {
+    expect(actual).toBe(expected);
+  },
+  pass() {
+    expect(true).toBe(true);
+  }
+};
 readdirSync('./fixtures/function').forEach((dir) => {
   let config;
-
   try {
     config = require(`./fixtures/function/${dir}/_config.js`);
   } catch (err) {
     config = {};
   }
-
-  test(`${dir}: ${config.description}`, async (t) => {
+  test(`${dir}: ${config.description}`, async () => {
     const options = Object.assign(
       {
         input: `fixtures/function/${dir}/main.js`
@@ -33,11 +37,9 @@ readdirSync('./fixtures/function').forEach((dir) => {
         ]
       }
     );
-
     const bundle = await rollup(options);
     const code = await getCodeFromBundle(bundle);
-    const exports = execute(code, config.context, t);
-
+    const exports = execute(code, config.context, avaAssertions);
     if (config.exports) config.exports(exports);
   });
 });

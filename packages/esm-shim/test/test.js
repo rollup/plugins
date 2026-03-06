@@ -1,85 +1,93 @@
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const esmShim = require('../');
 
-test.serial('inject cjs shim for esm output', async (t) => {
+test.sequential('inject cjs shim for esm output', async () => {
   const bundle = await rollup({
     input: 'test/fixtures/cjs.js',
     plugins: [esmShim()]
   });
-  const result = await bundle.generate({ format: 'es' });
-  t.is(result.output.length, 1);
+  const result = await bundle.generate({
+    format: 'es'
+  });
+  expect(result.output.length).toBe(1);
   const [output] = result.output;
-  t.snapshot(output.code);
-  t.falsy(output.map);
+  expect(output.code).toMatchSnapshot();
+  expect(output.map).toBeFalsy();
 });
-
-test.serial('inject cjs shim for esm output with sourcemap', async (t) => {
+test.sequential('inject cjs shim for esm output with sourcemap', async () => {
   const bundle = await rollup({
     input: 'test/fixtures/cjs.js',
     plugins: [esmShim()]
   });
-  const result = await bundle.generate({ format: 'es', sourcemap: true });
-  t.is(result.output.length, 2);
+  const result = await bundle.generate({
+    format: 'es',
+    sourcemap: true
+  });
+  expect(result.output.length).toBe(2);
   const [output, map] = result.output;
-  t.snapshot(output.code);
-  t.truthy(output.map);
-  t.is(output.map.file, 'cjs.js');
-  t.deepEqual(output.map.sources, ['test/fixtures/cjs.js']);
-  t.is(map.fileName, 'cjs.js.map');
+  expect(output.code).toMatchSnapshot();
+  expect(output.map).toBeTruthy();
+  expect(output.map.file).toBe('cjs.js');
+  expect(output.map.sources).toEqual(['test/fixtures/cjs.js']);
+  expect(map.fileName).toBe('cjs.js.map');
 });
-
-test.serial('not inject cjs shim for cjs output', async (t) => {
+test.sequential('not inject cjs shim for cjs output', async () => {
   const bundle = await rollup({
     input: 'test/fixtures/cjs.js',
     plugins: [esmShim()]
   });
-  const result = await bundle.generate({ format: 'cjs' });
-  t.is(result.output.length, 1);
+  const result = await bundle.generate({
+    format: 'cjs'
+  });
+  expect(result.output.length).toBe(1);
   const [output] = result.output;
-  t.snapshot(output.code);
-  t.falsy(output.map);
+  expect(output.code).toMatchSnapshot();
+  expect(output.map).toBeFalsy();
 });
-
-test.serial('inject cjs shim for esm output with a single import statement', async (t) => {
+test.sequential('inject cjs shim for esm output with a single import statement', async () => {
   const bundle = await rollup({
     input: 'test/fixtures/cjs-single-import.js',
     plugins: [esmShim()],
     external: ['magic-string']
   });
-  const result = await bundle.generate({ format: 'es' });
-  t.is(result.output.length, 1);
+  const result = await bundle.generate({
+    format: 'es'
+  });
+  expect(result.output.length).toBe(1);
   const [output] = result.output;
-  t.snapshot(output.code);
-  t.falsy(output.map);
+  expect(output.code).toMatchSnapshot();
+  expect(output.map).toBeFalsy();
 });
-
-test.serial('inject cjs shim for esm output with multiple import statements', async (t) => {
+test.sequential('inject cjs shim for esm output with multiple import statements', async () => {
   const bundle = await rollup({
     input: 'test/fixtures/cjs-multiple-imports.js',
     plugins: [esmShim()],
     external: ['magic-string', 'node:crypto']
   });
-  const result = await bundle.generate({ format: 'es' });
-  t.is(result.output.length, 1);
+  const result = await bundle.generate({
+    format: 'es'
+  });
+  expect(result.output.length).toBe(1);
   const [output] = result.output;
-  t.snapshot(output.code);
-  t.falsy(output.map);
+  expect(output.code).toMatchSnapshot();
+  expect(output.map).toBeFalsy();
 });
 
 // see issue #1649 https://github.com/rollup/plugins/issues/1649
-test.serial(
+test.sequential(
   'inject cjs shim should not break on valid js object with `import` literal value',
-  async (t) => {
+  async () => {
     const bundle = await rollup({
       input: 'test/fixtures/cjs-import-literal.js',
       plugins: [esmShim()]
     });
-    const result = await bundle.generate({ format: 'es' });
-    t.is(result.output.length, 1);
+    const result = await bundle.generate({
+      format: 'es'
+    });
+    expect(result.output.length).toBe(1);
     const [output] = result.output;
-    t.snapshot(output.code);
-    t.falsy(output.map);
+    expect(output.code).toMatchSnapshot();
+    expect(output.map).toBeFalsy();
   }
 );

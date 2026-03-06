@@ -28,13 +28,13 @@
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm test -- --verbose",
+    "ci:test": "pnpm test -- --reporter=verbose",
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "ava",
+    "test": "vitest --config ../../.config/vitest.config.mts run",
     "test:ts": "tsc --noEmit"
   },
   "files": [
@@ -64,7 +64,8 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^5.0.2"
+    "@rollup/pluginutils": "^5.0.2",
+    "types-registry": "^0.1.759"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^9.0.1",
@@ -74,15 +75,6 @@
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts",
-  "ava": {
-    "workerThreads": false,
-    "files": [
-      "!**/fixtures/**",
-      "!**/helpers/**",
-      "!**/recipes/**",
-      "!**/types.ts"
-    ]
-  },
   "contributors": [
     "Jamen Marz <jamenmarz+gh@gmail.com>",
     "Colin Eberhardt <colin.eberhardt@gmail.com>"

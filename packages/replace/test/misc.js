@@ -2,19 +2,22 @@
 
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const replace = require('..');
 
 const { getOutputFromGenerated } = require('./helpers/util');
 
-test('does not mutate the values map properties', async (t) => {
-  const valuesMap = { ANSWER: '42' };
+test('does not mutate the values map properties', async () => {
+  const valuesMap = {
+    ANSWER: '42'
+  };
   const bundle = await rollup({
     input: 'main.js',
     plugins: [
-      replace({ values: valuesMap }),
+      replace({
+        values: valuesMap
+      }),
       {
         resolveId(id) {
           return id;
@@ -27,13 +30,17 @@ test('does not mutate the values map properties', async (t) => {
       }
     ]
   });
-
-  const { code } = getOutputFromGenerated(await bundle.generate({ format: 'es' }));
-  t.is(code.trim(), 'log(42);');
-  t.deepEqual(valuesMap, { ANSWER: '42' });
+  const { code } = getOutputFromGenerated(
+    await bundle.generate({
+      format: 'es'
+    })
+  );
+  expect(code.trim()).toBe('log(42);');
+  expect(valuesMap).toEqual({
+    ANSWER: '42'
+  });
 });
-
-test('can be configured with output plugins', async (t) => {
+test('can be configured with output plugins', async () => {
   const bundle = await rollup({
     input: 'main.js',
     plugins: [
@@ -49,7 +56,6 @@ test('can be configured with output plugins', async (t) => {
       }
     ]
   });
-
   const { code, map } = getOutputFromGenerated(
     await bundle.generate({
       format: 'es',
@@ -62,14 +68,11 @@ test('can be configured with output plugins', async (t) => {
       ]
     })
   );
-
-  t.is(code.trim(), 'log("environment", "production");\n//# sourceMappingURL=main.js.map');
-  t.truthy(map);
+  expect(code.trim()).toBe('log("environment", "production");\n//# sourceMappingURL=main.js.map');
+  expect(map).toBeTruthy();
 });
-
 process.chdir(join(__dirname, 'fixtures', 'form', 'assignment'));
-
-test.serial('no explicit setting of preventAssignment', async (t) => {
+test.sequential('no explicit setting of preventAssignment', async () => {
   // eslint-disable-next-line no-undefined
   const possibleValues = [undefined, true, false];
   for await (const value of possibleValues) {
@@ -77,8 +80,12 @@ test.serial('no explicit setting of preventAssignment', async (t) => {
     await rollup({
       input: 'input.js',
       onwarn: (warning) => warnings.push(warning),
-      plugins: [replace({ preventAssignment: value })]
+      plugins: [
+        replace({
+          preventAssignment: value
+        })
+      ]
     });
-    t.snapshot(warnings);
+    expect(warnings).toMatchSnapshot();
   }
 });
