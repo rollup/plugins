@@ -1,6 +1,5 @@
 const path = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { normalizePath } = require('@rollup/pluginutils');
@@ -11,7 +10,7 @@ const legacy = require('..');
 
 process.chdir(__dirname);
 
-test('adds a default export', async (t) => {
+test('adds a default export', async () => {
   const bundle = await rollup({
     input: 'fixtures/default-export/main.js',
     plugins: [
@@ -20,11 +19,10 @@ test('adds a default export', async (t) => {
       })
     ]
   });
-  t.plan(1);
-  await testBundle(t, bundle);
+  await testBundle(undefined, bundle);
 });
 
-test('adds a changed named export', async (t) => {
+test('adds a changed named export', async () => {
   const bundle = await rollup({
     input: 'fixtures/named-exports-changed/main.js',
     plugins: [
@@ -35,11 +33,10 @@ test('adds a changed named export', async (t) => {
       })
     ]
   });
-  t.plan(1);
-  await testBundle(t, bundle);
+  await testBundle(undefined, bundle);
 });
 
-test('adds a nested named export', async (t) => {
+test('adds a nested named export', async () => {
   const bundle = await rollup({
     input: 'fixtures/named-exports-nested/main.js',
     plugins: [
@@ -50,11 +47,10 @@ test('adds a nested named export', async (t) => {
       })
     ]
   });
-  t.plan(1);
-  await testBundle(t, bundle);
+  await testBundle(undefined, bundle);
 });
 
-test('adds a unchanged named export', async (t) => {
+test('adds a unchanged named export', async () => {
   const bundle = await rollup({
     input: 'fixtures/named-exports-unchanged/main.js',
     plugins: [
@@ -65,11 +61,10 @@ test('adds a unchanged named export', async (t) => {
       })
     ]
   });
-  t.plan(1);
-  await testBundle(t, bundle);
+  await testBundle(undefined, bundle);
 });
 
-test('normalized paths', async (t) => {
+test('normalized paths', async () => {
   const bundle = await rollup({
     input: 'fixtures/default-export/main.js',
     plugins: [
@@ -87,6 +82,5 @@ test('normalized paths', async (t) => {
       })
     ]
   });
-  t.plan(1);
-  await testBundle(t, bundle);
+  await testBundle(undefined, bundle);
 });

@@ -1,6 +1,5 @@
 const path = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 // eslint-disable-next-line import/no-unresolved, import/extensions
@@ -27,33 +26,31 @@ function getBundle(input, sucraseOptions, rollupOptions) {
   });
 }
 
-test('calls without options', async (t) => {
+test('calls without options', async () => {
   const plugin = sucrase();
-  t.is(plugin.name, 'sucrase');
+  expect(plugin.name).toBe('sucrase');
 });
 
-test('does not transform files excluded by filter', async (t) => {
+test('does not transform files excluded by filter', async () => {
   const plugin = sucrase({ exclude: '**/*.ts', transforms: ['typescript'] });
   const result = plugin.transform('const x: number = 1;', 'foo.ts');
-  t.is(result, null);
+  expect(result).toBeNull();
 });
 
-test('converts jsx', async (t) => {
+test('converts jsx', async () => {
   const bundle = await getBundle('fixtures/jsx/main.js', { transforms: ['jsx'] });
-  t.plan(1);
-  return testBundle(t, bundle);
+  return testBundle(undefined, bundle);
 });
 
-test('converts jsx with custom jsxPragma', async (t) => {
+test('converts jsx with custom jsxPragma', async () => {
   const bundle = await getBundle('fixtures/jsx/main.js', {
     transforms: ['jsx'],
     jsxPragma: 'FakeReactCreateElement'
   });
-  t.plan(1);
-  return testBundle(t, bundle);
+  return testBundle(undefined, bundle);
 });
 
-test('converts jsx with jsxRuntime automatic', async (t) => {
+test('converts jsx with jsxRuntime automatic', async () => {
   const bundle = await getBundle(
     'fixtures/jsx-runtime/main.js',
     { transforms: ['jsx'], jsxRuntime: 'automatic' },
@@ -62,58 +59,54 @@ test('converts jsx with jsxRuntime automatic', async (t) => {
   const { output } = await bundle.generate({ format: 'cjs', exports: 'auto' });
   const [{ code }] = output;
   // Check that the code uses the automatic runtime instead of React.createElement
-  t.regex(code, /require\(['"]react\/jsx-dev-runtime['"]\)/);
-  t.notRegex(code, /React\.createElement/);
+  expect(code).toMatch(/require\(['"]react\/jsx-dev-runtime['"]\)/);
+  expect(code).not.toMatch(/React\.createElement/);
 });
 
-test('converts typescript', async (t) => {
+test('converts typescript', async () => {
   const bundle = await getBundle('fixtures/typescript/main.js', { transforms: ['typescript'] });
-  t.plan(4);
-  return testBundle(t, bundle);
+  return testBundle(undefined, bundle);
 });
 
 // Note: Windows struggles with this test setup as trying to read a directory
-if (process.platform !== 'win32') {
-  test('converts typescript with aliases', async (t) => {
-    const bundle = await rollup({
-      input: 'fixtures/typescript-with-aliases/main.js',
-      plugins: [
-        sucrase({ transforms: ['typescript'] }),
-        alias({
-          entries: [
-            {
-              find: '~src',
-              replacement: path.resolve(__dirname, 'fixtures', 'typescript-with-aliases', 'src')
-            }
-          ]
-        })
-      ]
-    });
-    t.plan(1);
+const testIfNotWindows = process.platform === 'win32' ? test.skip : test;
 
-    return testBundle(t, bundle);
+testIfNotWindows('converts typescript with aliases', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/typescript-with-aliases/main.js',
+    plugins: [
+      sucrase({ transforms: ['typescript'] }),
+      alias({
+        entries: [
+          {
+            find: '~src',
+            replacement: path.resolve(__dirname, 'fixtures', 'typescript-with-aliases', 'src')
+          }
+        ]
+      })
+    ]
   });
-}
 
-test('resolves typescript directory imports', async (t) => {
+  return testBundle(undefined, bundle);
+});
+
+test('resolves typescript directory imports', async () => {
   const bundle = await getBundle('fixtures/typescript-resolve-directory/main.js', {
     transforms: ['typescript']
   });
-  t.plan(2);
 
-  return testBundle(t, bundle);
+  return testBundle(undefined, bundle);
 });
 
-test('converts typescript jsx ("tsx")', async (t) => {
+test('converts typescript jsx ("tsx")', async () => {
   const bundle = await getBundle('fixtures/typescript-with-tsx/main.js', {
     transforms: ['typescript', 'jsx']
   });
-  t.plan(5);
 
-  return testBundle(t, bundle);
+  return testBundle(undefined, bundle);
 });
 
-test('converts jsx with jsxImportSource', async (t) => {
+test('converts jsx with jsxImportSource', async () => {
   const bundle = await getBundle(
     'fixtures/jsx-import-source/main.js',
     { transforms: ['jsx'], jsxRuntime: 'automatic', jsxImportSource: 'preact' },
@@ -121,21 +114,21 @@ test('converts jsx with jsxImportSource', async (t) => {
   );
   const { output } = await bundle.generate({ format: 'cjs', exports: 'auto' });
   const [{ code }] = output;
-  t.regex(code, /require\(['"]preact\/jsx-dev-runtime['"]\)/);
-  t.notRegex(code, /['"]react\/jsx-dev-runtime['"]/);
+  expect(code).toMatch(/require\(['"]preact\/jsx-dev-runtime['"]\)/);
+  expect(code).not.toMatch(/['"]react\/jsx-dev-runtime['"]/);
 });
 
-test('preserveDynamicImport keeps import() expression', async (t) => {
+test('preserveDynamicImport keeps import() expression', async () => {
   const bundle = await getBundle('fixtures/preserve-dynamic-import/main.js', {
     transforms: ['imports'],
     preserveDynamicImport: true
   });
   const { output } = await bundle.generate({ format: 'es' });
   const [{ code }] = output;
-  t.regex(code, /import\(/);
+  expect(code).toMatch(/import\(/);
 });
 
-test('injectCreateRequireForImportRequire emits createRequire', async (t) => {
+test('injectCreateRequireForImportRequire emits createRequire', async () => {
   const bundle = await getBundle(
     'fixtures/inject-create-require/main.ts',
     {
@@ -146,5 +139,5 @@ test('injectCreateRequireForImportRequire emits createRequire', async (t) => {
   );
   const { output } = await bundle.generate({ format: 'es' });
   const [{ code }] = output;
-  t.regex(code, /createRequire/);
+  expect(code).toMatch(/createRequire/);
 });

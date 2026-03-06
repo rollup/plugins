@@ -28,14 +28,14 @@
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm test -- --verbose && pnpm test:ts",
+    "ci:test": "pnpm test -- --reporter=verbose && pnpm test:ts",
     "lint:graphql": "prettier --write \"test/fixtures/**/*.graphql\"",
     "prebuild": "del-cli dist && pnpm lint:graphql",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "ava",
+    "test": "vitest --config ../../.config/vitest.config.mts run",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
@@ -72,14 +72,5 @@
     "graphql": "^16.6.0",
     "rollup": "^4.0.0-24"
   },
-  "types": "./types/index.d.ts",
-  "ava": {
-    "workerThreads": false,
-    "files": [
-      "!**/fixtures/**",
-      "!**/helpers/**",
-      "!**/recipes/**",
-      "!**/types.ts"
-    ]
-  }
+  "types": "./types/index.d.ts"
 }

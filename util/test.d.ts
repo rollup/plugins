@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { RollupBuild, OutputOptions, OutputChunk, OutputAsset } from 'rollup';
-import type { Assertions } from 'ava';
 
 interface GetCode {
   (bundle: RollupBuild, outputOptions?: OutputOptions | null, allFiles?: false): Promise<string>;
@@ -34,7 +33,7 @@ export function getResolvedModules(bundle: RollupBuild): Promise<Record<string, 
 export function onwarn(warning: string | any): void;
 
 export function testBundle(
-  t: Assertions,
+  t: unknown,
   bundle: RollupBuild,
   options: { inject: Record<string, any>; options: Record<string, any> }
 ): Promise<{

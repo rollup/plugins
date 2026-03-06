@@ -1,12 +1,12 @@
 import config from './config.yml';
 
-t.is(config.length, 3);
+expect(config.length).toBe(3);
 
 const [first, second, third] = config;
 
-t.is(first.version, 'v1');
-t.is(first.spec.selector, 1);
-t.is(second.version, 'v2');
-t.is(second.spec.selector, 2);
-t.is(third.version, 'v3');
-t.is(third.spec.selector, 3);
+expect(first.version).toBe('v1');
+expect(first.spec.selector).toBe(1);
+expect(second.version).toBe('v2');
+expect(second.spec.selector).toBe(2);
+expect(third.version).toBe('v3');
+expect(third.spec.selector).toBe(3);

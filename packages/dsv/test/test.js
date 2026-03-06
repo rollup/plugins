@@ -1,55 +1,50 @@
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const dsv = require('..');
 
 process.chdir(__dirname);
 
-const testBundle = async (t, bundle) => {
+const testBundle = async (bundle) => {
   const { output } = await bundle.generate({ format: 'cjs' });
   const [{ code }] = output;
-  const func = new Function('t', code); // eslint-disable-line no-new-func
+  const func = new Function(code); // eslint-disable-line no-new-func
 
-  return func(t);
+  return func();
 };
 
-test('converts a csv file', async (t) => {
+test('converts a csv file', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic-csv/main.js',
     plugins: [dsv()]
   });
-  t.plan(1);
-  return testBundle(t, bundle);
+  return testBundle(bundle);
 });
 
-test('converts a csv file with bom', async (t) => {
+test('converts a csv file with bom', async () => {
   const bundle = await rollup({
     input: 'fixtures/csv-with-bom/main.js',
     plugins: [dsv()]
   });
-  t.plan(1);
-  return testBundle(t, bundle);
+  return testBundle(bundle);
 });
 
-test('converts a tsv file', async (t) => {
+test('converts a tsv file', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic-tsv/main.js',
     plugins: [dsv()]
   });
-  t.plan(1);
-  return testBundle(t, bundle);
+  return testBundle(bundle);
 });
 
-test('converts a tsv file with bom', async (t) => {
+test('converts a tsv file with bom', async () => {
   const bundle = await rollup({
     input: 'fixtures/tsv-with-bom/main.js',
     plugins: [dsv()]
   });
-  t.plan(1);
-  return testBundle(t, bundle);
+  return testBundle(bundle);
 });
 
-test('uses a custom processor', async (t) => {
+test('uses a custom processor', async () => {
   const parse = (value) => (isNaN(+value) ? value : +value);
 
   const bundle = await rollup({
@@ -64,11 +59,10 @@ test('uses a custom processor', async (t) => {
       })
     ]
   });
-  t.plan(1);
-  return testBundle(t, bundle);
+  return testBundle(bundle);
 });
 
-test('uses a custom processor with id', async (t) => {
+test('uses a custom processor with id', async () => {
   const bundle = await rollup({
     input: 'fixtures/process-id/main.js',
     plugins: [
@@ -82,6 +76,5 @@ test('uses a custom processor with id', async (t) => {
       })
     ]
   });
-  t.plan(2);
-  return testBundle(t, bundle);
+  return testBundle(bundle);
 });

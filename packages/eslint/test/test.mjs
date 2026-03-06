@@ -6,13 +6,13 @@ import { fileURLToPath } from 'url';
 
 import eslint9 from 'eslint9';
 import esmock from 'esmock';
-import test from 'ava';
+import { test, expect } from 'vitest';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import { rollup } from 'rollup';
 
 import eslint from 'current-package';
 
-test('should lint files', async (t) => {
+test('should lint files', async () => {
   let count = 0;
   await rollup({
     input: './test/fixtures/legacy-config/undeclared.js',
@@ -22,25 +22,23 @@ test('should lint files', async (t) => {
           count += results[0].messages.length;
           // eslint-disable-next-line prefer-destructuring
           const { message } = results[0].messages[0];
-          t.is(message, "'x' is not defined.");
+          expect(message).toBe("'x' is not defined.");
         }
       })
     ]
   });
 
-  t.is(count, 1);
+  expect(count).toBe(1);
 });
 
-test('should not fail with default options', async (t) => {
+test('should not fail with default options', async () => {
   await rollup({
     input: './test/fixtures/legacy-config/undeclared.js',
     plugins: [eslint()]
   });
-
-  t.pass();
 });
 
-test('should ignore node_modules with exclude option', async (t) => {
+test('should ignore node_modules with exclude option', async () => {
   let count = 0;
   await rollup({
     input: './test/fixtures/legacy-config/modules.js',
@@ -55,10 +53,10 @@ test('should ignore node_modules with exclude option', async (t) => {
     ]
   });
 
-  t.is(count, 0);
+  expect(count).toBe(0);
 });
 
-test('should ignore files according .eslintignore', async (t) => {
+test('should ignore files according .eslintignore', async () => {
   let count = 0;
   await rollup({
     input: './test/fixtures/legacy-config/ignored.js',
@@ -71,62 +69,53 @@ test('should ignore files according .eslintignore', async (t) => {
     ]
   });
 
-  t.is(count, 0);
+  expect(count).toBe(0);
 });
 
-test('should fail with enabled throwOnWarning and throwOnError options', async (t) => {
-  await t.throwsAsync(
-    async () => {
-      await rollup({
-        input: './test/fixtures/legacy-config/use-strict.js',
-        plugins: [
-          eslint({
-            throwOnWarning: true,
-            throwOnError: true,
-            formatter: () => ''
-          })
-        ]
-      });
-    },
-    { message: /Found 1 warning and 1 error/ }
-  );
+test('should fail with enabled throwOnWarning and throwOnError options', async () => {
+  await expect(
+    rollup({
+      input: './test/fixtures/legacy-config/use-strict.js',
+      plugins: [
+        eslint({
+          throwOnWarning: true,
+          throwOnError: true,
+          formatter: () => ''
+        })
+      ]
+    })
+  ).rejects.toThrow(/Found 1 warning and 1 error/);
 });
 
-test('should fail with enabled throwOnError option', async (t) => {
-  await t.throwsAsync(
-    async () => {
-      await rollup({
-        input: './test/fixtures/legacy-config/use-strict.js',
-        plugins: [
-          eslint({
-            throwOnError: true,
-            formatter: () => ''
-          })
-        ]
-      });
-    },
-    { message: /Found 1 error/ }
-  );
+test('should fail with enabled throwOnError option', async () => {
+  await expect(
+    rollup({
+      input: './test/fixtures/legacy-config/use-strict.js',
+      plugins: [
+        eslint({
+          throwOnError: true,
+          formatter: () => ''
+        })
+      ]
+    })
+  ).rejects.toThrow(/Found 1 error/);
 });
 
-test('should fail with enabled throwOnWarning option', async (t) => {
-  await t.throwsAsync(
-    async () => {
-      await rollup({
-        input: './test/fixtures/legacy-config/use-strict.js',
-        plugins: [
-          eslint({
-            throwOnWarning: true,
-            formatter: () => ''
-          })
-        ]
-      });
-    },
-    { message: /Found 1 warning/ }
-  );
+test('should fail with enabled throwOnWarning option', async () => {
+  await expect(
+    rollup({
+      input: './test/fixtures/legacy-config/use-strict.js',
+      plugins: [
+        eslint({
+          throwOnWarning: true,
+          formatter: () => ''
+        })
+      ]
+    })
+  ).rejects.toThrow(/Found 1 warning/);
 });
 
-test('should not fail with throwOnError and throwOnWarning disabled', async (t) => {
+test('should not fail with throwOnError and throwOnWarning disabled', async () => {
   await rollup({
     input: './test/fixtures/legacy-config/use-strict.js',
     plugins: [
@@ -137,28 +126,23 @@ test('should not fail with throwOnError and throwOnWarning disabled', async (t) 
       })
     ]
   });
-
-  t.pass();
 });
 
-test('should fail with not found formatter', async (t) => {
-  await t.throwsAsync(
-    async () => {
-      await rollup({
-        input: './test/fixtures/legacy-config/use-strict.js',
-        plugins: [
-          eslint({
-            formatter: 'not-found-formatter'
-          })
-        ]
-      });
-    },
-    { message: /There was a problem loading formatter/ }
-  );
+test('should fail with not found formatter', async () => {
+  await expect(
+    rollup({
+      input: './test/fixtures/legacy-config/use-strict.js',
+      plugins: [
+        eslint({
+          formatter: 'not-found-formatter'
+        })
+      ]
+    })
+  ).rejects.toThrow(/There was a problem loading formatter/);
 });
 
-test('should not fail with found formatter', async (t) => {
-  rollup({
+test('should not fail with found formatter', async () => {
+  await rollup({
     input: './test/fixtures/legacy-config/use-strict.js',
     plugins: [
       eslint({
@@ -166,11 +150,9 @@ test('should not fail with found formatter', async (t) => {
       })
     ]
   });
-
-  t.pass();
 });
 
-test('should not fail with asynchronous formatter function', async (t) => {
+test('should not fail with asynchronous formatter function', async () => {
   await rollup({
     input: './test/fixtures/legacy-config/use-strict.js',
     plugins: [
@@ -179,11 +161,9 @@ test('should not fail with asynchronous formatter function', async (t) => {
       })
     ]
   });
-
-  t.pass();
 });
 
-test('should fix source code', async (t) => {
+test('should fix source code', async () => {
   fs.writeFileSync(
     './test/fixtures/legacy-config/fixable-clone.js',
     fs.readFileSync('./test/fixtures/legacy-config/fixable.js')
@@ -198,15 +178,14 @@ test('should fix source code', async (t) => {
     ]
   });
 
-  t.is(
-    fs.readFileSync('./test/fixtures/legacy-config/fixable-clone.js').toString(),
+  expect(fs.readFileSync('./test/fixtures/legacy-config/fixable-clone.js').toString()).toBe(
     fs.readFileSync('./test/fixtures/legacy-config/fixed.js').toString()
   );
 
   fs.unlinkSync('./test/fixtures/legacy-config/fixable-clone.js');
 });
 
-test('works with cjs plugin', async (t) => {
+test('works with cjs plugin', async () => {
   const require = createRequire(import.meta.url);
   const eslintPluginCjs = require('current-package');
   let count = 0;
@@ -218,16 +197,16 @@ test('works with cjs plugin', async (t) => {
           count += results[0].messages.length;
           // eslint-disable-next-line prefer-destructuring
           const { message } = results[0].messages[0];
-          t.is(message, "'x' is not defined.");
+          expect(message).toBe("'x' is not defined.");
         }
       })
     ]
   });
 
-  t.is(count, 1);
+  expect(count).toBe(1);
 });
 
-test('works with flat config', async (t) => {
+test('works with flat config', async () => {
   let count = 0;
   await rollup({
     input: './test/fixtures/flat-config/undeclared.js',
@@ -237,16 +216,16 @@ test('works with flat config', async (t) => {
           count += results[0].messages.length;
           // eslint-disable-next-line prefer-destructuring
           const { message } = results[0].messages[0];
-          t.is(message, "'x' is not defined.");
+          expect(message).toBe("'x' is not defined.");
         }
       })
     ]
   });
 
-  t.is(count, 1);
-});
+  expect(count).toBe(1);
+}, 15_000);
 
-test.serial('works with ESLint v9', async (t) => {
+test('works with ESLint v9', async () => {
   // Load the plugin with an override to route 'eslint' imports to ESLint v9
   const eslint = await esmock('current-package', {
     eslint: eslint9
@@ -267,7 +246,7 @@ test.serial('works with ESLint v9', async (t) => {
             count += results[0].messages.length;
             // eslint-disable-next-line prefer-destructuring
             const { message } = results[0].messages[0];
-            t.is(message, "'x' is not defined.");
+            expect(message).toBe("'x' is not defined.");
           }
         })
       ]
@@ -276,5 +255,5 @@ test.serial('works with ESLint v9', async (t) => {
     process.chdir(cwd);
   }
 
-  t.is(count, 1);
+  expect(count).toBe(1);
 });

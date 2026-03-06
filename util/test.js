@@ -61,7 +61,7 @@ const getResolvedModules = async (bundle) => {
 const onwarn = (warning) => console.warn(warning.toString());
 
 /**
- * @param {import('ava').Assertions} t
+ * @param {any} t
  * @param {import('rollup').RollupBuild} bundle
  * @param {object} args
  */

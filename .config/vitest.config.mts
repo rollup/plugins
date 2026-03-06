@@ -3,9 +3,13 @@ import path from 'node:path';
 
 export default defineConfig({
   test: {
-    // Store snapshots next to each test in a .snapshots folder
+    // Enable global APIs for CommonJS test files.
+    globals: true,
+    // Phase 1 packages use runtime-style test entrypoints.
+    include: ['test/test.{js,mjs,cjs,ts,mts,cts}'],
+    // Keep snapshots in the same location used by Ava.
     resolveSnapshotPath: (testPath, snapExt) =>
-      path.join(path.dirname(testPath), '.snapshots', path.basename(testPath) + snapExt)
+      path.join(path.dirname(testPath), 'snapshots', path.basename(testPath) + snapExt)
   },
   resolve: {
     // Allow importing the current package under test via `~package`

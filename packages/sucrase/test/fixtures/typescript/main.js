@@ -4,7 +4,7 @@ import exampleB from './example-b.js';
 import exampleC from './example-c.js';
 import exampleD from './example-d.js';
 
-t.snapshot(example.toString());
-t.snapshot(exampleB.toString());
-t.snapshot(exampleC.toString());
-t.snapshot(exampleD.toString());
+expect(example.toString()).toMatchSnapshot();
+expect(exampleB.toString()).toMatchSnapshot();
+expect(exampleC.toString()).toMatchSnapshot();
+expect(exampleD.toString()).toMatchSnapshot();
