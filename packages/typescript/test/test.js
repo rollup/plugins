@@ -311,14 +311,7 @@ test.serial('warns for invalid module types', async (t) => {
     })
   );
 
-  t.deepEqual(warnings, [
-    {
-      code: 'PLUGIN_WARNING',
-      plugin: 'typescript',
-      pluginCode: 'TS6046',
-      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
-    }
-  ]);
+  t.snapshot(warnings);
 });
 
 test.serial('ignores case of module types', async (t) => {
@@ -398,7 +391,10 @@ test.serial('reports diagnostics and throws if errors occur during transpilation
     })
   );
 
-  t.is(caughtError.message, '@rollup/plugin-typescript TS1110: Type expected.');
+  t.is(
+    caughtError.message,
+    '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): @rollup/plugin-typescript TS1110: Type expected.'
+  );
   t.is(caughtError.pluginCode, 'TS1110');
 });
 
@@ -420,7 +416,10 @@ test.serial('ignore type errors if noEmitOnError is false', async (t) => {
   t.is(warnings[0].code, 'PLUGIN_WARNING');
   t.is(warnings[0].plugin, 'typescript');
   t.is(warnings[0].pluginCode, 'TS1110');
-  t.is(warnings[0].message, '@rollup/plugin-typescript TS1110: Type expected.');
+  t.is(
+    warnings[0].message,
+    '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): @rollup/plugin-typescript TS1110: Type expected.'
+  );
 
   t.is(warnings[0].loc.line, 1);
   t.is(warnings[0].loc.column, 8);
@@ -494,6 +493,18 @@ test.serial('should not resolve .d.ts files', async (t) => {
   });
   const imports = bundle.cache.modules[0].dependencies;
   t.deepEqual(imports, ['an-import']);
+});
+
+test.serial('should not resolve arbitrary .d.<ext>.ts files', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/arbitrary-dts/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/arbitrary-dts/tsconfig.json' })],
+    onwarn
+  });
+  const arbitraryDeclarationModules = bundle.cache.modules.filter((module) =>
+    module.id.includes('.d.custom.ts')
+  );
+  t.is(arbitraryDeclarationModules.length, 0);
 });
 
 test.serial('should transpile JSX if enabled', async (t) => {
@@ -628,18 +639,11 @@ test.serial('should throw on bad options', async (t) => {
         }
       }),
     {
-      message: "@rollup/plugin-typescript: Couldn't process compiler options"
+      message: "[plugin typescript] @rollup/plugin-typescript: Couldn't process compiler options"
     }
   );
 
-  t.deepEqual(warnings, [
-    {
-      code: 'PLUGIN_WARNING',
-      plugin: 'typescript',
-      pluginCode: 'TS5023',
-      message: `@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
-    }
-  ]);
+  t.snapshot(warnings);
 });
 
 test.serial('should handle re-exporting types', async (t) => {
@@ -1537,7 +1541,7 @@ test.serial('correctly resolves types with nodenext moduleResolution', async (t)
   });
   const code = await getCode(bundle, outputOptions);
 
-  t.true(code.includes('var bar = foo'), code);
+  t.true(code.includes('const bar = foo'), code);
   t.is(warnings.length, 1);
   t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
 });

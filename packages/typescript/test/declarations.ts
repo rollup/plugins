@@ -4,12 +4,9 @@ import { rollup } from 'rollup';
 
 import typescript from '..';
 
-import { getCode } from '../../../util/test';
+import { getCode, onwarn } from '../../../util/test';
 
 test.beforeEach(() => process.chdir(__dirname));
-
-// eslint-disable-next-line no-console
-const onwarn = (warning: any) => console.warn(warning.toString());
 
 test.serial('supports creating declaration files', async (t) => {
   const bundle = await rollup({
@@ -144,7 +141,7 @@ test.serial(
       ['main.js', 'types/should-be-emitted-types.d.ts', 'types/main.d.ts']
     );
 
-    t.true(declaration.includes('export declare type MyNumber = number;'), declaration);
+    t.true(declaration.includes('export type MyNumber = number;'), declaration);
   }
 );
 
