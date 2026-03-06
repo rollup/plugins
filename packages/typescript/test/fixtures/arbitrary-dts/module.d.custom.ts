@@ -1,4 +1,4 @@
 declare const CustomModule: {
-    x: Number;
+    x: number;
 }
 export default CustomModule;
