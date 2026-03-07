@@ -1,10 +1,12 @@
 /* eslint-disable line-comment-position, no-new-func, no-undefined */
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
 const os = require('os');
 const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const test = require('ava');
 const { getLocator } = require('locate-character');
 const { rollup } = require('rollup');
 const { install } = require('source-map-support');
@@ -21,7 +23,7 @@ const {
 } = require('./helpers/util.js');
 
 install();
-test.beforeEach(() => process.chdir(__dirname));
+beforeEach(() => process.chdir(__dirname));
 
 const loader = (modules) => {
   return {
@@ -40,17 +42,17 @@ const loader = (modules) => {
   };
 };
 
-test('Rollup peer dependency has correct format', (t) => {
+test('Rollup peer dependency has correct format', () => {
   t.regex(peerDependencies.rollup, /^\^\d+\.\d+\.\d+(\|\|\^\d+\.\d+\.\d+)*$/);
 });
 
-test('exposes plugin version', (t) => {
+test('exposes plugin version', () => {
   const plugin = commonjs();
   t.regex(plugin.version, /^\d+\.\d+\.\d+/);
 });
 
 // most of these should be moved over to function...
-test('generates a sourcemap', async (t) => {
+test('generates a sourcemap', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/sourcemap/main.js',
     plugins: [commonjs({ sourceMap: true })]
@@ -87,7 +89,7 @@ test('generates a sourcemap', async (t) => {
   t.is(loc.column, 8);
 });
 
-test('supports an array of multiple entry points', async (t) => {
+test('supports an array of multiple entry points', async () => {
   const bundle = await rollup({
     input: [
       'fixtures/samples/multiple-entry-points/b.js',
@@ -112,7 +114,7 @@ test('supports an array of multiple entry points', async (t) => {
   }
 });
 
-test('supports an object of multiple entry points', async (t) => {
+test('supports an object of multiple entry points', async () => {
   const bundle = await rollup({
     input: {
       b: require.resolve('./fixtures/samples/multiple-entry-points/b.js'),
@@ -138,7 +140,7 @@ test('supports an object of multiple entry points', async (t) => {
   }
 });
 
-test('handles references to `global`', async (t) => {
+test('handles references to `global`', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/global/main.js',
     plugins: [commonjs()]
@@ -165,7 +167,7 @@ test('handles references to `global`', async (t) => {
   t.is(mockSelf.foo, 'bar', code);
 });
 
-test('handles multiple references to `global`', async (t) => {
+test('handles multiple references to `global`', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/global-in-if-block/main.js',
     plugins: [commonjs()]
@@ -183,7 +185,7 @@ test('handles multiple references to `global`', async (t) => {
   t.is(globalThis.count, 2);
 });
 
-test('handles transpiled CommonJS modules', async (t) => {
+test('handles transpiled CommonJS modules', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/corejs/literal-with-default.js',
     plugins: [commonjs()]
@@ -198,7 +200,7 @@ test('handles transpiled CommonJS modules', async (t) => {
   t.is(module.exports, 'foobar', code);
 });
 
-test('handles successive builds', async (t) => {
+test('handles successive builds', async () => {
   const plugin = commonjs();
   let bundle = await rollup({
     input: 'fixtures/samples/corejs/literal-with-default.js',
@@ -223,7 +225,7 @@ test('handles successive builds', async (t) => {
   t.is(module.exports, 'foobar', code);
 });
 
-test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) => {
+test.sequential('handles symlinked node_modules with preserveSymlinks: false', () => {
   const cwd = process.cwd();
 
   // ensure we resolve starting from a directory with
@@ -256,7 +258,7 @@ test.serial('handles symlinked node_modules with preserveSymlinks: false', (t) =
   );
 });
 
-test('converts a CommonJS module with custom file extension', async (t) => {
+test('converts a CommonJS module with custom file extension', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/extension/main.coffee',
     plugins: [commonjs({ extensions: ['.coffee'] })]
@@ -265,7 +267,7 @@ test('converts a CommonJS module with custom file extension', async (t) => {
   t.is((await executeBundle(bundle, t)).exports, 42);
 });
 
-test('import CommonJS module with esm property should get default export ', async (t) => {
+test('import CommonJS module with esm property should get default export ', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/cjs-with-esm-property/main.js',
     plugins: [
@@ -289,7 +291,7 @@ test('import CommonJS module with esm property should get default export ', asyn
   t.is(result2.error.message, 'libExports is not a function');
 });
 
-test('identifies named exports from object literals', async (t) => {
+test('identifies named exports from object literals', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/named-exports-from-object-literal/main.js',
     plugins: [commonjs()]
@@ -299,7 +301,7 @@ test('identifies named exports from object literals', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('can ignore references to `global`', async (t) => {
+test('can ignore references to `global`', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/ignore-global/main.js',
     plugins: [commonjs({ ignoreGlobal: true })],
@@ -318,7 +320,7 @@ test('can ignore references to `global`', async (t) => {
   t.is(exports.immediate3, null, code);
 });
 
-test('can handle parens around right have node while producing default export', async (t) => {
+test('can handle parens around right have node while producing default export', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/paren-expression/index.js',
     plugins: [commonjs()]
@@ -327,7 +329,7 @@ test('can handle parens around right have node while producing default export', 
   t.is((await executeBundle(bundle, t, { testEntry: 'index.js' })).exports, 42);
 });
 
-test('typeof transforms: correct-scoping', async (t) => {
+test('typeof transforms: correct-scoping', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/umd/correct-scoping.js',
     plugins: [commonjs()]
@@ -336,7 +338,7 @@ test('typeof transforms: correct-scoping', async (t) => {
   t.is((await executeBundle(bundle, t, { testEntry: 'correct-scoping.js' })).exports, 'object');
 });
 
-test('typeof transforms: protobuf', async (t) => {
+test('typeof transforms: protobuf', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/umd/protobuf.js',
     external: ['bytebuffer', 'foo'],
@@ -346,7 +348,7 @@ test('typeof transforms: protobuf', async (t) => {
   t.is((await executeBundle(bundle, t, { testEntry: 'protobuf.js' })).exports, true);
 });
 
-test('typeof transforms: sinon', async (t) => {
+test('typeof transforms: sinon', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/umd/sinon.js',
     plugins: [commonjs()]
@@ -361,7 +363,7 @@ test('typeof transforms: sinon', async (t) => {
   t.is(code.indexOf('typeof define'), -1, code);
 });
 
-test('deconflicts helper name', async (t) => {
+test('deconflicts helper name', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/deconflict-helpers/main.js',
     plugins: [commonjs()]
@@ -371,7 +373,7 @@ test('deconflicts helper name', async (t) => {
   t.not(exports, 'nope');
 });
 
-test('deconflicts reserved keywords', async (t) => {
+test('deconflicts reserved keywords', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/reserved-as-property/main.js',
     plugins: [commonjs()]
@@ -381,7 +383,7 @@ test('deconflicts reserved keywords', async (t) => {
   t.is(reservedProp, 'foo');
 });
 
-test('does not process the entry file when it has a leading "." (issue #63)', async (t) => {
+test('does not process the entry file when it has a leading "." (issue #63)', async () => {
   const bundle = await rollup({
     input: './fixtures/function/basic/main.js',
     plugins: [commonjs()]
@@ -390,7 +392,7 @@ test('does not process the entry file when it has a leading "." (issue #63)', as
   await t.notThrowsAsync(executeBundle(bundle, t));
 });
 
-test('respects other plugins', async (t) => {
+test('respects other plugins', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/other-transforms/main.js',
     plugins: [
@@ -407,7 +409,7 @@ test('respects other plugins', async (t) => {
   await t.notThrowsAsync(executeBundle(bundle, t));
 });
 
-test('rewrites top-level defines', async (t) => {
+test('rewrites top-level defines', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/define-is-undefined/main.js',
     plugins: [commonjs()]
@@ -423,7 +425,7 @@ test('rewrites top-level defines', async (t) => {
   t.is(exports, 42);
 });
 
-test('respects options.external', async (t) => {
+test('respects options.external', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/external/main.js',
     plugins: [nodeResolve(), commonjs()],
@@ -437,7 +439,7 @@ test('respects options.external', async (t) => {
   t.is(exports, 'HELLO');
 });
 
-test('prefers to set name using directory for index files', async (t) => {
+test('prefers to set name using directory for index files', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/rename-index/main.js',
     plugins: [commonjs()]
@@ -450,7 +452,7 @@ test('prefers to set name using directory for index files', async (t) => {
   t.not(code.indexOf('var nonIndex'), -1, 'contains nonIndex');
 });
 
-test('correctly wraps the default export from a CommonJS module when it is a class', async (t) => {
+test('correctly wraps the default export from a CommonJS module when it is a class', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/es-module-with-class-as-default-export/main.js',
     plugins: [commonjs()]
@@ -459,7 +461,7 @@ test('correctly wraps the default export from a CommonJS module when it is a cla
   t.is(result.error, undefined);
 });
 
-test('does not warn even if the ES module does not export "default"', async (t) => {
+test('does not warn even if the ES module does not export "default"', async () => {
   const warns = [];
   await rollup({
     input: 'fixtures/samples/es-modules-without-default-export/main.js',
@@ -483,7 +485,7 @@ test('does not warn even if the ES module does not export "default"', async (t) 
   t.is(warns.length, 0);
 });
 
-test('compiles with cache', async (t) => {
+test('compiles with cache', async () => {
   const plugin = commonjs();
 
   const { cache } = await rollup({
@@ -500,7 +502,7 @@ test('compiles with cache', async (t) => {
   );
 });
 
-test('creates an error with a code frame when parsing fails', async (t) => {
+test('creates an error with a code frame when parsing fails', async () => {
   try {
     await rollup({
       input: 'fixtures/samples/invalid-syntax/main.js',
@@ -517,7 +519,7 @@ test('creates an error with a code frame when parsing fails', async (t) => {
 });
 
 // Virtual modules are treated as "requireReturnsDefault: 'always'" to avoid interop
-test('ignores virtual modules', async (t) => {
+test('ignores virtual modules', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/ignore-virtual-modules/main.js',
     plugins: [
@@ -541,7 +543,7 @@ test('ignores virtual modules', async (t) => {
   t.is((await executeBundle(bundle, t)).exports, 'Virtual export');
 });
 
-test('does not produce warnings when importing .mjs without default export', async (t) => {
+test('does not produce warnings when importing .mjs without default export', async () => {
   const bundle = await rollup({
     input: 'main.mjs',
     onwarn(warning) {
@@ -577,7 +579,7 @@ test('does not produce warnings when importing .mjs without default export', asy
   t.deepEqual((await executeBundle(bundle, t)).exports, { result: 'from esm' });
 });
 
-test('produces optimized code when importing esm with a known default export', async (t) => {
+test('produces optimized code when importing esm with a known default export', async () => {
   const bundle = await rollup({
     input: 'main.js',
     plugins: [
@@ -591,7 +593,7 @@ test('produces optimized code when importing esm with a known default export', a
   t.snapshot(await getCodeFromBundle(bundle));
 });
 
-test('produces optimized code when importing esm without a default export', async (t) => {
+test('produces optimized code when importing esm without a default export', async () => {
   const bundle = await rollup({
     input: 'main.js',
     plugins: [
@@ -605,7 +607,7 @@ test('produces optimized code when importing esm without a default export', asyn
   t.snapshot(await getCodeFromBundle(bundle));
 });
 
-test('handles array destructuring assignment', async (t) => {
+test('handles array destructuring assignment', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/array-destructuring-assignment/main.js',
     plugins: [commonjs({ sourceMap: true })]
@@ -614,7 +616,7 @@ test('handles array destructuring assignment', async (t) => {
   t.snapshot(await getCodeFromBundle(bundle, { exports: 'named' }));
 });
 
-test('can spread an object into module.exports', async (t) => {
+test('can spread an object into module.exports', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/module-exports-spread/main.js',
     plugins: [commonjs()]
@@ -622,7 +624,7 @@ test('can spread an object into module.exports', async (t) => {
   t.snapshot(await getCodeFromBundle(bundle));
 });
 
-test('logs a warning when the deprecated namedExports option is used', async (t) => {
+test('logs a warning when the deprecated namedExports option is used', async () => {
   let message;
   const bundle = await rollup({
     onwarn(warning) {
@@ -641,7 +643,7 @@ test('logs a warning when the deprecated namedExports option is used', async (t)
 
 // This test uses worker threads to simulate an empty internal cache and needs at least Node 12
 if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
-  test('can be cached across instances', async (t) => {
+  test('can be cached across instances', async () => {
     const bundle = await rollup({
       input: 'fixtures/samples/caching/main.js',
       plugins: [commonjs()]
@@ -662,7 +664,7 @@ if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
   });
 }
 
-test('does not affect subsequently created instances when called with `requireReturnsDefault: "preferred"`', async (t) => {
+test('does not affect subsequently created instances when called with `requireReturnsDefault: "preferred"`', async () => {
   const input = 'fixtures/function/import-esm-require-returns-default-preferred/main.js';
   const options = { requireReturnsDefault: 'preferred' };
 
@@ -686,7 +688,7 @@ test('does not affect subsequently created instances when called with `requireRe
 // This test works only on Windows, which treats both forward and backward
 // slashes as path separators
 if (os.platform() === 'win32') {
-  test('supports both forward and backward slash as path separator in directory-based modules', async (t) => {
+  test('supports both forward and backward slash as path separator in directory-based modules', async () => {
     const bundle = await rollup({
       input: 'fixtures/samples/module-path-separator/main.js',
       plugins: [
@@ -711,7 +713,7 @@ if (os.platform() === 'win32') {
   });
 }
 
-test('throws when there is a dynamic require from outside dynamicRequireRoot', async (t) => {
+test('throws when there is a dynamic require from outside dynamicRequireRoot', async () => {
   let error = null;
   try {
     await rollup({
@@ -746,7 +748,7 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
   });
 });
 
-test('does not throw when a dynamic require uses different slashes than dynamicRequireRoot', async (t) => {
+test('does not throw when a dynamic require uses different slashes than dynamicRequireRoot', async () => {
   let error = null;
   try {
     await rollup({
@@ -770,7 +772,7 @@ test('does not throw when a dynamic require uses different slashes than dynamicR
 // On Windows, avoid a false error about a module not being in the dynamic require root due to
 // incoherent slashes/backslashes in the paths.
 if (os.platform() === 'win32') {
-  test('correctly asserts dynamicRequireRoot on Windows', async (t) => {
+  test('correctly asserts dynamicRequireRoot on Windows', async () => {
     let error = null;
     try {
       await rollup({
@@ -792,7 +794,7 @@ if (os.platform() === 'win32') {
   });
 }
 
-test('does not transform typeof exports for mixed modules', async (t) => {
+test('does not transform typeof exports for mixed modules', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/mixed-module-typeof-exports/main.js',
     plugins: [commonjs({ transformMixedEsModules: true })]
@@ -806,7 +808,7 @@ test('does not transform typeof exports for mixed modules', async (t) => {
   t.snapshot(code);
 });
 
-test('throws when using an old node_resolve version', async (t) => {
+test('throws when using an old node_resolve version', async () => {
   let error = null;
   try {
     await rollup({
@@ -822,7 +824,7 @@ test('throws when using an old node_resolve version', async (t) => {
   });
 });
 
-test('throws when using an inadequate node_resolve version', async (t) => {
+test('throws when using an inadequate node_resolve version', async () => {
   let error = null;
   try {
     await rollup({
@@ -864,7 +866,7 @@ const getTransformTracker = (trackedId) => {
   };
 };
 
-test('handles when an imported dependency of an ES module changes type', async (t) => {
+test('handles when an imported dependency of an ES module changes type', async () => {
   const { meta, tracker, trackedTransforms } = getTransformTracker('dep.js');
   const modules = {};
   const resetModules = () => {
@@ -955,7 +957,7 @@ test('handles when an imported dependency of an ES module changes type', async (
   t.is(await getCodeFromBundle(bundle), esCode);
 });
 
-test('handles when a dynamically imported dependency of an ES module changes type', async (t) => {
+test('handles when a dynamically imported dependency of an ES module changes type', async () => {
   const { meta, tracker, trackedTransforms } = getTransformTracker('dep.js');
   const modules = {};
   const resetModules = () => {
@@ -1036,7 +1038,7 @@ test('handles when a dynamically imported dependency of an ES module changes typ
   trackedTransforms.length = 0;
 });
 
-test('handles when a required dependency of a CJS module changes type', async (t) => {
+test('handles when a required dependency of a CJS module changes type', async () => {
   const { meta, tracker, trackedTransforms } = getTransformTracker('dep.js');
   const modules = {};
   const resetModules = () => {
@@ -1141,7 +1143,7 @@ test('handles when a required dependency of a CJS module changes type', async (t
   t.is(await getCodeFromBundle(bundle), esCode);
 });
 
-test('handles when a required dependency of a mixed ES module changes type', async (t) => {
+test('handles when a required dependency of a mixed ES module changes type', async () => {
   const { meta, tracker, trackedTransforms } = getTransformTracker('dep.js');
   const modules = {};
   const resetModules = () => {
@@ -1225,7 +1227,7 @@ test('handles when a required dependency of a mixed ES module changes type', asy
   t.is(await getCodeFromBundle(bundle), esCode);
 });
 
-test('handles ESM cycles when using the cache', async (t) => {
+test('handles ESM cycles when using the cache', async () => {
   const modules = {};
   const resetModules = () => {
     modules['main.js'] = "import 'dep.js';console.log('main');";
@@ -1245,7 +1247,7 @@ test('handles ESM cycles when using the cache', async (t) => {
   t.snapshot(await getCodeFromBundle(bundle));
 });
 
-test('handles external dependencies when using the cache', async (t) => {
+test('handles external dependencies when using the cache', async () => {
   const modules = {};
   const resetModules = () => {
     modules['main.js'] =
@@ -1285,7 +1287,7 @@ test('handles external dependencies when using the cache', async (t) => {
   t.is(await getCodeFromBundle(bundle), code);
 });
 
-test('Correctly processes meta data when using the cache but invalidating proxy modules', async (t) => {
+test('Correctly processes meta data when using the cache but invalidating proxy modules', async () => {
   const modules = {};
   const resetModules = () => {
     modules['main.js'] = "import first from 'first.js';export default first;";
@@ -1327,7 +1329,7 @@ test('Correctly processes meta data when using the cache but invalidating proxy 
   t.is((await executeBundle(bundle, t)).exports, 43);
 });
 
-test('allows the config to be reused', async (t) => {
+test('allows the config to be reused', async () => {
   const config = {
     preserveModules: true,
     plugins: [
@@ -1356,7 +1358,7 @@ test('allows the config to be reused', async (t) => {
   );
 });
 
-test('keep the shebang at the top of the file content', async (t) => {
+test('keep the shebang at the top of the file content', async () => {
   const bundle = await rollup({
     input: ['fixtures/samples/shebang/main.js'],
     plugins: [commonjs()]
@@ -1371,7 +1373,7 @@ test('keep the shebang at the top of the file content', async (t) => {
   t.is(output[0].code.startsWith('#!/usr/bin/env node\n'), true);
 });
 
-test('handles bind when requireReturnsDefault is false', async (t) => {
+test('handles bind when requireReturnsDefault is false', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/bind/main.js',
     plugins: [commonjs()]

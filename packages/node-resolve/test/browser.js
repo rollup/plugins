@@ -1,6 +1,5 @@
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 const commonjs = require('@rollup/plugin-commonjs');
 
@@ -8,9 +7,13 @@ const { testBundle } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
+
 process.chdir(join(__dirname, 'fixtures'));
 
-test('disregards top-level browser field', async (t) => {
+test('disregards top-level browser field', async () => {
   const bundle = await rollup({
     input: 'browser.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -21,7 +24,7 @@ test('disregards top-level browser field', async (t) => {
   t.is(module.exports, 'node');
 });
 
-test('allows use of the top-level browser field', async (t) => {
+test('allows use of the top-level browser field', async () => {
   const bundle = await rollup({
     input: 'browser.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -36,7 +39,7 @@ test('allows use of the top-level browser field', async (t) => {
   t.is(module.exports, 'browser');
 });
 
-test('disregards object browser field', async (t) => {
+test('disregards object browser field', async () => {
   const bundle = await rollup({
     input: 'browser-object.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -49,7 +52,7 @@ test('disregards object browser field', async (t) => {
   t.is(module.exports.test, 42);
 });
 
-test('allows use of the object browser field', async (t) => {
+test('allows use of the object browser field', async () => {
   const bundle = await rollup({
     input: 'browser-object.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -66,7 +69,7 @@ test('allows use of the object browser field', async (t) => {
   t.is(module.exports.test, 43);
 });
 
-test('allows use of object browser field, resolving `main`', async (t) => {
+test('allows use of object browser field, resolving `main`', async () => {
   const bundle = await rollup({
     input: 'browser-object-main.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -83,7 +86,7 @@ test('allows use of object browser field, resolving `main`', async (t) => {
   t.is(module.exports.test, 43);
 });
 
-test('options.browser = true still works', async (t) => {
+test('options.browser = true still works', async () => {
   const bundle = await rollup({
     input: 'browser-object-main.js',
     plugins: [
@@ -99,7 +102,7 @@ test('options.browser = true still works', async (t) => {
   t.is(module.exports.test, 43);
 });
 
-test('allows use of object browser field, resolving implicit `main`', async (t) => {
+test('allows use of object browser field, resolving implicit `main`', async () => {
   const bundle = await rollup({
     input: 'browser-object-implicit.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -114,7 +117,7 @@ test('allows use of object browser field, resolving implicit `main`', async (t) 
   t.is(module.exports.env, 'browser');
 });
 
-test('allows use of object browser field, resolving replaced builtins', async (t) => {
+test('allows use of object browser field, resolving replaced builtins', async () => {
   const bundle = await rollup({
     input: 'browser-object-builtin.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -129,7 +132,7 @@ test('allows use of object browser field, resolving replaced builtins', async (t
   t.is(module.exports, 'browser-fs');
 });
 
-test('allows use of object browser field, resolving nested directories', async (t) => {
+test('allows use of object browser field, resolving nested directories', async () => {
   const bundle = await rollup({
     input: 'browser-object-nested.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -146,7 +149,7 @@ test('allows use of object browser field, resolving nested directories', async (
   t.is(module.exports.test, 43);
 });
 
-test('respects local browser field for external dependencies', async (t) => {
+test('respects local browser field for external dependencies', async () => {
   const bundle = await rollup({
     input: 'browser-local.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -161,7 +164,7 @@ test('respects local browser field for external dependencies', async (t) => {
   t.is(module.exports, 'component-type');
 });
 
-test('respects local browser field for internal dependencies', async (t) => {
+test('respects local browser field for internal dependencies', async () => {
   const bundle = await rollup({
     input: 'browser-local-relative.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -176,7 +179,7 @@ test('respects local browser field for internal dependencies', async (t) => {
   t.is(module.exports, 'component-type');
 });
 
-test('does not apply local browser field for matching imports in nested paths', async (t) => {
+test('does not apply local browser field for matching imports in nested paths', async () => {
   try {
     await rollup({
       input: 'nested/browser-local-relative.js',
@@ -194,7 +197,7 @@ test('does not apply local browser field for matching imports in nested paths', 
   t.fail('expecting error');
 });
 
-test('allows use of object browser field, resolving to nested node_modules', async (t) => {
+test('allows use of object browser field, resolving to nested node_modules', async () => {
   const bundle = await rollup({
     input: 'browser-entry-points-to-node-module.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -210,7 +213,7 @@ test('allows use of object browser field, resolving to nested node_modules', asy
   t.is(module.exports, 'component-type');
 });
 
-test('supports `false` in browser field', async (t) => {
+test('supports `false` in browser field', async () => {
   const bundle = await rollup({
     input: 'browser-false.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -223,7 +226,7 @@ test('supports `false` in browser field', async (t) => {
   await testBundle(t, bundle);
 });
 
-test('pkg.browser with mapping to prevent bundle by specifying a value of false', async (t) => {
+test('pkg.browser with mapping to prevent bundle by specifying a value of false', async () => {
   const bundle = await rollup({
     input: 'browser-object-with-false.js',
     plugins: [nodeResolve({ browser: true }), commonjs()]
@@ -233,7 +236,7 @@ test('pkg.browser with mapping to prevent bundle by specifying a value of false'
   t.is(module.exports, 'ok');
 });
 
-test('exports.browser can be mapped via pkg.browser', async (t) => {
+test('exports.browser can be mapped via pkg.browser', async () => {
   const bundle = await rollup({
     input: 'browser-exports-browser-browser.js',
     plugins: [nodeResolve({ browser: true }), commonjs()]
@@ -243,7 +246,7 @@ test('exports.browser can be mapped via pkg.browser', async (t) => {
   t.is(module.exports, 'browser');
 });
 
-test('browser field does not take precedence over export map result', async (t) => {
+test('browser field does not take precedence over export map result', async () => {
   const bundle = await rollup({
     input: 'browser-exports-browser.js',
     plugins: [nodeResolve({ browser: true }), commonjs()]

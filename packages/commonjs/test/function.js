@@ -2,10 +2,13 @@
 
 const { readdirSync } = require('fs');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { commonjs, getCodeMapFromBundle, runCodeSplitTest } = require('./helpers/util');
+
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
 
 process.chdir(__dirname);
 
@@ -22,7 +25,7 @@ readdirSync('./fixtures/function').forEach((dir) => {
     console.error(`Skipped test "${dir}"`);
     return;
   }
-  (config.solo ? test.only : test)(dir, async (t) => {
+  (config.solo ? test.only : test)(dir, async () => {
     const options = Object.assign(
       {
         input: `fixtures/function/${dir}/${config.input || 'main.js'}`

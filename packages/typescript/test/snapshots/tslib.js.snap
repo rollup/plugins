@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`fails on bad tslib path 1`] = `[Error: Could not load fixtures/joker/tslib.js (imported by fixtures/overriding-tslib/main.ts): ENOENT: no such file or directory, open 'fixtures/joker/tslib.js']`;
+
+exports[`fails without tslib installed 1`] = `[RollupError: @rollup/plugin-typescript: Could not find module 'tslib', which is required by this plugin. Is it installed?]`;

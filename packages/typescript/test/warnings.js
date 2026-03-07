@@ -1,12 +1,15 @@
-import test from 'ava';
 import { rollup } from 'rollup';
 
 import typescript from '..';
 
-test.beforeEach(() => process.chdir(__dirname));
+import { createAvaAssertions } from './helpers/ava-assertions.js';
 
-test.serial('bad module in tsconfig', async (t) => {
-  const warnings: any[] = [];
+const t = createAvaAssertions();
+
+beforeEach(() => process.chdir(__dirname));
+
+test.sequential('bad module in tsconfig', async () => {
+  const warnings = [];
   await rollup({
     input: 'fixtures/bad-module/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/bad-module/tsconfig.json' })],

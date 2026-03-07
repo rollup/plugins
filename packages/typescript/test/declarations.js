@@ -1,17 +1,19 @@
-import test from 'ava';
-import type { ExecutionContext } from 'ava';
 import { rollup } from 'rollup';
 
 import typescript from '..';
 
 import { getCode } from '../../../util/test';
 
-test.beforeEach(() => process.chdir(__dirname));
+import { createAvaAssertions } from './helpers/ava-assertions.js';
+
+const t = createAvaAssertions();
+
+beforeEach(() => process.chdir(__dirname));
 
 // eslint-disable-next-line no-console
-const onwarn = (warning: any) => console.warn(warning.toString());
+const onwarn = (warning) => console.warn(warning.toString());
 
-test.serial('supports creating declaration files', async (t) => {
+test.sequential('supports creating declaration files', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -24,7 +26,7 @@ test.serial('supports creating declaration files', async (t) => {
     onwarn
   });
   const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
-  const declaration = output[1].source as string;
+  const declaration = output[1].source;
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -34,7 +36,7 @@ test.serial('supports creating declaration files', async (t) => {
   t.true(declaration.includes('declare const answer = 42;'), declaration);
 });
 
-test.serial('supports creating declaration files in subfolder', async (t) => {
+test.sequential('supports creating declaration files in subfolder', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -48,7 +50,7 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
     onwarn
   });
   const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
-  const declaration = output[2].source as string;
+  const declaration = output[2].source;
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -59,7 +61,7 @@ test.serial('supports creating declaration files in subfolder', async (t) => {
   t.true(declaration.includes('//# sourceMappingURL=main.d.ts.map'), declaration);
 });
 
-test.serial('supports creating declarations with non-default rootDir', async (t) => {
+test.sequential('supports creating declarations with non-default rootDir', async () => {
   const bundle = await rollup({
     input: 'fixtures/declaration-root-dir/src/main.ts',
     plugins: [
@@ -81,7 +83,7 @@ test.serial('supports creating declarations with non-default rootDir', async (t)
   );
 });
 
-test.serial('supports creating declaration files for interface only source file', async (t) => {
+test.sequential('supports creating declaration files for interface only source file', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-interface-only/main.ts',
     plugins: [
@@ -100,7 +102,7 @@ test.serial('supports creating declaration files for interface only source file'
     { format: 'es', dir: 'fixtures/export-interface-only/dist' },
     true
   );
-  const declaration = output[2].source as string;
+  const declaration = output[2].source;
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -117,9 +119,9 @@ test.serial('supports creating declaration files for interface only source file'
   t.true(declaration.includes('//# sourceMappingURL=interface.d.ts.map'), declaration);
 });
 
-test.serial(
+test.sequential(
   'supports creating declaration files for type-only source files that are implicitly included',
-  async (t) => {
+  async () => {
     const bundle = await rollup({
       input: 'fixtures/implicitly-included-type-only-file/main.ts',
       plugins: [
@@ -136,7 +138,7 @@ test.serial(
       { format: 'es', dir: 'fixtures/implicitly-included-type-only-file/dist' },
       true
     );
-    const declaration = output[1].source as string;
+    const declaration = output[1].source;
 
     t.deepEqual(
       output.map((out) => out.fileName),
@@ -148,7 +150,7 @@ test.serial(
   }
 );
 
-test.serial('supports creating declaration files in declarationDir', async (t) => {
+test.sequential('supports creating declaration files in declarationDir', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -161,7 +163,7 @@ test.serial('supports creating declaration files in declarationDir', async (t) =
     onwarn
   });
   const output = await getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true);
-  const declaration = output[1].source as string;
+  const declaration = output[1].source;
 
   t.deepEqual(
     output.map((out) => out.fileName),
@@ -171,10 +173,7 @@ test.serial('supports creating declaration files in declarationDir', async (t) =
   t.true(declaration.includes('declare const answer = 42;'), declaration);
 });
 
-async function ensureOutDirWhenCreatingDeclarationFiles(
-  t: ExecutionContext,
-  compilerOptionName: string
-) {
+async function ensureOutDirWhenCreatingDeclarationFiles(t, compilerOptionName) {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -190,17 +189,17 @@ async function ensureOutDirWhenCreatingDeclarationFiles(
   );
 
   t.true(
-    caughtError!.message.includes(
+    caughtError.message.includes(
       `'outDir' or 'declarationDir' must be specified to generate declaration files`
     ),
-    `Unexpected error message: ${caughtError!.message}`
+    `Unexpected error message: ${caughtError.message}`
   );
 }
 
-test.serial('ensures outDir is set when creating declaration files (declaration)', async (t) => {
+test.sequential('ensures outDir is set when creating declaration files (declaration)', async () => {
   await ensureOutDirWhenCreatingDeclarationFiles(t, 'declaration');
 });
 
-test.serial('ensures outDir is set when creating declaration files (composite)', async (t) => {
+test.sequential('ensures outDir is set when creating declaration files (composite)', async () => {
   await ensureOutDirWhenCreatingDeclarationFiles(t, 'composite');
 });

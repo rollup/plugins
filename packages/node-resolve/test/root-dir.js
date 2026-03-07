@@ -1,13 +1,15 @@
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
-test('deduplicates modules from the given root directory', async (t) => {
+test('deduplicates modules from the given root directory', async () => {
   const bundle = await rollup({
     input: './packages/package-a/index.js',
     plugins: [

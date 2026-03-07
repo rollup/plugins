@@ -1,16 +1,18 @@
 import { platform } from 'os';
 
-import test from 'ava';
-import type { RollupError } from 'rollup';
 import { rollup } from 'rollup';
 
 import typescript from '..';
 
 import { evaluateBundle, getCode, onwarn } from '../../../util/test.js';
 
-test.beforeEach(() => process.chdir(__dirname));
+import { createAvaAssertions } from './helpers/ava-assertions.js';
 
-test.serial('supports overriding tslib with a custom path', async (t) => {
+const t = createAvaAssertions();
+
+beforeEach(() => process.chdir(__dirname));
+
+test.sequential('supports overriding tslib with a custom path', async () => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
     plugins: [
@@ -23,10 +25,10 @@ test.serial('supports overriding tslib with a custom path', async (t) => {
   });
   const code = await evaluateBundle(bundle);
 
-  t.is((code as any).myParent.baseMethod(), 'base method');
+  t.is(code.myParent.baseMethod(), 'base method');
 });
 
-test.serial('supports overriding tslib with a custom path in a promise', async (t) => {
+test.sequential('supports overriding tslib with a custom path in a promise', async () => {
   const options = {
     tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
     tslib: Promise.resolve('fixtures/overriding-tslib/tslib.js')
@@ -38,10 +40,10 @@ test.serial('supports overriding tslib with a custom path in a promise', async (
   });
   const code = await evaluateBundle(bundle);
 
-  t.is((code as any).myParent.baseMethod(), 'base method');
+  t.is(code.myParent.baseMethod(), 'base method');
 });
 
-test.serial('fails on bad tslib path', async (t) => {
+test.sequential('fails on bad tslib path', async () => {
   const fail = () =>
     rollup({
       input: 'fixtures/overriding-tslib/main.ts',
@@ -54,7 +56,7 @@ test.serial('fails on bad tslib path', async (t) => {
       onwarn
     });
 
-  const error = (await t.throwsAsync(fail)) as RollupError;
+  const error = await t.throwsAsync(fail);
 
   // Note: I'm done fucking around with Windows paths
   if (platform() === 'win32') {
@@ -71,7 +73,7 @@ test.serial('fails on bad tslib path', async (t) => {
   t.snapshot(error);
 });
 
-test.serial('fails without tslib installed', async (t) => {
+test.sequential('fails without tslib installed', async () => {
   const fail = () =>
     rollup({
       input: 'fixtures/overriding-tslib/main.ts',
@@ -90,7 +92,7 @@ test.serial('fails without tslib installed', async (t) => {
   t.snapshot(error);
 });
 
-test.serial('creates _tslib.js file when preserveModules is used', async (t) => {
+test.sequential('creates _tslib.js file when preserveModules is used', async () => {
   const bundle = await rollup({
     input: 'fixtures/preserve-modules/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/preserve-modules/tsconfig.json' })],

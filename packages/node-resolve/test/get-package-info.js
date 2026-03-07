@@ -2,14 +2,17 @@
 
 const path = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { nodeResolve } = require('..');
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
+
 process.chdir(path.join(__dirname, 'fixtures'));
 
-test('populates info for main', async (t) => {
+test('populates info for main', async () => {
   const resolve = nodeResolve({
     mainFields: ['main']
   });
@@ -43,7 +46,7 @@ test('populates info for main', async (t) => {
   });
 });
 
-test('populates info for module', async (t) => {
+test('populates info for module', async () => {
   const resolve = nodeResolve({
     mainFields: ['module']
   });
@@ -77,7 +80,7 @@ test('populates info for module', async (t) => {
   });
 });
 
-test('populates info for browser', async (t) => {
+test('populates info for browser', async () => {
   const resolve = nodeResolve({
     mainFields: ['browser']
   });

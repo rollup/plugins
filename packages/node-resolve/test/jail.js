@@ -1,15 +1,18 @@
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { getImports } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
+
 process.chdir(join(__dirname, 'fixtures'));
 
-test('mark module outside the jail as external', async (t) => {
+test('mark module outside the jail as external', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'jail.js',
@@ -30,7 +33,7 @@ test('mark module outside the jail as external', async (t) => {
   t.is(id.endsWith('jail.js'), true, 'id');
 });
 
-test('bundle module defined inside the jail', async (t) => {
+test('bundle module defined inside the jail', async () => {
   const bundle = await rollup({
     input: 'jail.js',
     onwarn: () => t.fail('No warnings were expected'),

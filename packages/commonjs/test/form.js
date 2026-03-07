@@ -4,9 +4,12 @@ const fs = require('fs');
 const path = require('path');
 
 const acorn = require('acorn');
-const test = require('ava');
 
 const { commonjs } = require('./helpers/util.js');
+
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
 
 process.chdir(__dirname);
 
@@ -51,7 +54,7 @@ if (path.sep === '/') {
       inputEntries.push(['output', `fixtures/form/${dir}/input.js`]);
     }
 
-    (config.solo ? test.only : test)(dir, (t) =>
+    (config.solo ? test.only : test)(dir, () =>
       Promise.all(
         inputEntries.map(async ([outputName, id]) => {
           const { buildStart, transform } = commonjs(config.options);

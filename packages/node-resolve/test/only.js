@@ -1,15 +1,18 @@
 const { join, resolve } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { getImports, getResolvedModules } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
+
 process.chdir(join(__dirname, 'fixtures'));
 
-test('specify the only packages to resolve', async (t) => {
+test('specify the only packages to resolve', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: ['only.js'],
@@ -29,7 +32,7 @@ test('specify the only packages to resolve', async (t) => {
   t.assert(Object.keys(modules).includes(resolve('only-local.js')));
 });
 
-test('handles nested entry modules', async (t) => {
+test('handles nested entry modules', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: ['nested/only.js'],
@@ -49,7 +52,7 @@ test('handles nested entry modules', async (t) => {
   t.assert(Object.keys(modules).includes(resolve('only-local.js')));
 });
 
-test('regex', async (t) => {
+test('regex', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'only.js',
@@ -69,7 +72,7 @@ test('regex', async (t) => {
   t.assert(Object.keys(modules).includes(resolve('only-local.js')));
 });
 
-test('allows a function as the parameter', async (t) => {
+test('allows a function as the parameter', async () => {
   function allowed(...modules) {
     const set = new Set(modules);
     return (id) => set.has(id);

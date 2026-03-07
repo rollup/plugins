@@ -1,6 +1,5 @@
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 const commonjs = require('@rollup/plugin-commonjs');
 
@@ -8,9 +7,13 @@ const { testBundle } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
+
 process.chdir(join(__dirname, 'fixtures'));
 
-test('handles export map shorthand', async (t) => {
+test('handles export map shorthand', async () => {
   const bundle = await rollup({
     input: 'exports-shorthand.js',
     onwarn: () => {
@@ -23,7 +26,7 @@ test('handles export map shorthand', async (t) => {
   t.is(module.exports, 'MAIN MAPPED');
 });
 
-test('handles export map with fallback', async (t) => {
+test('handles export map with fallback', async () => {
   const bundle = await rollup({
     input: 'exports-shorthand-fallback.js',
     onwarn: () => {
@@ -36,7 +39,7 @@ test('handles export map with fallback', async (t) => {
   t.is(module.exports, 'MAIN MAPPED');
 });
 
-test('handles export map with pattern and extensions', async (t) => {
+test('handles export map with pattern and extensions', async () => {
   const bundle = await rollup({
     input: 'exports-pattern-extension.js',
     onwarn: () => {
@@ -49,7 +52,7 @@ test('handles export map with pattern and extensions', async (t) => {
   t.is(module.exports.foo, 'foo');
 });
 
-test('handles export map with top level mappings', async (t) => {
+test('handles export map with top level mappings', async () => {
   const bundle = await rollup({
     input: 'exports-top-level-mappings.js',
     onwarn: () => {
@@ -63,7 +66,7 @@ test('handles export map with top level mappings', async (t) => {
   t.is(module.exports.foo, 'FOO MAPPED');
 });
 
-test('handles export map with top level conditions', async (t) => {
+test('handles export map with top level conditions', async () => {
   const bundle = await rollup({
     input: 'exports-top-level-conditions.js',
     onwarn: () => {
@@ -76,7 +79,7 @@ test('handles export map with top level conditions', async (t) => {
   t.is(module.exports, 'MAIN MAPPED');
 });
 
-test('handles export map with nested conditions', async (t) => {
+test('handles export map with nested conditions', async () => {
   const bundle = await rollup({
     input: 'exports-nested-conditions.js',
     onwarn: () => {
@@ -89,7 +92,7 @@ test('handles export map with nested conditions', async (t) => {
   t.is(module.exports, 'MAIN MAPPED');
 });
 
-test('handles conditions with a fallback', async (t) => {
+test('handles conditions with a fallback', async () => {
   const bundle = await rollup({
     input: 'exports-conditions-fallback.js',
     onwarn: () => {
@@ -102,7 +105,7 @@ test('handles conditions with a fallback', async (t) => {
   t.is(module.exports, 'MAIN MAPPED');
 });
 
-test('handles top level mappings with conditions', async (t) => {
+test('handles top level mappings with conditions', async () => {
   const bundle = await rollup({
     input: 'exports-mappings-and-conditions.js',
     onwarn: () => {
@@ -117,7 +120,7 @@ test('handles top level mappings with conditions', async (t) => {
   t.is(module.exports.bar, 'BAR MAPPED');
 });
 
-test('handles directory exports', async (t) => {
+test('handles directory exports', async () => {
   const bundle = await rollup({
     input: 'exports-directory.js',
     onwarn: () => {
@@ -132,7 +135,7 @@ test('handles directory exports', async (t) => {
   t.is(module.exports.c, 'exported-foo c');
 });
 
-test('handles main directory exports', async (t) => {
+test('handles main directory exports', async () => {
   const bundle = await rollup({
     input: 'exports-main-directory.js',
     onwarn: () => {
@@ -147,7 +150,7 @@ test('handles main directory exports', async (t) => {
   t.is(module.exports.c, 'exported c');
 });
 
-test('logs a warning when using shorthand and importing a subpath', async (t) => {
+test('logs a warning when using shorthand and importing a subpath', async () => {
   t.plan(1);
   const errors = [];
   await rollup({
@@ -161,7 +164,7 @@ test('logs a warning when using shorthand and importing a subpath', async (t) =>
   t.true(errors[0].message.includes('Could not resolve import "exports-shorthand/foo" in '));
 });
 
-test('logs a warning when a subpath cannot be found', async (t) => {
+test('logs a warning when a subpath cannot be found', async () => {
   t.plan(1);
   const errors = [];
   await rollup({
@@ -177,7 +180,7 @@ test('logs a warning when a subpath cannot be found', async (t) => {
   );
 });
 
-test('prevents importing files not specified in exports map', async (t) => {
+test('prevents importing files not specified in exports map', async () => {
   t.plan(1);
   const errors = [];
   await rollup({
@@ -193,7 +196,7 @@ test('prevents importing files not specified in exports map', async (t) => {
   );
 });
 
-test('uses "require" condition when a module is referenced with require', async (t) => {
+test('uses "require" condition when a module is referenced with require', async () => {
   const bundle = await rollup({
     input: 'exports-cjs.js',
     onwarn: () => {
@@ -206,7 +209,7 @@ test('uses "require" condition when a module is referenced with require', async 
   t.is(module.exports, 'CJS');
 });
 
-test('can use star pattern in exports field', async (t) => {
+test('can use star pattern in exports field', async () => {
   const bundle = await rollup({
     input: 'exports-star.js',
     onwarn: () => {
@@ -219,7 +222,7 @@ test('can use star pattern in exports field', async (t) => {
   t.deepEqual(module.exports, { a: 'A', b: 'B', c: 'C' });
 });
 
-test('the most specific star pattern matches', async (t) => {
+test('the most specific star pattern matches', async () => {
   const bundle = await rollup({
     input: 'exports-star-specificity.js',
     onwarn: () => {
@@ -236,7 +239,7 @@ test('the most specific star pattern matches', async (t) => {
   });
 });
 
-test('a literal match takes presedence', async (t) => {
+test('a literal match takes presedence', async () => {
   const bundle = await rollup({
     input: 'exports-literal-specificity.js',
     onwarn: () => {
@@ -249,7 +252,7 @@ test('a literal match takes presedence', async (t) => {
   t.deepEqual(module.exports, { a: 'foo a' });
 });
 
-test('the most specific directory mapping pattern matches', async (t) => {
+test('the most specific directory mapping pattern matches', async () => {
   const bundle = await rollup({
     input: 'exports-directory-specificity.js',
     onwarn: () => {
@@ -266,7 +269,7 @@ test('the most specific directory mapping pattern matches', async (t) => {
   });
 });
 
-test('can resolve fallback with conditions', async (t) => {
+test('can resolve fallback with conditions', async () => {
   const bundle = await rollup({
     input: 'exports-shorthand-fallback-conditions.js',
     onwarn: () => {
@@ -279,7 +282,7 @@ test('can resolve fallback with conditions', async (t) => {
   t.deepEqual(module.exports, 'MAIN MAPPED');
 });
 
-test('can resolve fallback with errors', async (t) => {
+test('can resolve fallback with errors', async () => {
   const bundle = await rollup({
     input: 'exports-shorthand-fallback-error.js',
     onwarn: () => {
@@ -292,7 +295,7 @@ test('can resolve fallback with errors', async (t) => {
   t.deepEqual(module.exports, 'MAIN MAPPED');
 });
 
-test('can resolve a package import to a relative file', async (t) => {
+test('can resolve a package import to a relative file', async () => {
   const bundle = await rollup({
     input: 'imports-relative.js',
     onwarn: () => {
@@ -305,7 +308,7 @@ test('can resolve a package import to a relative file', async (t) => {
   t.deepEqual(module.exports, 'imports-relative imported ./src/foo');
 });
 
-test('can resolve a package import to a bare import', async (t) => {
+test('can resolve a package import to a bare import', async () => {
   const bundle = await rollup({
     input: 'imports-bare.js',
     onwarn: () => {
@@ -318,7 +321,7 @@ test('can resolve a package import to a bare import', async (t) => {
   t.deepEqual(module.exports, 'imports-bare imported imports-bare-dependency');
 });
 
-test('can resolve a package import with conditions', async (t) => {
+test('can resolve a package import with conditions', async () => {
   const bundle = await rollup({
     input: 'imports-conditions.js',
     onwarn: () => {
@@ -331,7 +334,7 @@ test('can resolve a package import with conditions', async (t) => {
   t.deepEqual(module.exports, 'imports-conditions imported ./src/foo.mjs');
 });
 
-test('can resolve a package import with a pattern', async (t) => {
+test('can resolve a package import with a pattern', async () => {
   const bundle = await rollup({
     input: 'imports-pattern.js',
     onwarn: () => {
@@ -349,7 +352,7 @@ test('can resolve a package import with a pattern', async (t) => {
   });
 });
 
-test('can resolve a package import pattern to a bare package that uses exports', async (t) => {
+test('can resolve a package import pattern to a bare package that uses exports', async () => {
   const bundle = await rollup({
     input: 'imports-bare-pattern-exports.js',
     onwarn: () => {
@@ -366,7 +369,7 @@ test('can resolve a package import pattern to a bare package that uses exports',
   });
 });
 
-test('can override a star pattern using null', async (t) => {
+test('can override a star pattern using null', async () => {
   const errors = [];
   const bundle = await rollup({
     input: 'exports-null-override.js',
@@ -380,7 +383,7 @@ test('can override a star pattern using null', async (t) => {
   t.true(errors[0].message.includes('Could not resolve import "exports-null-override/foo/a" in '));
 });
 
-test('can self-import a package when using exports field', async (t) => {
+test('can self-import a package when using exports field', async () => {
   const bundle = await rollup({
     input: 'self-package-import.js',
     onwarn: () => {
@@ -396,7 +399,7 @@ test('can self-import a package when using exports field', async (t) => {
   });
 });
 
-test('does not warn when resolving typescript imports with fallback', async (t) => {
+test('does not warn when resolving typescript imports with fallback', async () => {
   const bundle = await rollup({
     input: 'exports-ts-fallback.ts',
     onwarn: () => {
@@ -411,7 +414,7 @@ test('does not warn when resolving typescript imports with fallback', async (t) 
   });
 });
 
-test('custom condition takes precedence over browser field and condition with `browser: true`', async (t) => {
+test('custom condition takes precedence over browser field and condition with `browser: true`', async () => {
   const bundle = await rollup({
     input: 'exports-worker-condition-with-browser-field.js',
     plugins: [nodeResolve({ exportConditions: ['browser', 'webworker'], browser: true })]
@@ -421,7 +424,7 @@ test('custom condition takes precedence over browser field and condition with `b
   t.deepEqual(module.exports, 'FROM WEBWORKER CONDITION');
 });
 
-test('custom condition takes precedence over browser field with `browser: true`', async (t) => {
+test('custom condition takes precedence over browser field with `browser: true`', async () => {
   const bundle = await rollup({
     input: 'exports-only-worker-condition-with-browser-field.js',
     plugins: [nodeResolve({ exportConditions: ['browser', 'webworker'], browser: true })]
@@ -431,7 +434,7 @@ test('custom condition takes precedence over browser field with `browser: true`'
   t.deepEqual(module.exports, 'FROM WEBWORKER CONDITION');
 });
 
-test('development condition is used when NODE_ENV is not production', async (t) => {
+test('development condition is used when NODE_ENV is not production', async () => {
   const bundle = await rollup({
     input: 'dev-prod-conditions.js',
     plugins: [nodeResolve()]

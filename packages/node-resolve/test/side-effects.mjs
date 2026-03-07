@@ -1,7 +1,6 @@
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
-import test from 'ava';
 import { rollup } from 'rollup';
 import commonjs from '@rollup/plugin-commonjs';
 
@@ -9,16 +8,20 @@ import { nodeResolve } from 'current-package';
 
 import { getCode, testBundle } from '../../../util/test.js';
 
+import { createAvaAssertions } from './helpers/ava-assertions.js';
+
+const t = createAvaAssertions();
+
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 process.chdir(join(DIRNAME, 'fixtures'));
 
-const failOnWarn = (t) => (warning) =>
+const failOnWarn = (warning) =>
   t.fail(`No warnings were expected, got:\n${warning.code}\n${warning.message}`);
 
-test('respects the package.json sideEffects property for files in root package by default', async (t) => {
+test('respects the package.json sideEffects property for files in root package by default', async () => {
   const bundle = await rollup({
     input: 'root-package-side-effect/index.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         rootDir: 'root-package-side-effect'
@@ -31,10 +34,10 @@ test('respects the package.json sideEffects property for files in root package b
   t.snapshot(code);
 });
 
-test('respects the package.json sideEffects when commonjs plugin is used', async (t) => {
+test('respects the package.json sideEffects when commonjs plugin is used', async () => {
   const bundle = await rollup({
     input: 'root-package-side-effect/index.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       commonjs(),
       nodeResolve({
@@ -48,10 +51,10 @@ test('respects the package.json sideEffects when commonjs plugin is used', async
   t.snapshot(code);
 });
 
-test('respects the package.json sideEffects when when another plugin uses this.load it its resolveId hook', async (t) => {
+test('respects the package.json sideEffects when when another plugin uses this.load it its resolveId hook', async () => {
   const bundle = await rollup({
     input: 'root-package-side-effect/index.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       {
         name: 'test',
@@ -77,10 +80,10 @@ test('respects the package.json sideEffects when when another plugin uses this.l
   t.snapshot(code);
 });
 
-test('respects the package.json sideEffects property for files in the root package and supports deep side effects', async (t) => {
+test('respects the package.json sideEffects property for files in the root package and supports deep side effects', async () => {
   const bundle = await rollup({
     input: 'deep-side-effects/index.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         rootDir: 'deep-side-effects'
@@ -93,10 +96,10 @@ test('respects the package.json sideEffects property for files in the root packa
   t.snapshot(code);
 });
 
-test('does not prefix the sideEffects property if the side effect contains a "/"', async (t) => {
+test('does not prefix the sideEffects property if the side effect contains a "/"', async () => {
   const bundle = await rollup({
     input: 'deep-side-effects-with-specific-side-effects/index.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         rootDir: 'deep-side-effects-with-specific-side-effects'
@@ -109,10 +112,10 @@ test('does not prefix the sideEffects property if the side effect contains a "/"
   t.snapshot(code);
 });
 
-test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async (t) => {
+test('ignores the package.json sideEffects property for files in root package with "ignoreSideEffectsForRoot" option', async () => {
   const bundle = await rollup({
     input: 'root-package-side-effect/index.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         rootDir: 'root-package-side-effect',
@@ -126,10 +129,10 @@ test('ignores the package.json sideEffects property for files in root package wi
   t.snapshot(code);
 });
 
-test('handles package side-effects', async (t) => {
+test('handles package side-effects', async () => {
   const bundle = await rollup({
     input: 'side-effects.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [nodeResolve()]
   });
   await testBundle(t, bundle);

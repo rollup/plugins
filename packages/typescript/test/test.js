@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs');
 
 const commonjs = require('@rollup/plugin-commonjs');
-const test = require('ava');
 const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
@@ -10,13 +9,20 @@ const { evaluateBundle, getCode, getFiles, onwarn } = require('../../../util/tes
 
 const typescript = require('..');
 
-const { fakeTypescript, forceRemove, waitForWatcherEvent } = require('./helpers');
+const {
+  createAvaAssertions,
+  fakeTypescript,
+  forceRemove,
+  waitForWatcherEvent
+} = require('./helpers');
 
-test.beforeEach(() => process.chdir(__dirname));
+const t = createAvaAssertions();
+
+beforeEach(() => process.chdir(__dirname));
 
 const outputOptions = { format: 'es' };
 
-test.serial('runs code through typescript', async (t) => {
+test.sequential('runs code through typescript', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', target: 'es5' })],
@@ -28,7 +34,7 @@ test.serial('runs code through typescript', async (t) => {
   t.false(code.includes('const'), code);
 });
 
-test.serial('allows nodenext module', async (t) => {
+test.sequential('allows nodenext module', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'nodenext' })],
@@ -40,7 +46,7 @@ test.serial('allows nodenext module', async (t) => {
   t.true(code.includes('const'), code);
 });
 
-test.serial('runs code through typescript with compilerOptions', async (t) => {
+test.sequential('runs code through typescript with compilerOptions', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -54,7 +60,7 @@ test.serial('runs code through typescript with compilerOptions', async (t) => {
   t.false(code.includes('const'), code);
 });
 
-test.serial('ensures outDir is located in Rollup output dir', async (t) => {
+test.sequential('ensures outDir is located in Rollup output dir', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -77,7 +83,7 @@ test.serial('ensures outDir is located in Rollup output dir', async (t) => {
   );
 });
 
-test.serial('ensures declarationDir is located in Rollup output dir', async (t) => {
+test.sequential('ensures declarationDir is located in Rollup output dir', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -101,9 +107,9 @@ test.serial('ensures declarationDir is located in Rollup output dir', async (t) 
   );
 });
 
-test.serial(
+test.sequential(
   'ensures declarationDir is located in Rollup output directory when output.file is used',
-  async (t) => {
+  async () => {
     const bundle = await rollup({
       input: 'fixtures/basic/main.ts',
       plugins: [
@@ -129,9 +135,9 @@ test.serial(
   }
 );
 
-test.serial(
+test.sequential(
   'ensures declarationDir is allowed in Rollup output directory when output.file is used',
-  async (t) => {
+  async () => {
     const bundle = await rollup({
       input: 'fixtures/basic/main.ts',
       plugins: [
@@ -151,9 +157,9 @@ test.serial(
   }
 );
 
-test.serial(
+test.sequential(
   'ensures output files can be written to subdirectories within the tsconfig outDir',
-  async (t) => {
+  async () => {
     const warnings = [];
     const outputOpts = { format: 'es', file: 'fixtures/basic/dist/esm/main.js' };
     const bundle = await rollup({
@@ -181,7 +187,7 @@ test.serial(
   }
 );
 
-test.serial('ensures multiple outputs can be built', async (t) => {
+test.sequential('ensures multiple outputs can be built', async () => {
   // In a rollup.config.js we would pass an array
   // The rollup method that's exported as a library won't do that so we must make two calls
   const bundle1 = await rollup({
@@ -214,7 +220,7 @@ test.serial('ensures multiple outputs can be built', async (t) => {
   ]);
 });
 
-test.serial('supports emitting types also for single file output', async (t) => {
+test.sequential('supports emitting types also for single file output', async () => {
   // Navigate to folder and use default local tsconfig instead of specifying tsconfig via file path
   // as that would have the side effect that the tsconfig's path would be used as fallback path for
   // the here unspecified outputOptions.dir, in which case the original issue wouldn't show.
@@ -240,7 +246,7 @@ test.serial('supports emitting types also for single file output', async (t) => 
   t.is(warnings.length, 0);
 });
 
-test.serial('supports emitting declarations in correct directory for output.file', async (t) => {
+test.sequential('supports emitting declarations in correct directory for output.file', async () => {
   // Ensure even when no `output.dir` is configured, declarations are emitted to configured `declarationDir`
   process.chdir('fixtures/basic');
   const outputOpts = { format: 'es', file: 'dist/main.esm.js' };
@@ -263,7 +269,7 @@ test.serial('supports emitting declarations in correct directory for output.file
   t.is(warnings.length, 0);
 });
 
-test.serial('relative paths in tsconfig.json are resolved relative to the file', async (t) => {
+test.sequential('relative paths in tsconfig.json are resolved relative to the file', async () => {
   const outputOpts = { format: 'es', dir: 'fixtures/relative-dir/dist' };
   const bundle = await rollup({
     input: 'fixtures/relative-dir/main.ts',
@@ -281,7 +287,7 @@ test.serial('relative paths in tsconfig.json are resolved relative to the file',
   t.true(output[1].content.includes('declare const answer = 42;'), output[1].content);
 });
 
-test.serial('throws for unsupported module types', async (t) => {
+test.sequential('throws for unsupported module types', async () => {
   const caughtError = await t.throws(() =>
     rollup({
       input: 'fixtures/basic/main.ts',
@@ -298,7 +304,7 @@ test.serial('throws for unsupported module types', async (t) => {
   );
 });
 
-test.serial('warns for invalid module types', async (t) => {
+test.sequential('warns for invalid module types', async () => {
   const warnings = [];
   await t.throwsAsync(() =>
     rollup({
@@ -321,7 +327,7 @@ test.serial('warns for invalid module types', async (t) => {
   ]);
 });
 
-test.serial('ignores case of module types', async (t) => {
+test.sequential('ignores case of module types', async () => {
   await t.notThrowsAsync(
     rollup({
       input: 'fixtures/basic/main.ts',
@@ -331,7 +337,7 @@ test.serial('ignores case of module types', async (t) => {
   );
 });
 
-test.serial('handles async functions', async (t) => {
+test.sequential('handles async functions', async () => {
   const bundle = await rollup({
     input: 'fixtures/async/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/async/tsconfig.json' })],
@@ -342,7 +348,7 @@ test.serial('handles async functions', async (t) => {
   t.pass();
 });
 
-test.serial('does not duplicate helpers', async (t) => {
+test.sequential('does not duplicate helpers', async () => {
   const bundle = await rollup({
     input: 'fixtures/dedup-helpers/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/dedup-helpers/tsconfig.json', target: 'es5' })],
@@ -357,7 +363,7 @@ test.serial('does not duplicate helpers', async (t) => {
   t.false(code.includes('__extends$1'), code);
 });
 
-test.serial('transpiles `export class A` correctly', async (t) => {
+test.sequential('transpiles `export class A` correctly', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-class-fix/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/export-class-fix/tsconfig.json' })],
@@ -374,7 +380,7 @@ test.serial('transpiles `export class A` correctly', async (t) => {
   t.true(bInst instanceof B);
 });
 
-test.serial('transpiles ES6 features to ES5 with source maps', async (t) => {
+test.sequential('transpiles ES6 features to ES5 with source maps', async () => {
   process.chdir('fixtures/import-class');
 
   const bundle = await rollup({
@@ -389,7 +395,7 @@ test.serial('transpiles ES6 features to ES5 with source maps', async (t) => {
   t.is(code.indexOf('=>'), -1, code);
 });
 
-test.serial('reports diagnostics and throws if errors occur during transpilation', async (t) => {
+test.sequential('reports diagnostics and throws if errors occur during transpilation', async () => {
   const caughtError = await t.throwsAsync(
     rollup({
       input: 'fixtures/syntax-error/missing-type.ts',
@@ -402,7 +408,7 @@ test.serial('reports diagnostics and throws if errors occur during transpilation
   t.is(caughtError.pluginCode, 'TS1110');
 });
 
-test.serial('ignore type errors if noEmitOnError is false', async (t) => {
+test.sequential('ignore type errors if noEmitOnError is false', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/syntax-error/missing-type.ts',
@@ -428,7 +434,7 @@ test.serial('ignore type errors if noEmitOnError is false', async (t) => {
   t.true(warnings[0].frame.includes('var a: ;'));
 });
 
-test.serial('works with named exports for abstract classes', async (t) => {
+test.sequential('works with named exports for abstract classes', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-abstract-class/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/export-abstract-class/tsconfig.json' })],
@@ -438,7 +444,7 @@ test.serial('works with named exports for abstract classes', async (t) => {
   t.true(code.length > 0, code);
 });
 
-test.serial('should use named exports for classes', async (t) => {
+test.sequential('should use named exports for classes', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-class/main.ts',
     plugins: [typescript({ include: 'fixtures/export-class/**/*' })],
@@ -447,7 +453,7 @@ test.serial('should use named exports for classes', async (t) => {
   t.is((await evaluateBundle(bundle)).foo, 'bar');
 });
 
-test.serial('supports overriding the TypeScript version', async (t) => {
+test.sequential('supports overriding the TypeScript version', async () => {
   const bundle = await rollup({
     input: 'fixtures/overriding-typescript/main.ts',
     onwarn,
@@ -485,7 +491,7 @@ test.serial('supports overriding the TypeScript version', async (t) => {
   t.is(result, 1337);
 });
 
-test.serial('should not resolve .d.ts files', async (t) => {
+test.sequential('should not resolve .d.ts files', async () => {
   const bundle = await rollup({
     input: 'fixtures/dts/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/dts/tsconfig.json' })],
@@ -496,7 +502,7 @@ test.serial('should not resolve .d.ts files', async (t) => {
   t.deepEqual(imports, ['an-import']);
 });
 
-test.serial('should transpile JSX if enabled', async (t) => {
+test.sequential('should transpile JSX if enabled', async () => {
   process.chdir('fixtures/jsx');
 
   const bundle = await rollup({
@@ -513,7 +519,7 @@ test.serial('should transpile JSX if enabled', async (t) => {
   t.not(usage, -1, 'should contain usage');
 });
 
-test.serial('automatically loads tsconfig.json from the current directory', async (t) => {
+test.sequential('automatically loads tsconfig.json from the current directory', async () => {
   process.chdir('fixtures/tsconfig-jsx');
 
   const bundle = await rollup({
@@ -527,7 +533,7 @@ test.serial('automatically loads tsconfig.json from the current directory', asyn
   t.not(usage, -1, 'should contain usage');
 });
 
-test.serial('should support extends property in tsconfig', async (t) => {
+test.sequential('should support extends property in tsconfig', async () => {
   process.chdir('fixtures/tsconfig-extends');
 
   const bundle = await rollup({
@@ -541,7 +547,7 @@ test.serial('should support extends property in tsconfig', async (t) => {
   t.not(usage, -1, 'should contain usage');
 });
 
-test.serial('should support extends property with given tsconfig', async (t) => {
+test.sequential('should support extends property with given tsconfig', async () => {
   process.chdir('fixtures/tsconfig-extends/ts-config-extends-child');
 
   const bundle = await rollup({
@@ -559,7 +565,7 @@ test.serial('should support extends property with given tsconfig', async (t) => 
   t.not(usage, -1, 'should contain usage');
 });
 
-test.serial('should support extends property with node resolution', async (t) => {
+test.sequential('should support extends property with node resolution', async () => {
   process.chdir('fixtures/tsconfig-extends-module');
 
   const bundle = await rollup({
@@ -573,7 +579,7 @@ test.serial('should support extends property with node resolution', async (t) =>
   t.true(usage, 'should contain usage');
 });
 
-test.serial('complies code that uses browser functions', async (t) => {
+test.sequential('complies code that uses browser functions', async () => {
   const bundle = await rollup({
     input: 'fixtures/dom/main.ts',
     plugins: [typescript({ tsconfig: './fixtures/dom/tsconfig.json' })],
@@ -585,7 +591,7 @@ test.serial('complies code that uses browser functions', async (t) => {
   t.true(code.includes('navigator.clipboard.readText()'), code);
 });
 
-test.serial('allows specifying a path for tsconfig.json', async (t) => {
+test.sequential('allows specifying a path for tsconfig.json', async () => {
   const bundle = await rollup({
     input: 'fixtures/tsconfig-jsx/main.tsx',
     plugins: [
@@ -599,7 +605,7 @@ test.serial('allows specifying a path for tsconfig.json', async (t) => {
   t.not(usage, -1, 'should contain usage');
 });
 
-test.serial('throws if tsconfig cannot be found', async (t) => {
+test.sequential('throws if tsconfig cannot be found', async () => {
   const caughtError = await t.throws(() =>
     rollup({
       input: 'fixtures/tsconfig-jsx/main.tsx',
@@ -614,7 +620,7 @@ test.serial('throws if tsconfig cannot be found', async (t) => {
   );
 });
 
-test.serial('should throw on bad options', async (t) => {
+test.sequential('should throw on bad options', async () => {
   const warnings = [];
   await t.throwsAsync(
     () =>
@@ -642,7 +648,7 @@ test.serial('should throw on bad options', async (t) => {
   ]);
 });
 
-test.serial('should handle re-exporting types', async (t) => {
+test.sequential('should handle re-exporting types', async () => {
   const bundle = await rollup({
     input: 'fixtures/reexport-type/main.ts',
     plugins: [
@@ -658,9 +664,9 @@ test.serial('should handle re-exporting types', async (t) => {
   await t.notThrowsAsync(getCode(bundle, outputOptions));
 });
 
-test.serial(
+test.sequential(
   'prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options',
-  async (t) => {
+  async () => {
     await t.notThrowsAsync(
       rollup({
         input: 'fixtures/overriding-typescript/main.ts',
@@ -676,7 +682,7 @@ test.serial(
   }
 );
 
-test.serial('should not emit null sourceContent', async (t) => {
+test.sequential('should not emit null sourceContent', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -692,7 +698,7 @@ test.serial('should not emit null sourceContent', async (t) => {
   t.false(sourcemap.sourcesContent.includes(undefined));
 });
 
-test.serial('should not emit sourceContent that references a non-existent file', async (t) => {
+test.sequential('should not emit sourceContent that references a non-existent file', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     output: {
@@ -710,7 +716,7 @@ test.serial('should not emit sourceContent that references a non-existent file',
   t.false(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map'));
 });
 
-test.serial('should not fail if source maps are off', async (t) => {
+test.sequential('should not fail if source maps are off', async () => {
   await t.notThrowsAsync(
     rollup({
       input: 'fixtures/overriding-typescript/main.ts',
@@ -726,7 +732,7 @@ test.serial('should not fail if source maps are off', async (t) => {
   );
 });
 
-test.serial('should allow a namespace containing a class', async (t) => {
+test.sequential('should allow a namespace containing a class', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-namespace-export-class/test.ts',
     plugins: [typescript({ tsconfig: 'fixtures/export-namespace-export-class/tsconfig.json' })],
@@ -738,7 +744,7 @@ test.serial('should allow a namespace containing a class', async (t) => {
   t.true(mode instanceof MODE);
 });
 
-test.serial('should allow merging an exported function and namespace', async (t) => {
+test.sequential('should allow merging an exported function and namespace', async () => {
   process.chdir('fixtures/export-fodule');
 
   const bundle = await rollup({
@@ -752,7 +758,7 @@ test.serial('should allow merging an exported function and namespace', async (t)
   t.is(f.foo, '2');
 });
 
-test.serial('supports dynamic imports', async (t) => {
+test.sequential('supports dynamic imports', async () => {
   const code = await getCode(
     await rollup({
       input: 'fixtures/dynamic-imports/main.ts',
@@ -764,7 +770,7 @@ test.serial('supports dynamic imports', async (t) => {
   t.true(code.includes("console.log('dynamic')"));
 });
 
-test.serial('supports CommonJS imports when the output format is CommonJS', async (t) => {
+test.sequential('supports CommonJS imports when the output format is CommonJS', async () => {
   const bundle = await rollup({
     input: 'fixtures/commonjs-imports/main.ts',
     plugins: [
@@ -777,7 +783,7 @@ test.serial('supports CommonJS imports when the output format is CommonJS', asyn
   t.is(output, 'exported from commonjs');
 });
 
-test.serial('supports optional chaining', async (t) => {
+test.sequential('supports optional chaining', async () => {
   const bundle = await rollup({
     input: 'fixtures/optional-chaining/main.ts',
     plugins: [
@@ -792,7 +798,7 @@ test.serial('supports optional chaining', async (t) => {
   t.regex(await getCode(bundle), /.*var main = o\.b\?\.c \?\? 'NOT FOUND';.*/);
 });
 
-test.serial('supports incremental build', async (t) => {
+test.sequential('supports incremental build', async () => {
   process.chdir('fixtures/basic');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
@@ -815,7 +821,7 @@ test.serial('supports incremental build', async (t) => {
   );
 });
 
-test.serial('supports incremental rebuild', async (t) => {
+test.sequential('supports incremental rebuild', async () => {
   process.chdir('fixtures/incremental');
 
   const bundle = await rollup({
@@ -831,7 +837,7 @@ test.serial('supports incremental rebuild', async (t) => {
   );
 });
 
-test.serial('supports incremental build for single file output', async (t) => {
+test.sequential('supports incremental build for single file output', async () => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
@@ -855,7 +861,7 @@ test.serial('supports incremental build for single file output', async (t) => {
   t.is(warnings.length, 0);
 });
 
-test.serial('supports consecutive rebuilds when watchMode is false', async (t) => {
+test.sequential('supports consecutive rebuilds when watchMode is false', async () => {
   process.chdir('fixtures/incremental-watch-off');
 
   // IMPORTANT: The issue only happens if it's the same instance of rollup/plugin-typescript
@@ -893,7 +899,7 @@ test.serial('supports consecutive rebuilds when watchMode is false', async (t) =
   }
 });
 
-test.serial('does not output to filesystem when outputToFilesystem is false', async (t) => {
+test.sequential('does not output to filesystem when outputToFilesystem is false', async () => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
@@ -913,7 +919,7 @@ test.serial('does not output to filesystem when outputToFilesystem is false', as
   t.false(fs.existsSync('tsconfig.tsbuildinfo'));
 });
 
-test.serial('warn about outputToFilesystem default', async (t) => {
+test.sequential('warn about outputToFilesystem default', async () => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
@@ -941,7 +947,7 @@ test.serial('warn about outputToFilesystem default', async (t) => {
   );
 });
 
-test.serial('supports consecutive incremental rebuilds', async (t) => {
+test.sequential('supports consecutive incremental rebuilds', async () => {
   process.chdir('fixtures/incremental');
 
   const firstBundle = await rollup({
@@ -969,9 +975,9 @@ test.serial('supports consecutive incremental rebuilds', async (t) => {
 });
 
 // https://github.com/rollup/plugins/issues/681
-test.serial(
+test.sequential(
   'supports incremental rebuilds with no change to cache when using rollup emitFile',
-  async (t) => {
+  async () => {
     process.chdir('fixtures/incremental-output-cache');
     const cleanup = () => {
       let files;
@@ -1016,9 +1022,9 @@ test.serial(
 );
 
 // https://github.com/rollup/plugins/issues/681
-test.serial(
+test.sequential(
   'supports incremental rebuilds with no change to cache when using filesystem calls',
-  async (t) => {
+  async () => {
     process.chdir('fixtures/incremental-output-cache');
     const cleanup = async () => {
       let files;
@@ -1070,7 +1076,7 @@ test.serial(
   }
 );
 
-test.serial.skip('supports project references', async (t) => {
+test.skip('supports project references', async () => {
   process.chdir('fixtures/project-references');
 
   const bundle = await rollup({
@@ -1086,7 +1092,7 @@ test.serial.skip('supports project references', async (t) => {
   t.is(zoo[0].name, 'Bob!?! ');
 });
 
-test.serial('warns if sourceMap is set in Typescript but not Rollup', async (t) => {
+test.sequential('warns if sourceMap is set in Typescript but not Rollup', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -1104,7 +1110,7 @@ test.serial('warns if sourceMap is set in Typescript but not Rollup', async (t) 
   );
 });
 
-test.serial('warns if sourceMap is set in Rollup but not Typescript', async (t) => {
+test.sequential('warns if sourceMap is set in Rollup but not Typescript', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -1124,7 +1130,7 @@ test.serial('warns if sourceMap is set in Rollup but not Typescript', async (t) 
   );
 });
 
-test.serial('normalizes resolved ids to avoid duplicate output on windows', async (t) => {
+test.sequential('normalizes resolved ids to avoid duplicate output on windows', async () => {
   const bundle = await rollup({
     input: ['fixtures/normalize-ids/one.js', 'fixtures/normalize-ids/two.js'],
     plugins: [
@@ -1142,7 +1148,7 @@ test.serial('normalizes resolved ids to avoid duplicate output on windows', asyn
   t.true(files[0].code.includes("import { one } from './one.js';"), files[1].code);
 });
 
-test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
+test.sequential('does it support tsconfig.rootDir for filtering', async () => {
   process.chdir('fixtures/root-dir/packages/test-1');
   const bundle = await rollup({
     input: 'main.ts',
@@ -1154,19 +1160,22 @@ test.serial('does it support tsconfig.rootDir for filtering', async (t) => {
   t.is(files.length, 1);
 });
 
-test.serial('does it fail for filtering with incorrect rootDir in nested projects', async (t) => {
-  process.chdir('fixtures/root-dir/packages/test-2');
-  const error = await t.throwsAsync(
-    rollup({
-      input: 'main.ts',
-      plugins: [typescript({ tsconfig: 'tsconfig.json' })]
-    })
-  );
-  // It imports a typescript file outside CWD, hence will not get resolved
-  t.is(error.code, 'UNRESOLVED_IMPORT');
-});
+test.sequential(
+  'does it fail for filtering with incorrect rootDir in nested projects',
+  async () => {
+    process.chdir('fixtures/root-dir/packages/test-2');
+    const error = await t.throwsAsync(
+      rollup({
+        input: 'main.ts',
+        plugins: [typescript({ tsconfig: 'tsconfig.json' })]
+      })
+    );
+    // It imports a typescript file outside CWD, hence will not get resolved
+    t.is(error.code, 'UNRESOLVED_IMPORT');
+  }
+);
 
-test.serial('does manually setting filterRoot resolve nested projects', async (t) => {
+test.sequential('does manually setting filterRoot resolve nested projects', async () => {
   process.chdir('fixtures/root-dir/packages/test-2');
   const bundle = await rollup({
     input: 'main.ts',
@@ -1176,7 +1185,7 @@ test.serial('does manually setting filterRoot resolve nested projects', async (t
   t.is(files.length, 1);
 });
 
-test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript', async (t) => {
+test.sequential('does not warn if sourceMap is set in Rollup and unset in Typescript', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -1190,7 +1199,7 @@ test.serial('does not warn if sourceMap is set in Rollup and unset in Typescript
   t.is(warnings.length, 0);
 });
 
-test('supports custom transformers', async (t) => {
+test('supports custom transformers', async () => {
   const warnings = [];
 
   let program = null;
@@ -1316,7 +1325,7 @@ test('supports custom transformers', async (t) => {
   );
 });
 
-test('supports passing a custom transformers factory', async (t) => {
+test('supports passing a custom transformers factory', async () => {
   const warnings = [];
 
   let program = null;
@@ -1431,7 +1440,7 @@ test('supports passing a custom transformers factory', async (t) => {
 
 // This test randomly fails with a segfault directly at the first "await waitForWatcherEvent" before any event occurred.
 // Skipping it until we can figure out what the cause is.
-test.serial.skip('picks up on newly included typescript files in watch mode', async (t) => {
+test.skip('picks up on newly included typescript files in watch mode', async () => {
   const dirName = path.join('fixtures', 'watch');
 
   // clean up artefacts from earlier builds
@@ -1478,7 +1487,7 @@ test.serial.skip('picks up on newly included typescript files in watch mode', as
   t.true(usage, 'should contain usage');
 });
 
-test.serial('works when code is in src directory', async (t) => {
+test.sequential('works when code is in src directory', async () => {
   const bundle = await rollup({
     input: 'fixtures/src-dir/src/index.ts',
     output: [
@@ -1502,7 +1511,7 @@ test.serial('works when code is in src directory', async (t) => {
   );
 });
 
-test.serial('correctly resolves types in a nodenext module', async (t) => {
+test.sequential('correctly resolves types in a nodenext module', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/nodenext-module/index.ts',
@@ -1522,7 +1531,7 @@ test.serial('correctly resolves types in a nodenext module', async (t) => {
   t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
 });
 
-test.serial('correctly resolves types with nodenext moduleResolution', async (t) => {
+test.sequential('correctly resolves types with nodenext moduleResolution', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/nodenext-resolution/index.ts',
@@ -1542,7 +1551,7 @@ test.serial('correctly resolves types with nodenext moduleResolution', async (t)
   t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
 });
 
-test.serial('noForceEmit option defers to tsconfig.json for emitDeclarationOnly', async (t) => {
+test.sequential('noForceEmit option defers to tsconfig.json for emitDeclarationOnly', async () => {
   const input = 'fixtures/noForceEmit/emitDeclarationOnly/main.ts';
   const warnings = [];
   const bundle = await rollup({
@@ -1575,7 +1584,7 @@ test.serial('noForceEmit option defers to tsconfig.json for emitDeclarationOnly'
   t.is(output[0].code, originalCode);
 });
 
-test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) => {
+test.sequential('noForceEmit option defers to tsconfig.json for noEmit', async () => {
   const input = 'fixtures/noForceEmit/noEmit/main.ts';
   const warnings = [];
   const bundle = await rollup({
@@ -1605,7 +1614,7 @@ test.serial('noForceEmit option defers to tsconfig.json for noEmit', async (t) =
   t.is(output[0].code, originalCode);
 });
 
-test.serial('compiled external library', async (t) => {
+test.sequential('compiled external library', async () => {
   const input = 'fixtures/external-library-import/main.ts';
   await rollup({
     input,
@@ -1614,7 +1623,7 @@ test.serial('compiled external library', async (t) => {
   t.pass();
 });
 
-test.serial('observes included declarations', async (t) => {
+test.sequential('observes included declarations', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/included-declarations/main.ts',
@@ -1630,7 +1639,7 @@ test.serial('observes included declarations', async (t) => {
   t.is(files.length, 1);
 });
 
-test.serial('downlevels JS when allowJs is true (default include)', async (t) => {
+test.sequential('downlevels JS when allowJs is true (default include)', async () => {
   const bundle = await rollup({
     input: 'fixtures/allow-js-downlevel/src/main.js',
     plugins: [typescript({ tsconfig: 'fixtures/allow-js-downlevel/tsconfig.json' })],
@@ -1646,7 +1655,7 @@ test.serial('downlevels JS when allowJs is true (default include)', async (t) =>
   t.deepEqual(result(), [1, 123]);
 });
 
-test.serial('downlevels JS imported by TS when allowJs is true', async (t) => {
+test.sequential('downlevels JS imported by TS when allowJs is true', async () => {
   const bundle = await rollup({
     input: 'fixtures/allow-js-from-ts/src/main.ts',
     plugins: [typescript({ tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json' })],
@@ -1661,43 +1670,46 @@ test.serial('downlevels JS imported by TS when allowJs is true', async (t) => {
   t.deepEqual(result(), [7, 9]);
 });
 
-test.serial('excludes user-configured outDir from processing when allowJs is true', async (t) => {
-  const outDir = path.join(__dirname, 'fixtures/allow-js-from-ts/.out');
-  fs.rmSync(outDir, { recursive: true, force: true });
-
-  const bundle = await rollup({
-    input: 'fixtures/allow-js-from-ts/src/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json',
-        compilerOptions: { outDir }
-      })
-    ],
-    onwarn
-  });
-
-  try {
-    // Ensure Rollup did not pull any files from the outDir into the graph
-    const normalizeForCompare = (p) => {
-      const r = path.resolve(p);
-      return process.platform === 'win32' ? r.toLowerCase() : r;
-    };
-    const outDirAbs = normalizeForCompare(outDir);
-    const isInside = (parent, child) => {
-      const rel = path.relative(parent, normalizeForCompare(child));
-      // same dir or within parent
-      return !rel.startsWith('..') && !path.isAbsolute(rel);
-    };
-    t.true(bundle.watchFiles.every((f) => !isInside(outDirAbs, f)));
-  } finally {
-    await bundle.close();
+test.sequential(
+  'excludes user-configured outDir from processing when allowJs is true',
+  async () => {
+    const outDir = path.join(__dirname, 'fixtures/allow-js-from-ts/.out');
     fs.rmSync(outDir, { recursive: true, force: true });
-  }
-});
 
-test.serial(
+    const bundle = await rollup({
+      input: 'fixtures/allow-js-from-ts/src/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json',
+          compilerOptions: { outDir }
+        })
+      ],
+      onwarn
+    });
+
+    try {
+      // Ensure Rollup did not pull any files from the outDir into the graph
+      const normalizeForCompare = (p) => {
+        const r = path.resolve(p);
+        return process.platform === 'win32' ? r.toLowerCase() : r;
+      };
+      const outDirAbs = normalizeForCompare(outDir);
+      const isInside = (parent, child) => {
+        const rel = path.relative(parent, normalizeForCompare(child));
+        // same dir or within parent
+        return !rel.startsWith('..') && !path.isAbsolute(rel);
+      };
+      t.true(bundle.watchFiles.every((f) => !isInside(outDirAbs, f)));
+    } finally {
+      await bundle.close();
+      fs.rmSync(outDir, { recursive: true, force: true });
+    }
+  }
+);
+
+test.sequential(
   'recreates transformers per rebuild and exposes getProgram in watch mode',
-  async (t) => {
+  async () => {
     const observations = [];
 
     const dirName = path.join(__dirname, 'fixtures', 'transformers');
@@ -1779,7 +1791,7 @@ test.serial(
   }
 );
 
-test.serial('recreates typeChecker-based transformers per rebuild in watch mode', async (t) => {
+test.sequential('recreates typeChecker-based transformers per rebuild in watch mode', async () => {
   const observations = [];
 
   const dirName = path.join(__dirname, 'fixtures', 'transformers');
@@ -1859,7 +1871,7 @@ test.serial('recreates typeChecker-based transformers per rebuild in watch mode'
   }
 });
 
-test.serial('defaults to legacy behavior: reuses factories across watch rebuilds', async (t) => {
+test.sequential('defaults to legacy behavior: reuses factories across watch rebuilds', async () => {
   const dirName = path.join(__dirname, 'fixtures', 'transformers');
   const outputJs = path.join(dirName, 'main.js');
   if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);

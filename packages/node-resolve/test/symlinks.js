@@ -1,12 +1,15 @@
 const fs = require('fs');
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
+
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
 
 process.chdir(join(__dirname, 'fixtures'));
 
@@ -34,16 +37,16 @@ function unlinkDirectories() {
   fs.unlinkSync('symlinked/second/node_modules/third');
 }
 
-test.beforeEach(() => {
+beforeEach(() => {
   createMissingDirectories();
   linkDirectories();
 });
 
-test.afterEach.always(() => {
+afterEach(() => {
   unlinkDirectories();
 });
 
-test.serial('resolves symlinked packages', async (t) => {
+test.sequential('resolves symlinked packages', async () => {
   const bundle = await rollup({
     input: 'symlinked/first/index.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -53,7 +56,7 @@ test.serial('resolves symlinked packages', async (t) => {
   t.is(module.exports.number1, module.exports.number2);
 });
 
-test.serial('resolves symlinked packages with browser object', async (t) => {
+test.sequential('resolves symlinked packages with browser object', async () => {
   const bundle = await rollup({
     input: 'symlinked/first/index.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -63,7 +66,7 @@ test.serial('resolves symlinked packages with browser object', async (t) => {
   t.is(module.exports.number1, 'not random string');
 });
 
-test.serial('preserves symlinks if `preserveSymlinks` is true', async (t) => {
+test.sequential('preserves symlinks if `preserveSymlinks` is true', async () => {
   const bundle = await rollup({
     input: 'symlinked/first/index.js',
     onwarn: () => t.fail('No warnings were expected'),

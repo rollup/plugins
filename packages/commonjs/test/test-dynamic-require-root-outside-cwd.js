@@ -1,13 +1,16 @@
 const path = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { commonjs } = require('./helpers/util.js');
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
+
 process.chdir(path.join(__dirname, 'fixtures/samples/dynamic-require-root-outside-cwd/cwd'));
 
-test('crawls dynamicRequireRoot outside cwd', async (t) => {
+test('crawls dynamicRequireRoot outside cwd', async () => {
   const build = await rollup({
     input: 'main.js',
     plugins: [

@@ -1,15 +1,18 @@
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
 
 const { nodeResolve } = require('..');
 
+const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+
+const t = createAvaAssertions();
+
 process.chdir(join(__dirname, 'fixtures'));
 
-test('respects order if given module,jsnext:main,main', async (t) => {
+test('respects order if given module,jsnext:main,main', async () => {
   const bundle = await rollup({
     input: 'prefer-module.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -19,7 +22,7 @@ test('respects order if given module,jsnext:main,main', async (t) => {
   t.is(module.exports, 'MODULE-ENTRY');
 });
 
-test('prefer module field by default', async (t) => {
+test('prefer module field by default', async () => {
   const bundle = await rollup({
     input: 'prefer-module.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -29,7 +32,7 @@ test('prefer module field by default', async (t) => {
   t.is(module.exports, 'MODULE-ENTRY');
 });
 
-test('finds and uses a dual-distributed .js & .mjs module', async (t) => {
+test('finds and uses a dual-distributed .js & .mjs module', async () => {
   const bundle = await rollup({
     input: 'dual-cjs-mjs.js',
     onwarn: () => t.fail('No warnings were expected'),
@@ -39,7 +42,7 @@ test('finds and uses a dual-distributed .js & .mjs module', async (t) => {
   t.is(module.exports, 'DUAL-MJS');
 });
 
-test('respects order if given jsnext:main, main', async (t) => {
+test('respects order if given jsnext:main, main', async () => {
   const bundle = await rollup({
     input: 'prefer-jsnext.js',
     onwarn: () => t.fail('No warnings were expected'),
