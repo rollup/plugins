@@ -1,170 +1,168 @@
 import { resolve as rawResolve } from 'path';
 
-import test from 'ava';
-
 import { createFilter, normalizePath } from '../';
 
 const resolve = (...parts: string[]) => normalizePath(rawResolve(...parts));
 
-test.beforeEach(() => process.chdir(__dirname));
+beforeEach(() => process.chdir(__dirname));
 
-test('includes by default ', (t) => {
+test('includes by default ', () => {
   const filter = createFilter();
-  t.truthy(filter(resolve('x')));
+  expect(filter(resolve('x'))).toBeTruthy();
 });
 
-test('excludes IDs that are not included, if include.length > 0', (t) => {
+test('excludes IDs that are not included, if include.length > 0', () => {
   const filter = createFilter(['y']);
-  t.falsy(filter(resolve('x')));
-  t.truthy(filter(resolve('y')));
+  expect(filter(resolve('x'))).toBeFalsy();
+  expect(filter(resolve('y'))).toBeTruthy();
 });
 
-test('excludes IDs explicitly', (t) => {
+test('excludes IDs explicitly', () => {
   const filter = createFilter(null, ['y']);
-  t.truthy(filter(resolve('x')));
-  t.falsy(filter(resolve('y')));
+  expect(filter(resolve('x'))).toBeTruthy();
+  expect(filter(resolve('y'))).toBeFalsy();
 });
 
-test('handles non-array arguments', (t) => {
+test('handles non-array arguments', () => {
   const filter = createFilter('foo/*', 'foo/baz');
-  t.truthy(filter(resolve('foo/bar')));
-  t.falsy(filter(resolve('foo/baz')));
+  expect(filter(resolve('foo/bar'))).toBeTruthy();
+  expect(filter(resolve('foo/baz'))).toBeFalsy();
 });
 
-test('negation patterns', (t) => {
+test('negation patterns', () => {
   const filter = createFilter(['a/!(b)/c']);
-  t.truthy(filter(resolve('a/d/c')));
-  t.falsy(filter(resolve('a/b/c')));
+  expect(filter(resolve('a/d/c'))).toBeTruthy();
+  expect(filter(resolve('a/b/c'))).toBeFalsy();
 });
 
-test('excludes non-string IDs', (t) => {
+test('excludes non-string IDs', () => {
   const filter = createFilter(null, null);
-  t.falsy(filter({}));
+  expect(filter({})).toBeFalsy();
 });
 
-test('excludes strings beginning with NUL', (t) => {
+test('excludes strings beginning with NUL', () => {
   const filter = createFilter(null, null);
-  t.falsy(filter('\0someid'));
+  expect(filter('\0someid')).toBeFalsy();
 });
 
-test('includes with regexp', (t) => {
+test('includes with regexp', () => {
   const filter = createFilter(['a/!(b)/c', /\.js$/]);
-  t.truthy(filter(resolve('a/d/c')));
-  t.falsy(filter(resolve('a/b/c')));
-  t.truthy(filter(resolve('a.js')));
-  t.truthy(filter(resolve('a/b.js')));
-  t.falsy(filter(resolve('a/b.jsx')));
+  expect(filter(resolve('a/d/c'))).toBeTruthy();
+  expect(filter(resolve('a/b/c'))).toBeFalsy();
+  expect(filter(resolve('a.js'))).toBeTruthy();
+  expect(filter(resolve('a/b.js'))).toBeTruthy();
+  expect(filter(resolve('a/b.jsx'))).toBeFalsy();
 });
 
-test('excludes with regexp', (t) => {
+test('excludes with regexp', () => {
   const filter = createFilter(['a/!(b)/c', /\.js$/], /\.js$/);
-  t.truthy(filter(resolve('a/d/c')));
-  t.falsy(filter(resolve('a/b/c')));
-  t.falsy(filter(resolve('a.js')));
-  t.falsy(filter(resolve('a/b.js')));
-  t.falsy(filter(resolve('a/b.jsx')));
+  expect(filter(resolve('a/d/c'))).toBeTruthy();
+  expect(filter(resolve('a/b/c'))).toBeFalsy();
+  expect(filter(resolve('a.js'))).toBeFalsy();
+  expect(filter(resolve('a/b.js'))).toBeFalsy();
+  expect(filter(resolve('a/b.jsx'))).toBeFalsy();
 });
 
-test('allows setting an absolute base dir', (t) => {
+test('allows setting an absolute base dir', () => {
   const baseDir = resolve('C');
   const filter = createFilter(['y*'], ['yx'], { resolve: baseDir });
-  t.falsy(filter(`${baseDir}/x`));
-  t.truthy(filter(`${baseDir}/ys`));
-  t.falsy(filter(`${baseDir}/yx`));
-  t.falsy(filter(resolve('C/d/ys')));
-  t.falsy(filter(resolve('ys')));
-  t.falsy(filter('ys'));
+  expect(filter(`${baseDir}/x`)).toBeFalsy();
+  expect(filter(`${baseDir}/ys`)).toBeTruthy();
+  expect(filter(`${baseDir}/yx`)).toBeFalsy();
+  expect(filter(resolve('C/d/ys'))).toBeFalsy();
+  expect(filter(resolve('ys'))).toBeFalsy();
+  expect(filter('ys')).toBeFalsy();
 });
 
-test('allows setting a relative base dir', (t) => {
+test('allows setting a relative base dir', () => {
   const filter = createFilter(['y*'], ['yx'], { resolve: 'C/d' });
-  t.falsy(filter(resolve('C/d/x')));
-  t.truthy(filter(resolve('C/d/ys')));
-  t.falsy(filter(resolve('C/d/yx')));
-  t.falsy(filter(`${resolve('C')}/ys`));
-  t.falsy(filter(resolve('ys')));
-  t.falsy(filter('ys'));
+  expect(filter(resolve('C/d/x'))).toBeFalsy();
+  expect(filter(resolve('C/d/ys'))).toBeTruthy();
+  expect(filter(resolve('C/d/yx'))).toBeFalsy();
+  expect(filter(`${resolve('C')}/ys`)).toBeFalsy();
+  expect(filter(resolve('ys'))).toBeFalsy();
+  expect(filter('ys')).toBeFalsy();
 });
 
-test('ignores a falsy resolve value', (t) => {
+test('ignores a falsy resolve value', () => {
   const filter = createFilter(['y*'], ['yx'], { resolve: null });
-  t.falsy(filter(resolve('x')));
-  t.truthy(filter(resolve('ys')));
-  t.falsy(filter(resolve('yx')));
-  t.falsy(filter(`${resolve('C')}/ys`));
-  t.falsy(filter(resolve('C/d/ys')));
-  t.falsy(filter('ys'));
+  expect(filter(resolve('x'))).toBeFalsy();
+  expect(filter(resolve('ys'))).toBeTruthy();
+  expect(filter(resolve('yx'))).toBeFalsy();
+  expect(filter(`${resolve('C')}/ys`)).toBeFalsy();
+  expect(filter(resolve('C/d/ys'))).toBeFalsy();
+  expect(filter('ys')).toBeFalsy();
 });
 
-test('allows preventing resolution against process.cwd()', (t) => {
+test('allows preventing resolution against process.cwd()', () => {
   const filter = createFilter(['y*'], ['yx'], { resolve: false });
-  t.falsy(filter('x'));
-  t.truthy(filter('ys'));
-  t.falsy(filter('yx'));
-  t.falsy(filter(`${resolve('C')}/ys`));
-  t.falsy(filter(resolve('C/d/ys')));
-  t.falsy(filter(resolve('ys')));
+  expect(filter('x')).toBeFalsy();
+  expect(filter('ys')).toBeTruthy();
+  expect(filter('yx')).toBeFalsy();
+  expect(filter(`${resolve('C')}/ys`)).toBeFalsy();
+  expect(filter(resolve('C/d/ys'))).toBeFalsy();
+  expect(filter(resolve('ys'))).toBeFalsy();
 });
 
-test('includes names starting with a "."', (t) => {
+test('includes names starting with a "."', () => {
   const filter = createFilter(['**/*a']);
-  t.truthy(filter(resolve('.a')));
-  t.truthy(filter(resolve('.x/a')));
+  expect(filter(resolve('.a'))).toBeTruthy();
+  expect(filter(resolve('.x/a'))).toBeTruthy();
 });
 
-test.serial('includes names containing parenthesis', (t) => {
+test.sequential('includes names containing parenthesis', () => {
   process.chdir(resolve(__dirname, 'fixtures/folder-with (parens)'));
   const filter = createFilter(['*.ts+(|x)', '**/*.ts+(|x)'], ['*.d.ts', '**/*.d.ts']);
-  t.truthy(filter(resolve('folder (test)/src/main.tsx')));
-  t.truthy(filter(resolve('.x/(test)a.ts')));
-  t.falsy(filter(resolve('.x/(test)a.d.ts')));
+  expect(filter(resolve('folder (test)/src/main.tsx'))).toBeTruthy();
+  expect(filter(resolve('.x/(test)a.ts'))).toBeTruthy();
+  expect(filter(resolve('.x/(test)a.d.ts'))).toBeFalsy();
 });
 
-test('handles relative paths', (t) => {
+test('handles relative paths', () => {
   const filter = createFilter(['./index.js', './foo/../a.js']);
-  t.truthy(filter(resolve('index.js')));
-  t.truthy(filter(resolve('a.js')));
-  t.falsy(filter(resolve('foo/a.js')));
+  expect(filter(resolve('index.js'))).toBeTruthy();
+  expect(filter(resolve('a.js'))).toBeTruthy();
+  expect(filter(resolve('foo/a.js'))).toBeFalsy();
 });
 
-test('does not add current working directory when pattern is an absolute path', (t) => {
+test('does not add current working directory when pattern is an absolute path', () => {
   const filter = createFilter([resolve('..', '..', '*')]);
-  t.truthy(filter(resolve('..', '..', 'a')));
-  t.truthy(filter(resolve('..', '..', 'b')));
-  t.falsy(filter(resolve('..', 'c')));
+  expect(filter(resolve('..', '..', 'a'))).toBeTruthy();
+  expect(filter(resolve('..', '..', 'b'))).toBeTruthy();
+  expect(filter(resolve('..', 'c'))).toBeFalsy();
 });
 
-test('does not add current working directory when pattern starts with character **', (t) => {
+test('does not add current working directory when pattern starts with character **', () => {
   const filter = createFilter(['**/*']);
 
-  t.truthy(filter(resolve('a')));
-  t.truthy(filter(resolve('..', '..', 'a')));
+  expect(filter(resolve('a'))).toBeTruthy();
+  expect(filter(resolve('..', '..', 'a'))).toBeTruthy();
 });
 
-test('add current working directory when pattern starts with one *', (t) => {
+test('add current working directory when pattern starts with one *', () => {
   const filter = createFilter([`*`]);
 
-  t.truthy(filter(resolve('a')));
-  t.falsy(filter(resolve('..', '..', 'a')));
+  expect(filter(resolve('a'))).toBeTruthy();
+  expect(filter(resolve('..', '..', 'a'))).toBeFalsy();
 });
 
-test('normalizes path when pattern is an absolute path', (t) => {
+test('normalizes path when pattern is an absolute path', () => {
   const filterPosix = createFilter([`${resolve('.')}/*`]);
   const filterWin = createFilter([`${resolve('.')}\\*`]);
 
-  t.truthy(filterPosix(resolve('a')));
-  t.truthy(filterWin(resolve('a')));
+  expect(filterPosix(resolve('a'))).toBeTruthy();
+  expect(filterWin(resolve('a'))).toBeTruthy();
 });
 
-test('normalizes path when pattern starts with *', (t) => {
+test('normalizes path when pattern starts with *', () => {
   const filterPosix = createFilter([`**/a`]);
   const filterWin = createFilter([`**\\a`]);
 
-  t.truthy(filterPosix(resolve('a')));
-  t.truthy(filterWin(resolve('a')));
+  expect(filterPosix(resolve('a'))).toBeTruthy();
+  expect(filterWin(resolve('a'))).toBeTruthy();
 });
 
-test('normalizes path when pattern has resolution base', (t) => {
+test('normalizes path when pattern has resolution base', () => {
   const filterPosix = createFilter([`test/*`], [], {
     resolve: __dirname
   });
@@ -172,30 +170,30 @@ test('normalizes path when pattern has resolution base', (t) => {
     resolve: __dirname
   });
 
-  t.truthy(filterPosix(resolve('test/a')));
-  t.truthy(filterWin(resolve('test/a')));
+  expect(filterPosix(resolve('test/a'))).toBeTruthy();
+  expect(filterWin(resolve('test/a'))).toBeTruthy();
 });
 
-test('pass a regular expression to the include parameter', (t) => {
+test('pass a regular expression to the include parameter', () => {
   const filter = createFilter([/zxcvbnmasdfg/]);
-  t.truthy(filter(resolve('zxcvbnmasdfg')));
-  t.falsy(filter(resolve('zxcvbnmasdfe')));
+  expect(filter(resolve('zxcvbnmasdfg'))).toBeTruthy();
+  expect(filter(resolve('zxcvbnmasdfe'))).toBeFalsy();
 });
 
-test('pass a regular expression to the include parameter with g flag', (t) => {
+test('pass a regular expression to the include parameter with g flag', () => {
   const filter = createFilter([/zxcvbnmasdfg/g]);
-  t.truthy(filter(resolve('zxcvbnmasdfg')));
-  t.truthy(filter(resolve('zxcvbnmasdfg')));
+  expect(filter(resolve('zxcvbnmasdfg'))).toBeTruthy();
+  expect(filter(resolve('zxcvbnmasdfg'))).toBeTruthy();
 });
 
-test('pass a regular expression to the exclude parameter', (t) => {
+test('pass a regular expression to the exclude parameter', () => {
   const filter = createFilter(null, [/zxcvbnmasdfg/]);
-  t.falsy(filter(resolve('zxcvbnmasdfg')));
-  t.truthy(filter(resolve('zxcvbnmasdfe')));
+  expect(filter(resolve('zxcvbnmasdfg'))).toBeFalsy();
+  expect(filter(resolve('zxcvbnmasdfe'))).toBeTruthy();
 });
 
-test('pass a regular expression to the exclude parameter with g flag', (t) => {
+test('pass a regular expression to the exclude parameter with g flag', () => {
   const filter = createFilter(null, [/zxcvbnmasdfg/g]);
-  t.falsy(filter(resolve('zxcvbnmasdfg')));
-  t.falsy(filter(resolve('zxcvbnmasdfg')));
+  expect(filter(resolve('zxcvbnmasdfg'))).toBeFalsy();
+  expect(filter(resolve('zxcvbnmasdfg'))).toBeFalsy();
 });

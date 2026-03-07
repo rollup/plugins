@@ -1,17 +1,15 @@
-import test from 'ava';
-
 import { normalizePath } from '../';
 
-test('replaces \\ with /', (t) => {
-  t.is(normalizePath('foo\\bar'), 'foo/bar');
-  t.is(normalizePath('foo\\bar\\baz'), 'foo/bar/baz');
+test('replaces \\ with /', () => {
+  expect(normalizePath('foo\\bar')).toBe('foo/bar');
+  expect(normalizePath('foo\\bar\\baz')).toBe('foo/bar/baz');
 });
 
-test('ignores forward slash', (t) => {
-  t.is(normalizePath('foo/bar'), 'foo/bar');
-  t.is(normalizePath('foo/bar\\baz'), 'foo/bar/baz');
+test('ignores forward slash', () => {
+  expect(normalizePath('foo/bar')).toBe('foo/bar');
+  expect(normalizePath('foo/bar\\baz')).toBe('foo/bar/baz');
 });
 
-test('handles empty string', (t) => {
-  t.is(normalizePath(''), '');
+test('handles empty string', () => {
+  expect(normalizePath('')).toBe('');
 });
