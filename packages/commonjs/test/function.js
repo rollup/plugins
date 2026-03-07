@@ -6,21 +6,41 @@ const { rollup } = require('rollup');
 
 const { commonjs, getCodeMapFromBundle, runCodeSplitTest } = require('./helpers/util');
 
-const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  },
+  truthy(value, message) {
+    expect(value, message).toBeTruthy();
+  },
+  throws(fn, expectation) {
+    try {
+      fn();
+    } catch (error) {
+      if (expectation?.message instanceof RegExp) {
+        expect(error.message).toMatch(expectation.message);
+      } else if (expectation?.message) {
+        expect(error.message).toBe(expectation.message);
+      }
 
-const t = createAvaAssertions();
+      return error;
+    }
+
+    return expect.unreachable('Expected function to throw');
+  }
+};
 
 process.chdir(__dirname);
-
 readdirSync('./fixtures/function').forEach((dir) => {
   let config;
-
   try {
     config = require(`./fixtures/function/${dir}/_config.js`);
   } catch (err) {
     config = {};
   }
-
   if (config.skip) {
     console.error(`Skipped test "${dir}"`);
     return;
@@ -38,7 +58,6 @@ readdirSync('./fixtures/function').forEach((dir) => {
         ]
       }
     );
-
     const bundle = await rollup(options);
     const codeMap = await getCodeMapFromBundle(bundle, options.output || {});
     if (config.show || config.solo) {
@@ -53,16 +72,15 @@ readdirSync('./fixtures/function').forEach((dir) => {
     }
     const { exports, global, error } = runCodeSplitTest(
       codeMap,
-      t,
+      avaAssertions,
       config.testEntry || 'main.js',
       config.context
     );
-
-    if (config.exports) config.exports(exports, t);
-    if (config.global) config.global(global, t);
+    if (config.exports) config.exports(exports, avaAssertions);
+    if (config.global) config.global(global, avaAssertions);
     if (error) {
       throw error;
     }
-    t.snapshot(codeMap);
+    expect(codeMap).toMatchSnapshot();
   });
 });

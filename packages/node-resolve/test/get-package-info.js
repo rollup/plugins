@@ -6,19 +6,12 @@ const { rollup } = require('rollup');
 
 const { nodeResolve } = require('..');
 
-const { createAvaAssertions } = require('./helpers/ava-assertions.js');
-
-const t = createAvaAssertions();
-
 process.chdir(path.join(__dirname, 'fixtures'));
-
 test('populates info for main', async () => {
   const resolve = nodeResolve({
     mainFields: ['main']
   });
-
   let entriesInfo;
-
   await rollup({
     input: 'prefer-main.js',
     plugins: [
@@ -32,11 +25,9 @@ test('populates info for main', async () => {
       }
     ]
   });
-
   const entriesPkgJsonPath = path.resolve('node_modules/entries/package.json');
   const root = path.dirname(entriesPkgJsonPath);
-
-  t.deepEqual(entriesInfo, {
+  expect(entriesInfo).toEqual({
     browserMappedMain: false,
     resolvedMainField: 'main',
     packageJson: require(entriesPkgJsonPath),
@@ -45,14 +36,11 @@ test('populates info for main', async () => {
     resolvedEntryPoint: path.resolve(root, './main-entry.js')
   });
 });
-
 test('populates info for module', async () => {
   const resolve = nodeResolve({
     mainFields: ['module']
   });
-
   let entriesInfo;
-
   await rollup({
     input: 'prefer-main.js',
     plugins: [
@@ -66,11 +54,9 @@ test('populates info for module', async () => {
       }
     ]
   });
-
   const entriesPkgJsonPath = path.resolve('node_modules/entries/package.json');
   const root = path.dirname(entriesPkgJsonPath);
-
-  t.deepEqual(entriesInfo, {
+  expect(entriesInfo).toEqual({
     browserMappedMain: false,
     resolvedMainField: 'module',
     packageJson: require(entriesPkgJsonPath),
@@ -79,14 +65,11 @@ test('populates info for module', async () => {
     resolvedEntryPoint: path.resolve(root, './module-entry.js')
   });
 });
-
 test('populates info for browser', async () => {
   const resolve = nodeResolve({
     mainFields: ['browser']
   });
-
   const entriesInfoMap = new Map();
-
   await rollup({
     input: 'browser-object.js',
     plugins: [
@@ -100,13 +83,11 @@ test('populates info for browser', async () => {
       }
     ]
   });
-
   const entriesPkgJsonPath = path.resolve('node_modules/isomorphic-object/package.json');
   const root = path.dirname(entriesPkgJsonPath);
   const expectedPkgJson = require(entriesPkgJsonPath);
-
   for (const entriesInfo of entriesInfoMap.values()) {
-    t.deepEqual(entriesInfo, {
+    expect(entriesInfo).toEqual({
       browserMappedMain: true,
       resolvedMainField: 'main',
       packageJson: expectedPkgJson,

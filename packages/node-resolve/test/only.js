@@ -3,15 +3,9 @@ const { join, resolve } = require('path');
 const { rollup } = require('rollup');
 
 const { getImports, getResolvedModules } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
-const { createAvaAssertions } = require('./helpers/ava-assertions.js');
-
-const t = createAvaAssertions();
-
 process.chdir(join(__dirname, 'fixtures'));
-
 test('specify the only packages to resolve', async () => {
   const warnings = [];
   const bundle = await rollup({
@@ -25,13 +19,11 @@ test('specify the only packages to resolve', async () => {
   });
   const imports = await getImports(bundle);
   const modules = await getResolvedModules(bundle);
-
-  t.is(warnings.length, 0);
-  t.snapshot(warnings);
-  t.deepEqual(imports, ['@scoped/foo', '@scoped/bar']);
-  t.assert(Object.keys(modules).includes(resolve('only-local.js')));
+  expect(warnings.length).toBe(0);
+  expect(warnings).toMatchSnapshot();
+  expect(imports).toEqual(['@scoped/foo', '@scoped/bar']);
+  expect(Object.keys(modules).includes(resolve('only-local.js'))).toBeTruthy();
 });
-
 test('handles nested entry modules', async () => {
   const warnings = [];
   const bundle = await rollup({
@@ -45,13 +37,11 @@ test('handles nested entry modules', async () => {
   });
   const imports = await getImports(bundle);
   const modules = await getResolvedModules(bundle);
-
-  t.is(warnings.length, 0);
-  t.snapshot(warnings);
-  t.deepEqual(imports, ['@scoped/foo', '@scoped/bar']);
-  t.assert(Object.keys(modules).includes(resolve('only-local.js')));
+  expect(warnings.length).toBe(0);
+  expect(warnings).toMatchSnapshot();
+  expect(imports).toEqual(['@scoped/foo', '@scoped/bar']);
+  expect(Object.keys(modules).includes(resolve('only-local.js'))).toBeTruthy();
 });
-
 test('regex', async () => {
   const warnings = [];
   const bundle = await rollup({
@@ -65,19 +55,16 @@ test('regex', async () => {
   });
   const imports = await getImports(bundle);
   const modules = await getResolvedModules(bundle);
-
-  t.is(warnings.length, 0);
-  t.snapshot(warnings);
-  t.deepEqual(imports, ['test']);
-  t.assert(Object.keys(modules).includes(resolve('only-local.js')));
+  expect(warnings.length).toBe(0);
+  expect(warnings).toMatchSnapshot();
+  expect(imports).toEqual(['test']);
+  expect(Object.keys(modules).includes(resolve('only-local.js'))).toBeTruthy();
 });
-
 test('allows a function as the parameter', async () => {
   function allowed(...modules) {
     const set = new Set(modules);
     return (id) => set.has(id);
   }
-
   const warnings = [];
   const bundle = await rollup({
     input: ['only.js'],
@@ -90,9 +77,8 @@ test('allows a function as the parameter', async () => {
   });
   const imports = await getImports(bundle);
   const modules = await getResolvedModules(bundle);
-
-  t.is(warnings.length, 0);
-  t.snapshot(warnings);
-  t.deepEqual(imports, ['@scoped/foo', '@scoped/bar']);
-  t.assert(Object.keys(modules).includes(resolve('only-local.js')));
+  expect(warnings.length).toBe(0);
+  expect(warnings).toMatchSnapshot();
+  expect(imports).toEqual(['@scoped/foo', '@scoped/bar']);
+  expect(Object.keys(modules).includes(resolve('only-local.js'))).toBeTruthy();
 });

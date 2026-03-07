@@ -4,88 +4,80 @@ const { rollup } = require('rollup');
 const commonjs = require('@rollup/plugin-commonjs');
 
 const { testBundle } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
-const { createAvaAssertions } = require('./helpers/ava-assertions.js');
-
-const t = createAvaAssertions();
-
 process.chdir(join(__dirname, 'fixtures'));
-
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  }
+};
 test('disregards top-level browser field', async () => {
   const bundle = await rollup({
     input: 'browser.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [nodeResolve()]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'node');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('node');
 });
-
 test('allows use of the top-level browser field', async () => {
   const bundle = await rollup({
     input: 'browser.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'browser');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('browser');
 });
-
 test('disregards object browser field', async () => {
   const bundle = await rollup({
     input: 'browser-object.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [nodeResolve()]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports.env, 'node');
-  t.is(module.exports.dep, 'node-dep');
-  t.is(module.exports.test, 42);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports.env).toBe('node');
+  expect(module.exports.dep).toBe('node-dep');
+  expect(module.exports.test).toBe(42);
 });
-
 test('allows use of the object browser field', async () => {
   const bundle = await rollup({
     input: 'browser-object.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports.env, 'browser');
-  t.is(module.exports.dep, 'browser-dep');
-  t.is(module.exports.test, 43);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports.env).toBe('browser');
+  expect(module.exports.dep).toBe('browser-dep');
+  expect(module.exports.test).toBe(43);
 });
-
 test('allows use of object browser field, resolving `main`', async () => {
   const bundle = await rollup({
     input: 'browser-object-main.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports.env, 'browser');
-  t.is(module.exports.dep, 'browser-dep');
-  t.is(module.exports.test, 43);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports.env).toBe('browser');
+  expect(module.exports.dep).toBe('browser-dep');
+  expect(module.exports.test).toBe(43);
 });
-
 test('options.browser = true still works', async () => {
   const bundle = await rollup({
     input: 'browser-object-main.js',
@@ -95,95 +87,83 @@ test('options.browser = true still works', async () => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports.env, 'browser');
-  t.is(module.exports.dep, 'browser-dep');
-  t.is(module.exports.test, 43);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports.env).toBe('browser');
+  expect(module.exports.dep).toBe('browser-dep');
+  expect(module.exports.test).toBe(43);
 });
-
 test('allows use of object browser field, resolving implicit `main`', async () => {
   const bundle = await rollup({
     input: 'browser-object-implicit.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports.env, 'browser');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports.env).toBe('browser');
 });
-
 test('allows use of object browser field, resolving replaced builtins', async () => {
   const bundle = await rollup({
     input: 'browser-object-builtin.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'browser-fs');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('browser-fs');
 });
-
 test('allows use of object browser field, resolving nested directories', async () => {
   const bundle = await rollup({
     input: 'browser-object-nested.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports.env, 'browser');
-  t.is(module.exports.dep, 'browser-dep');
-  t.is(module.exports.test, 43);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports.env).toBe('browser');
+  expect(module.exports.dep).toBe('browser-dep');
+  expect(module.exports.test).toBe(43);
 });
-
 test('respects local browser field for external dependencies', async () => {
   const bundle = await rollup({
     input: 'browser-local.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'component-type');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('component-type');
 });
-
 test('respects local browser field for internal dependencies', async () => {
   const bundle = await rollup({
     input: 'browser-local-relative.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'component-type');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('component-type');
 });
-
 test('does not apply local browser field for matching imports in nested paths', async () => {
   try {
     await rollup({
       input: 'nested/browser-local-relative.js',
-      onwarn: () => t.fail('No warnings were expected'),
+      onwarn: () => expect.unreachable('No warnings were expected'),
       plugins: [
         nodeResolve({
           mainFields: ['browser', 'main']
@@ -191,16 +171,15 @@ test('does not apply local browser field for matching imports in nested paths', 
       ]
     });
   } catch (e) {
-    t.is(e.code, 'UNRESOLVED_IMPORT');
+    expect(e.code).toBe('UNRESOLVED_IMPORT');
     return;
   }
-  t.fail('expecting error');
+  expect.unreachable('expecting error');
 });
-
 test('allows use of object browser field, resolving to nested node_modules', async () => {
   const bundle = await rollup({
     input: 'browser-entry-points-to-node-module.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         main: true,
@@ -208,50 +187,57 @@ test('allows use of object browser field, resolving to nested node_modules', asy
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'component-type');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('component-type');
 });
-
 test('supports `false` in browser field', async () => {
   const bundle = await rollup({
     input: 'browser-false.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         mainFields: ['browser', 'main']
       })
     ]
   });
-  await testBundle(t, bundle);
+  await testBundle(avaAssertions, bundle);
 });
-
 test('pkg.browser with mapping to prevent bundle by specifying a value of false', async () => {
   const bundle = await rollup({
     input: 'browser-object-with-false.js',
-    plugins: [nodeResolve({ browser: true }), commonjs()]
+    plugins: [
+      nodeResolve({
+        browser: true
+      }),
+      commonjs()
+    ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'ok');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('ok');
 });
-
 test('exports.browser can be mapped via pkg.browser', async () => {
   const bundle = await rollup({
     input: 'browser-exports-browser-browser.js',
-    plugins: [nodeResolve({ browser: true }), commonjs()]
+    plugins: [
+      nodeResolve({
+        browser: true
+      }),
+      commonjs()
+    ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'browser');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('browser');
 });
-
 test('browser field does not take precedence over export map result', async () => {
   const bundle = await rollup({
     input: 'browser-exports-browser.js',
-    plugins: [nodeResolve({ browser: true }), commonjs()]
+    plugins: [
+      nodeResolve({
+        browser: true
+      }),
+      commonjs()
+    ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'require');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('require');
 });

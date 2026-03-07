@@ -68,6 +68,4 @@ const waitForWatcherEvent = (watcher, eventCode) =>
     });
   });
 
-const { createAvaAssertions } = require('./ava-assertions');
-
-module.exports = { fakeTypescript, forceRemove, waitForWatcherEvent, createAvaAssertions };
+module.exports = { fakeTypescript, forceRemove, waitForWatcherEvent };

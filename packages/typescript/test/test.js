@@ -6,60 +6,74 @@ const { rollup, watch } = require('rollup');
 const ts = require('typescript');
 
 const { evaluateBundle, getCode, getFiles, onwarn } = require('../../../util/test');
-
 const typescript = require('..');
 
-const {
-  createAvaAssertions,
-  fakeTypescript,
-  forceRemove,
-  waitForWatcherEvent
-} = require('./helpers');
-
-const t = createAvaAssertions();
+const { fakeTypescript, forceRemove, waitForWatcherEvent } = require('./helpers');
 
 beforeEach(() => process.chdir(__dirname));
+const outputOptions = {
+  format: 'es'
+};
 
-const outputOptions = { format: 'es' };
+const captureThrownError = async (valueOrFactory) => {
+  try {
+    await (typeof valueOrFactory === 'function' ? valueOrFactory() : valueOrFactory);
+  } catch (error) {
+    return error;
+  }
 
+  return expect.unreachable('Expected call to throw');
+};
+
+const expectNoError = (valueOrFactory) =>
+  typeof valueOrFactory === 'function' ? valueOrFactory() : valueOrFactory;
 test.sequential('runs code through typescript', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', target: 'es5' })],
-    onwarn
-  });
-  const code = await getCode(bundle, outputOptions);
-
-  t.false(code.includes('number'), code);
-  t.false(code.includes('const'), code);
-});
-
-test.sequential('allows nodenext module', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'nodenext' })],
-    onwarn
-  });
-  const code = await getCode(bundle, outputOptions);
-
-  t.false(code.includes('number'), code);
-  t.true(code.includes('const'), code);
-});
-
-test.sequential('runs code through typescript with compilerOptions', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
     plugins: [
-      typescript({ tsconfig: 'fixtures/basic/tsconfig.json', compilerOptions: { target: 'es5' } })
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        target: 'es5'
+      })
     ],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-
-  t.false(code.includes('number'), code);
-  t.false(code.includes('const'), code);
+  expect(code.includes('number'), code).toBe(false);
+  expect(code.includes('const'), code).toBe(false);
 });
-
+test.sequential('allows nodenext module', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        module: 'nodenext'
+      })
+    ],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+  expect(code.includes('number'), code).toBe(false);
+  expect(code.includes('const'), code).toBe(true);
+});
+test.sequential('runs code through typescript with compilerOptions', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        compilerOptions: {
+          target: 'es5'
+        }
+      })
+    ],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+  expect(code.includes('number'), code).toBe(false);
+  expect(code.includes('const'), code).toBe(false);
+});
 test.sequential('ensures outDir is located in Rollup output dir', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -71,18 +85,23 @@ test.sequential('ensures outDir is located in Rollup output dir', async () => {
     ],
     onwarn
   });
-
-  const wrongDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true)
+  const wrongDirError = await captureThrownError(() =>
+    getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: 'fixtures/basic/dist'
+      },
+      true
+    )
   );
-  t.true(
+  expect(
     wrongDirError.message.includes(
       `Path of Typescript compiler option 'outDir' must be located inside Rollup 'dir' option`
     ),
     `Unexpected error message: ${wrongDirError.message}`
-  );
+  ).toBe(true);
 });
-
 test.sequential('ensures declarationDir is located in Rollup output dir', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -95,18 +114,23 @@ test.sequential('ensures declarationDir is located in Rollup output dir', async 
     ],
     onwarn
   });
-
-  const wrongDirError = await t.throwsAsync(() =>
-    getCode(bundle, { format: 'es', dir: 'fixtures/basic/dist' }, true)
+  const wrongDirError = await captureThrownError(() =>
+    getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: 'fixtures/basic/dist'
+      },
+      true
+    )
   );
-  t.true(
+  expect(
     wrongDirError.message.includes(
       `Path of Typescript compiler option 'declarationDir' must be located inside Rollup 'dir' option`
     ),
     `Unexpected error message: ${wrongDirError.message}`
-  );
+  ).toBe(true);
 });
-
 test.sequential(
   'ensures declarationDir is located in Rollup output directory when output.file is used',
   async () => {
@@ -123,18 +147,24 @@ test.sequential(
     });
 
     // this should throw an error just like the equivalent setup using output.dir above
-    const wrongDirError = await t.throwsAsync(() =>
-      getCode(bundle, { format: 'es', file: 'fixtures/basic/dist/index.js' }, true)
+    const wrongDirError = await captureThrownError(() =>
+      getCode(
+        bundle,
+        {
+          format: 'es',
+          file: 'fixtures/basic/dist/index.js'
+        },
+        true
+      )
     );
-    t.true(
+    expect(
       wrongDirError.message.includes(
         `Path of Typescript compiler option 'declarationDir' must be located inside the same directory as the Rollup 'file' option`
       ),
       `Unexpected error message: ${wrongDirError.message}`
-    );
+    ).toBe(true);
   }
 );
-
 test.sequential(
   'ensures declarationDir is allowed in Rollup output directory when output.file is used',
   async () => {
@@ -151,17 +181,26 @@ test.sequential(
     });
 
     // this should not throw an error
-    await t.notThrowsAsync(() =>
-      getCode(bundle, { format: 'es', file: 'fixtures/basic/dist/index.js' }, true)
+    await expectNoError(() =>
+      getCode(
+        bundle,
+        {
+          format: 'es',
+          file: 'fixtures/basic/dist/index.js'
+        },
+        true
+      )
     );
   }
 );
-
 test.sequential(
   'ensures output files can be written to subdirectories within the tsconfig outDir',
   async () => {
     const warnings = [];
-    const outputOpts = { format: 'es', file: 'fixtures/basic/dist/esm/main.js' };
+    const outputOpts = {
+      format: 'es',
+      file: 'fixtures/basic/dist/esm/main.js'
+    };
     const bundle = await rollup({
       input: 'fixtures/basic/main.ts',
       output: outputOpts,
@@ -178,146 +217,165 @@ test.sequential(
 
     // This should not throw an error
     const output = await getFiles(bundle, outputOpts);
-
-    t.deepEqual(
-      output.map((out) => out.fileName),
-      ['fixtures/basic/dist/esm/main.js']
-    );
-    t.is(warnings.length, 0);
+    expect(output.map((out) => out.fileName)).toEqual(['fixtures/basic/dist/esm/main.js']);
+    expect(warnings.length).toBe(0);
   }
 );
-
 test.sequential('ensures multiple outputs can be built', async () => {
   // In a rollup.config.js we would pass an array
   // The rollup method that's exported as a library won't do that so we must make two calls
   const bundle1 = await rollup({
     input: 'fixtures/multiple-files/src/index.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/multiple-files/tsconfig.json'
+      })
+    ]
   });
-
   const output1 = await getCode(
     bundle1,
-    { file: 'fixtures/multiple-files/index.js', format: 'cjs' },
+    {
+      file: 'fixtures/multiple-files/index.js',
+      format: 'cjs'
+    },
     true
   );
-
   const bundle2 = await rollup({
     input: 'fixtures/multiple-files/src/server.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/multiple-files/tsconfig.json' })]
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/multiple-files/tsconfig.json'
+      })
+    ]
   });
-
   const output2 = await getCode(
     bundle2,
-    { file: 'fixtures/multiple-files/server.js', format: 'cjs' },
+    {
+      file: 'fixtures/multiple-files/server.js',
+      format: 'cjs'
+    },
     true
   );
-
-  t.deepEqual([...new Set(output1.concat(output2).map((out) => out.fileName))].sort(), [
+  expect([...new Set(output1.concat(output2).map((out) => out.fileName))].sort()).toEqual([
     'index.d.ts',
     'index.js',
     'server.d.ts',
     'server.js'
   ]);
 });
-
 test.sequential('supports emitting types also for single file output', async () => {
   // Navigate to folder and use default local tsconfig instead of specifying tsconfig via file path
   // as that would have the side effect that the tsconfig's path would be used as fallback path for
   // the here unspecified outputOptions.dir, in which case the original issue wouldn't show.
   process.chdir('fixtures/basic');
-  const outputOpts = { format: 'es', file: 'dist/main.js' };
-
+  const outputOpts = {
+    format: 'es',
+    file: 'dist/main.js'
+  };
   const warnings = [];
   const bundle = await rollup({
     input: 'main.ts',
     output: outputOpts,
-    plugins: [typescript({ declaration: true, declarationDir: 'dist' })],
+    plugins: [
+      typescript({
+        declaration: true,
+        declarationDir: 'dist'
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
   // generate a single output bundle, in which case, declaration files were not correctly emitted
   const output = await getFiles(bundle, outputOpts);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['dist/main.js', 'dist/main.d.ts']
-  );
-  t.is(warnings.length, 0);
+  expect(output.map((out) => out.fileName)).toEqual(['dist/main.js', 'dist/main.d.ts']);
+  expect(warnings.length).toBe(0);
 });
-
 test.sequential('supports emitting declarations in correct directory for output.file', async () => {
   // Ensure even when no `output.dir` is configured, declarations are emitted to configured `declarationDir`
   process.chdir('fixtures/basic');
-  const outputOpts = { format: 'es', file: 'dist/main.esm.js' };
-
+  const outputOpts = {
+    format: 'es',
+    file: 'dist/main.esm.js'
+  };
   const warnings = [];
   const bundle = await rollup({
     input: 'main.ts',
     output: outputOpts,
-    plugins: [typescript({ declaration: true, declarationDir: 'dist' })],
+    plugins: [
+      typescript({
+        declaration: true,
+        declarationDir: 'dist'
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
   const output = await getFiles(bundle, outputOpts);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['dist/main.esm.js', 'dist/main.d.ts']
-  );
-  t.is(warnings.length, 0);
+  expect(output.map((out) => out.fileName)).toEqual(['dist/main.esm.js', 'dist/main.d.ts']);
+  expect(warnings.length).toBe(0);
 });
-
 test.sequential('relative paths in tsconfig.json are resolved relative to the file', async () => {
-  const outputOpts = { format: 'es', dir: 'fixtures/relative-dir/dist' };
+  const outputOpts = {
+    format: 'es',
+    dir: 'fixtures/relative-dir/dist'
+  };
   const bundle = await rollup({
     input: 'fixtures/relative-dir/main.ts',
     output: outputOpts,
-    plugins: [typescript({ tsconfig: 'fixtures/relative-dir/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/relative-dir/tsconfig.json'
+      })
+    ],
     onwarn
   });
   const output = await getFiles(bundle, outputOpts);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['fixtures/relative-dir/dist/main.js', 'fixtures/relative-dir/dist/main.d.ts']
-  );
-
-  t.true(output[1].content.includes('declare const answer = 42;'), output[1].content);
+  expect(output.map((out) => out.fileName)).toEqual([
+    'fixtures/relative-dir/dist/main.js',
+    'fixtures/relative-dir/dist/main.d.ts'
+  ]);
+  expect(output[1].content.includes('declare const answer = 42;'), output[1].content).toBe(true);
 });
-
 test.sequential('throws for unsupported module types', async () => {
-  const caughtError = await t.throws(() =>
+  const caughtError = await captureThrownError(() =>
     rollup({
       input: 'fixtures/basic/main.ts',
-      plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'AMD' })],
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          module: 'AMD'
+        })
+      ],
       onwarn
     })
   );
-
-  t.true(
+  expect(
     caughtError.message.includes(
       "The module kind should be 'ES2015', 'ESNext', 'node16' or 'nodenext', found: 'AMD'"
     ),
     `Unexpected error message: ${caughtError.message}`
-  );
+  ).toBe(true);
 });
-
 test.sequential('warns for invalid module types', async () => {
   const warnings = [];
-  await t.throwsAsync(() =>
+  await captureThrownError(() =>
     rollup({
       input: 'fixtures/basic/main.ts',
-      plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'ES5' })],
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          module: 'ES5'
+        })
+      ],
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onwarn({ toString, ...warning }) {
         warnings.push(warning);
       }
     })
   );
-
-  t.deepEqual(warnings, [
+  expect(warnings).toEqual([
     {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
@@ -326,133 +384,147 @@ test.sequential('warns for invalid module types', async () => {
     }
   ]);
 });
-
 test.sequential('ignores case of module types', async () => {
-  await t.notThrowsAsync(
+  await expectNoError(
     rollup({
       input: 'fixtures/basic/main.ts',
-      plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', module: 'eSnExT' })],
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          module: 'eSnExT'
+        })
+      ],
       onwarn
     })
   );
 });
-
 test.sequential('handles async functions', async () => {
   const bundle = await rollup({
     input: 'fixtures/async/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/async/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/async/tsconfig.json'
+      })
+    ],
     onwarn
   });
   const wait = await evaluateBundle(bundle);
   await wait(3);
-  t.pass();
+  expect(true).toBe(true);
 });
-
 test.sequential('does not duplicate helpers', async () => {
   const bundle = await rollup({
     input: 'fixtures/dedup-helpers/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/dedup-helpers/tsconfig.json', target: 'es5' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/dedup-helpers/tsconfig.json',
+        target: 'es5'
+      })
+    ],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
 
   // The `__extends` function is defined in the bundle.
-  t.true(code.includes('function __extends'), code);
+  expect(code.includes('function __extends'), code).toBe(true);
 
   // No duplicate `__extends` helper is defined.
-  t.false(code.includes('__extends$1'), code);
+  expect(code.includes('__extends$1'), code).toBe(false);
 });
-
 test.sequential('transpiles `export class A` correctly', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-class-fix/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/export-class-fix/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/export-class-fix/tsconfig.json'
+      })
+    ],
     onwarn
   });
-
   const code = await getCode(bundle, outputOptions);
-  t.true(code.includes('export { A, B };'), code);
-
+  expect(code.includes('export { A, B };'), code).toBe(true);
   const { A, B } = await evaluateBundle(bundle);
   const aInst = new A();
   const bInst = new B();
-  t.true(aInst instanceof A);
-  t.true(bInst instanceof B);
+  expect(aInst instanceof A).toBe(true);
+  expect(bInst instanceof B).toBe(true);
 });
-
 test.sequential('transpiles ES6 features to ES5 with source maps', async () => {
   process.chdir('fixtures/import-class');
-
   const bundle = await rollup({
     input: 'main.ts',
     plugins: [typescript()],
     onwarn
   });
-
   const code = await getCode(bundle, outputOptions);
-
-  t.is(code.indexOf('...'), -1, code);
-  t.is(code.indexOf('=>'), -1, code);
+  expect(code.indexOf('...'), code).toBe(-1);
+  expect(code.indexOf('=>'), code).toBe(-1);
 });
-
 test.sequential('reports diagnostics and throws if errors occur during transpilation', async () => {
-  const caughtError = await t.throwsAsync(
+  const caughtError = await captureThrownError(
     rollup({
       input: 'fixtures/syntax-error/missing-type.ts',
-      plugins: [typescript({ tsconfig: 'fixtures/syntax-error/tsconfig.json' })],
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/syntax-error/tsconfig.json'
+        })
+      ],
       onwarn
     })
   );
-
-  t.is(caughtError.message, '@rollup/plugin-typescript TS1110: Type expected.');
-  t.is(caughtError.pluginCode, 'TS1110');
+  expect(caughtError.message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+  expect(caughtError.pluginCode).toBe('TS1110');
 });
-
 test.sequential('ignore type errors if noEmitOnError is false', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/syntax-error/missing-type.ts',
-    plugins: [typescript({ noEmitOnError: false })],
+    plugins: [
+      typescript({
+        noEmitOnError: false
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
   const code = await getCode(bundle, outputOptions);
-
-  t.true(code.includes(`console.log('hello world')`));
-
-  t.is(warnings.length, 2);
-
-  t.is(warnings[0].code, 'PLUGIN_WARNING');
-  t.is(warnings[0].plugin, 'typescript');
-  t.is(warnings[0].pluginCode, 'TS1110');
-  t.is(warnings[0].message, '@rollup/plugin-typescript TS1110: Type expected.');
-
-  t.is(warnings[0].loc.line, 1);
-  t.is(warnings[0].loc.column, 8);
-  t.true(warnings[0].loc.file.includes('missing-type.ts'));
-  t.true(warnings[0].frame.includes('var a: ;'));
+  expect(code.includes(`console.log('hello world')`)).toBe(true);
+  expect(warnings.length).toBe(2);
+  expect(warnings[0].code).toBe('PLUGIN_WARNING');
+  expect(warnings[0].plugin).toBe('typescript');
+  expect(warnings[0].pluginCode).toBe('TS1110');
+  expect(warnings[0].message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+  expect(warnings[0].loc.line).toBe(1);
+  expect(warnings[0].loc.column).toBe(8);
+  expect(warnings[0].loc.file.includes('missing-type.ts')).toBe(true);
+  expect(warnings[0].frame.includes('var a: ;')).toBe(true);
 });
-
 test.sequential('works with named exports for abstract classes', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-abstract-class/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/export-abstract-class/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/export-abstract-class/tsconfig.json'
+      })
+    ],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-  t.true(code.length > 0, code);
+  expect(code.length > 0, code).toBe(true);
 });
-
 test.sequential('should use named exports for classes', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-class/main.ts',
-    plugins: [typescript({ include: 'fixtures/export-class/**/*' })],
+    plugins: [
+      typescript({
+        include: 'fixtures/export-class/**/*'
+      })
+    ],
     onwarn
   });
-  t.is((await evaluateBundle(bundle)).foo, 'bar');
+  expect((await evaluateBundle(bundle)).foo).toBe('bar');
 });
-
 test.sequential('supports overriding the TypeScript version', async () => {
   const bundle = await rollup({
     input: 'fixtures/overriding-typescript/main.ts',
@@ -461,11 +533,9 @@ test.sequential('supports overriding the TypeScript version', async () => {
       typescript({
         // Don't use `tsconfig.json`
         tsconfig: false,
-
         // test with a mocked version of TypeScript
         typescript: fakeTypescript({
           version: '1.8.0-fake',
-
           createWatchProgram(host) {
             const program = {
               emit(_, writeFile) {
@@ -479,77 +549,71 @@ test.sequential('supports overriding the TypeScript version', async () => {
 
             // Call the overrided emit function to trigger writeFile
             program.emit();
-
-            return { close() {} };
+            return {
+              close() {}
+            };
           }
         })
       })
     ]
   });
   const result = await evaluateBundle(bundle);
-
-  t.is(result, 1337);
+  expect(result).toBe(1337);
 });
-
 test.sequential('should not resolve .d.ts files', async () => {
   const bundle = await rollup({
     input: 'fixtures/dts/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/dts/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/dts/tsconfig.json'
+      })
+    ],
     onwarn,
     external: ['an-import']
   });
   const imports = bundle.cache.modules[0].dependencies;
-  t.deepEqual(imports, ['an-import']);
+  expect(imports).toEqual(['an-import']);
 });
-
 test.sequential('should transpile JSX if enabled', async () => {
   process.chdir('fixtures/jsx');
-
   const bundle = await rollup({
     input: 'main.tsx',
-    plugins: [typescript({ jsx: 'react' })],
+    plugins: [
+      typescript({
+        jsx: 'react'
+      })
+    ],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-
-  t.not(code.indexOf('var __assign = '), -1, 'should contain __assign definition');
-
+  expect(code.indexOf('var __assign = '), 'should contain __assign definition').not.toBe(-1);
   const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
-
-  t.not(usage, -1, 'should contain usage');
+  expect(usage, 'should contain usage').not.toBe(-1);
 });
-
 test.sequential('automatically loads tsconfig.json from the current directory', async () => {
   process.chdir('fixtures/tsconfig-jsx');
-
   const bundle = await rollup({
     input: 'main.tsx',
     plugins: [typescript()],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-
   const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
-  t.not(usage, -1, 'should contain usage');
+  expect(usage, 'should contain usage').not.toBe(-1);
 });
-
 test.sequential('should support extends property in tsconfig', async () => {
   process.chdir('fixtures/tsconfig-extends');
-
   const bundle = await rollup({
     input: 'main.tsx',
     plugins: [typescript()],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-
   const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
-  t.not(usage, -1, 'should contain usage');
+  expect(usage, 'should contain usage').not.toBe(-1);
 });
-
 test.sequential('should support extends property with given tsconfig', async () => {
   process.chdir('fixtures/tsconfig-extends/ts-config-extends-child');
-
   const bundle = await rollup({
     input: 'main.tsx',
     plugins: [
@@ -560,73 +624,75 @@ test.sequential('should support extends property with given tsconfig', async () 
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-
   const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
-  t.not(usage, -1, 'should contain usage');
+  expect(usage, 'should contain usage').not.toBe(-1);
 });
-
 test.sequential('should support extends property with node resolution', async () => {
   process.chdir('fixtures/tsconfig-extends-module');
-
   const bundle = await rollup({
     input: 'main.tsx',
     plugins: [typescript()],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-
   const usage = code.includes('React.createElement("span", __assign({}, props), "Yo!")');
-  t.true(usage, 'should contain usage');
+  expect(usage, 'should contain usage').toBe(true);
 });
-
 test.sequential('complies code that uses browser functions', async () => {
   const bundle = await rollup({
     input: 'fixtures/dom/main.ts',
-    plugins: [typescript({ tsconfig: './fixtures/dom/tsconfig.json' })],
-    onwarn
-  });
-
-  const code = await getCode(bundle, outputOptions);
-
-  t.true(code.includes('navigator.clipboard.readText()'), code);
-});
-
-test.sequential('allows specifying a path for tsconfig.json', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/tsconfig-jsx/main.tsx',
     plugins: [
-      typescript({ tsconfig: path.resolve(__dirname, 'fixtures/tsconfig-jsx/tsconfig.json') })
+      typescript({
+        tsconfig: './fixtures/dom/tsconfig.json'
+      })
     ],
     onwarn
   });
   const code = await getCode(bundle, outputOptions);
-
-  const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
-  t.not(usage, -1, 'should contain usage');
+  expect(code.includes('navigator.clipboard.readText()'), code).toBe(true);
 });
-
+test.sequential('allows specifying a path for tsconfig.json', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/tsconfig-jsx/main.tsx',
+    plugins: [
+      typescript({
+        tsconfig: path.resolve(__dirname, 'fixtures/tsconfig-jsx/tsconfig.json')
+      })
+    ],
+    onwarn
+  });
+  const code = await getCode(bundle, outputOptions);
+  const usage = code.indexOf('React.createElement("span", __assign({}, props), "Yo!")');
+  expect(usage, 'should contain usage').not.toBe(-1);
+});
 test.sequential('throws if tsconfig cannot be found', async () => {
-  const caughtError = await t.throws(() =>
+  const caughtError = await captureThrownError(() =>
     rollup({
       input: 'fixtures/tsconfig-jsx/main.tsx',
-      plugins: [typescript({ tsconfig: path.resolve(__dirname, 'does-not-exist.json') })],
+      plugins: [
+        typescript({
+          tsconfig: path.resolve(__dirname, 'does-not-exist.json')
+        })
+      ],
       onwarn
     })
   );
-
-  t.true(
+  expect(
     caughtError.message.includes('Could not find specified tsconfig.json'),
     `Unexpected error message: ${caughtError.message}`
-  );
+  ).toBe(true);
 });
-
 test.sequential('should throw on bad options', async () => {
   const warnings = [];
-  await t.throwsAsync(
+  await captureThrownError(
     () =>
       rollup({
         input: 'does-not-matter.ts',
-        plugins: [typescript({ foo: 'bar' })],
+        plugins: [
+          typescript({
+            foo: 'bar'
+          })
+        ],
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onwarn({ toString, ...warning }) {
           // Can't match toString function, so omit it
@@ -637,8 +703,7 @@ test.sequential('should throw on bad options', async () => {
       message: "@rollup/plugin-typescript: Couldn't process compiler options"
     }
   );
-
-  t.deepEqual(warnings, [
+  expect(warnings).toEqual([
     {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
@@ -647,7 +712,6 @@ test.sequential('should throw on bad options', async () => {
     }
   ]);
 });
-
 test.sequential('should handle re-exporting types', async () => {
   const bundle = await rollup({
     input: 'fixtures/reexport-type/main.ts',
@@ -661,13 +725,12 @@ test.sequential('should handle re-exporting types', async () => {
     ],
     onwarn
   });
-  await t.notThrowsAsync(getCode(bundle, outputOptions));
+  await expectNoError(getCode(bundle, outputOptions));
 });
-
 test.sequential(
   'prevents errors due to conflicting `sourceMap`/`inlineSourceMap` options',
   async () => {
-    await t.notThrowsAsync(
+    await expectNoError(
       rollup({
         input: 'fixtures/overriding-typescript/main.ts',
         plugins: [
@@ -681,7 +744,6 @@ test.sequential(
     );
   }
 );
-
 test.sequential('should not emit null sourceContent', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -692,12 +754,18 @@ test.sequential('should not emit null sourceContent', async () => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'es', sourcemap: true }, true);
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      sourcemap: true
+    },
+    true
+  );
   const sourcemap = output[0].map;
   // eslint-disable-next-line no-undefined
-  t.false(sourcemap.sourcesContent.includes(undefined));
+  expect(sourcemap.sourcesContent.includes(undefined)).toBe(false);
 });
-
 test.sequential('should not emit sourceContent that references a non-existent file', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -711,13 +779,19 @@ test.sequential('should not emit sourceContent that references a non-existent fi
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'es', sourcemap: true }, true);
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      sourcemap: true
+    },
+    true
+  );
   const sourcemap = output[0].map;
-  t.false(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map'));
+  expect(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map')).toBe(false);
 });
-
 test.sequential('should not fail if source maps are off', async () => {
-  await t.notThrowsAsync(
+  await expectNoError(
     rollup({
       input: 'fixtures/overriding-typescript/main.ts',
       plugins: [
@@ -731,58 +805,66 @@ test.sequential('should not fail if source maps are off', async () => {
     })
   );
 });
-
 test.sequential('should allow a namespace containing a class', async () => {
   const bundle = await rollup({
     input: 'fixtures/export-namespace-export-class/test.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/export-namespace-export-class/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/export-namespace-export-class/tsconfig.json'
+      })
+    ],
     onwarn
   });
   const { MODE } = (await evaluateBundle(bundle)).MODE;
   const mode = new MODE();
-
-  t.true(mode instanceof MODE);
+  expect(mode instanceof MODE).toBe(true);
 });
-
 test.sequential('should allow merging an exported function and namespace', async () => {
   process.chdir('fixtures/export-fodule');
-
   const bundle = await rollup({
     input: 'main.ts',
     plugins: [typescript()],
     onwarn
   });
   const f = (await evaluateBundle(bundle)).test;
-
-  t.is(f(), 0);
-  t.is(f.foo, '2');
+  expect(f()).toBe(0);
+  expect(f.foo).toBe('2');
 });
-
 test.sequential('supports dynamic imports', async () => {
   const code = await getCode(
     await rollup({
       input: 'fixtures/dynamic-imports/main.ts',
-      plugins: [typescript({ tsconfig: 'fixtures/dynamic-imports/tsconfig.json' })],
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/dynamic-imports/tsconfig.json'
+        })
+      ],
       onwarn
     }),
-    { ...outputOptions, inlineDynamicImports: true }
+    {
+      ...outputOptions,
+      inlineDynamicImports: true
+    }
   );
-  t.true(code.includes("console.log('dynamic')"));
+  expect(code.includes("console.log('dynamic')")).toBe(true);
 });
-
 test.sequential('supports CommonJS imports when the output format is CommonJS', async () => {
   const bundle = await rollup({
     input: 'fixtures/commonjs-imports/main.ts',
     plugins: [
-      typescript({ tsconfig: 'fixtures/commonjs-imports/tsconfig.json', module: 'CommonJS' }),
-      commonjs({ extensions: ['.ts', '.js'] })
+      typescript({
+        tsconfig: 'fixtures/commonjs-imports/tsconfig.json',
+        module: 'CommonJS'
+      }),
+      commonjs({
+        extensions: ['.ts', '.js']
+      })
     ],
     onwarn
   });
   const output = await evaluateBundle(bundle);
-  t.is(output, 'exported from commonjs');
+  expect(output).toBe('exported from commonjs');
 });
-
 test.sequential('supports optional chaining', async () => {
   const bundle = await rollup({
     input: 'fixtures/optional-chaining/main.ts',
@@ -795,14 +877,12 @@ test.sequential('supports optional chaining', async () => {
     ],
     onwarn
   });
-  t.regex(await getCode(bundle), /.*var main = o\.b\?\.c \?\? 'NOT FOUND';.*/);
+  expect(await getCode(bundle)).toMatch(/.*var main = o\.b\?\.c \?\? 'NOT FOUND';.*/);
 });
-
 test.sequential('supports incremental build', async () => {
   process.chdir('fixtures/basic');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
-
   const bundle = await rollup({
     input: 'main.ts',
     plugins: [
@@ -813,118 +893,140 @@ test.sequential('supports incremental build', async () => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'es', dir: './' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', 'tsconfig.tsbuildinfo']
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      dir: './'
+    },
+    true
   );
+  expect(output.map((out) => out.fileName)).toEqual(['main.js', 'tsconfig.tsbuildinfo']);
 });
-
 test.sequential('supports incremental rebuild', async () => {
   process.chdir('fixtures/incremental');
-
   const bundle = await rollup({
     input: 'main.ts',
     plugins: [typescript()],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'es', dir: 'dist' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', '.tsbuildinfo']
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      dir: 'dist'
+    },
+    true
   );
+  expect(output.map((out) => out.fileName)).toEqual(['main.js', '.tsbuildinfo']);
 });
-
 test.sequential('supports incremental build for single file output', async () => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
   await forceRemove('index.js');
-
   const warnings = [];
   const bundle = await rollup({
     input: 'main.ts',
-    plugins: [typescript({ outputToFilesystem: true })],
+    plugins: [
+      typescript({
+        outputToFilesystem: true
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
-  const output = await getCode(bundle, { format: 'es', file: 'main.js' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js']
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      file: 'main.js'
+    },
+    true
   );
-  t.true(fs.existsSync('tsconfig.tsbuildinfo'));
-  t.is(warnings.length, 0);
+  expect(output.map((out) => out.fileName)).toEqual(['main.js']);
+  expect(fs.existsSync('tsconfig.tsbuildinfo')).toBe(true);
+  expect(warnings.length).toBe(0);
 });
-
 test.sequential('supports consecutive rebuilds when watchMode is false', async () => {
   process.chdir('fixtures/incremental-watch-off');
 
   // IMPORTANT: The issue only happens if it's the same instance of rollup/plugin-typescript
   // Hence, generating one instance and using it twice below.
-  const tsPlugin = typescript({ outputToFilesystem: true });
-
+  const tsPlugin = typescript({
+    outputToFilesystem: true
+  });
   const firstBundle = await rollup({
     input: 'main.ts',
     plugins: [tsPlugin],
     onwarn
   });
-
-  const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
+  const firstRun = await getCode(
+    firstBundle,
+    {
+      format: 'es',
+      dir: 'dist'
+    },
+    true
+  );
   const firstRunCode = firstRun[0].code;
-
   try {
     // Mutating the source file
     fs.appendFileSync('main.ts', '\nexport const REBUILD_WITH_WATCH_OFF = 1;');
-
     const secondBundle = await rollup({
       input: 'main.ts',
       plugins: [tsPlugin],
       onwarn
     });
-    const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
+    const secondRun = await getCode(
+      secondBundle,
+      {
+        format: 'es',
+        dir: 'dist'
+      },
+      true
+    );
     const secondRunCode = secondRun[0].code;
-
-    t.notDeepEqual(firstRunCode, secondRunCode);
+    expect(firstRunCode).not.toEqual(secondRunCode);
   } finally {
     fs.copyFile('original.txt', 'main.ts', (err) => {
       if (err) {
-        t.fail(err);
+        expect.unreachable(err);
       }
     });
   }
 });
-
 test.sequential('does not output to filesystem when outputToFilesystem is false', async () => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
   await forceRemove('index.js');
-
   const bundle = await rollup({
     input: 'main.ts',
-    plugins: [typescript({ outputToFilesystem: false })],
+    plugins: [
+      typescript({
+        outputToFilesystem: false
+      })
+    ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'es', file: 'main.js' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js']
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      file: 'main.js'
+    },
+    true
   );
-  t.false(fs.existsSync('tsconfig.tsbuildinfo'));
+  expect(output.map((out) => out.fileName)).toEqual(['main.js']);
+  expect(fs.existsSync('tsconfig.tsbuildinfo')).toBe(false);
 });
-
 test.sequential('warn about outputToFilesystem default', async () => {
   process.chdir('fixtures/incremental-single');
   // clean up artefacts from earlier builds
   await forceRemove('tsconfig.tsbuildinfo');
   await forceRemove('index.js');
-
   const warnings = [];
   const bundle = await rollup({
     input: 'main.ts',
@@ -933,45 +1035,52 @@ test.sequential('warn about outputToFilesystem default', async () => {
       warnings.push(warning);
     }
   });
-  const output = await getCode(bundle, { format: 'es', file: 'main.js' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js']
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      file: 'main.js'
+    },
+    true
   );
-  t.true(fs.existsSync('tsconfig.tsbuildinfo'));
-  t.is(warnings.length, 1);
-  t.true(
+  expect(output.map((out) => out.fileName)).toEqual(['main.js']);
+  expect(fs.existsSync('tsconfig.tsbuildinfo')).toBe(true);
+  expect(warnings.length).toBe(1);
+  expect(
     warnings[0].message.includes(`outputToFilesystem option is defaulting to true`),
     warnings[0].message
-  );
+  ).toBe(true);
 });
-
 test.sequential('supports consecutive incremental rebuilds', async () => {
   process.chdir('fixtures/incremental');
-
   const firstBundle = await rollup({
     input: 'main.ts',
     plugins: [typescript()],
     onwarn
   });
-
-  const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
-  t.deepEqual(
-    firstRun.map((out) => out.fileName),
-    ['main.js', '.tsbuildinfo']
+  const firstRun = await getCode(
+    firstBundle,
+    {
+      format: 'es',
+      dir: 'dist'
+    },
+    true
   );
-
+  expect(firstRun.map((out) => out.fileName)).toEqual(['main.js', '.tsbuildinfo']);
   const secondBundle = await rollup({
     input: 'main.ts',
     plugins: [typescript()],
     onwarn
   });
-  const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
-  t.deepEqual(
-    secondRun.map((out) => out.fileName),
-    ['main.js', '.tsbuildinfo']
+  const secondRun = await getCode(
+    secondBundle,
+    {
+      format: 'es',
+      dir: 'dist'
+    },
+    true
   );
+  expect(secondRun.map((out) => out.fileName)).toEqual(['main.js', '.tsbuildinfo']);
 });
 
 // https://github.com/rollup/plugins/issues/681
@@ -989,34 +1098,41 @@ test.sequential(
       }
       files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
     };
-
     cleanup();
-
     const firstBundle = await rollup({
       input: 'main.ts',
       plugins: [typescript()],
       onwarn
     });
-
-    const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
-    t.deepEqual(
-      firstRun.map((out) => out.fileName),
-      ['main.js', '.tsbuildinfo']
+    const firstRun = await getCode(
+      firstBundle,
+      {
+        format: 'es',
+        dir: 'dist'
+      },
+      true
     );
-    await firstBundle.write({ dir: 'dist' });
-
+    expect(firstRun.map((out) => out.fileName)).toEqual(['main.js', '.tsbuildinfo']);
+    await firstBundle.write({
+      dir: 'dist'
+    });
     const secondBundle = await rollup({
       input: 'main.ts',
       plugins: [typescript()],
       onwarn
     });
-    const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
-    t.deepEqual(
-      secondRun.map((out) => out.fileName),
+    const secondRun = await getCode(
+      secondBundle,
+      {
+        format: 'es',
+        dir: 'dist'
+      },
+      true
+    );
+    expect(secondRun.map((out) => out.fileName)).toEqual(
       // .tsbuildinfo should not be emitted
       ['main.js']
     );
-
     cleanup();
   }
 );
@@ -1037,99 +1153,123 @@ test.sequential(
       files.forEach((file) => fs.unlinkSync(path.join('dist', file)));
       await forceRemove('.tsbuildinfo');
     };
-
     await cleanup();
-
     const firstBundle = await rollup({
       input: 'main.ts',
-      plugins: [typescript({ tsBuildInfoFile: './.tsbuildinfo' })],
+      plugins: [
+        typescript({
+          tsBuildInfoFile: './.tsbuildinfo'
+        })
+      ],
       onwarn
     });
-
-    const firstRun = await getCode(firstBundle, { format: 'es', dir: 'dist' }, true);
-    t.deepEqual(
-      firstRun.map((out) => out.fileName),
-      ['main.js']
+    const firstRun = await getCode(
+      firstBundle,
+      {
+        format: 'es',
+        dir: 'dist'
+      },
+      true
     );
-    t.true(fs.existsSync('.tsbuildinfo'));
-    await firstBundle.write({ dir: 'dist' });
+    expect(firstRun.map((out) => out.fileName)).toEqual(['main.js']);
+    expect(fs.existsSync('.tsbuildinfo')).toBe(true);
+    await firstBundle.write({
+      dir: 'dist'
+    });
     const tsBuildInfoStats = fs.statSync('.tsbuildinfo');
-
     const secondBundle = await rollup({
       input: 'main.ts',
-      plugins: [typescript({ tsBuildInfoFile: './.tsbuildinfo' })],
+      plugins: [
+        typescript({
+          tsBuildInfoFile: './.tsbuildinfo'
+        })
+      ],
       onwarn
     });
-    const secondRun = await getCode(secondBundle, { format: 'es', dir: 'dist' }, true);
-    t.deepEqual(
-      secondRun.map((out) => out.fileName),
-      ['main.js']
+    const secondRun = await getCode(
+      secondBundle,
+      {
+        format: 'es',
+        dir: 'dist'
+      },
+      true
     );
-    t.true(fs.existsSync('.tsbuildinfo'));
+    expect(secondRun.map((out) => out.fileName)).toEqual(['main.js']);
+    expect(fs.existsSync('.tsbuildinfo')).toBe(true);
     const tsBuildInfoStats2 = fs.statSync('.tsbuildinfo');
     // .tsbuildinfo should not be emitted
-    t.is(tsBuildInfoStats2.mtimeMs, tsBuildInfoStats.mtimeMs);
-    t.is(tsBuildInfoStats2.ctimeMs, tsBuildInfoStats.ctimeMs);
-    t.is(tsBuildInfoStats2.birthtimeMs, tsBuildInfoStats.birthtimeMs);
-
+    expect(tsBuildInfoStats2.mtimeMs).toBe(tsBuildInfoStats.mtimeMs);
+    expect(tsBuildInfoStats2.ctimeMs).toBe(tsBuildInfoStats.ctimeMs);
+    expect(tsBuildInfoStats2.birthtimeMs).toBe(tsBuildInfoStats.birthtimeMs);
     await cleanup();
   }
 );
-
 test.skip('supports project references', async () => {
   process.chdir('fixtures/project-references');
-
   const bundle = await rollup({
     input: 'zoo/zoo.ts',
-    plugins: [typescript({ tsconfig: 'zoo/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'zoo/tsconfig.json'
+      })
+    ],
     onwarn
   });
   const createZoo = await evaluateBundle(bundle);
   const zoo = createZoo();
-
-  t.is(zoo.length, 1);
-  t.is(zoo[0].size, 'medium');
-  t.is(zoo[0].name, 'Bob!?! ');
+  expect(zoo.length).toBe(1);
+  expect(zoo[0].size).toBe('medium');
+  expect(zoo[0].name).toBe('Bob!?! ');
 });
-
 test.sequential('warns if sourceMap is set in Typescript but not Rollup', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', sourceMap: true })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        sourceMap: true
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
-  await getCode(bundle, { format: 'es' });
-
-  t.is(warnings.length, 1);
-  t.true(
+  await getCode(bundle, {
+    format: 'es'
+  });
+  expect(warnings.length).toBe(1);
+  expect(
     warnings[0].message.includes(`Rollup 'sourcemap' option must be set to generate source maps`),
     warnings[0].message
-  );
+  ).toBe(true);
 });
-
 test.sequential('warns if sourceMap is set in Rollup but not Typescript', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json', sourceMap: false })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json',
+        sourceMap: false
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
-  await getCode(bundle, { format: 'es', sourcemap: true });
-
-  t.is(warnings.length, 1);
-  t.true(
+  await getCode(bundle, {
+    format: 'es',
+    sourcemap: true
+  });
+  expect(warnings.length).toBe(1);
+  expect(
     warnings[0].message.includes(
       `Typescript 'sourceMap' compiler option must be set to generate source maps`
     ),
     warnings[0].message
-  );
+  ).toBe(true);
 });
-
 test.sequential('normalizes resolved ids to avoid duplicate output on windows', async () => {
   const bundle = await rollup({
     input: ['fixtures/normalize-ids/one.js', 'fixtures/normalize-ids/two.js'],
@@ -1140,71 +1280,98 @@ test.sequential('normalizes resolved ids to avoid duplicate output on windows', 
       })
     ]
   });
-
-  const files = await getCode(bundle, { format: 'es' }, true);
-
-  t.is(files.length, 2);
-  t.true(files[0].fileName.includes('two.js'), files[1].fileName);
-  t.true(files[0].code.includes("import { one } from './one.js';"), files[1].code);
+  const files = await getCode(
+    bundle,
+    {
+      format: 'es'
+    },
+    true
+  );
+  expect(files.length).toBe(2);
+  expect(files[0].fileName.includes('two.js'), files[1].fileName).toBe(true);
+  expect(files[0].code.includes("import { one } from './one.js';"), files[1].code).toBe(true);
 });
-
 test.sequential('does it support tsconfig.rootDir for filtering', async () => {
   process.chdir('fixtures/root-dir/packages/test-1');
   const bundle = await rollup({
     input: 'main.ts',
-    plugins: [typescript({ tsconfig: 'tsconfig.json' })]
+    plugins: [
+      typescript({
+        tsconfig: 'tsconfig.json'
+      })
+    ]
   });
-
-  const files = await getCode(bundle, { format: 'es' }, true);
+  const files = await getCode(
+    bundle,
+    {
+      format: 'es'
+    },
+    true
+  );
   // Compiles with no errors
-  t.is(files.length, 1);
+  expect(files.length).toBe(1);
 });
-
 test.sequential(
   'does it fail for filtering with incorrect rootDir in nested projects',
   async () => {
     process.chdir('fixtures/root-dir/packages/test-2');
-    const error = await t.throwsAsync(
+    const error = await captureThrownError(
       rollup({
         input: 'main.ts',
-        plugins: [typescript({ tsconfig: 'tsconfig.json' })]
+        plugins: [
+          typescript({
+            tsconfig: 'tsconfig.json'
+          })
+        ]
       })
     );
     // It imports a typescript file outside CWD, hence will not get resolved
-    t.is(error.code, 'UNRESOLVED_IMPORT');
+    expect(error.code).toBe('UNRESOLVED_IMPORT');
   }
 );
-
 test.sequential('does manually setting filterRoot resolve nested projects', async () => {
   process.chdir('fixtures/root-dir/packages/test-2');
   const bundle = await rollup({
     input: 'main.ts',
-    plugins: [typescript({ tsconfig: 'tsconfig.json', filterRoot: '../../' })]
+    plugins: [
+      typescript({
+        tsconfig: 'tsconfig.json',
+        filterRoot: '../../'
+      })
+    ]
   });
-  const files = await getCode(bundle, { format: 'es' }, true);
-  t.is(files.length, 1);
+  const files = await getCode(
+    bundle,
+    {
+      format: 'es'
+    },
+    true
+  );
+  expect(files.length).toBe(1);
 });
-
 test.sequential('does not warn if sourceMap is set in Rollup and unset in Typescript', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/basic/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/basic/tsconfig.json'
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
-  await getCode(bundle, { format: 'es', sourcemap: true });
-
-  t.is(warnings.length, 0);
+  await getCode(bundle, {
+    format: 'es',
+    sourcemap: true
+  });
+  expect(warnings.length).toBe(0);
 });
-
 test('supports custom transformers', async () => {
   const warnings = [];
-
   let program = null;
   let typeChecker = null;
-
   const bundle = await rollup({
     input: 'fixtures/transformers/main.ts',
     plugins: [
@@ -1219,7 +1386,6 @@ test('supports custom transformers', async () => {
               type: 'program',
               factory: (p) => {
                 program = p;
-
                 return function removeOneParameterFactory(context) {
                   return function removeOneParameter(source) {
                     function visitor(node) {
@@ -1233,10 +1399,8 @@ test('supports custom transformers', async () => {
                           node.body
                         );
                       }
-
                       return ts.visitEachChild(node, visitor, context);
                     }
-
                     return ts.visitEachChild(source, visitor, context);
                   };
                 };
@@ -1249,7 +1413,6 @@ test('supports custom transformers', async () => {
               type: 'typeChecker',
               factory: (tc) => {
                 typeChecker = tc;
-
                 return function enforceConstantReturnFactory(context) {
                   return function enforceConstantReturn(source) {
                     function visitor(node) {
@@ -1258,10 +1421,8 @@ test('supports custom transformers', async () => {
                           ts.factory.createNumericLiteral('1')
                         );
                       }
-
                       return ts.visitEachChild(node, visitor, context);
                     }
-
                     return ts.visitEachChild(source, visitor, context);
                   };
                 };
@@ -1280,10 +1441,8 @@ test('supports custom transformers', async () => {
                       ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
                     );
                   }
-
                   return ts.visitEachChild(node, visitor, context);
                 }
-
                 return ts.visitEachChild(source, visitor, context);
               };
             }
@@ -1295,42 +1454,43 @@ test('supports custom transformers', async () => {
       warnings.push(warning);
     }
   });
-
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/transformers' }, true);
-
-  t.is(warnings.length, 0);
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', 'dist/main.d.ts']
-  );
-
-  // Expect the function to have one less arguments from before transformer and return 1 from after transformer
-  t.true(output[0].code.includes('var HashFn = function (val) { return 1; };'), output[0].code);
-
-  // Expect the definition file to reflect the resulting function type after transformer modifications
-  t.true(
-    output[1].source.includes('export declare const HashFn: (val: string) => number;'),
-    output[1].source
-  );
-
-  // Expect a Program to have been forwarded for transformers with custom factories requesting one
-  t.deepEqual(program && program.emit && typeof program.emit === 'function', true);
-
-  // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
-  t.deepEqual(
-    typeChecker &&
-      typeChecker.getTypeAtLocation &&
-      typeof typeChecker.getTypeAtLocation === 'function',
+  const output = await getCode(
+    bundle,
+    {
+      format: 'esm',
+      dir: 'fixtures/transformers'
+    },
     true
   );
-});
+  expect(warnings.length).toBe(0);
+  expect(output.map((out) => out.fileName)).toEqual(['main.js', 'dist/main.d.ts']);
 
+  // Expect the function to have one less arguments from before transformer and return 1 from after transformer
+  expect(
+    output[0].code.includes('var HashFn = function (val) { return 1; };'),
+    output[0].code
+  ).toBe(true);
+
+  // Expect the definition file to reflect the resulting function type after transformer modifications
+  expect(
+    output[1].source.includes('export declare const HashFn: (val: string) => number;'),
+    output[1].source
+  ).toBe(true);
+
+  // Expect a Program to have been forwarded for transformers with custom factories requesting one
+  expect(program && program.emit && typeof program.emit === 'function').toEqual(true);
+
+  // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
+  expect(
+    typeChecker &&
+      typeChecker.getTypeAtLocation &&
+      typeof typeChecker.getTypeAtLocation === 'function'
+  ).toEqual(true);
+});
 test('supports passing a custom transformers factory', async () => {
   const warnings = [];
-
   let program = null;
   let typeChecker = null;
-
   const bundle = await rollup({
     input: 'fixtures/transformers/main.ts',
     plugins: [
@@ -1356,10 +1516,8 @@ test('supports passing a custom transformers factory', async () => {
                         node.body
                       );
                     }
-
                     return ts.visitEachChild(node, visitor, context);
                   }
-
                   return ts.visitEachChild(source, visitor, context);
                 };
               }
@@ -1372,10 +1530,8 @@ test('supports passing a custom transformers factory', async () => {
                     if (ts.isReturnStatement(node)) {
                       return ts.factory.createReturnStatement(ts.factory.createNumericLiteral('1'));
                     }
-
                     return ts.visitEachChild(node, visitor, context);
                   }
-
                   return ts.visitEachChild(source, visitor, context);
                 };
               }
@@ -1392,10 +1548,8 @@ test('supports passing a custom transformers factory', async () => {
                         ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
                       );
                     }
-
                     return ts.visitEachChild(node, visitor, context);
                   }
-
                   return ts.visitEachChild(source, visitor, context);
                 };
               }
@@ -1408,34 +1562,38 @@ test('supports passing a custom transformers factory', async () => {
       warnings.push(warning);
     }
   });
-
-  const output = await getCode(bundle, { format: 'esm', dir: 'fixtures/transformers' }, true);
-
-  t.is(warnings.length, 0);
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['main.js', 'dist/main.d.ts']
-  );
-
-  // Expect the function to have one less arguments from before transformer and return 1 from after transformer
-  t.true(output[0].code.includes('var HashFn = function (val) { return 1; };'), output[0].code);
-
-  // Expect the definition file to reflect the resulting function type after transformer modifications
-  t.true(
-    output[1].source.includes('export declare const HashFn: (val: string) => number;'),
-    output[1].source
-  );
-
-  // Expect a Program to have been forwarded for transformers with custom factories requesting one
-  t.deepEqual(program && program.emit && typeof program.emit === 'function', true);
-
-  // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
-  t.deepEqual(
-    typeChecker &&
-      typeChecker.getTypeAtLocation &&
-      typeof typeChecker.getTypeAtLocation === 'function',
+  const output = await getCode(
+    bundle,
+    {
+      format: 'esm',
+      dir: 'fixtures/transformers'
+    },
     true
   );
+  expect(warnings.length).toBe(0);
+  expect(output.map((out) => out.fileName)).toEqual(['main.js', 'dist/main.d.ts']);
+
+  // Expect the function to have one less arguments from before transformer and return 1 from after transformer
+  expect(
+    output[0].code.includes('var HashFn = function (val) { return 1; };'),
+    output[0].code
+  ).toBe(true);
+
+  // Expect the definition file to reflect the resulting function type after transformer modifications
+  expect(
+    output[1].source.includes('export declare const HashFn: (val: string) => number;'),
+    output[1].source
+  ).toBe(true);
+
+  // Expect a Program to have been forwarded for transformers with custom factories requesting one
+  expect(program && program.emit && typeof program.emit === 'function').toEqual(true);
+
+  // Expect a TypeChecker to have been forwarded for transformers with custom factories requesting one
+  expect(
+    typeChecker &&
+      typeChecker.getTypeAtLocation &&
+      typeof typeChecker.getTypeAtLocation === 'function'
+  ).toEqual(true);
 });
 
 // This test randomly fails with a segfault directly at the first "await waitForWatcherEvent" before any event occurred.
@@ -1454,7 +1612,6 @@ test.skip('picks up on newly included typescript files in watch mode', async () 
   // set up initial main.ts
   // (file will be modified later in the test)
   fs.copyFileSync(path.join(dirName, 'main.ts.1'), path.join(dirName, 'main.ts'));
-
   const watcher = watch({
     input: 'fixtures/watch/main.ts',
     output: {
@@ -1468,7 +1625,6 @@ test.skip('picks up on newly included typescript files in watch mode', async () 
     ],
     onwarn
   });
-
   await waitForWatcherEvent(watcher, 'END');
 
   // add new .ts file
@@ -1477,16 +1633,12 @@ test.skip('picks up on newly included typescript files in watch mode', async () 
   // update main.ts file to include new.ts
   const newMain = fs.readFileSync(path.join(dirName, 'main.ts.2'));
   fs.writeFileSync(path.join(dirName, 'main.ts'), newMain);
-
   await waitForWatcherEvent(watcher, 'END');
-
   watcher.close();
-
   const code = fs.readFileSync(path.join(dirName, 'dist', 'main.js'));
   const usage = code.includes('Is it me');
-  t.true(usage, 'should contain usage');
+  expect(usage, 'should contain usage').toBe(true);
 });
-
 test.sequential('works when code is in src directory', async () => {
   const bundle = await rollup({
     input: 'fixtures/src-dir/src/index.ts',
@@ -1503,14 +1655,16 @@ test.sequential('works when code is in src directory', async () => {
     ],
     onwarn
   });
-  const output = await getCode(bundle, { format: 'es', dir: 'fixtures/src-dir/dist' }, true);
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
-    ['index.js', 'index.d.ts']
+  const output = await getCode(
+    bundle,
+    {
+      format: 'es',
+      dir: 'fixtures/src-dir/dist'
+    },
+    true
   );
+  expect(output.map((out) => out.fileName)).toEqual(['index.js', 'index.d.ts']);
 });
-
 test.sequential('correctly resolves types in a nodenext module', async () => {
   const warnings = [];
   const bundle = await rollup({
@@ -1525,12 +1679,10 @@ test.sequential('correctly resolves types in a nodenext module', async () => {
     }
   });
   const code = await getCode(bundle, outputOptions);
-
-  t.true(code.includes('const bar = foo'), code);
-  t.is(warnings.length, 1);
-  t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
+  expect(code.includes('const bar = foo'), code).toBe(true);
+  expect(warnings.length).toBe(1);
+  expect(warnings[0].code).toBe('UNRESOLVED_IMPORT');
 });
-
 test.sequential('correctly resolves types with nodenext moduleResolution', async () => {
   const warnings = [];
   const bundle = await rollup({
@@ -1545,12 +1697,10 @@ test.sequential('correctly resolves types with nodenext moduleResolution', async
     }
   });
   const code = await getCode(bundle, outputOptions);
-
-  t.true(code.includes('var bar = foo'), code);
-  t.is(warnings.length, 1);
-  t.is(warnings[0].code, 'UNRESOLVED_IMPORT');
+  expect(code.includes('var bar = foo'), code).toBe(true);
+  expect(warnings.length).toBe(1);
+  expect(warnings[0].code).toBe('UNRESOLVED_IMPORT');
 });
-
 test.sequential('noForceEmit option defers to tsconfig.json for emitDeclarationOnly', async () => {
   const input = 'fixtures/noForceEmit/emitDeclarationOnly/main.ts';
   const warnings = [];
@@ -1569,28 +1719,31 @@ test.sequential('noForceEmit option defers to tsconfig.json for emitDeclarationO
   // generate a single output bundle, in which case, declaration files were not correctly emitted
   const output = await getCode(
     bundle,
-    { format: 'es', file: 'fixtures/noForceEmit/emitDeclarationOnly/dist/main.js' },
+    {
+      format: 'es',
+      file: 'fixtures/noForceEmit/emitDeclarationOnly/dist/main.js'
+    },
     true
   );
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
+  expect(output.map((out) => out.fileName)).toEqual(
     // original file is passed through, main.d.ts is emitted
     ['main.js', 'main.d.ts']
   );
-  t.is(warnings.length, 0);
+  expect(warnings.length).toBe(0);
   // test that NO transpilation happened
   const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
-  t.is(output[0].code, originalCode);
+  expect(output[0].code).toBe(originalCode);
 });
-
 test.sequential('noForceEmit option defers to tsconfig.json for noEmit', async () => {
   const input = 'fixtures/noForceEmit/noEmit/main.ts';
   const warnings = [];
   const bundle = await rollup({
     input,
     plugins: [
-      typescript({ tsconfig: 'fixtures/noForceEmit/noEmit/tsconfig.json', noForceEmit: true })
+      typescript({
+        tsconfig: 'fixtures/noForceEmit/noEmit/tsconfig.json',
+        noForceEmit: true
+      })
     ],
     onwarn(warning) {
       warnings.push(warning);
@@ -1599,94 +1752,115 @@ test.sequential('noForceEmit option defers to tsconfig.json for noEmit', async (
   // generate a single output bundle, in which case, declaration files were not correctly emitted
   const output = await getCode(
     bundle,
-    { format: 'es', file: 'fixtures/noForceEmit/noEmit/dist/main.js' },
+    {
+      format: 'es',
+      file: 'fixtures/noForceEmit/noEmit/dist/main.js'
+    },
     true
   );
-
-  t.deepEqual(
-    output.map((out) => out.fileName),
+  expect(output.map((out) => out.fileName)).toEqual(
     // no `main.d.ts`, main.js is passed through
     ['main.js']
   );
-  t.is(warnings.length, 0);
+  expect(warnings.length).toBe(0);
   // test that NO transpilation happened
   const originalCode = fs.readFileSync(path.join(__dirname, input), 'utf8');
-  t.is(output[0].code, originalCode);
+  expect(output[0].code).toBe(originalCode);
 });
-
 test.sequential('compiled external library', async () => {
   const input = 'fixtures/external-library-import/main.ts';
   await rollup({
     input,
-    plugins: [typescript({ tsconfig: 'fixtures/external-library-import/tsconfig.json' })]
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/external-library-import/tsconfig.json'
+      })
+    ]
   });
-  t.pass();
+  expect(true).toBe(true);
 });
-
 test.sequential('observes included declarations', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'fixtures/included-declarations/main.ts',
     external: ['declared-module'],
-    plugins: [typescript({ tsconfig: 'fixtures/included-declarations/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/included-declarations/tsconfig.json'
+      })
+    ],
     onwarn(warning) {
       warnings.push(warning);
     }
   });
-  t.deepEqual(warnings, []);
-
-  const files = await getCode(bundle, { format: 'es' }, true);
-  t.is(files.length, 1);
+  expect(warnings).toEqual([]);
+  const files = await getCode(
+    bundle,
+    {
+      format: 'es'
+    },
+    true
+  );
+  expect(files.length).toBe(1);
 });
-
 test.sequential('downlevels JS when allowJs is true (default include)', async () => {
   const bundle = await rollup({
     input: 'fixtures/allow-js-downlevel/src/main.js',
-    plugins: [typescript({ tsconfig: 'fixtures/allow-js-downlevel/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/allow-js-downlevel/tsconfig.json'
+      })
+    ],
     onwarn
   });
-  const code = await getCode(bundle, { format: 'es' });
+  const code = await getCode(bundle, {
+    format: 'es'
+  });
 
   // Optional chaining and nullish coalescing assignment should be transformed
-  t.false(code.includes('?.'), code);
-  t.false(code.includes('??='), code);
-
+  expect(code.includes('?.'), code).toBe(false);
+  expect(code.includes('??='), code).toBe(false);
   const result = await evaluateBundle(bundle);
-  t.deepEqual(result(), [1, 123]);
+  expect(result()).toEqual([1, 123]);
 });
-
 test.sequential('downlevels JS imported by TS when allowJs is true', async () => {
   const bundle = await rollup({
     input: 'fixtures/allow-js-from-ts/src/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json'
+      })
+    ],
     onwarn
   });
-  const code = await getCode(bundle, { format: 'es' });
-
-  t.false(code.includes('?.'), code);
-  t.false(code.includes('??='), code);
-
+  const code = await getCode(bundle, {
+    format: 'es'
+  });
+  expect(code.includes('?.'), code).toBe(false);
+  expect(code.includes('??='), code).toBe(false);
   const result = await evaluateBundle(bundle);
-  t.deepEqual(result(), [7, 9]);
+  expect(result()).toEqual([7, 9]);
 });
-
 test.sequential(
   'excludes user-configured outDir from processing when allowJs is true',
   async () => {
     const outDir = path.join(__dirname, 'fixtures/allow-js-from-ts/.out');
-    fs.rmSync(outDir, { recursive: true, force: true });
-
+    fs.rmSync(outDir, {
+      recursive: true,
+      force: true
+    });
     const bundle = await rollup({
       input: 'fixtures/allow-js-from-ts/src/main.ts',
       plugins: [
         typescript({
           tsconfig: 'fixtures/allow-js-from-ts/tsconfig.json',
-          compilerOptions: { outDir }
+          compilerOptions: {
+            outDir
+          }
         })
       ],
       onwarn
     });
-
     try {
       // Ensure Rollup did not pull any files from the outDir into the graph
       const normalizeForCompare = (p) => {
@@ -1699,19 +1873,20 @@ test.sequential(
         // same dir or within parent
         return !rel.startsWith('..') && !path.isAbsolute(rel);
       };
-      t.true(bundle.watchFiles.every((f) => !isInside(outDirAbs, f)));
+      expect(bundle.watchFiles.every((f) => !isInside(outDirAbs, f))).toBe(true);
     } finally {
       await bundle.close();
-      fs.rmSync(outDir, { recursive: true, force: true });
+      fs.rmSync(outDir, {
+        recursive: true,
+        force: true
+      });
     }
   }
 );
-
 test.sequential(
   'recreates transformers per rebuild and exposes getProgram in watch mode',
   async () => {
     const observations = [];
-
     const dirName = path.join(__dirname, 'fixtures', 'transformers');
     const outputJs = path.join(dirName, 'main.js');
 
@@ -1719,19 +1894,22 @@ test.sequential(
     if (fs.existsSync(outputJs)) {
       fs.unlinkSync(outputJs);
     }
-
     const bundle = await rollup({
       input: 'fixtures/transformers/main.ts',
       plugins: [
         typescript({
           tsconfig: false,
-          compilerOptions: { module: 'esnext' },
+          compilerOptions: {
+            module: 'esnext'
+          },
           recreateTransformersOnRebuild: true,
           // Use a fake TS that simulates two watch rebuilds by calling afterProgramCreate twice
           typescript: fakeTypescript({
             createWatchProgram(host) {
               const makeBuilder = (id, value) => {
-                const innerProgram = { id };
+                const innerProgram = {
+                  id
+                };
                 return {
                   getProgram() {
                     return innerProgram;
@@ -1741,16 +1919,15 @@ test.sequential(
                   }
                 };
               };
-
               const p1 = makeBuilder('one', 101);
               host.afterProgramCreate(p1);
               p1.emit();
-
               const p2 = makeBuilder('two', 202);
               host.afterProgramCreate(p2);
               p2.emit();
-
-              return { close() {} };
+              return {
+                close() {}
+              };
             }
           }),
           transformers: {
@@ -1776,12 +1953,24 @@ test.sequential(
       ],
       onwarn
     });
-
     try {
-      await getCode(bundle, { format: 'esm', dir: dirName }, true);
-      t.deepEqual(observations, [
-        { p: 'one', gp: 'one' },
-        { p: 'two', gp: 'two' }
+      await getCode(
+        bundle,
+        {
+          format: 'esm',
+          dir: dirName
+        },
+        true
+      );
+      expect(observations).toEqual([
+        {
+          p: 'one',
+          gp: 'one'
+        },
+        {
+          p: 'two',
+          gp: 'two'
+        }
       ]);
     } finally {
       await bundle.close();
@@ -1790,10 +1979,8 @@ test.sequential(
     }
   }
 );
-
 test.sequential('recreates typeChecker-based transformers per rebuild in watch mode', async () => {
   const observations = [];
-
   const dirName = path.join(__dirname, 'fixtures', 'transformers');
   const outputJs = path.join(dirName, 'main.js');
 
@@ -1801,19 +1988,22 @@ test.sequential('recreates typeChecker-based transformers per rebuild in watch m
   if (fs.existsSync(outputJs)) {
     fs.unlinkSync(outputJs);
   }
-
   const bundle = await rollup({
     input: 'fixtures/transformers/main.ts',
     plugins: [
       typescript({
         tsconfig: false,
-        compilerOptions: { module: 'esnext' },
+        compilerOptions: {
+          module: 'esnext'
+        },
         recreateTransformersOnRebuild: true,
         // Fake TS that simulates two watch rebuilds, each returning a distinct TypeChecker
         typescript: fakeTypescript({
           createWatchProgram(host) {
             const makeBuilder = (id, value) => {
-              const innerTypeChecker = { id: `tc-${id}` };
+              const innerTypeChecker = {
+                id: `tc-${id}`
+              };
               const innerProgram = {
                 getTypeChecker() {
                   return innerTypeChecker;
@@ -1828,16 +2018,15 @@ test.sequential('recreates typeChecker-based transformers per rebuild in watch m
                 }
               };
             };
-
             const p1 = makeBuilder('one', 101);
             host.afterProgramCreate(p1);
             p1.emit();
-
             const p2 = makeBuilder('two', 202);
             host.afterProgramCreate(p2);
             p2.emit();
-
-            return { close() {} };
+            return {
+              close() {}
+            };
           }
         }),
         transformers: {
@@ -1860,34 +2049,42 @@ test.sequential('recreates typeChecker-based transformers per rebuild in watch m
     ],
     onwarn
   });
-
   try {
-    await getCode(bundle, { format: 'esm', dir: dirName }, true);
-    t.deepEqual(observations, ['tc-one', 'tc-two']);
+    await getCode(
+      bundle,
+      {
+        format: 'esm',
+        dir: dirName
+      },
+      true
+    );
+    expect(observations).toEqual(['tc-one', 'tc-two']);
   } finally {
     await bundle.close();
     // tidy emitted file to avoid cross-test interference if ordering changes
     if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
   }
 });
-
 test.sequential('defaults to legacy behavior: reuses factories across watch rebuilds', async () => {
   const dirName = path.join(__dirname, 'fixtures', 'transformers');
   const outputJs = path.join(dirName, 'main.js');
   if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
-
   const seen = [];
   const bundle = await rollup({
     input: 'fixtures/transformers/main.ts',
     plugins: [
       typescript({
         tsconfig: false,
-        compilerOptions: { module: 'esnext' },
+        compilerOptions: {
+          module: 'esnext'
+        },
         // Intentionally omit recreateTransformersOnRebuild (defaults to legacy)
         typescript: fakeTypescript({
           createWatchProgram(host) {
             const makeBuilder = (id, value) => {
-              const innerProgram = { id };
+              const innerProgram = {
+                id
+              };
               return {
                 getProgram() {
                   return innerProgram;
@@ -1897,16 +2094,15 @@ test.sequential('defaults to legacy behavior: reuses factories across watch rebu
                 }
               };
             };
-
             const p1 = makeBuilder('first', 1);
             host.afterProgramCreate(p1);
             p1.emit();
-
             const p2 = makeBuilder('second', 2);
             host.afterProgramCreate(p2);
             p2.emit();
-
-            return { close() {} };
+            return {
+              close() {}
+            };
           }
         }),
         transformers: {
@@ -1914,7 +2110,10 @@ test.sequential('defaults to legacy behavior: reuses factories across watch rebu
             {
               type: 'program',
               factory(program, getProgram) {
-                seen.push({ p: program.id, gp: getProgram ? getProgram().id : void 0 });
+                seen.push({
+                  p: program.id,
+                  gp: getProgram ? getProgram().id : void 0
+                });
                 return (context) => (source) => ts.visitEachChild(source, (n) => n, context);
               }
             }
@@ -1924,11 +2123,22 @@ test.sequential('defaults to legacy behavior: reuses factories across watch rebu
     ],
     onwarn
   });
-
   try {
-    await getCode(bundle, { format: 'esm', dir: dirName }, true);
+    await getCode(
+      bundle,
+      {
+        format: 'esm',
+        dir: dirName
+      },
+      true
+    );
     // Only one factory invocation; both references point to the initial program
-    t.deepEqual(seen, [{ p: 'first', gp: 'first' }]);
+    expect(seen).toEqual([
+      {
+        p: 'first',
+        gp: 'first'
+      }
+    ]);
   } finally {
     await bundle.close();
     if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);

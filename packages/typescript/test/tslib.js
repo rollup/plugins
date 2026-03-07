@@ -3,15 +3,19 @@ import { platform } from 'os';
 import { rollup } from 'rollup';
 
 import typescript from '..';
-
 import { evaluateBundle, getCode, onwarn } from '../../../util/test.js';
 
-import { createAvaAssertions } from './helpers/ava-assertions.js';
+const captureThrownError = async (valueOrFactory) => {
+  try {
+    await (typeof valueOrFactory === 'function' ? valueOrFactory() : valueOrFactory);
+  } catch (error) {
+    return error;
+  }
 
-const t = createAvaAssertions();
+  return expect.unreachable('Expected call to throw');
+};
 
 beforeEach(() => process.chdir(__dirname));
-
 test.sequential('supports overriding tslib with a custom path', async () => {
   const bundle = await rollup({
     input: 'fixtures/overriding-tslib/main.ts',
@@ -24,10 +28,8 @@ test.sequential('supports overriding tslib with a custom path', async () => {
     onwarn
   });
   const code = await evaluateBundle(bundle);
-
-  t.is(code.myParent.baseMethod(), 'base method');
+  expect(code.myParent.baseMethod()).toBe('base method');
 });
-
 test.sequential('supports overriding tslib with a custom path in a promise', async () => {
   const options = {
     tsconfig: 'fixtures/overriding-tslib/tsconfig.json',
@@ -39,10 +41,8 @@ test.sequential('supports overriding tslib with a custom path in a promise', asy
     onwarn
   });
   const code = await evaluateBundle(bundle);
-
-  t.is(code.myParent.baseMethod(), 'base method');
+  expect(code.myParent.baseMethod()).toBe('base method');
 });
-
 test.sequential('fails on bad tslib path', async () => {
   const fail = () =>
     rollup({
@@ -55,51 +55,58 @@ test.sequential('fails on bad tslib path', async () => {
       ],
       onwarn
     });
-
-  const error = await t.throwsAsync(fail);
+  const error = await captureThrownError(fail);
 
   // Note: I'm done fucking around with Windows paths
   if (platform() === 'win32') {
-    t.pass();
+    expect(true).toBe(true);
     return;
   }
-
   if (error.watchFiles) {
     let [filePath] = error.watchFiles;
     filePath = filePath.substring(filePath.indexOf('packages'));
     error.watchFiles[0] = filePath;
   }
-
-  t.snapshot(error);
+  expect(error).toMatchSnapshot();
 });
-
 test.sequential('fails without tslib installed', async () => {
   const fail = () =>
     rollup({
       input: 'fixtures/overriding-tslib/main.ts',
-      plugins: [typescript({ tsconfig: 'fixtures/overriding-tslib/tsconfig.json' })],
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/overriding-tslib/tsconfig.json'
+        })
+      ],
       onwarn
     });
 
   // eslint-disable-next-line no-underscore-dangle
   process.env.__TSLIB_TEST_PATH__ = 'badtslib/tslib.es6.js';
-
-  const error = await t.throwsAsync(fail);
+  const error = await captureThrownError(fail);
 
   // eslint-disable-next-line no-underscore-dangle, no-undefined
   process.env.__TSLIB_TEST_PATH__ = '';
-
-  t.snapshot(error);
+  expect(error).toMatchSnapshot();
 });
-
 test.sequential('creates _tslib.js file when preserveModules is used', async () => {
   const bundle = await rollup({
     input: 'fixtures/preserve-modules/main.ts',
-    plugins: [typescript({ tsconfig: 'fixtures/preserve-modules/tsconfig.json' })],
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/preserve-modules/tsconfig.json'
+      })
+    ],
     onwarn
   });
-
-  const files = await getCode(bundle, { format: 'es', preserveModules: true }, true);
-  t.true(files[0].fileName.includes('main.js'), files[0].fileName);
-  t.true(files[1].fileName.includes('tslib.es6.js'), files[1].fileName);
+  const files = await getCode(
+    bundle,
+    {
+      format: 'es',
+      preserveModules: true
+    },
+    true
+  );
+  expect(files[0].fileName.includes('main.js'), files[0].fileName).toBe(true);
+  expect(files[1].fileName.includes('tslib.es6.js'), files[1].fileName).toBe(true);
 });

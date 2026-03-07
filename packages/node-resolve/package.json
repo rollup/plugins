@@ -35,7 +35,7 @@
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test": "pnpm test:ts && vitest --config ../../.config/vitest.config.mts run",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [

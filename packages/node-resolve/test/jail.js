@@ -3,15 +3,9 @@ const { join } = require('path');
 const { rollup } = require('rollup');
 
 const { getImports } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
-const { createAvaAssertions } = require('./helpers/ava-assertions.js');
-
-const t = createAvaAssertions();
-
 process.chdir(join(__dirname, 'fixtures'));
-
 test('mark module outside the jail as external', async () => {
   const warnings = [];
   const bundle = await rollup({
@@ -25,18 +19,16 @@ test('mark module outside the jail as external', async () => {
     ]
   });
   const imports = await getImports(bundle);
-  t.deepEqual(imports, ['string/uppercase.js']);
-
-  t.is(warnings.length, 1, 'number of warnings');
+  expect(imports).toEqual(['string/uppercase.js']);
+  expect(warnings.length, 'number of warnings').toBe(1);
   const [{ exporter, id }] = warnings;
-  t.is(exporter, 'string/uppercase.js', 'exporter');
-  t.is(id.endsWith('jail.js'), true, 'id');
+  expect(exporter, 'exporter').toBe('string/uppercase.js');
+  expect(id.endsWith('jail.js'), 'id').toBe(true);
 });
-
 test('bundle module defined inside the jail', async () => {
   const bundle = await rollup({
     input: 'jail.js',
-    onwarn: () => t.fail('No warnings were expected'),
+    onwarn: () => expect.unreachable('No warnings were expected'),
     plugins: [
       nodeResolve({
         jail: `${__dirname}/`
@@ -44,6 +36,5 @@ test('bundle module defined inside the jail', async () => {
     ]
   });
   const imports = await getImports(bundle);
-
-  t.deepEqual(imports, []);
+  expect(imports).toEqual([]);
 });

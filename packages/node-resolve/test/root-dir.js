@@ -1,12 +1,17 @@
-const { createAvaAssertions } = require('./helpers/ava-assertions.js');
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  }
+};
 
-const t = createAvaAssertions();
 const { join } = require('path');
 
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
 test('deduplicates modules from the given root directory', async () => {
@@ -19,7 +24,6 @@ test('deduplicates modules from the given root directory', async () => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });
