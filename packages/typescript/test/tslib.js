@@ -1,5 +1,3 @@
-import { platform } from 'os';
-
 import { rollup } from 'rollup';
 
 import typescript from '..';
@@ -57,17 +55,8 @@ test.sequential('fails on bad tslib path', async () => {
     });
   const error = await captureThrownError(fail);
 
-  // Note: I'm done fucking around with Windows paths
-  if (platform() === 'win32') {
-    expect(true).toBe(true);
-    return;
-  }
-  if (error.watchFiles) {
-    let [filePath] = error.watchFiles;
-    filePath = filePath.substring(filePath.indexOf('packages'));
-    error.watchFiles[0] = filePath;
-  }
-  expect(error).toMatchSnapshot();
+  expect(error.message).toMatch(/Could not load .*fixtures[\\/]joker[\\/]tslib\.js/);
+  expect(error.message).toMatch(/imported by .*fixtures[\\/]overriding-tslib[\\/]main\.ts/);
 });
 test.sequential('fails without tslib installed', async () => {
   const fail = () =>

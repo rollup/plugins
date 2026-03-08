@@ -4,6 +4,7 @@ import { rollup } from 'rollup';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from 'current-package';
 import { getCode, testBundle } from '../../../util/test.js';
+
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 process.chdir(join(DIRNAME, 'fixtures'));
 const avaAssertions = {

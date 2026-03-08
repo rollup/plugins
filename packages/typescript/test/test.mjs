@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url';
 import { rollup } from 'rollup';
 import typescript from 'current-package';
 import { getCode, onwarn } from '../../../util/test.js';
+
 beforeEach(() => process.chdir(fileURLToPath(new URL('.', import.meta.url))));
 test.sequential('works as ESM build', async () => {
   const bundle = await rollup({
