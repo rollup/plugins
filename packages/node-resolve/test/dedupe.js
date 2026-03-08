@@ -1,15 +1,20 @@
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
-
-test('single module version is bundled if dedupe is set', async (t) => {
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  }
+};
+test('single module version is bundled if dedupe is set', async () => {
   const bundle = await rollup({
     input: 'react-app.js',
     plugins: [
@@ -18,12 +23,10 @@ test('single module version is bundled if dedupe is set', async (t) => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });
-
-test('dedupes deep imports by package name if dedupe is set', async (t) => {
+test('dedupes deep imports by package name if dedupe is set', async () => {
   const bundle = await rollup({
     input: 'react-app-deep-import.js',
     plugins: [
@@ -32,12 +35,10 @@ test('dedupes deep imports by package name if dedupe is set', async (t) => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });
-
-test('dedupes scoped deep imports by package name if dedupe is set', async (t) => {
+test('dedupes scoped deep imports by package name if dedupe is set', async () => {
   const bundle = await rollup({
     input: 'scoped-deep-import.js',
     plugins: [
@@ -46,12 +47,10 @@ test('dedupes scoped deep imports by package name if dedupe is set', async (t) =
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });
-
-test('single module version is bundled if dedupe is set as a function', async (t) => {
+test('single module version is bundled if dedupe is set as a function', async () => {
   const bundle = await rollup({
     input: 'react-app.js',
     plugins: [
@@ -60,17 +59,14 @@ test('single module version is bundled if dedupe is set as a function', async (t
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });
-
-test('multiple module versions are bundled if dedupe is not set', async (t) => {
+test('multiple module versions are bundled if dedupe is not set', async () => {
   const bundle = await rollup({
     input: 'react-app.js',
     plugins: [nodeResolve()]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });

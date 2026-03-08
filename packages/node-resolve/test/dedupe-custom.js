@@ -1,15 +1,20 @@
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures', 'custom-module-dir'));
-
-test('can deduplicate custom module directory', async (t) => {
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  }
+};
+test('can deduplicate custom module directory', async () => {
   const bundle = await rollup({
     input: 'dedupe.js',
     plugins: [
@@ -19,7 +24,6 @@ test('can deduplicate custom module directory', async (t) => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });

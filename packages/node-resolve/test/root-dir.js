@@ -1,13 +1,20 @@
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  }
+};
+
 const { join } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { testBundle } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
-test('deduplicates modules from the given root directory', async (t) => {
+test('deduplicates modules from the given root directory', async () => {
   const bundle = await rollup({
     input: './packages/package-a/index.js',
     plugins: [
@@ -17,7 +24,6 @@ test('deduplicates modules from the given root directory', async (t) => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.snapshot(module.exports);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toMatchSnapshot();
 });
