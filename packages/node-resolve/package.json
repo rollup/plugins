@@ -28,14 +28,14 @@
     "ci:coverage": "nyc pnpm test && nyc report --reporter=text-lcov > coverage.lcov",
     "ci:lint": "pnpm build && pnpm lint",
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
-    "ci:test": "pnpm test -- --verbose",
+    "ci:test": "pnpm test -- --reporter=verbose",
     "prebuild": "del-cli dist",
     "prepare": "if [ ! -d 'dist' ]; then pnpm build; fi",
     "prepublishOnly": "pnpm build",
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "pnpm test:ts && ava",
+    "test": "pnpm test:ts && vitest --config ../../.config/vitest.config.mts run",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
@@ -79,14 +79,5 @@
     "source-map": "^0.7.4",
     "string-capitalize": "^1.0.1"
   },
-  "types": "./types/index.d.ts",
-  "ava": {
-    "workerThreads": false,
-    "files": [
-      "!**/fixtures/**",
-      "!**/helpers/**",
-      "!**/recipes/**",
-      "!**/types.ts"
-    ]
-  }
+  "types": "./types/index.d.ts"
 }

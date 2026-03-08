@@ -1,84 +1,89 @@
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
-
 import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
-import test from 'ava';
 import { rollup } from 'rollup';
-
 import { nodeResolve, DEFAULTS } from 'current-package';
-
 import { evaluateBundle, getCode, getImports, testBundle } from '../../../util/test.js';
 
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 process.chdir(join(DIRNAME, 'fixtures'));
-
-const failOnWarn = (t) => (warning) =>
-  t.fail(`No warnings were expected, got:\n${warning.code}\n${warning.message}`);
-
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  }
+};
+const failOnWarn = (warning) =>
+  expect.unreachable(`No warnings were expected, got:\n${warning.code}\n${warning.message}`);
 const getLastPathFragment = (path) => path && path.split(/[\\/]/).slice(-1)[0];
-
-test('exposes plugin version', (t) => {
+test('exposes plugin version', () => {
   const plugin = nodeResolve();
-  t.regex(plugin.version, /^\d+\.\d+\.\d+/);
+  expect(plugin.version).toMatch(/^\d+\.\d+\.\d+/);
 });
-
-test('has default config', (t) => {
-  t.snapshot(DEFAULTS);
+test('has default config', () => {
+  expect(DEFAULTS).toMatchSnapshot();
 });
-
-test('finds a module with jsnext:main', async (t) => {
+test('finds a module with jsnext:main', async () => {
   const bundle = await rollup({
     input: 'jsnext.js',
-    onwarn: failOnWarn(t),
-    plugins: [nodeResolve({ mainFields: ['jsnext:main', 'module', 'main'] })]
+    onwarn: failOnWarn,
+    plugins: [
+      nodeResolve({
+        mainFields: ['jsnext:main', 'module', 'main']
+      })
+    ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'JSNEXT');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('JSNEXT');
 });
-
-test('finds and converts a basic CommonJS module', async (t) => {
+test('finds and converts a basic CommonJS module', async () => {
   const bundle = await rollup({
     input: 'commonjs.js',
-    onwarn: failOnWarn(t),
-    plugins: [nodeResolve({ mainFields: ['main'] }), commonjs()]
+    onwarn: failOnWarn,
+    plugins: [
+      nodeResolve({
+        mainFields: ['main']
+      }),
+      commonjs()
+    ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('handles cyclic CommonJS modules', async (t) => {
+test('handles cyclic CommonJS modules', async () => {
   const bundle = await rollup({
     input: 'cyclic-commonjs/main.js',
     onwarn(warning) {
       if (warning.code !== 'CIRCULAR_DEPENDENCY') {
-        t.fail(`Unexpected warning:\n${warning.code}\n${warning.message}`);
+        expect.unreachable(`Unexpected warning:\n${warning.code}\n${warning.message}`);
       }
     },
     plugins: [nodeResolve(), commonjs()]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports.main, 'main');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports.main).toBe('main');
 });
-
-test('handles a trailing slash', async (t) => {
+test('handles a trailing slash', async () => {
   const bundle = await rollup({
     input: 'trailing-slash.js',
-    onwarn: failOnWarn(t),
-    plugins: [nodeResolve({ mainFields: ['main'] }), commonjs()]
+    onwarn: failOnWarn,
+    plugins: [
+      nodeResolve({
+        mainFields: ['main']
+      }),
+      commonjs()
+    ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('finds a file inside a package directory', async (t) => {
+test('finds a file inside a package directory', async () => {
   const bundle = await rollup({
     input: 'granular.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       babel({
@@ -96,67 +101,59 @@ test('finds a file inside a package directory', async (t) => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'FOO');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('FOO');
 });
-
-test('loads local directories by finding index.js within them', async (t) => {
+test('loads local directories by finding index.js within them', async () => {
   const bundle = await rollup({
     input: 'local-index/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [nodeResolve()]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 42);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe(42);
 });
-
-test('loads package directories by finding index.js within them', async (t) => {
+test('loads package directories by finding index.js within them', async () => {
   const bundle = await rollup({
     input: 'package-index.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [nodeResolve()]
   });
   const code = await getCode(bundle);
-
-  t.truthy(code.indexOf('setPrototypeOf'));
+  expect(code.indexOf('setPrototypeOf')).toBeTruthy();
 });
-
-test('supports non-standard extensions', async (t) => {
+test('supports non-standard extensions', async () => {
   const bundle = await rollup({
     input: 'extensions/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js', '.wut']
       })
     ]
   });
-  await testBundle(t, bundle);
+  await testBundle(avaAssertions, bundle);
 });
-
-test('does not fallback to standard node resolve algorithm if error with exports one', async (t) => {
+test('does not fallback to standard node resolve algorithm if error with exports one', async () => {
   try {
     await rollup({
       input: 'exports-error-no-fallback/main.js',
-      onwarn: failOnWarn(t),
+      onwarn: failOnWarn,
       plugins: [
         nodeResolve({
           extensions: ['.js']
         })
       ]
     });
-    t.fail('expecting throw');
+    expect.unreachable('expecting throw');
   } catch {
-    t.pass();
+    expect(true).toBe(true);
   }
 });
-
-test('supports JS extensions in TS when referring to TS imports', async (t) => {
+test('supports JS extensions in TS when referring to TS imports', async () => {
   const bundle = await rollup({
     input: 'ts-import-js-extension/import-ts-with-js-extension.ts',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js', '.ts']
@@ -168,14 +165,13 @@ test('supports JS extensions in TS when referring to TS imports', async (t) => {
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('supports JS extensions in TS when referring to TSX imports', async (t) => {
+test('supports JS extensions in TS when referring to TSX imports', async () => {
   const bundle = await rollup({
     input: 'tsx-import-js-extension/import-tsx-with-js-extension.ts',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js', '.ts', '.tsx']
@@ -187,14 +183,13 @@ test('supports JS extensions in TS when referring to TSX imports', async (t) => 
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('supports JSX extensions in TS when referring to TSX imports', async (t) => {
+test('supports JSX extensions in TS when referring to TSX imports', async () => {
   const bundle = await rollup({
     input: 'tsx-import-jsx-extension/import-tsx-with-jsx-extension.ts',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js', '.ts', '.tsx']
@@ -206,14 +201,13 @@ test('supports JSX extensions in TS when referring to TSX imports', async (t) =>
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('supports MJS extensions in TS when referring to MTS imports', async (t) => {
+test('supports MJS extensions in TS when referring to MTS imports', async () => {
   const bundle = await rollup({
     input: 'ts-import-mjs-extension/import-ts-with-mjs-extension.ts',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js', '.ts', '.mjs', '.mts']
@@ -225,14 +219,13 @@ test('supports MJS extensions in TS when referring to MTS imports', async (t) =>
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('supports CJS extensions in TS when referring to CTS imports', async (t) => {
+test('supports CJS extensions in TS when referring to CTS imports', async () => {
   const bundle = await rollup({
     input: 'ts-import-cjs-extension/import-ts-with-cjs-extension.ts',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js', '.ts', '.cjs', '.cts']
@@ -244,14 +237,13 @@ test('supports CJS extensions in TS when referring to CTS imports', async (t) =>
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('supports JS extensions in TS actually importing JS with export map', async (t) => {
+test('supports JS extensions in TS actually importing JS with export map', async () => {
   const bundle = await rollup({
     input: 'ts-import-js-extension-for-js-file-export-map/import-js-with-js-extension.ts',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js', '.ts']
@@ -263,79 +255,73 @@ test('supports JS extensions in TS actually importing JS with export map', async
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('handles package.json being a directory earlier in the path', async (t) => {
+test('handles package.json being a directory earlier in the path', async () => {
   const bundle = await rollup({
     input: 'package-json-in-path/package.json/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         extensions: ['.js']
       })
     ]
   });
-  const { module } = await testBundle(t, bundle);
-  t.is(module.exports, 'It works!');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('It works!');
 });
-
-test('ignores IDs with null character', async (t) => {
+test('ignores IDs with null character', async () => {
   const result = await nodeResolve().resolveId.handler('\0someid', 'test.js', {});
-  t.is(result, null);
+  expect(result).toBe(null);
 });
-
-test('finds and uses an .mjs module', async (t) => {
+test('finds and uses an .mjs module', async () => {
   const bundle = await rollup({
     input: 'module-mjs.js',
-    onwarn: failOnWarn(t),
-    plugins: [nodeResolve({ preferBuiltins: false })]
+    onwarn: failOnWarn,
+    plugins: [
+      nodeResolve({
+        preferBuiltins: false
+      })
+    ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'MODULE-MJS');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('MODULE-MJS');
 });
-
-test('supports ./ in entry filename', async (t) => {
+test('supports ./ in entry filename', async () => {
   const bundle = await rollup({
     input: './jsnext.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [nodeResolve({})]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'MAIN');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('MAIN');
 });
-
-test('throws error if local id is not resolved', async (t) => {
-  t.plan(1);
+test('throws error if local id is not resolved', async () => {
+  expect.assertions(1);
   try {
     await rollup({
       input: 'unresolved-local.js',
-      onwarn: failOnWarn(t),
+      onwarn: failOnWarn,
       plugins: [nodeResolve()]
     });
   } catch (e) {
-    t.snapshot(e.message);
+    expect(e.message).toMatchSnapshot();
   }
 });
-
-test('allows custom moduleDirectories', async (t) => {
+test('allows custom moduleDirectories', async () => {
   const bundle = await rollup({
     input: 'custom-module-dir/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         moduleDirectories: ['js_modules']
       })
     ]
   });
-
-  t.is(bundle.cache.modules[0].id, resolve('custom-module-dir/js_modules/foo.js'));
+  expect(bundle.cache.modules[0].id).toBe(resolve('custom-module-dir/js_modules/foo.js'));
 });
-
-test('allows custom moduleDirectories with legacy customResolveOptions.moduleDirectory', async (t) => {
+test('allows custom moduleDirectories with legacy customResolveOptions.moduleDirectory', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'custom-module-dir/main.js',
@@ -348,40 +334,31 @@ test('allows custom moduleDirectories with legacy customResolveOptions.moduleDir
       })
     ]
   });
-
-  t.is(bundle.cache.modules[0].id, resolve('custom-module-dir/js_modules/foo.js'));
-  t.is(warnings.length, 1);
-  t.snapshot(warnings);
+  expect(bundle.cache.modules[0].id).toBe(resolve('custom-module-dir/js_modules/foo.js'));
+  expect(warnings.length).toBe(1);
+  expect(warnings).toMatchSnapshot();
 });
-
-test('moduleDirectories option rejects paths that contain a slash', async (t) => {
-  t.throws(
-    () =>
-      nodeResolve({
-        moduleDirectories: ['some/path']
-      }),
-    {
-      message: /must only contain directory names/
-    }
-  );
+test('moduleDirectories option rejects paths that contain a slash', async () => {
+  expect(() =>
+    nodeResolve({
+      moduleDirectories: ['some/path']
+    })
+  ).toThrow(/must only contain directory names/);
 });
-
-test('allows custom modulePaths', async (t) => {
+test('allows custom modulePaths', async () => {
   const bundle = await rollup({
     input: 'custom-module-path/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve({
         modulePaths: [join(process.cwd(), 'custom-module-path/node_modules')]
       })
     ]
   });
-
   const { dependency } = await evaluateBundle(bundle);
-  t.is(dependency, 'DEPENDENCY');
+  expect(dependency).toBe('DEPENDENCY');
 });
-
-test('ignores deep-import non-modules', async (t) => {
+test('ignores deep-import non-modules', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'deep-import-non-module.js',
@@ -393,22 +370,19 @@ test('ignores deep-import non-modules', async (t) => {
     ]
   });
   const imports = await getImports(bundle);
-  t.deepEqual(imports, ['foo/deep']);
-
-  t.is(warnings.length, 1, 'number of warnings');
+  expect(imports).toEqual(['foo/deep']);
+  expect(warnings.length, 'number of warnings').toBe(1);
   const [{ exporter, id }] = warnings;
-  t.is(exporter, 'foo/deep', 'exporter');
-  t.is(id.endsWith('deep-import-non-module.js'), true, 'id');
+  expect(exporter, 'exporter').toBe('foo/deep');
+  expect(id.endsWith('deep-import-non-module.js'), 'id').toBe(true);
 });
-
-test('generates manual chunks', async (t) => {
+test('generates manual chunks', async () => {
   const chunkName = 'mychunk';
   const bundle = await rollup({
     input: 'manualchunks.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [nodeResolve()]
   });
-
   const { output } = await bundle.generate({
     format: 'es',
     chunkFileNames: '[name]',
@@ -416,25 +390,26 @@ test('generates manual chunks', async (t) => {
       [chunkName]: ['simple']
     }
   });
-
-  t.truthy(output.find(({ fileName }) => fileName === chunkName));
+  expect(output.find(({ fileName }) => fileName === chunkName)).toBeTruthy();
 });
-
-test('resolves dynamic imports', async (t) => {
+test('resolves dynamic imports', async () => {
   const bundle = await rollup({
     input: 'dynamic.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [nodeResolve()]
   });
-  const { module } = await testBundle(t, bundle, { options: { inlineDynamicImports: true } });
+  const { module } = await testBundle(avaAssertions, bundle, {
+    options: {
+      inlineDynamicImports: true
+    }
+  });
   const result = await module.exports;
-  t.is(result.default, 42);
+  expect(result.default).toBe(42);
 });
-
-test('can resolve imports with hash in path', async (t) => {
+test('can resolve imports with hash in path', async () => {
   const bundle = await rollup({
     input: 'hash-in-path.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       {
@@ -447,15 +422,13 @@ test('can resolve imports with hash in path', async (t) => {
       }
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'resolved with hash');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('resolved with hash');
 });
-
-test('can resolve imports with search params', async (t) => {
+test('can resolve imports with search params', async () => {
   const bundle = await rollup({
     input: 'search-params.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       {
@@ -471,15 +444,13 @@ test('can resolve imports with search params', async (t) => {
       }
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'resolved with search params');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('resolved with search params');
 });
-
-test('can resolve imports with search params and hash', async (t) => {
+test('can resolve imports with search params and hash', async () => {
   const bundle = await rollup({
     input: 'search-params-and-hash.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       {
@@ -495,23 +466,19 @@ test('can resolve imports with search params and hash', async (t) => {
       }
     ]
   });
-  const { module } = await testBundle(t, bundle);
-
-  t.is(module.exports, 'resolved with search params and hash');
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(module.exports).toBe('resolved with search params and hash');
 });
-
-test('marks a module as external if the resolved version is external', async (t) => {
+test('marks a module as external if the resolved version is external', async () => {
   const bundle = await rollup({
     input: 'resolved-external/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     external: [/node_modules/],
     plugins: [nodeResolve()]
   });
-
   const code = await getCode(bundle);
-  t.is(/node_modules/.test(code), false);
+  expect(/node_modules/.test(code)).toBe(false);
 });
-
 [
   'preserveSymlinks',
   'basedir',
@@ -527,7 +494,7 @@ test('marks a module as external if the resolved version is external', async (t)
   'paths',
   'packageIterator'
 ].forEach((resolveOption) => {
-  test(`throws error for removed customResolveOptions.${resolveOption} option`, (t) => {
+  test(`throws error for removed customResolveOptions.${resolveOption} option`, () => {
     try {
       nodeResolve({
         customResolveOptions: {
@@ -535,25 +502,28 @@ test('marks a module as external if the resolved version is external', async (t)
         }
       });
     } catch (e) {
-      t.snapshot(e);
+      expect(e).toMatchSnapshot();
       return;
     }
-    t.fail('expecting error');
+    expect.unreachable('expecting error');
   });
 });
-
-test('passes on "isEntry" flag and original importee', async (t) => {
+test('passes on "isEntry" flag and original importee', async () => {
   const resolveOptions = [];
   await rollup({
     input: 'entry/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       {
         name: 'test',
         buildStart() {
           // A emitted chunk with an importer must not lose its "isEntry" flag after node-resolve
-          this.emitFile({ type: 'chunk', importer: 'entry/main.js', id: './other.js' });
+          this.emitFile({
+            type: 'chunk',
+            importer: 'entry/main.js',
+            id: './other.js'
+          });
         },
         resolveId(source, importer, options) {
           resolveOptions.push([
@@ -565,10 +535,25 @@ test('passes on "isEntry" flag and original importee', async (t) => {
       }
     ]
   });
-
-  t.deepEqual(resolveOptions, [
-    ['other.js', 'main.js', { attributes: {}, custom: {}, isEntry: true }],
-    ['main.js', void 0, { attributes: {}, custom: {}, isEntry: true }],
+  expect(resolveOptions).toEqual([
+    [
+      'other.js',
+      'main.js',
+      {
+        attributes: {},
+        custom: {},
+        isEntry: true
+      }
+    ],
+    [
+      'main.js',
+      void 0,
+      {
+        attributes: {},
+        custom: {},
+        isEntry: true
+      }
+    ],
     [
       'other.js',
       'main.js',
@@ -603,7 +588,15 @@ test('passes on "isEntry" flag and original importee', async (t) => {
         isEntry: true
       }
     ],
-    ['dep.js', 'main.js', { attributes: {}, custom: {}, isEntry: false }],
+    [
+      'dep.js',
+      'main.js',
+      {
+        attributes: {},
+        custom: {},
+        isEntry: false
+      }
+    ],
     [
       'dep.js',
       'main.js',
@@ -623,12 +616,11 @@ test('passes on "isEntry" flag and original importee', async (t) => {
     ]
   ]);
 });
-
-test('passes on custom options', async (t) => {
+test('passes on custom options', async () => {
   const resolveOptions = [];
   await rollup({
     input: 'entry/other.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       {
@@ -637,7 +629,9 @@ test('passes on custom options', async (t) => {
           await this.resolve('entry/main.js', void 0, {
             isEntry: false,
             skipSelf: false,
-            custom: { test: 42 }
+            custom: {
+              test: 42
+            }
           });
         },
         resolveId(source, importer, options) {
@@ -650,8 +644,18 @@ test('passes on custom options', async (t) => {
       }
     ]
   });
-  t.deepEqual(resolveOptions, [
-    ['main.js', void 0, { attributes: {}, custom: { test: 42 }, isEntry: false }],
+  expect(resolveOptions).toEqual([
+    [
+      'main.js',
+      void 0,
+      {
+        attributes: {},
+        custom: {
+          test: 42
+        },
+        isEntry: false
+      }
+    ],
     [
       'main.js',
       void 0,
@@ -670,7 +674,15 @@ test('passes on custom options', async (t) => {
         isEntry: false
       }
     ],
-    ['other.js', void 0, { attributes: {}, custom: {}, isEntry: true }],
+    [
+      'other.js',
+      void 0,
+      {
+        attributes: {},
+        custom: {},
+        isEntry: true
+      }
+    ],
     [
       'other.js',
       void 0,
@@ -690,11 +702,10 @@ test('passes on custom options', async (t) => {
     ]
   ]);
 });
-
-test('passes on meta information from other plugins', async (t) => {
+test('passes on meta information from other plugins', async () => {
   await rollup({
     input: 'entry/other.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       {
@@ -702,23 +713,29 @@ test('passes on meta information from other plugins', async (t) => {
         resolveId(importee) {
           return {
             id: resolve(importee),
-            meta: { test: { 'I am': 'here' } }
+            meta: {
+              test: {
+                'I am': 'here'
+              }
+            }
           };
         },
-
         load(id) {
           const info = this.getModuleInfo(id);
-          t.deepEqual(info.meta, { test: { 'I am': 'here' } });
+          expect(info.meta).toEqual({
+            test: {
+              'I am': 'here'
+            }
+          });
         }
       }
     ]
   });
 });
-
-test('allow other plugins to take over resolution', async (t) => {
+test('allow other plugins to take over resolution', async () => {
   await rollup({
     input: 'entry/main.js',
-    onwarn: failOnWarn(t),
+    onwarn: failOnWarn,
     plugins: [
       nodeResolve(),
       {
@@ -728,30 +745,29 @@ test('allow other plugins to take over resolution', async (t) => {
           if (importee === join(DIRNAME, 'fixtures', 'entry', 'main.js')) {
             return {
               id: join(dirname(importee), 'other.js'),
-              meta: { 'change-resolution': 'changed' }
+              meta: {
+                'change-resolution': 'changed'
+              }
             };
           }
           return null;
         },
-
         load(id) {
           const info = this.getModuleInfo(id);
-          t.is(info.id, join(DIRNAME, 'fixtures', 'entry', 'other.js'));
-          t.deepEqual(info.meta, { 'change-resolution': 'changed' });
+          expect(info.id).toBe(join(DIRNAME, 'fixtures', 'entry', 'other.js'));
+          expect(info.meta).toEqual({
+            'change-resolution': 'changed'
+          });
         }
       }
     ]
   });
 });
-
-test('error message for invalid entry', async (t) => {
-  const error = await t.throwsAsync(() =>
-    rollup({
-      input: '',
-      onwarn: failOnWarn(t),
-      plugins: [nodeResolve()]
-    })
-  );
-
-  t.is(error.message, `Could not resolve entry module "".`);
+test('error message for invalid entry', async () => {
+  const error = await rollup({
+    input: '',
+    onwarn: failOnWarn,
+    plugins: [nodeResolve()]
+  }).catch((caught) => caught);
+  expect(error.message).toBe(`Could not resolve entry module "".`);
 });

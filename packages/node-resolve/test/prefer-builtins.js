@@ -1,15 +1,20 @@
 const { join, resolve } = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { getImports, testBundle } = require('../../../util/test');
-
 const { nodeResolve } = require('..');
 
 process.chdir(join(__dirname, 'fixtures'));
-
-test('handles importing builtins', async (t) => {
+const avaAssertions = {
+  is(actual, expected, message) {
+    expect(actual, message).toBe(expected);
+  },
+  deepEqual(actual, expected, message) {
+    expect(actual, message).toEqual(expected);
+  }
+};
+test('handles importing builtins', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'builtins.js',
@@ -21,15 +26,12 @@ test('handles importing builtins', async (t) => {
       })
     ]
   });
-
-  const { module } = await testBundle(t, bundle);
-
-  t.is(warnings.length, 0);
+  const { module } = await testBundle(avaAssertions, bundle);
+  expect(warnings.length).toBe(0);
   // eslint-disable-next-line global-require
-  t.is(module.exports, require('path').sep);
+  expect(module.exports).toBe(require('path').sep);
 });
-
-test('warning when preferring a builtin module, no explicit configuration', async (t) => {
+test('warning when preferring a builtin module, no explicit configuration', async () => {
   let warning = '';
   await rollup({
     input: 'prefer-builtin.js',
@@ -40,18 +42,15 @@ test('warning when preferring a builtin module, no explicit configuration', asyn
     },
     plugins: [nodeResolve()]
   });
-
   const localPath = resolve('node_modules/events/index.js');
-  t.is(
-    warning,
+  expect(warning).toBe(
     `preferring built-in module 'events' over local alternative ` +
       `at '${localPath}', pass 'preferBuiltins: false' to disable this behavior ` +
       `or 'preferBuiltins: true' to disable this warning.` +
       `or passing a function to 'preferBuiltins' to provide more fine-grained control over which built-in modules to prefer.`
   );
 });
-
-test('true allows preferring a builtin to a local module of the same name', async (t) => {
+test('true allows preferring a builtin to a local module of the same name', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'prefer-builtin.js',
@@ -62,14 +61,11 @@ test('true allows preferring a builtin to a local module of the same name', asyn
       })
     ]
   });
-
   const imports = await getImports(bundle);
-
-  t.is(warnings.length, 0);
-  t.deepEqual(imports, ['events']);
+  expect(warnings.length).toBe(0);
+  expect(imports).toEqual(['events']);
 });
-
-test('true prefers a local module to a builtin of the same name when imported with a trailing slash', async (t) => {
+test('true prefers a local module to a builtin of the same name when imported with a trailing slash', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'prefer-local.js',
@@ -80,14 +76,11 @@ test('true prefers a local module to a builtin of the same name when imported wi
       })
     ]
   });
-
   const imports = await getImports(bundle);
-
-  t.is(warnings.length, 0);
-  t.deepEqual(imports, []);
+  expect(warnings.length).toBe(0);
+  expect(imports).toEqual([]);
 });
-
-test('false allows resolving a local module with the same name as a builtin module', async (t) => {
+test('false allows resolving a local module with the same name as a builtin module', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'prefer-builtin.js',
@@ -98,15 +91,12 @@ test('false allows resolving a local module with the same name as a builtin modu
       })
     ]
   });
-
   const imports = await getImports(bundle);
-
-  t.is(warnings.length, 1);
-  t.snapshot(warnings);
-  t.deepEqual(imports, []);
+  expect(warnings.length).toBe(1);
+  expect(warnings).toMatchSnapshot();
+  expect(imports).toEqual([]);
 });
-
-test('does not warn when using a builtin module when there is no local version, no explicit configuration', async (t) => {
+test('does not warn when using a builtin module when there is no local version, no explicit configuration', async () => {
   let warning = null;
   await rollup({
     input: 'prefer-builtin-no-local.js',
@@ -118,11 +108,9 @@ test('does not warn when using a builtin module when there is no local version, 
     },
     plugins: [nodeResolve()]
   });
-
-  t.is(warning, null);
+  expect(warning).toBe(null);
 });
-
-test('detects builtins imported with node: protocol', async (t) => {
+test('detects builtins imported with node: protocol', async () => {
   const warnings = [];
   await rollup({
     input: 'node-protocol.js',
@@ -131,11 +119,9 @@ test('detects builtins imported with node: protocol', async (t) => {
     },
     plugins: [nodeResolve()]
   });
-
-  t.is(warnings.length, 0);
+  expect(warnings.length).toBe(0);
 });
-
-test('accpet passing a function to determine which builtins to prefer', async (t) => {
+test('accpet passing a function to determine which builtins to prefer', async () => {
   const warnings = [];
   const bundle = await rollup({
     input: 'prefer-builtin-local-and-builtin.js',
@@ -148,13 +134,11 @@ test('accpet passing a function to determine which builtins to prefer', async (t
       })
     ]
   });
-
   const {
     module: { exports }
-  } = await testBundle(t, bundle);
-
-  t.is(warnings.length, 0);
-  t.is(exports.sep, require('node:path').sep);
-  t.not(exports.events, require('node:events'));
-  t.is(exports.events, 'not the built-in events module');
+  } = await testBundle(avaAssertions, bundle);
+  expect(warnings.length).toBe(0);
+  expect(exports.sep).toBe(require('node:path').sep);
+  expect(exports.events).not.toBe(require('node:events'));
+  expect(exports.events).toBe('not the built-in events module');
 });

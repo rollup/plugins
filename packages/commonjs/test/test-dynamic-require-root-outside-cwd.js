@@ -1,13 +1,11 @@
 const path = require('path');
 
-const test = require('ava');
 const { rollup } = require('rollup');
 
 const { commonjs } = require('./helpers/util.js');
 
 process.chdir(path.join(__dirname, 'fixtures/samples/dynamic-require-root-outside-cwd/cwd'));
-
-test('crawls dynamicRequireRoot outside cwd', async (t) => {
+test('crawls dynamicRequireRoot outside cwd', async () => {
   const build = await rollup({
     input: 'main.js',
     plugins: [
@@ -17,7 +15,11 @@ test('crawls dynamicRequireRoot outside cwd', async (t) => {
       })
     ]
   });
-  const bundle = await build.generate({ format: 'cjs' });
+  const bundle = await build.generate({
+    format: 'cjs'
+  });
   const { code } = bundle.output[0];
-  t.true(code.includes('outer_export_value'), 'outer_export_value not found in the code');
+  expect(code.includes('outer_export_value'), 'outer_export_value not found in the code').toBe(
+    true
+  );
 });

@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`fails without tslib installed 1`] = `[RollupError: @rollup/plugin-typescript: Could not find module 'tslib', which is required by this plugin. Is it installed?]`;
