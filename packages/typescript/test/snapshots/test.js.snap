@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should throw on bad options 1`] = `
+[
+  {
+    "code": "PLUGIN_WARNING",
+    "message": "[plugin typescript] @rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.",
+    "plugin": "typescript",
+    "pluginCode": "TS5023",
+    Symbol(augmented): true,
+  },
+]
+`;
+
+exports[`warns for invalid module types 1`] = `
+[
+  {
+    "code": "PLUGIN_WARNING",
+    "message": "[plugin typescript] @rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'node18', 'node20', 'nodenext', 'preserve'.",
+    "plugin": "typescript",
+    "pluginCode": "TS6046",
+    Symbol(augmented): true,
+  },
+]
+`;

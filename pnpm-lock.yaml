@@ -713,7 +713,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.1.0
-        version: 5.1.0(rollup@4.0.0-24)
+        version: 5.1.0(rollup@4.52.5)
       resolve:
         specifier: ^1.22.1
         version: 1.22.1
@@ -723,10 +723,10 @@ importers:
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
-        version: 1.0.0(rollup@4.0.0-24)
+        version: 1.0.0(rollup@4.52.5)
       '@rollup/plugin-commonjs':
         specifier: ^23.0.0
-        version: 23.0.0(rollup@4.0.0-24)
+        version: 23.0.0(rollup@4.52.5)
       '@types/node':
         specifier: ^14.18.30
         version: 14.18.31
@@ -737,11 +737,11 @@ importers:
         specifier: ^0.20.0
         version: 0.20.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: ^4.0.0
+        version: 4.52.5
       typescript:
-        specifier: ^4.8.3
-        version: 4.8.4
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/url:
     dependencies:
@@ -6415,6 +6415,14 @@ snapshots:
     optionalDependencies:
       rollup: 4.0.0-24
 
+  '@rollup/plugin-buble@1.0.0(rollup@4.52.5)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      '@types/buble': 0.19.2
+      buble: 0.20.0
+    optionalDependencies:
+      rollup: 4.52.5
+
   '@rollup/plugin-commonjs@23.0.0(rollup@4.0.0-24)':
     dependencies:
       '@rollup/pluginutils': 4.2.1
@@ -6425,6 +6433,17 @@ snapshots:
       magic-string: 0.26.7
     optionalDependencies:
       rollup: 4.0.0-24
+
+  '@rollup/plugin-commonjs@23.0.0(rollup@4.52.5)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      commondir: 1.0.1
+      estree-walker: 2.0.2
+      glob: 8.1.0
+      is-reference: 1.2.1
+      magic-string: 0.26.7
+    optionalDependencies:
+      rollup: 4.52.5
 
   '@rollup/plugin-json@5.0.0(rollup@4.0.0-24)':
     dependencies:
@@ -6503,6 +6522,14 @@ snapshots:
       picomatch: 2.3.1
     optionalDependencies:
       rollup: 4.0.0-24
+
+  '@rollup/pluginutils@5.1.0(rollup@4.52.5)':
+    dependencies:
+      '@types/estree': 1.0.0
+      estree-walker: 2.0.2
+      picomatch: 2.3.1
+    optionalDependencies:
+      rollup: 4.52.5
 
   '@rollup/rollup-android-arm-eabi@4.0.0-24':
     optional: true

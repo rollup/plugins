@@ -375,14 +375,8 @@ test.sequential('warns for invalid module types', async () => {
       }
     })
   );
-  expect(warnings).toEqual([
-    {
-      code: 'PLUGIN_WARNING',
-      plugin: 'typescript',
-      pluginCode: 'TS6046',
-      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
-    }
-  ]);
+
+  expect(warnings).toMatchSnapshot();
 });
 test.sequential('ignores case of module types', async () => {
   await expectNoError(
@@ -472,7 +466,10 @@ test.sequential('reports diagnostics and throws if errors occur during transpila
       onwarn
     })
   );
-  expect(caughtError.message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+
+  expect(caughtError.message).toBe(
+    '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): @rollup/plugin-typescript TS1110: Type expected.'
+  );
   expect(caughtError.pluginCode).toBe('TS1110');
 });
 test.sequential('ignore type errors if noEmitOnError is false', async () => {
@@ -494,7 +491,9 @@ test.sequential('ignore type errors if noEmitOnError is false', async () => {
   expect(warnings[0].code).toBe('PLUGIN_WARNING');
   expect(warnings[0].plugin).toBe('typescript');
   expect(warnings[0].pluginCode).toBe('TS1110');
-  expect(warnings[0].message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+  expect(warnings[0].message).toBe(
+    '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): @rollup/plugin-typescript TS1110: Type expected.'
+  );
   expect(warnings[0].loc.line).toBe(1);
   expect(warnings[0].loc.column).toBe(8);
   expect(warnings[0].loc.file.includes('missing-type.ts')).toBe(true);
@@ -573,6 +572,18 @@ test.sequential('should not resolve .d.ts files', async () => {
   });
   const imports = bundle.cache.modules[0].dependencies;
   expect(imports).toEqual(['an-import']);
+});
+
+test.sequential('should not resolve arbitrary .d.<ext>.ts files', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/arbitrary-dts/main.ts',
+    plugins: [typescript({ tsconfig: 'fixtures/arbitrary-dts/tsconfig.json' })],
+    onwarn
+  });
+  const arbitraryDeclarationModules = bundle.cache.modules.filter((module) =>
+    module.id.includes('.d.custom.ts')
+  );
+  expect(arbitraryDeclarationModules.length).toBe(0);
 });
 test.sequential('should transpile JSX if enabled', async () => {
   process.chdir('fixtures/jsx');
@@ -700,17 +711,11 @@ test.sequential('should throw on bad options', async () => {
         }
       }),
     {
-      message: "@rollup/plugin-typescript: Couldn't process compiler options"
+      message: "[plugin typescript] @rollup/plugin-typescript: Couldn't process compiler options"
     }
   );
-  expect(warnings).toEqual([
-    {
-      code: 'PLUGIN_WARNING',
-      plugin: 'typescript',
-      pluginCode: 'TS5023',
-      message: `@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
-    }
-  ]);
+
+  expect(warnings).toMatchSnapshot();
 });
 test.sequential('should handle re-exporting types', async () => {
   const bundle = await rollup({
@@ -1697,7 +1702,7 @@ test.sequential('correctly resolves types with nodenext moduleResolution', async
     }
   });
   const code = await getCode(bundle, outputOptions);
-  expect(code.includes('var bar = foo'), code).toBe(true);
+  expect(code.includes('const bar = foo'), code).toBe(true);
   expect(warnings.length).toBe(1);
   expect(warnings[0].code).toBe('UNRESOLVED_IMPORT');
 });

@@ -1,12 +1,9 @@
 import { rollup } from 'rollup';
 
 import typescript from '..';
-import { getCode } from '../../../util/test';
+import { getCode, onwarn } from '../../../util/test';
 
 beforeEach(() => process.chdir(__dirname));
-
-// eslint-disable-next-line no-console
-const onwarn = (warning) => console.warn(warning.toString());
 
 const captureThrownError = async (valueOrFactory) => {
   try {
@@ -150,7 +147,7 @@ test.sequential(
       // 'types/should-not-be-emitted-types.d.ts' should not be emitted because 'main.ts' does not import/export from it.
       ['main.js', 'types/should-be-emitted-types.d.ts', 'types/main.d.ts']
     );
-    expect(declaration.includes('export declare type MyNumber = number;'), declaration).toBe(true);
+    expect(declaration.includes('export type MyNumber = number;'), declaration).toBe(true);
   }
 );
 test.sequential('supports creating declaration files in declarationDir', async () => {
