@@ -334,7 +334,7 @@ For these situations, you can change Rollup's behaviour either globally or per m
         var isInstance = false;
         try {
           isInstance = this instanceof a;
-        } catch {}
+        } catch (e) {}
         if (isInstance) {
           return Reflect.construct(f, arguments, this.constructor);
         }
