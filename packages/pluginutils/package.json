@@ -52,14 +52,6 @@
     "plugin",
     "utils"
   ],
-  "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0"
-  },
-  "peerDependenciesMeta": {
-    "rollup": {
-      "optional": true
-    }
-  },
   "dependencies": {
     "@types/estree": "^1.0.0",
     "estree-walker": "^2.0.2",
