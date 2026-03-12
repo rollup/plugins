@@ -38,7 +38,7 @@ async function resolvePackageImports({
   };
 
   // Assert: specifier begins with "#".
-  if (!importSpecifier.startsWith('#')) {
+  if (importSpecifier[0] !== '#') {
     throw new InvalidModuleSpecifierError(context, true, 'Invalid import specifier.');
   }
 
