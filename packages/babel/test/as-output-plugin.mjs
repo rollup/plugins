@@ -403,3 +403,66 @@ test('allows excluding manual chunks from output transform via `excludeChunks`',
   // Debug output intentionally omitted
   expect(codes.some((c) => c.includes('=> 42'))).toBe(true);
 });
+
+test('works in parallel', async () => {
+  const bundle = await rollup({ input: `${FIXTURES}basic/main.js` });
+  const code = await getCode(bundle, {
+    format: 'es',
+    plugins: [
+      getBabelOutputPlugin({
+        presets: ['@babel/env'],
+        parallel: true
+      })
+    ]
+  });
+  expect(code.includes('const')).toBe(false);
+});
+
+test('works in parallel with specified worker count', async () => {
+  const bundle = await rollup({ input: `${FIXTURES}basic/main.js` });
+  const code = await getCode(bundle, {
+    format: 'es',
+    plugins: [
+      getBabelOutputPlugin({
+        presets: ['@babel/env'],
+        parallel: 2
+      })
+    ]
+  });
+  expect(code.includes('const')).toBe(false);
+});
+
+test('throws when output plugin parallel option is not a positive integer', () => {
+  expect(() => getBabelOutputPlugin({ parallel: 0 })).toThrow(/must be true or a positive integer/);
+  expect(() => getBabelOutputPlugin({ parallel: -1 })).toThrow(
+    /must be true or a positive integer/
+  );
+});
+
+test('throws when using output plugin parallel with config override', () => {
+  const customBabelPlugin = createBabelOutputPluginFactory(() => {
+    return {
+      config(cfg) {
+        return cfg.options;
+      }
+    };
+  });
+
+  expect(() => customBabelPlugin({ parallel: true })).toThrow(
+    /Cannot use "parallel" mode with a custom "config" override/
+  );
+});
+
+test('throws when using output plugin parallel with result override', () => {
+  const customBabelPlugin = createBabelOutputPluginFactory(() => {
+    return {
+      result(result) {
+        return result;
+      }
+    };
+  });
+
+  expect(() => customBabelPlugin({ parallel: true })).toThrow(
+    /Cannot use "parallel" mode with a custom "result" override/
+  );
+});

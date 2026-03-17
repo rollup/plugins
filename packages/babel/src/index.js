@@ -1,11 +1,13 @@
+import { cpus } from 'os';
+import { fileURLToPath } from 'url';
+
 import * as babel from '@babel/core';
 import { createFilter } from '@rollup/pluginutils';
+import workerpool from 'workerpool';
 
 import { BUNDLED, HELPERS } from './constants.js';
-import bundledHelpersPlugin from './bundledHelpersPlugin.js';
-import preflightCheck from './preflightCheck.js';
 import transformCode from './transformCode.js';
-import { addBabelPlugin, escapeRegExpCharacters, warnOnce } from './utils.js';
+import { escapeRegExpCharacters, warnOnce } from './utils.js';
 
 const unpackOptions = ({
   extensions = babel.DEFAULT_EXTENSIONS,
@@ -100,6 +102,68 @@ const returnObject = () => {
   return {};
 };
 
+function findNonSerializableOption(obj) {
+  const isSerializable = (value) => {
+    if (value === null) return true;
+    if (Array.isArray(value)) return value.every(isSerializable);
+    switch (typeof value) {
+      case 'undefined':
+      case 'string':
+      case 'number':
+      case 'boolean':
+        return true;
+      case 'object':
+        return Object.values(value).every(isSerializable);
+      default:
+        return false;
+    }
+  };
+
+  for (const key of Object.keys(obj)) {
+    if (!isSerializable(obj[key])) return key;
+  }
+  return null;
+}
+
+const WORKER_PATH = fileURLToPath(new URL('./worker.js', import.meta.url));
+
+function createParallelWorkerPool(parallel, overrides) {
+  if (typeof parallel === 'number' && (!Number.isInteger(parallel) || parallel < 1)) {
+    throw new Error(
+      'The "parallel" option must be true or a positive integer specifying the number of workers.'
+    );
+  }
+
+  if (!parallel) return null;
+
+  if (overrides?.config) {
+    throw new Error('Cannot use "parallel" mode with a custom "config" override.');
+  }
+  if (overrides?.result) {
+    throw new Error('Cannot use "parallel" mode with a custom "result" override.');
+  }
+
+  // Default limits to 4 workers. Benefits diminish after this point, because of the setup cost.
+  const workerCount = typeof parallel === 'number' ? parallel : Math.min(cpus().length, 4);
+  return workerpool.pool(WORKER_PATH, {
+    maxWorkers: workerCount,
+    workerType: 'thread'
+  });
+}
+
+function transformWithWorkerPool(workerPool, context, transformOpts, babelOptions) {
+  const nonSerializableKey = findNonSerializableOption(babelOptions);
+  if (nonSerializableKey) {
+    return Promise.reject(
+      new Error(
+        `Cannot use "parallel" mode because the "${nonSerializableKey}" option is not serializable.`
+      )
+    );
+  }
+
+  return workerPool.exec('transform', [transformOpts]).catch((err) => context.error(err.message));
+}
+
 function createBabelInputPluginFactory(customCallback = returnObject) {
   const overrides = customCallback(babel);
 
@@ -116,8 +180,11 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
       include,
       filter: customFilter,
       skipPreflightCheck,
+      parallel,
       ...babelOptions
     } = unpackInputPluginOptions(pluginOptionsWithOverrides);
+
+    const workerPool = createParallelWorkerPool(parallel, overrides);
 
     const extensionRegExp = new RegExp(
       `(${extensions.map(escapeRegExpCharacters).join('|')})(\\?.*)?(#.*)?$`
@@ -162,23 +229,45 @@ function createBabelInputPluginFactory(customCallback = returnObject) {
           if (!(await filter(filename, code))) return null;
           if (filename === HELPERS) return null;
 
-          return transformCode(
-            code,
-            { ...babelOptions, filename },
-            overrides,
-            customOptions,
-            this,
-            async (transformOptions) => {
-              if (!skipPreflightCheck) {
-                await preflightCheck(this, babelHelpers, transformOptions);
-              }
+          const resolvedBabelOptions = { ...babelOptions, filename };
 
-              return babelHelpers === BUNDLED
-                ? addBabelPlugin(transformOptions, bundledHelpersPlugin)
-                : transformOptions;
-            }
-          );
+          if (workerPool) {
+            return transformWithWorkerPool(
+              workerPool,
+              this,
+              {
+                inputCode: code,
+                babelOptions: resolvedBabelOptions,
+                skipPreflightCheck,
+                babelHelpers
+              },
+              resolvedBabelOptions
+            );
+          }
+
+          return transformCode({
+            inputCode: code,
+            babelOptions: resolvedBabelOptions,
+            overrides: {
+              config: overrides.config?.bind(this),
+              result: overrides.result?.bind(this)
+            },
+            customOptions,
+            error: this.error.bind(this),
+            skipPreflightCheck,
+            babelHelpers
+          });
         }
+      },
+
+      async closeBundle() {
+        if (!this.meta.watchMode) {
+          await workerPool?.terminate();
+        }
+      },
+
+      async closeWatcher() {
+        await workerPool?.terminate();
       }
     };
   };
@@ -206,6 +295,8 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
       pluginOptions,
       overrides
     );
+
+    const workerPool = createParallelWorkerPool(pluginOptionsWithOverrides.parallel, overrides);
 
     // cache for chunk name filter (includeChunks/excludeChunks)
     let chunkNameFilter;
@@ -242,6 +333,7 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
           externalHelpers,
           externalHelpersWhitelist,
           include,
+          parallel,
           runtimeHelpers,
           ...babelOptions
         } = unpackOutputPluginOptions(pluginOptionsWithOverrides, outputOptions);
@@ -257,7 +349,36 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
           }
         }
 
-        return transformCode(code, babelOptions, overrides, customOptions, this);
+        if (workerPool) {
+          return transformWithWorkerPool(
+            workerPool,
+            this,
+            {
+              inputCode: code,
+              babelOptions,
+              skipPreflightCheck: true
+            },
+            babelOptions
+          );
+        }
+
+        return transformCode({
+          inputCode: code,
+          babelOptions,
+          overrides: {
+            config: overrides.config?.bind(this),
+            result: overrides.result?.bind(this)
+          },
+          customOptions,
+          error: this.error.bind(this),
+          skipPreflightCheck: true
+        });
+      },
+
+      async generateBundle() {
+        if (!this.meta.watchMode) {
+          await workerPool?.terminate();
+        }
       }
     };
   };
