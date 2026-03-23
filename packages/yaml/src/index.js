@@ -1,6 +1,6 @@
 import YAML from 'js-yaml';
 import toSource from 'tosource';
-import { createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
+import { createFilter, makeLegalIdentifier, suffixRegex } from '@rollup/pluginutils';
 
 const defaults = {
   documentMode: 'single',
@@ -24,33 +24,40 @@ export default function yaml(opts = {}) {
     );
   }
 
+  const extensionsFilter = suffixRegex(extensions, 'i');
+
   return {
     name: 'yaml',
 
-    transform(content, id) {
-      if (!extensions.some((ext) => id.toLowerCase().endsWith(ext))) return null;
-      if (!filter(id)) return null;
+    transform: {
+      filter: {
+        id: extensionsFilter
+      },
+      handler(content, id) {
+        if (!extensionsFilter.test(id)) return null;
+        if (!filter(id)) return null;
 
-      let data = loadMethod(content);
+        let data = loadMethod(content);
 
-      if (typeof options.transform === 'function') {
-        const result = options.transform(data, id);
-        // eslint-disable-next-line no-undefined
-        if (result !== undefined) {
-          data = result;
+        if (typeof options.transform === 'function') {
+          const result = options.transform(data, id);
+          // eslint-disable-next-line no-undefined
+          if (result !== undefined) {
+            data = result;
+          }
         }
+
+        const keys = Object.keys(data).filter((key) => key === makeLegalIdentifier(key));
+        const code = `var data = ${toSource(data)};\n\n`;
+        const exports = ['export default data;']
+          .concat(keys.map((key) => `export var ${key} = data.${key};`))
+          .join('\n');
+
+        return {
+          code: code + exports,
+          map: { mappings: '' }
+        };
       }
-
-      const keys = Object.keys(data).filter((key) => key === makeLegalIdentifier(key));
-      const code = `var data = ${toSource(data)};\n\n`;
-      const exports = ['export default data;']
-        .concat(keys.map((key) => `export var ${key} = data.${key};`))
-        .join('\n');
-
-      return {
-        code: code + exports,
-        map: { mappings: '' }
-      };
     }
   };
 }
