@@ -38,7 +38,7 @@ export async function analyzeExports(code, id) {
     };
   } catch (err) {
     // If lexer fails (e.g. WASM issue), fall back gracefully
-    console.warn(
+    this.warn(
       `[commonjs] cjs-module-lexer failed for ${id}: ${err.message}. ` +
         'Falling back to no named exports.'
     );
