@@ -294,6 +294,15 @@ test('import CommonJS module with esm property should get default export ', asyn
   const result2 = await executeBundle(bundle2, avaAssertions);
   expect(result2.error.message).toBe('libExports is not a function');
 });
+test('test named exports from cjs', async (t) => {
+  const bundle = await rollup({
+    input: 'fixtures/samples/named-cjs-exports/main.cjs',
+    plugins: [commonjs()]
+  });
+
+  t.plan(3);
+  await testBundle(t, bundle);
+});
 test('identifies named exports from object literals', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/named-exports-from-object-literal/main.js',
