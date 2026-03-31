@@ -62,7 +62,7 @@
     }
   },
   "dependencies": {
-    "serialize-javascript": "^7.0.3",
+    "serialize-javascript": "^7.0.5",
     "smob": "^1.0.0",
     "terser": "^5.17.4"
   },
