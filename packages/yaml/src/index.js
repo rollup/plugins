@@ -34,7 +34,7 @@ export default function yaml(opts = {}) {
         id: extensionsFilter
       },
       handler(content, id) {
-        if (!extensionsFilter.test(id)) return null;
+        if (extensions.length === 0 || !extensionsFilter.test(id)) return null;
         if (!filter(id)) return null;
 
         let data = loadMethod(content);
