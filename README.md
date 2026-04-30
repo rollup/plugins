@@ -12,7 +12,7 @@
 
 # Rollup Plugins
 
-🍣 The one-stop shop for official Rollup plugins
+🍣 The one-stop shop for Rollup official plugins
 
 This repository houses plugins that Rollup considers critical to every day use of Rollup, plugins which the organization has adopted maintenance of, and plugins that the project recommends to its users.
 
