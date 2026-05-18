@@ -90,7 +90,7 @@ test('supports static block', () => {
 
   const classDeclaration = ast.body[0] as estree.ClassDeclaration;
   const classBody = classDeclaration.body;
-  const staticBlock = classBody.body[0] as estree.StaticBlock & { scope: AttachedScope };;
+  const staticBlock = classBody.body[0] as estree.StaticBlock & { scope: AttachedScope };
 
   expect(staticBlock.scope.contains('a')).toBeTruthy();
 });
