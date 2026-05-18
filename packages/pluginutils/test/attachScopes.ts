@@ -73,6 +73,28 @@ test('supports catch without a parameter', () => {
   }).not.toThrow();
 });
 
+test('supports static block', () => {
+  const ast = parse(
+    `
+    class Foo {
+      static {
+        let a = 10;
+      }
+    }
+  `,
+    { ecmaVersion: 2022, sourceType: 'module' }
+  ) as unknown as estree.Program;
+
+  const scope = attachScopes(ast, 'scope');
+  expect(scope.contains('a')).toBeFalsy();
+
+  const classDeclaration = ast.body[0] as estree.ClassDeclaration;
+  const classBody = classDeclaration.body;
+  const staticBlock = classBody.body[0] as estree.StaticBlock & { scope: AttachedScope };;
+
+  expect(staticBlock.scope.contains('a')).toBeTruthy();
+});
+
 test('supports ForStatement', () => {
   const ast = parse(
     `
