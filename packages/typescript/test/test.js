@@ -57,6 +57,45 @@ test.sequential('allows nodenext module', async () => {
   expect(code.includes('number'), code).toBe(false);
   expect(code.includes('const'), code).toBe(true);
 });
+test.sequential('inherits module/moduleResolution from extends without TS5110', async () => {
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/extends-nodenext/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/extends-nodenext/tsconfig.json'
+      })
+    ],
+    onwarn(warning) {
+      warnings.push(warning);
+    }
+  });
+  await getCode(bundle, outputOptions);
+  const ts5110 = warnings.find((w) => w.pluginCode === 'TS5110');
+  expect(
+    ts5110,
+    `expected no TS5110 warning, got: ${warnings.map((w) => w.pluginCode || w.code).join(', ')}`
+  ).toBeUndefined();
+});
+test.sequential(
+  'parseTypescriptConfig: extends-inherited module survives plugin defaults',
+  async () => {
+    const { parseTypescriptConfig } = await import('../src/options/tsconfig.ts');
+    const result = parseTypescriptConfig(ts, 'fixtures/extends-nodenext/tsconfig.json', {}, false);
+    expect(result.errors).toEqual([]);
+    expect(result.options.module).toBe(ts.ModuleKind.NodeNext);
+    expect(result.options.moduleResolution).toBe(ts.ModuleResolutionKind.NodeNext);
+  }
+);
+test.sequential(
+  'parseTypescriptConfig: applies plugin default module=ESNext + skipLibCheck',
+  async () => {
+    const { parseTypescriptConfig } = await import('../src/options/tsconfig.ts');
+    const result = parseTypescriptConfig(ts, 'fixtures/basic/tsconfig.json', {}, false);
+    expect(result.options.module).toBe(ts.ModuleKind.ESNext);
+    expect(result.options.skipLibCheck).toBe(true);
+  }
+);
 test.sequential('runs code through typescript with compilerOptions', async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -481,7 +520,10 @@ test.sequential('ignore type errors if noEmitOnError is false', async () => {
     input: 'fixtures/syntax-error/missing-type.ts',
     plugins: [
       typescript({
-        noEmitOnError: false
+        noEmitOnError: false,
+        // Pin to esnext explicitly; falling back to the repo's dev tsconfig.base would
+        // otherwise inherit `module: commonjs` and trip the preflight ESM check.
+        module: 'esnext'
       })
     ],
     onwarn(warning) {
@@ -518,7 +560,8 @@ test.sequential('should use named exports for classes', async () => {
     input: 'fixtures/export-class/main.ts',
     plugins: [
       typescript({
-        include: 'fixtures/export-class/**/*'
+        include: 'fixtures/export-class/**/*',
+        module: 'esnext'
       })
     ],
     onwarn
