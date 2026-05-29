@@ -594,3 +594,94 @@ test('works as a CJS plugin', async () => {
   const code = await getCode(bundle);
   expect(code.includes('const')).toBe(false);
 });
+
+test('works in parallel as a CJS plugin', async () => {
+  const require = createRequire(import.meta.url);
+  const babelPluginCjs = require('current-package');
+  const bundle = await rollup({
+    input: `${FIXTURES}basic/main.js`,
+    plugins: [
+      babelPluginCjs({
+        babelHelpers: 'bundled',
+        presets: ['@babel/env'],
+        parallel: true
+      })
+    ]
+  });
+  const code = await getCode(bundle);
+  expect(code.includes('const')).toBe(false);
+  expect(code.includes('var answer')).toBe(true);
+});
+
+test('works in parallel', async () => {
+  const bundle = await rollup({
+    input: `${FIXTURES}proposal-decorators/main.js`,
+    plugins: [babelPlugin({ parallel: true })]
+  });
+  const code = await getCode(bundle);
+
+  expect(code.includes('_createClass')).toBe(true);
+});
+
+test('works in parallel with specified worker count', async () => {
+  const code = await generate('basic/main.js', { parallel: 2 });
+  expect(code.includes('const')).toBe(false);
+  expect(code.includes('var answer = 42')).toBe(true);
+});
+
+test('throws when parallel option is not a positive integer', () => {
+  expect(() => babelPlugin({ babelHelpers: 'bundled', parallel: 0 })).toThrow(
+    /must be true or a positive integer/
+  );
+  expect(() => babelPlugin({ babelHelpers: 'bundled', parallel: -1 })).toThrow(
+    /must be true or a positive integer/
+  );
+  expect(() => babelPlugin({ babelHelpers: 'bundled', parallel: 2.5 })).toThrow(
+    /must be true or a positive integer/
+  );
+  expect(() => babelPlugin({ babelHelpers: 'bundled', parallel: NaN })).toThrow(
+    /must be true or a positive integer/
+  );
+});
+
+test('throws when using parallel with non-serializable babel options', async () => {
+  await expect(() =>
+    generate('basic/main.js', {
+      parallel: true,
+      plugins: [
+        // Functions are not serializable
+        function customPlugin() {
+          return { visitor: {} };
+        }
+      ]
+    })
+  ).rejects.toThrow(/Cannot use "parallel" mode because the "plugins" option is not serializable/);
+});
+
+test('throws when using parallel with config override', () => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
+    return {
+      config(cfg) {
+        return cfg.options;
+      }
+    };
+  });
+
+  expect(() => customBabelPlugin({ babelHelpers: 'bundled', parallel: true })).toThrow(
+    /Cannot use "parallel" mode with a custom "config" override/
+  );
+});
+
+test('throws when using parallel with result override', () => {
+  const customBabelPlugin = createBabelInputPluginFactory(() => {
+    return {
+      result(result) {
+        return result;
+      }
+    };
+  });
+
+  expect(() => customBabelPlugin({ babelHelpers: 'bundled', parallel: true })).toThrow(
+    /Cannot use "parallel" mode with a custom "result" override/
+  );
+});
