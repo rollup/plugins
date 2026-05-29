@@ -1,5 +1,13 @@
 # @rollup/plugin-graphql ChangeLog
 
+## v3.0.0
+
+_2026-05-29_
+
+### Breaking Changes
+
+- graphql!: use hook filters ([#1995](https://github.com/rollup/plugins/issues/1995))
+
 ## v2.0.5
 
 _2024-09-22_
