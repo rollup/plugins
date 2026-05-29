@@ -131,6 +131,9 @@ importers:
       '@rollup/pluginutils':
         specifier: ^5.0.1
         version: 5.0.1(rollup@4.0.0-24)
+      workerpool:
+        specifier: ^9.0.0
+        version: 9.3.4
     devDependencies:
       '@babel/core':
         specifier: ^7.19.1
@@ -5292,6 +5295,9 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
 
+  workerpool@9.3.4:
+    resolution: {integrity: sha512-TmPRQYYSAnnDiEB0P/Ytip7bFGvqnSU6I2BcuSw7Hx+JSg/DsUi5ebYfc8GYaSdpuvOcEs6dXxPurOYpe9QFwg==}
+
   wrap-ansi@6.2.0:
     resolution: {integrity: sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==}
     engines: {node: '>=8'}
@@ -10117,6 +10123,8 @@ snapshots:
   word-wrap@1.2.3: {}
 
   word-wrap@1.2.5: {}
+
+  workerpool@9.3.4: {}
 
   wrap-ansi@6.2.0:
     dependencies:
