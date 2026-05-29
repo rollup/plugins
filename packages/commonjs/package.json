@@ -81,5 +81,6 @@
     "source-map-support": "^0.5.21",
     "typescript": "^4.8.3"
   },
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "bump": 1
 }
