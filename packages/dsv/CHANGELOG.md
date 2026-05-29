@@ -1,5 +1,13 @@
 # @rollup/plugin-dsv ChangeLog
 
+## v4.0.0
+
+_2026-05-29_
+
+### Breaking Changes
+
+- dsv!: use hook filters ([#1994](https://github.com/rollup/plugins/issues/1994))
+
 ## v3.0.5
 
 _2024-09-23_
