@@ -1,13 +1,5 @@
 # @rollup/plugin-typescript ChangeLog
 
-## v12.3.1
-
-_2026-05-27_
-
-### Bugfixes
-
-- fix: do not override `module`/`moduleResolution` inherited via tsconfig `extends` (resolves TS5110 when a base config sets `module: nodenext`) (#1726, #1583)
-
 ## v12.3.0
 
 _2025-10-23_
