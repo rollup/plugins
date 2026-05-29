@@ -13,7 +13,7 @@
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v2.0+.
+This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v20.0.0+) and Rollup v2.0+.
 
 ## Install
 
