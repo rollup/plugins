@@ -1,5 +1,13 @@
 # @rollup/plugin-commonjs ChangeLog
 
+## v29.0.3
+
+_2026-05-29_
+
+### Bugfixes
+
+- commonjs: make #1868 es5-compatible ([#1981](https://github.com/rollup/plugins/issues/1981))
+
 ## v29.0.2
 
 _2026-03-06_
