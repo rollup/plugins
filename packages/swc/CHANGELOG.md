@@ -1,5 +1,13 @@
 # @rollup/plugin-swc ChangeLog
 
+## v0.4.1
+
+_2026-05-29_
+
+### Bugfixes
+
+- fix: fix typings to match actual exports (#1985)
+
 ## v0.4.0
 
 _2024-09-06_

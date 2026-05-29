@@ -11,26 +11,31 @@ export default function graphql({ include, exclude } = {}) {
 
   return {
     name: 'graphql',
-    transform(source, id) {
-      if (!filter(id)) return null;
-      if (!filterExt.test(id)) return null;
+    transform: {
+      filter: {
+        id: filterExt
+      },
+      handler(source, id) {
+        if (!filter(id)) return null;
+        if (!filterExt.test(id)) return null;
 
-      // XXX: this.cachable() in graphql-tag/loader
-      const code = toESModules(
-        loader.call(
-          {
-            cacheable() {}
-          },
-          source
-        )
-      );
+        // XXX: this.cachable() in graphql-tag/loader
+        const code = toESModules(
+          loader.call(
+            {
+              cacheable() {}
+            },
+            source
+          )
+        );
 
-      const map = { mappings: '' };
+        const map = { mappings: '' };
 
-      return {
-        code,
-        map
-      };
+        return {
+          code,
+          map
+        };
+      }
     }
   };
 }

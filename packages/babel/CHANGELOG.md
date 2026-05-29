@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v7.1.0
+
+_2026-05-29_
+
+### Features
+
+- babel: add parallel processing via worker threads ([#1956](https://github.com/rollup/plugins/issues/1956))
+
 ## v7.0.0
 
 _2026-03-05_
