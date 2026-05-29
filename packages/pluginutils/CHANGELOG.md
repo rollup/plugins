@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.4.0
+
+_2026-05-29_
+
+### Features
+
+- feat: named exports for reserved-word keys + fix duplicate default export in dataToEsm (#2002)
+
 ## v5.3.0
 
 _2025-09-04_
