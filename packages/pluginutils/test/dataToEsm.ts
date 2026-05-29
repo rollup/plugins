@@ -44,7 +44,7 @@ test('supports a compact argument', () => {
       { compact: true, objectShorthand: false }
     )
   ).toBe(
-    'export var some={deep:{object:"definition",here:"here"}};export default{some:some,"else":{deep:{object:"definition",here:"here"}}};'
+    'export var some={deep:{object:"definition",here:"here"}};var _arbitrary0={deep:{object:"definition",here:"here"}};export{_arbitrary0 as else};export default{some:some,"else":{deep:{object:"definition",here:"here"}}};'
   );
 });
 
@@ -63,7 +63,10 @@ test('supports nested arrays', () => {
 });
 
 test('serializes null', () => {
-  expect(dataToEsm({ null: null })).toBe('export default {\n\t"null": null\n};\n');
+  // `null` is a valid IdentifierName, so it is re-exported with the unquoted form.
+  expect(dataToEsm({ null: null })).toBe(
+    'var _arbitrary0 = null;\nexport {\n\t_arbitrary0 as null\n};\nexport default {\n\t"null": null\n};\n'
+  );
 });
 
 test('supports default only', () => {
@@ -124,4 +127,31 @@ test('does not emit a named export for a `default` key with includeArbitraryName
   expect(
     dataToEsm({ default: 'a', normal: 'b' }, { namedExports: true, includeArbitraryNames: true })
   ).toBe('export var normal = "b";\nexport default {\n\t"default": "a",\n\tnormal: normal\n};\n');
+});
+
+test('exports reserved-word / global keys as ES2015-safe named exports', () => {
+  // `switch` is a reserved word, `Promise` is a global — both are valid
+  // IdentifierNames, so they are re-exported with the unquoted form without
+  // `includeArbitraryNames`. `default` stays object-only.
+  expect(
+    dataToEsm(
+      { switch: 'a', Promise: 'b', default: 'c', normal: 'd' },
+      { namedExports: true, preferConst: true }
+    )
+  ).toBe(
+    'const _arbitrary0 = "a";\nconst _arbitrary1 = "b";\nexport const normal = "d";\nexport {\n\t_arbitrary0 as switch,\n\t_arbitrary1 as Promise\n};\nexport default {\n\t"switch": "a",\n\t"Promise": "b",\n\t"default": "c",\n\tnormal: normal\n};\n'
+  );
+});
+
+test('keeps reserved-word exports unquoted even with includeArbitraryNames', () => {
+  // Reserved words use the unquoted ES2015 form; only non-identifier-name keys
+  // (e.g. `foo-bar`) use the quoted ES2022 arbitrary-namespace form.
+  expect(
+    dataToEsm(
+      { switch: 'a', 'foo-bar': 'b' },
+      { namedExports: true, preferConst: true, includeArbitraryNames: true }
+    )
+  ).toBe(
+    'const _arbitrary0 = "a";\nconst _arbitrary1 = "b";\nexport {\n\t_arbitrary0 as switch,\n\t_arbitrary1 as "foo-bar"\n};\nexport default {\n\t"switch": "a",\n\t"foo-bar": "b"\n};\n'
+  );
 });

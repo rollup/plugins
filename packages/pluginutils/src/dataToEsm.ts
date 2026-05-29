@@ -70,6 +70,11 @@ function isWellFormedString(input: string): boolean {
   return !/\p{Surrogate}/u.test(input);
 }
 
+// Matches the ECMAScript `IdentifierName` grammar, which (unlike a binding
+// identifier) also accepts reserved words such as `switch`/`await`. Such names
+// can be re-exported with the `export { _x as switch }` form, valid since ES2015.
+const identifierNameRE = /^[$_\p{ID_Start}][$\u200c\u200d\p{ID_Continue}]*$/u;
+
 const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
   const t = options.compact ? '' : 'indent' in options ? options.indent : '\t';
   const _ = options.compact ? '' : ' ';
@@ -115,17 +120,27 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
       defaultExportRows.push(
         `${stringify(key)}:${_}${serialize(value, options.compact ? null : t, '')}`
       );
-      // A `default` key is skipped here and exposed only through the default
-      // export object: a `... as default` re-export would clash with the trailing
-      // `export default` and produce a duplicate default export (a SyntaxError).
-      if (key !== 'default' && options.includeArbitraryNames && isWellFormedString(key)) {
-        const variableName = `${arbitraryNamePrefix}${arbitraryNameExportRows.length}`;
-        namedExportCode += `${declarationType} ${variableName}${_}=${_}${serialize(
-          value,
-          options.compact ? null : t,
-          ''
-        )};${n}`;
-        arbitraryNameExportRows.push(`${variableName} as ${JSON.stringify(key)}`);
+      // A `default` key is exposed only through the default export object: a
+      // `... as default` re-export would clash with the trailing `export default`
+      // and produce a duplicate default export (a SyntaxError).
+      if (key !== 'default') {
+        // A valid `IdentifierName` that is not a legal binding identifier (a
+        // reserved word or global, e.g. `switch`, `await`) is re-exported with the
+        // unquoted `export { _x as switch }` form, valid since ES2015. Any other
+        // key needs the quoted arbitrary-namespace form (ES2022+), which remains
+        // opt-in via `includeArbitraryNames`.
+        const isIdentifierName = identifierNameRE.test(key);
+        if (isIdentifierName || (options.includeArbitraryNames && isWellFormedString(key))) {
+          const variableName = `${arbitraryNamePrefix}${arbitraryNameExportRows.length}`;
+          namedExportCode += `${declarationType} ${variableName}${_}=${_}${serialize(
+            value,
+            options.compact ? null : t,
+            ''
+          )};${n}`;
+          arbitraryNameExportRows.push(
+            `${variableName} as ${isIdentifierName ? key : JSON.stringify(key)}`
+          );
+        }
       }
     }
   }
