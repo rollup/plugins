@@ -4,6 +4,7 @@ import { createFilter } from '@rollup/pluginutils';
 
 import { peerDependencies, version } from '../package.json';
 
+import { analyzeExports, ensureInit as ensureLexerInit } from './analyze-exports-lexer';
 import analyzeTopLevelStatements from './analyze-top-level-statements';
 import { getDynamicModuleRegistry, getDynamicRequireModules } from './dynamic-modules';
 
@@ -113,7 +114,7 @@ export default function commonjs(options = {}) {
   // Initialized in buildStart
   let requireResolver;
 
-  function transformAndCheckExports(code, id) {
+  async function transformAndCheckExports(code, id) {
     const normalizedId = normalizePathSlashes(id);
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
       this.parse,
@@ -136,6 +137,16 @@ export default function commonjs(options = {}) {
     ) {
       commonjsMeta.isCommonJS = false;
       return { meta: { commonjs: commonjsMeta } };
+    }
+
+    // Use cjs-module-lexer for named export detection on CJS modules
+    if (!isEsModule) {
+      const lexerResult = await analyzeExports(code, id);
+      commonjsMeta.lexerExports = lexerResult.exports;
+      commonjsMeta.lexerReexports = lexerResult.reexports;
+      if (lexerResult.hasDefaultExport && !commonjsMeta.hasDefaultExport) {
+        commonjsMeta.hasDefaultExport = true;
+      }
     }
 
     const needsRequireWrapper =
@@ -202,8 +213,9 @@ export default function commonjs(options = {}) {
       return { ...rawOptions, plugins };
     },
 
-    buildStart({ plugins }) {
+    async buildStart({ plugins }) {
       validateVersion(this.meta.rollupVersion, peerDependencies.rollup, 'rollup');
+      await ensureLexerInit();
       const nodeResolve = plugins.find(({ name }) => name === 'node-resolve');
       if (nodeResolve) {
         validateVersion(nodeResolve.version, '^13.0.6', '@rollup/plugin-node-resolve');
@@ -291,10 +303,12 @@ export default function commonjs(options = {}) {
 
       if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
         const actualId = unwrapId(id, ES_IMPORT_SUFFIX);
+        const loadedModule = await this.load({ id: actualId });
         return getEsImportProxy(
           actualId,
           getDefaultIsModuleExports(actualId),
-          (await this.load({ id: actualId })).moduleSideEffects
+          loadedModule.moduleSideEffects,
+          loadedModule.meta?.commonjs?.lexerExports || []
         );
       }
 
@@ -319,11 +333,11 @@ export default function commonjs(options = {}) {
       return requireResolver.shouldTransformCachedModule.call(this, ...args);
     },
 
-    transform(code, id) {
+    async transform(code, id) {
       if (!isPossibleCjsId(id)) return null;
 
       try {
-        return transformAndCheckExports.call(this, code, id);
+        return await transformAndCheckExports.call(this, code, id);
       } catch (err) {
         return this.error(err, err.pos);
       }
