@@ -102,7 +102,7 @@ test('file extension not in the list', async () => {
   const content = 'some content';
   const id = 'testfile.unknown';
   const plugin = yaml();
-  const output = plugin.transform(content, id);
+  const output = plugin.transform.handler(content, id);
 
   expect(output).toBeNull();
 });
@@ -111,7 +111,7 @@ test('file passes the filter', async () => {
   const content = 'some content';
   const id = 'testfile.yaml';
   const plugin = yaml({ include: '**/*.yaml' });
-  const output = plugin.transform(content, id);
+  const output = plugin.transform.handler(content, id);
 
   expect(output).not.toBeNull();
 });
@@ -120,7 +120,7 @@ test('file does not pass the filter', async () => {
   const content = 'some content';
   const id = 'testfile.yaml';
   const plugin = yaml({ exclude: '**/*.yaml' });
-  const output = plugin.transform(content, id);
+  const output = plugin.transform.handler(content, id);
 
   expect(output).toBeNull();
 });
@@ -129,7 +129,7 @@ test('uses custom extensions', async () => {
   const content = 'some content';
   const id = 'testfile.custom';
   const plugin = yaml({ extensions: ['.custom'] });
-  const output = plugin.transform(content, id);
+  const output = plugin.transform.handler(content, id);
 
   expect(output).not.toBeNull();
 });
@@ -138,7 +138,7 @@ test('does not process non-custom extensions', async () => {
   const content = 'some content';
   const id = 'testfile.yaml';
   const plugin = yaml({ extensions: ['.custom'] });
-  const output = plugin.transform(content, id);
+  const output = plugin.transform.handler(content, id);
 
   expect(output).toBeNull();
 });

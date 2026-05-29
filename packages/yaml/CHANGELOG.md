@@ -1,5 +1,13 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v5.0.0
+
+_2026-05-29_
+
+### Breaking Changes
+
+- yaml!: use hook filters ([#1996](https://github.com/rollup/plugins/issues/1996))
+
 ## v4.1.2
 
 _2023-10-05_
