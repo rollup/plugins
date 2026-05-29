@@ -115,7 +115,10 @@ const dataToEsm: DataToEsm = function dataToEsm(data, options = {}) {
       defaultExportRows.push(
         `${stringify(key)}:${_}${serialize(value, options.compact ? null : t, '')}`
       );
-      if (options.includeArbitraryNames && isWellFormedString(key)) {
+      // A `default` key is skipped here and exposed only through the default
+      // export object: a `... as default` re-export would clash with the trailing
+      // `export default` and produce a duplicate default export (a SyntaxError).
+      if (key !== 'default' && options.includeArbitraryNames && isWellFormedString(key)) {
         const variableName = `${arbitraryNamePrefix}${arbitraryNameExportRows.length}`;
         namedExportCode += `${declarationType} ${variableName}${_}=${_}${serialize(
           value,

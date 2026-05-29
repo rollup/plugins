@@ -116,3 +116,12 @@ test('support arbitrary module namespace identifier names', () => {
     'export var foo="foo";var _arbitrary0="foo.bar";export{_arbitrary0 as "foo.bar"};export default{foo:foo,"foo.bar":"foo.bar","\\udfff":"non wellformed"};'
   );
 });
+
+test('does not emit a named export for a `default` key with includeArbitraryNames', () => {
+  // `export { _x as "default" }` alongside the trailing `export default {...}`
+  // would be a duplicate default export (a SyntaxError), so a `default` key is
+  // only reachable through the default export object.
+  expect(
+    dataToEsm({ default: 'a', normal: 'b' }, { namedExports: true, includeArbitraryNames: true })
+  ).toBe('export var normal = "b";\nexport default {\n\t"default": "a",\n\tnormal: normal\n};\n');
+});
