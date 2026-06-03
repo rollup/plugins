@@ -113,6 +113,41 @@ test('generates a sourcemap', async () => {
   expect(loc.line).toBe(3);
   expect(loc.column).toBe(8);
 });
+test('does not include absolute generated proxy imports in sourcemap sourcesContent', async () => {
+  const input = path.resolve('fixtures/absolute/main.js');
+  const dependency = path.resolve('fixtures/absolute/dependency.js');
+  const modules = {
+    [input]: 'module.exports = require("./dependency.js");',
+    [dependency]: 'module.exports = "dependency";'
+  };
+  const bundle = await rollup({
+    input,
+    plugins: [
+      commonjs(),
+      {
+        name: 'loader',
+        resolveId(source, importer) {
+          const resolved = importer?.startsWith(path.resolve('fixtures/absolute'))
+            ? path.resolve(path.dirname(importer), source)
+            : path.resolve(source);
+          return Object.hasOwnProperty.call(modules, resolved) ? resolved : null;
+        },
+        load(id) {
+          return modules[id] || null;
+        }
+      }
+    ]
+  });
+  const {
+    output: [{ map }]
+  } = await bundle.generate({
+    format: 'cjs',
+    sourcemap: true
+  });
+
+  expect(map.sources).not.toContain(`${normalizePathSlashes(input)}?commonjs-entry`);
+  expect(map.sourcesContent.join('\n')).not.toContain(`from ${JSON.stringify(input)}`);
+});
 test('supports an array of multiple entry points', async () => {
   const bundle = await rollup({
     input: [

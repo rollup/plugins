@@ -82,6 +82,7 @@ export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) 
   }
   return {
     code,
+    map: { mappings: '' },
     syntheticNamedExports: '__moduleExports'
   };
 }
