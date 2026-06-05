@@ -78,7 +78,10 @@ test('supports static block', () => {
     `
     class Foo {
       static {
-        let a = 10;
+        var a = 10;
+        {
+          var b = 20;
+        }
       }
     }
   `,
@@ -87,12 +90,14 @@ test('supports static block', () => {
 
   const scope = attachScopes(ast, 'scope');
   expect(scope.contains('a')).toBeFalsy();
+  expect(scope.contains('b')).toBeFalsy();
 
   const classDeclaration = ast.body[0] as estree.ClassDeclaration;
   const classBody = classDeclaration.body;
   const staticBlock = classBody.body[0] as estree.StaticBlock & { scope: AttachedScope };
 
   expect(staticBlock.scope.contains('a')).toBeTruthy();
+  expect(staticBlock.scope.contains('b')).toBeTruthy();
 });
 
 test('supports ForStatement', () => {
