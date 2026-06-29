@@ -1,6 +1,6 @@
 import type { Plugin, SourceMapInput } from 'rollup';
 
-interface Output {
+export interface Output {
   code: string;
   map?: SourceMapInput;
 }
@@ -10,5 +10,6 @@ interface Output {
  *
  * @returns Plugin instance.
  */
-export default function commonjsShim(): Plugin;
+export function esmShim(): Plugin;
+export default esmShim;
 export function provideCJSSyntax(code: string): Output | null;

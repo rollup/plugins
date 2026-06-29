@@ -1,6 +1,6 @@
 import type { RollupOptions } from 'rollup';
 
-import commonjsShim from '../types/index';
+import esmShimDefault, { esmShim } from '../types/index';
 
 const config: RollupOptions = {
   input: 'main.js',
@@ -8,7 +8,7 @@ const config: RollupOptions = {
     file: 'bundle.js',
     format: 'iife'
   },
-  plugins: [commonjsShim()]
+  plugins: [esmShimDefault(), esmShim()]
 };
 
 export default config;
