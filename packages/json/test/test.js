@@ -162,3 +162,13 @@ test('handles empty keys', async () => {
     'export var b = "c";\nexport default {\n\t"": "a",\n\tb: b\n};\n'
   );
 });
+test('handles json files with import attributes', async () => {
+  const result = json().transform(
+    `{"a":"b"}`,
+    `input.json?attributes=${encodeURIComponent(JSON.stringify({ type: 'json' }))}`,
+    {
+      rawId: 'input.json'
+    }
+  );
+  expect(result).not.toBeNull();
+});
