@@ -10678,6 +10678,45 @@ module.exports = main;
 }
 `;
 
+exports[`try-catch-handler 1`] = `
+{
+  "main.js": "'use strict';
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var main$1 = {};
+
+/* eslint-disable global-require */
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	let handled = 'no error';
+
+	try {
+	  handled = 'no error';
+	} catch (error) {
+	  // The handler never runs here, but the require must still stay inside it. Hoisting it
+	  // to a top-level import would make this module fail to evaluate at all.
+	  handled = require('uninstalled-external-module');
+	}
+
+	t.is(handled, 'no error');
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
+
 exports[`try-catch-ids-array 1`] = `
 {
   "main.js": "'use strict';

@@ -65,7 +65,7 @@ export function getRequireHandlers() {
     node,
     scope,
     usesReturnValue,
-    isInsideTryBlock,
+    isInsideTryStatement,
     isInsideConditional,
     toBeRemoved
   ) {
@@ -74,7 +74,7 @@ export function getRequireHandlers() {
       node,
       scope,
       usesReturnValue,
-      isInsideTryBlock,
+      isInsideTryStatement,
       isInsideConditional,
       toBeRemoved
     });
@@ -170,9 +170,12 @@ function processRequireExpressions(
     const name = generateRequireName(requires);
     let usesRequired = false;
     let needsImport = false;
-    for (const { node, usesReturnValue, toBeRemoved, isInsideTryBlock } of requires) {
+    for (const { node, usesReturnValue, toBeRemoved, isInsideTryStatement } of requires) {
+      // A `require` anywhere inside a try statement is guarded, including in the catch
+      // clause: hoisting it to a top-level import would turn a failure the author chose to
+      // handle into an unconditional module-evaluation error.
       const { canConvertRequire, shouldRemoveRequire } =
-        isInsideTryBlock && isWrappedId(resolvedId, EXTERNAL_SUFFIX)
+        isInsideTryStatement && isWrappedId(resolvedId, EXTERNAL_SUFFIX)
           ? getIgnoreTryCatchRequireStatementMode(source)
           : { canConvertRequire: true, shouldRemoveRequire: false };
       if (shouldRemoveRequire) {

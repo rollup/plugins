@@ -79,6 +79,7 @@ export default async function transformCommonjs(
   let programDepth = 0;
   let classBodyDepth = 0;
   let currentTryBlockEnd = null;
+  let currentTryStatementEnd = null;
   let shouldWrap = false;
 
   const globals = new Set();
@@ -117,6 +118,9 @@ export default async function transformCommonjs(
 
       if (currentTryBlockEnd !== null && node.start > currentTryBlockEnd) {
         currentTryBlockEnd = null;
+      }
+      if (currentTryStatementEnd !== null && node.start > currentTryStatementEnd) {
+        currentTryStatementEnd = null;
       }
       if (currentConditionalNodeEnd !== null && node.start > currentConditionalNodeEnd) {
         currentConditionalNodeEnd = null;
@@ -249,7 +253,7 @@ export default async function transformCommonjs(
               node,
               scope,
               usesReturnValue,
-              currentTryBlockEnd !== null,
+              currentTryStatementEnd !== null,
               currentConditionalNodeEnd !== null,
               toBeRemoved
             );
@@ -382,6 +386,9 @@ export default async function transformCommonjs(
         case 'TryStatement':
           if (currentTryBlockEnd === null) {
             currentTryBlockEnd = node.block.end;
+          }
+          if (currentTryStatementEnd === null) {
+            currentTryStatementEnd = node.end;
           }
           if (currentConditionalNodeEnd === null) {
             currentConditionalNodeEnd = node.end;
