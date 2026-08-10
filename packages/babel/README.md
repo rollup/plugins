@@ -26,7 +26,15 @@ Using Rollup with `@rollup/plugin-babel` makes the process far easier.
 
 ## Requirements
 
-This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v14.0.0+) and Rollup v1.20.0+.
+This plugin requires Node.js `^22.18.0 || >=24.11.0` (the range supported by Babel 8), Rollup v4.0.0+ and `@babel/core` v8.0.0+. If you are on Babel 7, use `@rollup/plugin-babel` v7.
+
+This package is published as ES modules only. `require('@rollup/plugin-babel')` keeps working on the supported Node versions via [`require(esm)`](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
+
+## Migration to v8
+
+- Babel 7 is no longer supported, see the [Babel 8 migration guide](https://babeljs.io/docs/v8-migration) for upgrading your Babel configuration.
+- The `runtimeHelpers` and `externalHelpers` plugin options (deprecated since v5 in favour of `babelHelpers`) have been removed.
+- The `@types/babel__core` optional peer dependency is gone; Babel 8 ships its own TypeScript types.
 
 ## Install
 
@@ -110,7 +118,7 @@ const filter = createFilter(include, exclude, {});
 ### `extensions`
 
 Type: `Array[...String]`<br>
-Default: `['.js', '.jsx', '.es6', '.es', '.mjs']`
+Default: `['.js', '.jsx', '.es6', '.es', '.mjs', '.cjs']`
 
 An array of file extensions that Babel should transpile. If you want to transpile TypeScript files with this plugin it's essential to include `.ts` and `.tsx` in this option.
 
@@ -291,7 +299,7 @@ By default, helpers e.g. when transpiling classes will be inserted at the top of
 
 Alternatively, you can use imported runtime helpers by adding the `@babel/transform-runtime` plugin. This will make `@babel/runtime` an external dependency of your project, see [@babel/plugin-transform-runtime](https://babeljs.io/docs/en/babel-plugin-transform-runtime) for details.
 
-Note that this will only work for `es` and `cjs` formats, and you need to make sure to set the `useESModules` option of `@babel/plugin-transform-runtime` to `true` if you create ES output:
+Note that this will only work for `es` and `cjs` formats. Helpers are always imported as `@babel/runtime/helpers/<name>`; whether the ESM or CommonJS flavour is used is resolved from `@babel/runtime`'s `package.json#exports`:
 
 ```js
 rollup.rollup({...})
@@ -299,7 +307,7 @@ rollup.rollup({...})
   format: 'es',
   plugins: [getBabelOutputPlugin({
     presets: ['@babel/preset-env'],
-    plugins: [['@babel/plugin-transform-runtime', { useESModules: true }]]
+    plugins: ['@babel/plugin-transform-runtime']
   })]
 }))
 ```
@@ -309,42 +317,13 @@ rollup.rollup({...})
 export default class Foo {}
 
 // output
-import _classCallCheck from '@babel/runtime/helpers/esm/classCallCheck';
+import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
 
 var Foo = function Foo() {
   _classCallCheck(this, Foo);
 };
 
 export default Foo;
-```
-
-And for CommonJS:
-
-```js
-rollup.rollup({...})
-.then(bundle => bundle.generate({
-  format: 'cjs',
-  plugins: [getBabelOutputPlugin({
-    presets: ['@babel/preset-env'],
-    plugins: [['@babel/plugin-transform-runtime', { useESModules: false }]]
-  })]
-}))
-```
-
-```js
-// input
-export default class Foo {}
-
-// output
-('use strict');
-
-var _classCallCheck = require('@babel/runtime/helpers/classCallCheck');
-
-var Foo = function Foo() {
-  _classCallCheck(this, Foo);
-};
-
-module.exports = Foo;
 ```
 
 Another option is to use `@babel/plugin-external-helpers`, which will reference the global `babelHelpers` object. It is your responsibility to make sure this global variable exists.

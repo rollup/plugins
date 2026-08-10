@@ -1,6 +1,6 @@
 {
-  "presets": [ "@babel/env" ],
+  "presets": [ ["@babel/env", { "targets": { "ie": "11" } }] ],
   "plugins": [
-    ["@babel/proposal-decorators", { "legacy": true }]
+    ["@babel/proposal-decorators", { "version": "legacy" }]
   ]
 }

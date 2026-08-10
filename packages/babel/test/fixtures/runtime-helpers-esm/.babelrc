@@ -1,6 +1,4 @@
 {
-  "presets": [ "@babel/env" ],
-  "plugins": [
-    [ "@babel/transform-runtime", { "useESModules": true } ]
-  ]
+  "presets": [ ["@babel/env", { "targets": { "ie": "11" } }] ],
+  "plugins": [ "@babel/transform-runtime" ]
 }

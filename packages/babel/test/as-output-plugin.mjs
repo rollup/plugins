@@ -55,7 +55,7 @@ async function generate(input, babelOptions = {}, generateOptions = {}, rollupOp
 }
 test('allows running the plugin on the output via output options', async () => {
   const code = await generate('basic/main.js', {
-    presets: ['@babel/env']
+    presets: [['@babel/env', { targets: { ie: '11' } }]]
   });
   expect(code.includes('const')).toBe(false);
 });
@@ -63,19 +63,12 @@ test('ignores .babelrc when transforming the output by default', async () => {
   const code = await generate('basic/main.js');
   expect(code.includes('const')).toBe(true);
 });
-test("allows transform-runtime to be used with `useESModules: false` (the default) and `format: 'cjs'`", async () => {
+test("allows transform-runtime to be used with `format: 'cjs'`", async () => {
   const code = await generate(
     'runtime-helpers/main.js',
     {
-      presets: ['@babel/env'],
-      plugins: [
-        [
-          '@babel/transform-runtime',
-          {
-            useESModules: false
-          }
-        ]
-      ]
+      presets: [['@babel/env', { targets: { ie: '11' } }]],
+      plugins: ['@babel/transform-runtime']
     },
     {
       format: 'cjs'
@@ -83,34 +76,27 @@ test("allows transform-runtime to be used with `useESModules: false` (the defaul
   );
   expect(code).toBe(`'use strict';
 
-var _createClass = require("@babel/runtime/helpers/createClass");
-var _classCallCheck = require("@babel/runtime/helpers/classCallCheck");
+var _createClass = require("@babel/runtime/helpers/createClass").default;
+var _classCallCheck = require("@babel/runtime/helpers/classCallCheck").default;
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
 });
 module.exports = Foo;
 `);
 });
-test("allows transform-runtime to be used with `useESModules: true` and `format: 'es'`", async () => {
+test("allows transform-runtime to be used with `format: 'es'`", async () => {
   const code = await generate(
     'runtime-helpers/main.js',
     {
-      presets: ['@babel/env'],
-      plugins: [
-        [
-          '@babel/transform-runtime',
-          {
-            useESModules: true
-          }
-        ]
-      ]
+      presets: [['@babel/env', { targets: { ie: '11' } }]],
+      plugins: ['@babel/transform-runtime']
     },
     {
       format: 'es'
     }
   );
-  expect(code).toBe(`import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
+  expect(code).toBe(`import _createClass from "@babel/runtime/helpers/createClass";
+import _classCallCheck from "@babel/runtime/helpers/classCallCheck";
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
 });
@@ -144,7 +130,8 @@ test('generates sourcemap by default', async () => {
     source: 'test/fixtures/class/main.js'.split(nodePath.sep).join('/'),
     line: 3,
     column: 12,
-    name: target
+    // Babel 8 no longer records a name mapping for identifiers whose text is unchanged
+    name: null
   });
 });
 test('allows using external-helpers plugin even if the externalHelpers flag is not passed', async () => {
@@ -152,7 +139,7 @@ test('allows using external-helpers plugin even if the externalHelpers flag is n
   const code = await generate(
     'external-helpers/main.js',
     {
-      presets: ['@babel/env'],
+      presets: [['@babel/env', { targets: { ie: '11' } }]],
       plugins: ['@babel/external-helpers']
     },
     {},
@@ -192,7 +179,7 @@ test('warns when using the "include" option', async () => {
     }
   );
   expect(warnings).toEqual([
-    'The "include", "exclude" and "extensions" options are ignored when transforming the output.'
+    '[plugin babel] The "include", "exclude" and "extensions" options are ignored when transforming the output.'
   ]);
 });
 test('transforms all chunks in a code-splitting setup', async () => {
@@ -205,15 +192,14 @@ test('transforms all chunks in a code-splitting setup', async () => {
       format: 'es',
       plugins: [
         getBabelOutputPlugin({
-          plugins: ['@babel/syntax-dynamic-import'],
-          presets: ['@babel/env']
+          presets: [['@babel/env', { targets: { ie: '11' } }]]
         })
       ]
     },
     true
   );
   expect(output.map(({ code }) => code)).toEqual([
-    `import('./dep--s88I99N.js').then(function (result) {
+    `import('./dep-D_rFPbwT.js').then(function (result) {
   return console.log(result);
 });
 `,
@@ -235,7 +221,7 @@ test('transforms all chunks when preserving modules', async () => {
       preserveModules: true,
       plugins: [
         getBabelOutputPlugin({
-          presets: ['@babel/env']
+          presets: [['@babel/env', { targets: { ie: '11' } }]]
         })
       ]
     },
@@ -313,7 +299,7 @@ test('allows using a Rollup output format other than esm or cjs with allowAllFor
   const code = await generate(
     'basic/main.js',
     {
-      presets: ['@babel/env'],
+      presets: [['@babel/env', { targets: { ie: '11' } }]],
       allowAllFormats: true
     },
     {
@@ -336,6 +322,7 @@ test('allows using Babel to transform to other formats', async () => {
         [
           '@babel/env',
           {
+            targets: { ie: '11' },
             modules: 'umd'
           }
         ]
@@ -391,7 +378,7 @@ test('allows excluding manual chunks from output transform via `excludeChunks`',
       plugins: [
         getBabelOutputPlugin({
           // Transform generated code but skip the 'vendor' manual chunk
-          presets: ['@babel/env'],
+          presets: [['@babel/env', { targets: { ie: '11' } }]],
           excludeChunks: ['vendor']
         })
       ]
@@ -410,7 +397,7 @@ test('works in parallel', async () => {
     format: 'es',
     plugins: [
       getBabelOutputPlugin({
-        presets: ['@babel/env'],
+        presets: [['@babel/env', { targets: { ie: '11' } }]],
         parallel: true
       })
     ]
@@ -424,7 +411,7 @@ test('works in parallel with specified worker count', async () => {
     format: 'es',
     plugins: [
       getBabelOutputPlugin({
-        presets: ['@babel/env'],
+        presets: [['@babel/env', { targets: { ie: '11' } }]],
         parallel: 2
       })
     ]

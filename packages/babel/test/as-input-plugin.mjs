@@ -216,7 +216,8 @@ test('generates sourcemap by default', async () => {
     source: 'test/fixtures/class/main.js'.split(nodePath.sep).join('/'),
     line: 3,
     column: 12,
-    name: target
+    // Babel 8 no longer records a name mapping for identifiers whose text is unchanged
+    name: null
   });
 });
 test('works with proposal-decorators (rollup/rollup-plugin-babel#18)', async () => {
@@ -273,7 +274,7 @@ var Foo = /*#__PURE__*/_createClass(function Foo() {
 module.exports = Foo;
 `);
 });
-test('allows transform-runtime to inject esm version of helpers', async () => {
+test('allows transform-runtime to inject helpers in esm output', async () => {
   const warnings = [];
   const code = await generate(
     'runtime-helpers-esm/main.js',
@@ -290,11 +291,11 @@ test('allows transform-runtime to inject esm version of helpers', async () => {
     }
   );
   expect(warnings).toEqual([
-    `"@babel/runtime/helpers/esm/createClass" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`,
-    `"@babel/runtime/helpers/esm/classCallCheck" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`
+    `"@babel/runtime/helpers/createClass" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`,
+    `"@babel/runtime/helpers/classCallCheck" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`
   ]);
-  expect(code).toBe(`import _createClass from '@babel/runtime/helpers/esm/createClass';
-import _classCallCheck from '@babel/runtime/helpers/esm/classCallCheck';
+  expect(code).toBe(`import _createClass from '@babel/runtime/helpers/createClass';
+import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
 
 var Foo = /*#__PURE__*/_createClass(function Foo() {
   _classCallCheck(this, Foo);
@@ -573,7 +574,7 @@ test('can be used as an input plugin while transforming the output', async () =>
     input: `${FIXTURES}basic/main.js`,
     plugins: [
       getBabelOutputPlugin({
-        presets: ['@babel/env']
+        presets: [['@babel/env', { targets: { ie: '11' } }]]
       })
     ]
   });
@@ -587,7 +588,7 @@ test('works as a CJS plugin', async () => {
     input: `${FIXTURES}basic/main.js`,
     plugins: [
       babelPluginCjs({
-        presets: ['@babel/env']
+        presets: [['@babel/env', { targets: { ie: '11' } }]]
       })
     ]
   });
@@ -603,7 +604,7 @@ test('works in parallel as a CJS plugin', async () => {
     plugins: [
       babelPluginCjs({
         babelHelpers: 'bundled',
-        presets: ['@babel/env'],
+        presets: [['@babel/env', { targets: { ie: '11' } }]],
         parallel: true
       })
     ]
