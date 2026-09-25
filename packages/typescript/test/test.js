@@ -560,6 +560,62 @@ test.sequential('supports overriding the TypeScript version', async () => {
   const result = await evaluateBundle(bundle);
   expect(result).toBe(1337);
 });
+test.sequential('clears a pending program update when the watch program is closed', async () => {
+  let updateTimer = null;
+  let updateFired = false;
+  let closed = false;
+  const bundle = await rollup({
+    input: 'fixtures/overriding-typescript/main.ts',
+    onwarn,
+    plugins: [
+      typescript({
+        tsconfig: false,
+        typescript: fakeTypescript({
+          createWatchCompilerHost() {
+            return {
+              afterProgramCreate() {},
+              setTimeout,
+              clearTimeout
+            };
+          },
+          createWatchProgram(host) {
+            const program = {
+              emit(_, writeFile) {
+                writeFile(
+                  path.join(__dirname, 'fixtures/overriding-typescript/main.js'),
+                  'export default 1337;'
+                );
+              }
+            };
+            host.afterProgramCreate(program);
+            program.emit();
+
+            // A file change in the last 250ms of the build arms TypeScript's update timer
+            // and `close()` leaves it running.
+            updateTimer = host.setTimeout(
+              () => {
+                updateFired = true;
+              },
+              50,
+              'timerToUpdateProgram'
+            );
+            return {
+              close() {
+                closed = true;
+              }
+            };
+          }
+        })
+      })
+    ]
+  });
+  await getCode(bundle, outputOptions);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
+  expect(closed).toBe(true);
+  expect(updateTimer).not.toBeNull();
+  expect(updateFired).toBe(false);
+});
 test.sequential('should not resolve .d.ts files', async () => {
   const bundle = await rollup({
     input: 'fixtures/dts/main.ts',
