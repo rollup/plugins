@@ -240,10 +240,14 @@ export default function createWatchProgram(
   const { setTimeout: schedule, clearTimeout: cancel } = host;
   if (schedule && cancel) {
     host.setTimeout = (callback, ms, ...args) => {
-      const timer: unknown = schedule(() => {
-        timers.delete(timer);
-        callback(...args);
-      }, ms);
+      const timer: unknown = schedule(
+        () => {
+          timers.delete(timer);
+          callback(...args);
+        },
+        ms,
+        ...args
+      );
       timers.add(timer);
       return timer;
     };
