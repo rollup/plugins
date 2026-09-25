@@ -561,6 +561,8 @@ test.sequential('supports overriding the TypeScript version', async () => {
   expect(result).toBe(1337);
 });
 test.sequential('clears a pending program update when the watch program is closed', async () => {
+  const scheduled = [];
+  const cancelled = [];
   let updateTimer = null;
   let updateFired = false;
   let closed = false;
@@ -574,8 +576,16 @@ test.sequential('clears a pending program update when the watch program is close
           createWatchCompilerHost() {
             return {
               afterProgramCreate() {},
-              setTimeout,
-              clearTimeout
+              // Record the timers instead of arming them so the outcome does not depend on
+              // how quickly the build reaches `buildEnd`.
+              setTimeout(callback, ms) {
+                const timer = { callback, ms };
+                scheduled.push(timer);
+                return timer;
+              },
+              clearTimeout(timer) {
+                cancelled.push(timer);
+              }
             };
           },
           createWatchProgram(host) {
@@ -596,7 +606,7 @@ test.sequential('clears a pending program update when the watch program is close
               () => {
                 updateFired = true;
               },
-              50,
+              250,
               'timerToUpdateProgram'
             );
             return {
@@ -610,10 +620,13 @@ test.sequential('clears a pending program update when the watch program is close
     ]
   });
   await getCode(bundle, outputOptions);
-  await new Promise((resolve) => setTimeout(resolve, 200));
 
   expect(closed).toBe(true);
-  expect(updateTimer).not.toBeNull();
+  expect(scheduled).toHaveLength(1);
+  expect(scheduled[0].ms).toBe(250);
+  expect(updateTimer).toBe(scheduled[0]);
+  expect(cancelled).toHaveLength(1);
+  expect(cancelled[0]).toBe(updateTimer);
   expect(updateFired).toBe(false);
 });
 test.sequential('should not resolve .d.ts files', async () => {
