@@ -4,3 +4,5 @@
 '9007199254740993': large integer
 nested:
   '01': nested leading zero
+array:
+  - '01': array leading zero

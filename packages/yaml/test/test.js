@@ -56,14 +56,15 @@ test('preserves quoted numeric mapping keys in an ES module', async () => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output[0].code).toContain('export');
-  const { error, module } = await testBundle(undefined, bundle);
+  const { error, module } = await testBundle(null, bundle);
   expect(error).toBeUndefined();
   expect(module.exports).toEqual({
     '00': 'zeroes',
     '01': 'leading zero',
     '08': 'eight',
     '9007199254740993': 'large integer',
-    nested: { '01': 'nested leading zero' }
+    nested: { '01': 'nested leading zero' },
+    array: [{ '01': 'array leading zero' }]
   });
 });
 
@@ -72,7 +73,7 @@ test('preserves YAML timestamps, non-finite numbers and aliases', async () => {
     input: 'fixtures/serialized-values/main.js',
     plugins: [yaml()]
   });
-  const { error, module } = await testBundle(undefined, bundle, {
+  const { error, module } = await testBundle(null, bundle, {
     options: { exports: 'named' }
   });
   expect(error).toBeUndefined();
@@ -98,12 +99,50 @@ test('preserves special values returned by a transform', async () => {
     input: 'fixtures/numeric-keys/main.js',
     plugins: [yaml({ transform: () => data })]
   });
-  const { error, module } = await testBundle(undefined, bundle);
+  const { error, module } = await testBundle(null, bundle);
   expect(error).toBeUndefined();
   expect(module.exports.regexp).toEqual(data.regexp);
   expect(module.exports.map).toEqual(data.map);
   expect(module.exports.set).toEqual(data.set);
   expect(module.exports.fn()).toBe(42);
+});
+
+test('preserves other object and array serialization returned by a transform', async () => {
+  const circular = {};
+  circular.self = circular;
+  const circularArray = [];
+  circularArray.push(circularArray);
+  const custom = {
+    toSource: function customSource() {
+      return 'custom';
+    }
+  };
+  const data = {
+    boxedString: Object('abc'),
+    boxedNumber: Object(4),
+    boxedBoolean: Object(false),
+    error: new Error('example'),
+    custom,
+    sparse: Array(2).concat([1]),
+    proto: JSON.parse('{"__proto__":{"example":true}}'),
+    circularArray,
+    map: new Map([['key', circular]])
+  };
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml({ transform: () => data })]
+  });
+  const { error, module } = await testBundle(null, bundle);
+  expect(error).toBeUndefined();
+  expect(module.exports.boxedString).toEqual({ 0: 'a', 1: 'b', 2: 'c' });
+  expect(module.exports.boxedNumber).toEqual({});
+  expect(module.exports.boxedBoolean).toEqual({});
+  expect(module.exports.error).toEqual({});
+  expect(module.exports.custom.toSource()).toBe('custom');
+  expect(module.exports.sparse).toEqual(data.sparse);
+  expect(Object.getPrototypeOf(module.exports.proto)).toEqual({ example: true });
+  expect(module.exports.circularArray).toEqual([{ $circularReference: 1 }]);
+  expect(module.exports.map.get('key')).toEqual({ self: { $circularReference: 1 } });
 });
 
 test('resolves extensionless imports in conjunction with nodeResolve plugin', async () => {

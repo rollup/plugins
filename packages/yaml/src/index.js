@@ -9,15 +9,10 @@ const defaults = {
 };
 
 function serialize(data, ancestors = []) {
-  if (
-    data === null ||
-    typeof data !== 'object' ||
-    data instanceof Date ||
-    data instanceof RegExp ||
-    data instanceof Map ||
-    data instanceof Set
-  ) {
-    return toSource(data);
+  if (data === null || typeof data !== 'object') return toSource(data);
+  if (!Array.isArray(data)) {
+    const prototype = Object.getPrototypeOf(data);
+    if (prototype !== Object.prototype && prototype !== null) return toSource(data);
   }
   if (ancestors.includes(data)) return '{$circularReference:1}';
   const parents = ancestors.concat([data]);
