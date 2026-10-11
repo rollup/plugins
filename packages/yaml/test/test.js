@@ -49,6 +49,63 @@ test('generates named exports', async () => {
   return testBundle(undefined, bundle);
 });
 
+test('preserves quoted numeric mapping keys in an ES module', async () => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml()]
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+  expect(output[0].code).toContain('export');
+  const { error, module } = await testBundle(undefined, bundle);
+  expect(error).toBeUndefined();
+  expect(module.exports).toEqual({
+    '00': 'zeroes',
+    '01': 'leading zero',
+    '08': 'eight',
+    '9007199254740993': 'large integer',
+    nested: { '01': 'nested leading zero' }
+  });
+});
+
+test('preserves YAML timestamps, non-finite numbers and aliases', async () => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/serialized-values/main.js',
+    plugins: [yaml()]
+  });
+  const { error, module } = await testBundle(undefined, bundle, {
+    options: { exports: 'named' }
+  });
+  expect(error).toBeUndefined();
+  const data = module.exports.default;
+  expect(data.timestamp).toEqual(new Date('2020-01-02T03:04:05.000Z'));
+  expect(data.values).toEqual([Infinity, -Infinity, NaN, -0]);
+  expect(data.shared).toEqual({ '01': 'alias value' });
+  expect(data.alias).toEqual(data.shared);
+  expect(module.exports.shared).toBe(data.shared);
+  expect(data.loop.self).toEqual({ $circularReference: 1 });
+});
+
+test('preserves special values returned by a transform', async () => {
+  const data = {
+    regexp: /example/gi,
+    map: new Map([['key', 'value']]),
+    set: new Set(['value']),
+    fn: function value() {
+      return 42;
+    }
+  };
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml({ transform: () => data })]
+  });
+  const { error, module } = await testBundle(undefined, bundle);
+  expect(error).toBeUndefined();
+  expect(module.exports.regexp).toEqual(data.regexp);
+  expect(module.exports.map).toEqual(data.map);
+  expect(module.exports.set).toEqual(data.set);
+  expect(module.exports.fn()).toBe(42);
+});
+
 test('resolves extensionless imports in conjunction with nodeResolve plugin', async () => {
   const bundle = await rollup.rollup({
     input: 'fixtures/extensionless/main.js',

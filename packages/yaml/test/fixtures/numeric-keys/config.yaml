@@ -1,0 +1,6 @@
+'00': zeroes
+'01': leading zero
+'08': eight
+'9007199254740993': large integer
+nested:
+  '01': nested leading zero
