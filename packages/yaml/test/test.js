@@ -145,6 +145,32 @@ test('preserves other object and array serialization returned by a transform', a
   expect(module.exports.map.get('key')).toEqual({ self: { $circularReference: 1 } });
 });
 
+test('preserves existing serialization of arrays with trailing holes', async () => {
+  const data = {
+    allHoles: Array(2),
+    moreHoles: Array(3),
+    trailingHole: [1].concat(Array(1)),
+    trailingHoles: [1].concat(Array(2))
+  };
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml({ transform: () => data })]
+  });
+  const { error, module } = await testBundle(null, bundle);
+  expect(error).toBeUndefined();
+
+  // The existing tosource serializer drops one trailing hole.
+  for (const key of Object.keys(data)) {
+    const result = module.exports[key];
+    expect(result.length).toBe(data[key].length - 1);
+    for (let index = 0; index < result.length; index += 1) {
+      expect(index in result).toBe(index in data[key]);
+    }
+  }
+  expect(module.exports.trailingHole[0]).toBe(1);
+  expect(module.exports.trailingHoles[0]).toBe(1);
+});
+
 test('resolves extensionless imports in conjunction with nodeResolve plugin', async () => {
   const bundle = await rollup.rollup({
     input: 'fixtures/extensionless/main.js',
