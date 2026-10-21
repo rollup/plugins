@@ -45,7 +45,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 24
           registry-url: https://registry.npmjs.org/
 
       - name: Install PNPM
@@ -66,11 +66,6 @@ jobs:
           echo node `node -v`;
           echo pnpm `pnpm -v`
           echo `moon --version`
-
-      - name: Initliaze .npmrc
-        run: >
-          echo -e "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}\n$(cat .npmrc)" > .npmrc
-          && cat -n .npmrc
 
       - name: Set Git Config
         run: |
@@ -104,16 +99,12 @@ jobs:
 
       - name: Release and Publish Packages
         run: pnpm --filter [HEAD^] --workspace-concurrency=1 release
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Release and Cleanup
         run: |
           set -euo pipefail
           DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
           pnpm lint:docs
-          git checkout .npmrc
           git add . && git commit --amend --no-edit
           git pull origin "${DEFAULT_BRANCH}" --no-edit
           git rebase
