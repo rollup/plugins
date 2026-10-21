@@ -2,9 +2,63 @@ import { resolve as rawResolve } from 'path';
 
 import { createFilter, normalizePath } from '../';
 
+const picomatchCalls = vi.hoisted(() => {
+  return { count: 0 };
+});
+
+vi.mock('picomatch', async (importOriginal) => {
+  const actual = await importOriginal<{ default: (...args: unknown[]) => unknown }>();
+  const countingPicomatch = Object.assign((...args: unknown[]) => {
+    picomatchCalls.count += 1;
+    return actual.default(...args);
+  }, actual.default);
+  return { ...actual, default: countingPicomatch };
+});
+
 const resolve = (...parts: string[]) => normalizePath(rawResolve(...parts));
 
 beforeEach(() => process.chdir(__dirname));
+
+test('compiles each pattern once when the filter is created, not on every call', () => {
+  picomatchCalls.count = 0;
+  const filter = createFilter(['a/**', 'b/**'], ['a/excluded/**']);
+  expect(picomatchCalls.count).toBe(3);
+
+  expect(filter(resolve('a/file.js'))).toBeTruthy();
+  expect(filter(resolve('a/excluded/file.js'))).toBeFalsy();
+  expect(filter(resolve('b/file.js'))).toBeTruthy();
+  expect(filter(resolve('c/file.js'))).toBeFalsy();
+  expect(picomatchCalls.count).toBe(3);
+});
+
+test.sequential('resolves relative patterns against the cwd at call time', () => {
+  picomatchCalls.count = 0;
+  const filter = createFilter(['*.ts']);
+  const fileInOriginalCwd = resolve('main.ts');
+  expect(filter(fileInOriginalCwd)).toBeTruthy();
+
+  process.chdir(resolve(__dirname, 'fixtures'));
+  expect(filter(resolve('main.ts'))).toBeTruthy();
+  expect(filter(fileInOriginalCwd)).toBeFalsy();
+  expect(picomatchCalls.count).toBe(2);
+});
+
+test.sequential('does not read the cwd for patterns that do not resolve against it', () => {
+  const unresolved = createFilter(['*.ts'], null, { resolve: false });
+  const absolute = createFilter([resolve('*.ts')]);
+  const globstar = createFilter(['**/*.ts']);
+
+  const cwdSpy = vi.spyOn(process, 'cwd').mockImplementation(() => {
+    throw new Error('ENOENT');
+  });
+  try {
+    expect(unresolved('main.ts')).toBeTruthy();
+    expect(absolute(resolve(__dirname, 'main.ts'))).toBeTruthy();
+    expect(globstar('/any/where/main.ts')).toBeTruthy();
+  } finally {
+    cwdSpy.mockRestore();
+  }
+});
 
 test('includes by default ', () => {
   const filter = createFilter();

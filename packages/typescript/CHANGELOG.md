@@ -1,5 +1,13 @@
 # @rollup/plugin-typescript ChangeLog
 
+## v12.3.1
+
+_2026-10-21_
+
+### Bugfixes
+
+- typescript: clear the pending program update when a build closes the watch program ([#2025](https://github.com/rollup/plugins/issues/2025))
+
 ## v12.3.0
 
 _2025-10-23_

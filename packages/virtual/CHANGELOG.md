@@ -1,5 +1,13 @@
 # @rollup/plugin-virtual ChangeLog
 
+## v3.0.3
+
+_2026-10-21_
+
+### Bugfixes
+
+- virtual: support default imports with Node16 and NodeNext ([#2028](https://github.com/rollup/plugins/issues/2028))
+
 ## v3.0.2
 
 _2023-10-05_

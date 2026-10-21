@@ -229,5 +229,43 @@ export default function createWatchProgram(
   context: PluginContext,
   options: CreateProgramOptions
 ) {
-  return ts.createWatchProgram(createWatchHost(ts, context, options));
+  const host = createWatchHost(ts, context, options);
+
+  // TypeScript schedules program updates through the host's timers and does not
+  // clear a pending update when the program is closed. Track the timers the
+  // program arms so `close()` can cancel whatever is still pending; otherwise a
+  // file change in the last 250ms of a one-shot build fires after `buildEnd`,
+  // recreates every file watcher on the closed program and keeps Rollup alive.
+  const timers = new Set<unknown>();
+  const { setTimeout: schedule, clearTimeout: cancel } = host;
+  if (schedule && cancel) {
+    host.setTimeout = (callback, ms, ...args) => {
+      const timer: unknown = schedule(
+        () => {
+          timers.delete(timer);
+          callback(...args);
+        },
+        ms,
+        ...args
+      );
+      timers.add(timer);
+      return timer;
+    };
+    host.clearTimeout = (timer) => {
+      timers.delete(timer);
+      cancel(timer);
+    };
+  }
+
+  const program = ts.createWatchProgram(host);
+  const { close } = program;
+  program.close = () => {
+    close.call(program);
+    if (cancel) {
+      timers.forEach((timer) => cancel(timer));
+    }
+    timers.clear();
+  };
+
+  return program;
 }
