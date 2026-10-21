@@ -8,6 +8,22 @@ const defaults = {
   extensions: ['.yaml', '.yml']
 };
 
+function serialize(data, ancestors = []) {
+  if (data === null || typeof data !== 'object') return toSource(data);
+  if (!Array.isArray(data)) {
+    const prototype = Object.getPrototypeOf(data);
+    if (prototype !== Object.prototype && prototype !== null) return toSource(data);
+  }
+  if (ancestors.includes(data)) return '{$circularReference:1}';
+  const parents = ancestors.concat([data]);
+  if (Array.isArray(data)) {
+    return `[${data.map((value) => serialize(value, parents)).join(',')}]`;
+  }
+  return `{${Object.keys(data)
+    .map((key) => `${JSON.stringify(key)}:${serialize(data[key], parents)}`)
+    .join(',')}}`;
+}
+
 export default function yaml(opts = {}) {
   const options = Object.assign({}, defaults, opts);
   const { documentMode, extensions } = options;
@@ -48,7 +64,7 @@ export default function yaml(opts = {}) {
         }
 
         const keys = Object.keys(data).filter((key) => key === makeLegalIdentifier(key));
-        const code = `var data = ${toSource(data)};\n\n`;
+        const code = `var data = ${serialize(data)};\n\n`;
         const exports = ['export default data;']
           .concat(keys.map((key) => `export var ${key} = data.${key};`))
           .join('\n');

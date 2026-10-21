@@ -167,6 +167,23 @@ describe('plugin-alias', () => {
     ]);
   });
 
+  it('Replaces string aliases literally', async () => {
+    const result = await resolveAliasWithRollup(
+      {
+        entries: [
+          { find: 'id', replacement: '$$' },
+          { find: 'at', replacement: '$&co' }
+        ]
+      },
+      ['$$', '$&co'],
+      [
+        { source: 'id', importer: '/src/importer.js' },
+        { source: 'at', importer: '/src/importer.js' }
+      ]
+    );
+    expect(result).toEqual(['$$', '$&co']);
+  });
+
   it('Will not confuse modules with similar names', async () => {
     const result = await resolveAliasWithRollup(
       {
