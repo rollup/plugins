@@ -127,7 +127,13 @@ export default function alias(options: RollupAliasOptions = {}): Plugin {
         return null;
       }
 
-      const updatedId = importee.replace(matchedEntry.find, matchedEntry.replacement);
+      // When "find" is a string, the replacement must be inserted literally.
+      // Passing it as the second argument of String.replace would interpret
+      // "$$", "$&" etc. as special replacement patterns.
+      const updatedId =
+        typeof matchedEntry.find === 'string'
+          ? importee.replace(matchedEntry.find, () => matchedEntry.replacement)
+          : importee.replace(matchedEntry.find, matchedEntry.replacement);
 
       if (matchedEntry.resolverFunction) {
         return matchedEntry.resolverFunction.call(this, updatedId, importer, resolveOptions);
