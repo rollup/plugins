@@ -5010,6 +5010,95 @@ module.exports = main;
 }
 `;
 
+exports[`import-cjs-node23-require-returns-default-auto 1`] = `
+{
+  "main.js": "'use strict';
+
+var externalCjsNode23Constructor = require('external-cjs-node23-constructor');
+var externalCjsNode23Named = require('external-cjs-node23-named');
+var externalEsmModuleExportsKey = require('external-esm-module-exports-key');
+var externalCjsNode23Nan = require('external-cjs-node23-nan');
+
+function _interopNamespaceCompat(e) {
+	if (e && typeof e === 'object' && 'default' in e) return e;
+	var n = Object.create(null);
+	if (e) {
+		Object.keys(e).forEach(function (k) {
+			if (k !== 'default') {
+				var d = Object.getOwnPropertyDescriptor(e, k);
+				Object.defineProperty(n, k, d.get ? d : {
+					enumerable: true,
+					get: function () { return e[k]; }
+				});
+			}
+		});
+	}
+	n.default = e;
+	return Object.freeze(n);
+}
+
+var externalCjsNode23Constructor__namespace = /*#__PURE__*/_interopNamespaceCompat(externalCjsNode23Constructor);
+var externalCjsNode23Named__namespace = /*#__PURE__*/_interopNamespaceCompat(externalCjsNode23Named);
+var externalEsmModuleExportsKey__namespace = /*#__PURE__*/_interopNamespaceCompat(externalEsmModuleExportsKey);
+var externalCjsNode23Nan__namespace = /*#__PURE__*/_interopNamespaceCompat(externalCjsNode23Nan);
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function getDefaultExportFromNamespaceIfNotNamed (n) {
+	if (n && Object.prototype.hasOwnProperty.call(n, 'module.exports')) {
+		var d = n['default'];
+		var m = n['module.exports'];
+		if (d === m || (d !== d && m !== m)) return m;
+	}
+	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
+}
+
+var main$1 = {};
+
+var require$$0 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(externalCjsNode23Constructor__namespace);
+
+var require$$1 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(externalCjsNode23Named__namespace);
+
+var require$$2 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(externalEsmModuleExportsKey__namespace);
+
+var require$$3 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(externalCjsNode23Nan__namespace);
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	const ExternalCtor = require$$0;
+	const namedExports = require$$1;
+	const esmNamespace = require$$2;
+	const nanExport = require$$3;
+
+	t.is(typeof ExternalCtor, 'function', 'unwraps \`module.exports\` instead of returning the namespace');
+	t.is(new ExternalCtor('foo').value, 'foo', 'the required value is constructable');
+	t.deepEqual(
+	  namedExports,
+	  { foo: 'foo' },
+	  'returns \`module.exports\` even when named exports were detected'
+	);
+	t.deepEqual(
+	  esmNamespace,
+	  { default: 'bar', foo: 'foo', 'module.exports': 'not-the-default' },
+	  'keeps the namespace of an ES module that exports a binding named "module.exports"'
+	);
+	t.is(nanExport, NaN, 'unwraps \`module.exports\` when the exported value is NaN');
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
+
 exports[`import-esm-require-returns-default-auto 1`] = `
 {
   "main.js": "'use strict';
@@ -5045,6 +5134,11 @@ function getDefaultExportFromCjs (x) {
 }
 
 function getDefaultExportFromNamespaceIfNotNamed (n) {
+	if (n && Object.prototype.hasOwnProperty.call(n, 'module.exports')) {
+		var d = n['default'];
+		var m = n['module.exports'];
+		if (d === m || (d !== d && m !== m)) return m;
+	}
 	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
 }
 
@@ -5503,6 +5597,11 @@ function getDefaultExportFromCjs (x) {
 }
 
 function getDefaultExportFromNamespaceIfNotNamed (n) {
+	if (n && Object.prototype.hasOwnProperty.call(n, 'module.exports')) {
+		var d = n['default'];
+		var m = n['module.exports'];
+		if (d === m || (d !== d && m !== m)) return m;
+	}
 	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
 }
 

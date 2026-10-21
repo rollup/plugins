@@ -26,6 +26,11 @@ export const IS_WRAPPED_COMMONJS = 'withRequireFunction';
 // Minifiers like uglify will usually transpile it back if compatibility with ES3 is not enabled.
 // This could be improved by inspecting Rollup's "generatedCode" option
 
+// Since Node 23, the namespace of an imported CommonJS module exposes the raw `module.exports`
+// value under a 'module.exports' key whose value is identical to the `default` (https://github.com/nodejs/node/pull/53848).
+// `getDefaultExportFromNamespaceIfNotNamed` returns it to match what a real `require()` call would return.
+// The same-value check (NaN-safe, hence the self-comparisons) keeps namespaces of ES modulesthat just export a binding named 'module.exports' intact.
+
 const HELPERS = `
 export var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -38,6 +43,11 @@ export function getDefaultExportFromNamespaceIfPresent (n) {
 }
 
 export function getDefaultExportFromNamespaceIfNotNamed (n) {
+	if (n && Object.prototype.hasOwnProperty.call(n, 'module.exports')) {
+		var d = n['default'];
+		var m = n['module.exports'];
+		if (d === m || (d !== d && m !== m)) return m;
+	}
 	return n && Object.prototype.hasOwnProperty.call(n, 'default') && Object.keys(n).length === 1 ? n['default'] : n;
 }
 
