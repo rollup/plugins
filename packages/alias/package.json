@@ -61,5 +61,6 @@
     "rollup": "^4.0.0",
     "typescript": "catalog:"
   },
-  "types": "./dist/index.d.ts"
+  "types": "./dist/index.d.ts",
+  "bump": 1
 }
