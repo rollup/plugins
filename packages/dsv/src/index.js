@@ -6,6 +6,11 @@ import { createFilter } from '@rollup/pluginutils';
 import stripBom from 'strip-bom';
 
 const parsers = { '.csv': csvParse, '.tsv': tsvParse };
+const idFilter = new RegExp(
+  `\\.(?:${Object.keys(parsers)
+    .map((ext) => ext.slice(1))
+    .join('|')})$`
+);
 
 export default function dsv(options = {}) {
   const filter = createFilter(options.include, options.exclude);
@@ -13,22 +18,27 @@ export default function dsv(options = {}) {
   return {
     name: 'dsv',
 
-    transform(code, id) {
-      if (!filter(id)) return null;
+    transform: {
+      filter: {
+        id: idFilter
+      },
+      handler(code, id) {
+        if (!filter(id)) return null;
 
-      const ext = extname(id);
-      if (!(ext in parsers)) return null;
+        const ext = extname(id);
+        if (!(ext in parsers)) return null;
 
-      let rows = parsers[ext](stripBom(code));
+        let rows = parsers[ext](stripBom(code));
 
-      if (options.processRow) {
-        rows = rows.map((row) => options.processRow(row, id) || row);
+        if (options.processRow) {
+          rows = rows.map((row) => options.processRow(row, id) || row);
+        }
+
+        return {
+          code: `export default ${toSource(rows)};`,
+          map: { mappings: '' }
+        };
       }
-
-      return {
-        code: `export default ${toSource(rows)};`,
-        map: { mappings: '' }
-      };
     }
   };
 }

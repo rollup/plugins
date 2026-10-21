@@ -13,6 +13,10 @@ export default function terser(input: Options = {}) {
   let numOfChunks = 0;
   let numOfWorkersUsed = 0;
 
+  // Chained minify tasks; used only when a shared nameCache is provided,
+  // since terser requires sequential minification for consistent mangling.
+  let nameCacheChain: Promise<unknown> = Promise.resolve();
+
   return {
     name: 'terser',
 
@@ -23,6 +27,8 @@ export default function terser(input: Options = {}) {
           maxWorkers
         });
       }
+
+      const pool = workerPool;
 
       numOfChunks += 1;
 
@@ -38,12 +44,12 @@ export default function terser(input: Options = {}) {
         defaultOptions.toplevel = true;
       }
 
-      try {
+      const runTask = async () => {
         const {
           code: result,
           nameCache,
           sourceMap
-        } = await workerPool.addAsync({
+        } = await pool.addAsync({
           code,
           options: merge({}, options || {}, defaultOptions)
         });
@@ -79,13 +85,28 @@ export default function terser(input: Options = {}) {
           options.nameCache.props = props;
         }
 
-        if ((!!defaultOptions.sourceMap || !!options.sourceMap) && isObject(sourceMap)) {
+        return { result, sourceMap };
+      };
+
+      try {
+        let output;
+        if (options.nameCache) {
+          // The options snapshot and its serialization must only happen once
+          // the previous chunk's nameCache has been merged back.
+          const task = nameCacheChain.then(runTask);
+          nameCacheChain = task.catch(() => {});
+          output = await task;
+        } else {
+          output = await runTask();
+        }
+
+        if ((!!defaultOptions.sourceMap || !!options.sourceMap) && isObject(output.sourceMap)) {
           return {
-            code: result,
-            map: sourceMap
+            code: output.result,
+            map: output.sourceMap
           };
         }
-        return result;
+        return output.result;
       } catch (e) {
         return Promise.reject(e);
       } finally {

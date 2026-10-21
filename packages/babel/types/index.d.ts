@@ -39,6 +39,14 @@ export interface RollupBabelInputPluginOptions
    * @default false
    */
   skipPreflightCheck?: boolean;
+  /**
+   * Enable parallel processing of files in worker threads. This has a setup cost, so is best suited for larger projects.
+   * Pass an integer to set the number of workers. Set `true` for the default number of workers (based on CPU cores, capped at 4).
+   *
+   * This option cannot be used alongside custom overrides or non-serializable Babel options.
+   * @default false
+   */
+  parallel?: boolean | number;
 }
 
 export interface RollupBabelOutputPluginOptions
@@ -58,6 +66,14 @@ export interface RollupBabelOutputPluginOptions
    * These patterns are matched against the `chunk.name` value in Rollup's `renderChunk` hook.
    */
   excludeChunks?: FilterPattern;
+  /**
+   * Enable parallel processing of chunks in worker threads. This has a setup cost, so is best suited for larger projects.
+   * Pass an integer to set the number of workers. Set `true` for the default number of workers (based on CPU cores, capped at 4).
+   *
+   * This option cannot be used alongside custom overrides or non-serializable Babel options.
+   * @default false
+   */
+  parallel?: boolean | number;
 }
 
 export type RollupBabelCustomInputPluginOptions = (

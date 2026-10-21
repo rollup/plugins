@@ -432,3 +432,144 @@ test.sequential('terser preserve vars in nameCache when provided', async () => {
     }
   });
 });
+
+// https://github.com/rollup/plugins/issues/1970
+// The same property must mangle to the same name in every chunk of a build.
+async function buildSharedImportChunks(maxWorkers) {
+  const nameCache = {};
+  const bundle = await rollup({
+    input: ['test/fixtures/name-cache-entry-1.js', 'test/fixtures/name-cache-entry-2.js'],
+    plugins: [
+      terser({
+        mangle: {
+          properties: {
+            regex: /^_/
+          }
+        },
+        nameCache,
+        maxWorkers
+      })
+    ]
+  });
+  const result = await bundle.generate({
+    format: 'es',
+    chunkFileNames: 'chunk-[name].js'
+  });
+  expect(result.output.length).toBe(3);
+  const bar = nameCache.props.props.$_bar;
+  const baz = nameCache.props.props.$_baz;
+  expect(bar).toBeTruthy();
+  expect(baz).toBeTruthy();
+  expect(bar).not.toBe(baz);
+  for (const chunk of result.output) {
+    expect(chunk.code).not.toContain('_bar');
+    expect(chunk.code).not.toContain('_baz');
+  }
+  const entry1 = result.output.find((chunk) => chunk.fileName === 'name-cache-entry-1.js');
+  const entry2 = result.output.find((chunk) => chunk.fileName === 'name-cache-entry-2.js');
+  const shared = result.output.find((chunk) => !chunk.isEntry);
+  expect(entry1.code).toContain(`.${bar}(`);
+  expect(entry2.code).toContain(`.${bar}(`);
+  expect(entry2.code).toContain(`.${baz}(`);
+  expect(shared.code).toContain(`${bar}(){return"bar"}`);
+  expect(shared.code).toContain(`${baz}(){return"baz"}`);
+}
+test.sequential('shares nameCache between chunks with a common import', async () => {
+  await buildSharedImportChunks();
+});
+test.sequential(
+  'shares nameCache between chunks with a common import with only 1 worker',
+  async () => {
+    await buildSharedImportChunks(1);
+  }
+);
+
+async function buildUnrelatedChunks(maxWorkers) {
+  const nameCache = {};
+  const bundle = await rollup({
+    input: ['test/fixtures/chunk-1.js', 'test/fixtures/chunk-2.js'],
+    plugins: [
+      terser({
+        mangle: {
+          properties: {
+            regex: /^_/
+          }
+        },
+        nameCache,
+        maxWorkers
+      })
+    ]
+  });
+  const result = await bundle.generate({
+    format: 'es'
+  });
+  expect(result.output.length).toBe(2);
+  const name = nameCache.props.props.$_name;
+  const size = nameCache.props.props.$_size;
+  expect(name).toBeTruthy();
+  expect(size).toBeTruthy();
+  expect(name).not.toBe(size);
+  const chunk1 = result.output.find((chunk) => chunk.fileName === 'chunk-1.js');
+  const chunk2 = result.output.find((chunk) => chunk.fileName === 'chunk-2.js');
+  expect(chunk1.code).toContain(`${name}:"chunk-1"`);
+  expect(chunk1.code).toContain(`${size}:1`);
+  expect(chunk2.code).toContain(`${name}:"chunk-2"`);
+  expect(chunk2.code).toContain(`${size}:2`);
+}
+test.sequential('shares nameCache between unrelated chunks', async () => {
+  await buildUnrelatedChunks();
+});
+test.sequential('shares nameCache between unrelated chunks with only 1 worker', async () => {
+  await buildUnrelatedChunks(1);
+});
+
+test.sequential('mangles unrelated chunks independently without a nameCache', async () => {
+  const bundle = await rollup({
+    input: ['test/fixtures/chunk-1.js', 'test/fixtures/chunk-2.js'],
+    plugins: [
+      terser({
+        mangle: {
+          properties: {
+            regex: /^_/
+          }
+        }
+      })
+    ]
+  });
+  const result = await bundle.generate({
+    format: 'es'
+  });
+  expect(result.output.length).toBe(2);
+  const chunk1 = result.output.find((chunk) => chunk.fileName === 'chunk-1.js');
+  const chunk2 = result.output.find((chunk) => chunk.fileName === 'chunk-2.js');
+  const [, chunk1Name] = chunk1.code.match(/[{,]([$\w]+):"chunk-1"/);
+  const [, chunk2Name] = chunk2.code.match(/[{,]([$\w]+):"chunk-2"/);
+  expect(chunk1Name).toBeTruthy();
+  expect(chunk2Name).toBeTruthy();
+  // Each chunk starts from its own empty cache, so the first `_`-property
+  // encountered in each file gets the same first mangled name; `_name` is
+  // declared first in chunk-1 and second in chunk-2, so its name diverges.
+  expect(chunk1Name).not.toBe(chunk2Name);
+});
+
+test.sequential('uses a single worker when a nameCache is shared', async () => {
+  let plugin;
+  const bundle = await rollup({
+    input: ['test/fixtures/name-cache-entry-1.js', 'test/fixtures/name-cache-entry-2.js'],
+    plugins: [
+      (plugin = terser({
+        mangle: {
+          properties: {
+            regex: /^_/
+          }
+        },
+        nameCache: {},
+        maxWorkers: 4
+      }))
+    ]
+  });
+  await bundle.generate({
+    format: 'es'
+  });
+  expect(plugin.numOfWorkersUsed).toBe(1);
+});

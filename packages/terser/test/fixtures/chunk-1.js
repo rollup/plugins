@@ -1,2 +1,1 @@
-const chunk1 = 'chunk-1';
-console.log(chunk1)
+console.log({ _name: 'chunk-1', _size: 1 });

@@ -1,5 +1,13 @@
 # @rollup/plugin-alias ChangeLog
 
+## v6.0.1
+
+_2026-10-21_
+
+### Updates
+
+- alias: bump release ([3417670](https://github.com/rollup/plugins/commit/3417670))
+
 ## v6.0.0
 
 _2025-10-28_

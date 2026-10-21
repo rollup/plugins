@@ -1,12 +1,28 @@
 import YAML from 'js-yaml';
 import toSource from 'tosource';
-import { createFilter, makeLegalIdentifier } from '@rollup/pluginutils';
+import { createFilter, makeLegalIdentifier, suffixRegex } from '@rollup/pluginutils';
 
 const defaults = {
   documentMode: 'single',
   transform: null,
   extensions: ['.yaml', '.yml']
 };
+
+function serialize(data, ancestors = []) {
+  if (data === null || typeof data !== 'object') return toSource(data);
+  if (!Array.isArray(data)) {
+    const prototype = Object.getPrototypeOf(data);
+    if (prototype !== Object.prototype && prototype !== null) return toSource(data);
+  }
+  if (ancestors.includes(data)) return '{$circularReference:1}';
+  const parents = ancestors.concat([data]);
+  if (Array.isArray(data)) {
+    return `[${data.map((value) => serialize(value, parents)).join(',')}]`;
+  }
+  return `{${Object.keys(data)
+    .map((key) => `${JSON.stringify(key)}:${serialize(data[key], parents)}`)
+    .join(',')}}`;
+}
 
 export default function yaml(opts = {}) {
   const options = Object.assign({}, defaults, opts);
@@ -24,33 +40,40 @@ export default function yaml(opts = {}) {
     );
   }
 
+  const extensionsFilter = suffixRegex(extensions, 'i');
+
   return {
     name: 'yaml',
 
-    transform(content, id) {
-      if (!extensions.some((ext) => id.toLowerCase().endsWith(ext))) return null;
-      if (!filter(id)) return null;
+    transform: {
+      filter: {
+        id: extensionsFilter
+      },
+      handler(content, id) {
+        if (extensions.length === 0 || !extensionsFilter.test(id)) return null;
+        if (!filter(id)) return null;
 
-      let data = loadMethod(content);
+        let data = loadMethod(content);
 
-      if (typeof options.transform === 'function') {
-        const result = options.transform(data, id);
-        // eslint-disable-next-line no-undefined
-        if (result !== undefined) {
-          data = result;
+        if (typeof options.transform === 'function') {
+          const result = options.transform(data, id);
+          // eslint-disable-next-line no-undefined
+          if (result !== undefined) {
+            data = result;
+          }
         }
+
+        const keys = Object.keys(data).filter((key) => key === makeLegalIdentifier(key));
+        const code = `var data = ${serialize(data)};\n\n`;
+        const exports = ['export default data;']
+          .concat(keys.map((key) => `export var ${key} = data.${key};`))
+          .join('\n');
+
+        return {
+          code: code + exports,
+          map: { mappings: '' }
+        };
       }
-
-      const keys = Object.keys(data).filter((key) => key === makeLegalIdentifier(key));
-      const code = `var data = ${toSource(data)};\n\n`;
-      const exports = ['export default data;']
-        .concat(keys.map((key) => `export var ${key} = data.${key};`))
-        .join('\n');
-
-      return {
-        code: code + exports,
-        map: { mappings: '' }
-      };
     }
   };
 }
