@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.5.1
+
+_2026-10-21_
+
+### Updates
+
+- pluginutils: compile createFilter patterns once ([#2026](https://github.com/rollup/plugins/issues/2026))
+
 ## v5.5.0
 
 _2026-10-21_
