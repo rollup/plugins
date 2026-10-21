@@ -1,5 +1,13 @@
 # @rollup/plugin-yaml ChangeLog
 
+## v5.0.1
+
+_2026-10-21_
+
+### Bugfixes
+
+- yaml: preserve numeric mapping keys ([#2030](https://github.com/rollup/plugins/issues/2030))
+
 ## v5.0.0
 
 _2026-05-29_

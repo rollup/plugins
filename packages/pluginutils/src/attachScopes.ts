@@ -97,6 +97,14 @@ const attachScopes: AttachScopes = function attachScopes(ast, propertyName = 'sc
         }
       }
 
+      // static clause has its own function scope
+      if (node.type === 'StaticBlock') {
+        newScope = new Scope({
+          parent: scope,
+          block: false
+        });
+      }
+
       // create new for scope
       if (/For(?:In|Of)?Statement/.test(node.type)) {
         newScope = new Scope({

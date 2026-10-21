@@ -26,19 +26,33 @@ function getMatcherString(id: string, resolutionBase: string | false | null | un
 const createFilter: CreateFilter = function createFilter(include?, exclude?, options?) {
   const resolutionBase = options && options.resolve;
 
-  const getMatcher = (id: string | RegExp) =>
-    id instanceof RegExp
-      ? id
-      : {
-          test: (what: string) => {
-            // this refactor is a tad overly verbose but makes for easy debugging
-            const pattern = getMatcherString(id, resolutionBase);
-            const fn = pm(pattern, { dot: true });
-            const result = fn(what);
+  const getMatcher = (id: string | RegExp) => {
+    if (id instanceof RegExp) {
+      return id;
+    }
 
-            return result;
-          }
-        };
+    // Compiling a pattern costs far more than matching against it, so only recompile when the cwd it resolves against changes
+    const compile = () => pm(getMatcherString(id, resolutionBase), { dot: true });
+
+    // These patterns never resolve against the cwd, so there is no need to read or track it
+    if (resolutionBase === false || isAbsolute(id) || id.startsWith('**')) {
+      return { test: compile() };
+    }
+
+    let compiledCwd = process.cwd();
+    let fn = compile();
+
+    return {
+      test: (what: string) => {
+        const cwd = process.cwd();
+        if (cwd !== compiledCwd) {
+          compiledCwd = cwd;
+          fn = compile();
+        }
+        return fn(what);
+      }
+    };
+  };
 
   const includeMatchers = ensureArray(include).map(getMatcher);
   const excludeMatchers = ensureArray(exclude).map(getMatcher);
