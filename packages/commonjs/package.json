@@ -69,7 +69,7 @@
     "fdir": "^6.2.0",
     "is-reference": "1.2.1",
     "magic-string": "^0.30.3",
-    "picomatch": "^4.0.2"
+    "picomatch": "^4.0.4"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^5.0.0",

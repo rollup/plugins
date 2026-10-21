@@ -166,7 +166,7 @@ test('includes names starting with a "."', () => {
 
 test.sequential('includes names containing parenthesis', () => {
   process.chdir(resolve(__dirname, 'fixtures/folder-with (parens)'));
-  const filter = createFilter(['*.ts+(|x)', '**/*.ts+(|x)'], ['*.d.ts', '**/*.d.ts']);
+  const filter = createFilter(['*.{ts,tsx}', '**/*.{ts,tsx}'], ['*.d.ts', '**/*.d.ts']);
   expect(filter(resolve('folder (test)/src/main.tsx'))).toBeTruthy();
   expect(filter(resolve('.x/(test)a.ts'))).toBeTruthy();
   expect(filter(resolve('.x/(test)a.d.ts'))).toBeFalsy();
