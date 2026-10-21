@@ -184,11 +184,13 @@ Default: `true`
 In most cases, where `require` calls to external dependencies are inside a `try-catch` clause, they should be left unconverted as it requires an optional dependency that may or may not be installed beside the rolled up package.
 Due to the conversion of `require` to a static `import` - the call is hoisted to the top of the file, outside of the `try-catch` clause.
 
-- `true`: All external `require` calls inside a `try` will be left unconverted.
-- `false`: All external `require` calls inside a `try` will be converted as if the `try-catch` clause is not there.
-- `remove`: Remove all external `require` calls from inside any `try` block.
+- `true`: All external `require` calls inside a `try-catch` statement will be left unconverted.
+- `false`: All external `require` calls inside a `try-catch` statement will be converted as if the `try-catch` clause is not there.
+- `remove`: Remove all external `require` calls from inside any `try-catch` statement.
 - `string[]`: Pass an array containing the IDs to left unconverted.
 - `((id: string) => boolean|'remove')`: Pass a function that control individual IDs.
+
+This covers the whole statement, so a `require` in the `catch` or `finally` clause is treated the same as one in the `try` block.
 
 Note that non-external requires will not be ignored by this option.
 
