@@ -31,26 +31,8 @@ const unpackOptions = ({
   };
 };
 
-const warnAboutDeprecatedHelpersOption = ({ deprecatedOption, suggestion }) => {
-  // eslint-disable-next-line no-console
-  console.warn(
-    `\`${deprecatedOption}\` has been removed in favor a \`babelHelpers\` option. Try changing your configuration to \`${suggestion}\`. ` +
-      `Refer to the documentation to learn more: https://github.com/rollup/plugins/tree/master/packages/babel#babelhelpers`
-  );
-};
-
 const unpackInputPluginOptions = ({ skipPreflightCheck = false, ...rest }) => {
-  if ('runtimeHelpers' in rest) {
-    warnAboutDeprecatedHelpersOption({
-      deprecatedOption: 'runtimeHelpers',
-      suggestion: `babelHelpers: 'runtime'`
-    });
-  } else if ('externalHelpers' in rest) {
-    warnAboutDeprecatedHelpersOption({
-      deprecatedOption: 'externalHelpers',
-      suggestion: `babelHelpers: 'external'`
-    });
-  } else if (!rest.babelHelpers) {
+  if (!rest.babelHelpers) {
     // eslint-disable-next-line no-console
     console.warn(
       "babelHelpers: 'bundled' option was used by default. It is recommended to configure this option explicitly, read more here: " +
@@ -330,11 +312,8 @@ function createBabelOutputPluginFactory(customCallback = returnObject) {
           excludeChunks,
           exclude,
           extensions,
-          externalHelpers,
-          externalHelpersWhitelist,
           include,
           parallel,
-          runtimeHelpers,
           ...babelOptions
         } = unpackOutputPluginOptions(pluginOptionsWithOverrides, outputOptions);
         /* eslint-enable no-unused-vars */
@@ -392,3 +371,15 @@ export { createBabelInputPluginFactory, createBabelOutputPluginFactory };
 export default getBabelInputPlugin;
 // support `rollup -c —plugin babel`
 export { getBabelInputPlugin as babel };
+
+// make `require('@rollup/plugin-babel')` return the callable default export with
+// the named exports attached, like the removed CJS build did
+const cjsExports = Object.assign(getBabelInputPlugin, {
+  default: getBabelInputPlugin,
+  babel: getBabelInputPlugin,
+  getBabelInputPlugin,
+  getBabelOutputPlugin,
+  createBabelInputPluginFactory,
+  createBabelOutputPluginFactory
+});
+export { cjsExports as 'module.exports' };

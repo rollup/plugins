@@ -14,8 +14,7 @@ export default async function transformCode({
   skipPreflightCheck,
   babelHelpers
 }) {
-  // loadPartialConfigAsync has become available in @babel/core@7.8.0
-  const config = await (babel.loadPartialConfigAsync || babel.loadPartialConfig)(babelOptions);
+  const config = await babel.loadPartialConfigAsync(babelOptions);
 
   // file is ignored by babel
   if (!config) {

@@ -3,7 +3,7 @@ import type { FilterPattern } from '@rollup/pluginutils';
 import type * as babelCore from '@babel/core';
 
 export interface RollupBabelInputPluginOptions
-  extends Omit<babelCore.TransformOptions, 'include' | 'exclude'> {
+  extends Omit<babelCore.InputOptions, 'include' | 'exclude'> {
   /**
    * A picomatch pattern, or array of patterns, which specifies the files in the build the plugin should operate on. When relying on Babel configuration files you cannot include files already excluded there.
    * @default undefined;
@@ -26,7 +26,7 @@ export interface RollupBabelInputPluginOptions
   filter?: (id: string, code: string) => Promise<boolean> | boolean;
   /**
    * An array of file extensions that Babel should transpile. If you want to transpile TypeScript files with this plugin it's essential to include .ts and .tsx in this option.
-   * @default ['.js', '.jsx', '.es6', '.es', '.mjs']
+   * @default ['.js', '.jsx', '.es6', '.es', '.mjs', '.cjs']
    */
   extensions?: string[];
   /**
@@ -50,7 +50,7 @@ export interface RollupBabelInputPluginOptions
 }
 
 export interface RollupBabelOutputPluginOptions
-  extends Omit<babelCore.TransformOptions, 'include' | 'exclude'> {
+  extends Omit<babelCore.InputOptions, 'include' | 'exclude'> {
   /**
    * Use with other formats than UMD/IIFE.
    * @default false
@@ -96,28 +96,28 @@ export interface RollupBabelCustomPluginResultOptions {
   code: string;
   customOptions: Record<string, any>;
   config: babelCore.PartialConfig;
-  transformOptions: babelCore.TransformOptions;
+  transformOptions: babelCore.InputOptions;
 }
 export type RollupBabelCustomInputPluginConfig = (
   this: TransformPluginContext,
   cfg: babelCore.PartialConfig,
   options: RollupBabelCustomPluginConfigOptions
-) => babelCore.TransformOptions;
+) => babelCore.InputOptions;
 export type RollupBabelCustomInputPluginResult = (
   this: TransformPluginContext,
-  result: babelCore.BabelFileResult,
+  result: babelCore.FileResult,
   options: RollupBabelCustomPluginResultOptions
-) => babelCore.BabelFileResult;
+) => babelCore.FileResult;
 export type RollupBabelCustomOutputPluginConfig = (
   this: PluginContext,
   cfg: babelCore.PartialConfig,
   options: RollupBabelCustomPluginConfigOptions
-) => babelCore.TransformOptions;
+) => babelCore.InputOptions;
 export type RollupBabelCustomOutputPluginResult = (
   this: PluginContext,
-  result: babelCore.BabelFileResult,
+  result: babelCore.FileResult,
   options: RollupBabelCustomPluginResultOptions
-) => babelCore.BabelFileResult;
+) => babelCore.FileResult;
 export interface RollupBabelCustomInputPlugin {
   options?: RollupBabelCustomInputPluginOptions;
   config?: RollupBabelCustomInputPluginConfig;

@@ -1,4 +1,4 @@
 {
-  "presets": [ "@babel/env" ],
+  "presets": [ ["@babel/env", { "targets": { "ie": "11" } }] ],
   "plugins": [ "@babel/external-helpers", "@babel/transform-runtime" ]
 }
