@@ -1,0 +1,7 @@
+timestamp: 2020-01-02T03:04:05Z
+values: [.inf, -.inf, .nan, -0.0]
+shared: &shared
+  '01': alias value
+alias: *shared
+loop: &loop
+  self: *loop
