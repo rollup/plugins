@@ -73,6 +73,8 @@ export default {
 };
 ```
 
+Note: when a [`nameCache`](https://github.com/terser/terser#minify-options) is provided, chunks are minified sequentially on a single worker regardless of `maxWorkers`, since a shared name cache requires sequential minification to mangle names consistently across chunks.
+
 ## Meta
 
 [CONTRIBUTING](/.github/CONTRIBUTING.md)
