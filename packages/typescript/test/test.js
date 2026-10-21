@@ -560,6 +560,75 @@ test.sequential('supports overriding the TypeScript version', async () => {
   const result = await evaluateBundle(bundle);
   expect(result).toBe(1337);
 });
+test.sequential('clears a pending program update when the watch program is closed', async () => {
+  const scheduled = [];
+  const cancelled = [];
+  let updateTimer = null;
+  let updateFired = false;
+  let closed = false;
+  const bundle = await rollup({
+    input: 'fixtures/overriding-typescript/main.ts',
+    onwarn,
+    plugins: [
+      typescript({
+        tsconfig: false,
+        typescript: fakeTypescript({
+          createWatchCompilerHost() {
+            return {
+              afterProgramCreate() {},
+              // Record the timers instead of arming them so the outcome does not depend on
+              // how quickly the build reaches `buildEnd`.
+              setTimeout(callback, ms) {
+                const timer = { callback, ms };
+                scheduled.push(timer);
+                return timer;
+              },
+              clearTimeout(timer) {
+                cancelled.push(timer);
+              }
+            };
+          },
+          createWatchProgram(host) {
+            const program = {
+              emit(_, writeFile) {
+                writeFile(
+                  path.join(__dirname, 'fixtures/overriding-typescript/main.js'),
+                  'export default 1337;'
+                );
+              }
+            };
+            host.afterProgramCreate(program);
+            program.emit();
+
+            // A file change in the last 250ms of the build arms TypeScript's update timer
+            // and `close()` leaves it running.
+            updateTimer = host.setTimeout(
+              () => {
+                updateFired = true;
+              },
+              250,
+              'timerToUpdateProgram'
+            );
+            return {
+              close() {
+                closed = true;
+              }
+            };
+          }
+        })
+      })
+    ]
+  });
+  await getCode(bundle, outputOptions);
+
+  expect(closed).toBe(true);
+  expect(scheduled).toHaveLength(1);
+  expect(scheduled[0].ms).toBe(250);
+  expect(updateTimer).toBe(scheduled[0]);
+  expect(cancelled).toHaveLength(1);
+  expect(cancelled[0]).toBe(updateTimer);
+  expect(updateFired).toBe(false);
+});
 test.sequential('should not resolve .d.ts files', async () => {
   const bundle = await rollup({
     input: 'fixtures/dts/main.ts',
