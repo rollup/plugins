@@ -37,6 +37,10 @@ const fakeTypescript = (custom) => {
       };
     },
 
+    convertCompilerOptionsFromJson(jsonOptions) {
+      return { options: { ...jsonOptions }, errors: [] };
+    },
+
     getOutputFileNames(_, id) {
       return [id.replace(/\.tsx?/, '.js')];
     },

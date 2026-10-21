@@ -125,6 +125,30 @@ function setModuleResolutionKind(parsedConfig: ParsedCommandLine): ParsedCommand
 const configCache = new Map() as typescript.ESMap<string, ExtendedConfigCacheEntry>;
 
 /**
+ * Fill plugin defaults from {@link DEFAULT_COMPILER_OPTIONS} for keys the resolved tsconfig
+ * left unset. Defaults are stored as JSON strings (e.g. `module: 'esnext'`) and must be coerced
+ * to the parsed {@link CompilerOptions} representation (e.g. `ts.ModuleKind.ESNext`) before
+ * being written onto the parsed options. This must run AFTER `parseJsonConfigFileContent` so
+ * that values inherited via `extends` are not clobbered.
+ */
+function applyPluginDefaults(
+  ts: typeof typescript,
+  options: CompilerOptions,
+  basePath: string
+): void {
+  const { options: coerced } = ts.convertCompilerOptionsFromJson(
+    DEFAULT_COMPILER_OPTIONS,
+    basePath
+  );
+  for (const key of Object.keys(coerced) as Array<keyof CompilerOptions>) {
+    if (options[key] == null) {
+      // Plugin-controlled defaults; runtime cast is safe.
+      (options as Record<string, unknown>)[key] = coerced[key];
+    }
+  }
+}
+
+/**
  * Parse the Typescript config to use with the plugin.
  * @param ts Typescript library instance.
  * @param tsconfig Path to the tsconfig file, or `false` to ignore the file.
@@ -155,16 +179,14 @@ export function parseTypescriptConfig(
 
   // If compilerOptions has enums, it represents an CompilerOptions object instead of parsed JSON.
   // This determines where the data is passed to the parser.
+  // Note: plugin defaults are intentionally NOT spread into the leaf tsconfig's compilerOptions
+  // slot here. Doing so would make them win over values inherited via `extends`, producing
+  // spurious diagnostics like TS5110 when extends sets `module`/`moduleResolution: nodenext`.
+  // Defaults are applied below, after parsing, only for keys the resolved config left unset.
   if (containsEnumOptions(compilerOptions)) {
     parsedConfig = setModuleResolutionKind(
       ts.parseJsonConfigFileContent(
-        {
-          ...tsConfigFile,
-          compilerOptions: {
-            ...DEFAULT_COMPILER_OPTIONS,
-            ...tsConfigFile.compilerOptions
-          }
-        },
+        tsConfigFile,
         ts.sys,
         basePath,
         { ...compilerOptions, ...makeForcedCompilerOptions(noForceEmit) },
@@ -180,7 +202,6 @@ export function parseTypescriptConfig(
         {
           ...tsConfigFile,
           compilerOptions: {
-            ...DEFAULT_COMPILER_OPTIONS,
             ...tsConfigFile.compilerOptions,
             ...compilerOptions
           }
@@ -195,6 +216,8 @@ export function parseTypescriptConfig(
       )
     );
   }
+
+  applyPluginDefaults(ts, parsedConfig.options, basePath);
 
   const autoSetSourceMap = normalizeCompilerOptions(ts, parsedConfig.options);
 
