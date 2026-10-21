@@ -1,5 +1,13 @@
 # @rollup/pluginutils ChangeLog
 
+## v5.5.0
+
+_2026-10-21_
+
+### Features
+
+- pluginutils: add staticBlock(es2022) support ([#2000](https://github.com/rollup/plugins/issues/2000))
+
 ## v5.4.0
 
 _2026-05-29_
