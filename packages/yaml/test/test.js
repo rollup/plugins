@@ -49,6 +49,128 @@ test('generates named exports', async () => {
   return testBundle(undefined, bundle);
 });
 
+test('preserves quoted numeric mapping keys in an ES module', async () => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml()]
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+  expect(output[0].code).toContain('export');
+  const { error, module } = await testBundle(null, bundle);
+  expect(error).toBeUndefined();
+  expect(module.exports).toEqual({
+    '00': 'zeroes',
+    '01': 'leading zero',
+    '08': 'eight',
+    '9007199254740993': 'large integer',
+    nested: { '01': 'nested leading zero' },
+    array: [{ '01': 'array leading zero' }]
+  });
+});
+
+test('preserves YAML timestamps, non-finite numbers and aliases', async () => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/serialized-values/main.js',
+    plugins: [yaml()]
+  });
+  const { error, module } = await testBundle(null, bundle, {
+    options: { exports: 'named' }
+  });
+  expect(error).toBeUndefined();
+  const data = module.exports.default;
+  expect(data.timestamp).toEqual(new Date('2020-01-02T03:04:05.000Z'));
+  expect(data.values).toEqual([Infinity, -Infinity, NaN, -0]);
+  expect(data.shared).toEqual({ '01': 'alias value' });
+  expect(data.alias).toEqual(data.shared);
+  expect(module.exports.shared).toBe(data.shared);
+  expect(data.loop.self).toEqual({ $circularReference: 1 });
+});
+
+test('preserves special values returned by a transform', async () => {
+  const data = {
+    regexp: /example/gi,
+    map: new Map([['key', 'value']]),
+    set: new Set(['value']),
+    fn: function value() {
+      return 42;
+    }
+  };
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml({ transform: () => data })]
+  });
+  const { error, module } = await testBundle(null, bundle);
+  expect(error).toBeUndefined();
+  expect(module.exports.regexp).toEqual(data.regexp);
+  expect(module.exports.map).toEqual(data.map);
+  expect(module.exports.set).toEqual(data.set);
+  expect(module.exports.fn()).toBe(42);
+});
+
+test('preserves other object and array serialization returned by a transform', async () => {
+  const circular = {};
+  circular.self = circular;
+  const circularArray = [];
+  circularArray.push(circularArray);
+  const custom = {
+    toSource: function customSource() {
+      return 'custom';
+    }
+  };
+  const data = {
+    boxedString: Object('abc'),
+    boxedNumber: Object(4),
+    boxedBoolean: Object(false),
+    error: new Error('example'),
+    custom,
+    sparse: Array(2).concat([1]),
+    proto: JSON.parse('{"__proto__":{"example":true}}'),
+    circularArray,
+    map: new Map([['key', circular]])
+  };
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml({ transform: () => data })]
+  });
+  const { error, module } = await testBundle(null, bundle);
+  expect(error).toBeUndefined();
+  expect(module.exports.boxedString).toEqual({ 0: 'a', 1: 'b', 2: 'c' });
+  expect(module.exports.boxedNumber).toEqual({});
+  expect(module.exports.boxedBoolean).toEqual({});
+  expect(module.exports.error).toEqual({});
+  expect(module.exports.custom.toSource()).toBe('custom');
+  expect(module.exports.sparse).toEqual(data.sparse);
+  expect(Object.getPrototypeOf(module.exports.proto)).toEqual({ example: true });
+  expect(module.exports.circularArray).toEqual([{ $circularReference: 1 }]);
+  expect(module.exports.map.get('key')).toEqual({ self: { $circularReference: 1 } });
+});
+
+test('preserves existing serialization of arrays with trailing holes', async () => {
+  const data = {
+    allHoles: Array(2),
+    moreHoles: Array(3),
+    trailingHole: [1].concat(Array(1)),
+    trailingHoles: [1].concat(Array(2))
+  };
+  const bundle = await rollup.rollup({
+    input: 'fixtures/numeric-keys/main.js',
+    plugins: [yaml({ transform: () => data })]
+  });
+  const { error, module } = await testBundle(null, bundle);
+  expect(error).toBeUndefined();
+
+  // The existing tosource serializer drops one trailing hole.
+  for (const key of Object.keys(data)) {
+    const result = module.exports[key];
+    expect(result.length).toBe(data[key].length - 1);
+    for (let index = 0; index < result.length; index += 1) {
+      expect(index in result).toBe(index in data[key]);
+    }
+  }
+  expect(module.exports.trailingHole[0]).toBe(1);
+  expect(module.exports.trailingHoles[0]).toBe(1);
+});
+
 test('resolves extensionless imports in conjunction with nodeResolve plugin', async () => {
   const bundle = await rollup.rollup({
     input: 'fixtures/extensionless/main.js',
