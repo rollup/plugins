@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v1.0.1
+
+_2026-10-21_
+
+### Bugfixes
+
+- terser: share nameCache between chunks by serializing minify tasks ([#2020](https://github.com/rollup/plugins/issues/2020))
+
 ## v1.0.0
 
 _2026-03-05_
