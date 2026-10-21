@@ -1,5 +1,13 @@
 # @rollup/plugin-terser ChangeLog
 
+## v1.0.2
+
+_2026-10-21_
+
+### Updates
+
+- terser: update terser to ^5.49.2 ([#2019](https://github.com/rollup/plugins/issues/2019))
+
 ## v1.0.1
 
 _2026-10-21_
