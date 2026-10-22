@@ -859,6 +859,52 @@ test.sequential('should not emit sourceContent that references a non-existent fi
   const sourcemap = output[0].map;
   expect(sourcemap.sourcesContent.includes('//# sourceMappingURL=main.js.map')).toBe(false);
 });
+test.sequential(
+  'should correctly resolve sourcemap sources when outDir is outside source directory',
+  async () => {
+    // This test verifies the fix for issue #1966
+    // When TypeScript's outDir places emitted files in a different directory tree than
+    // the source files (e.g., outDir: "../dist"), TypeScript emits sourcemaps with
+    // sources relative to the output map file location. Rollup's getCollapsedSourcemap
+    // resolves those paths relative to the original source file's directory instead.
+    // The fix rebases the sourcemap sources to be relative to the source file directory.
+    const bundle = await rollup({
+      input: './fixtures/outdir-outside-source/my-project-1/src/index.ts',
+      plugins: [
+        typescript({
+          tsconfig: './fixtures/outdir-outside-source/my-project-1/tsconfig.json'
+        })
+      ],
+      onwarn
+    });
+    const [indexJsOutput] = await getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: './fixtures/outdir-outside-source/dist/project-1',
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name]-[hash].js',
+        sourcemap: true
+      },
+      true
+    );
+
+    const sourcemap = indexJsOutput.map;
+
+    expect(sourcemap.sources, 'should have exactly 2 sources').toHaveLength(2);
+
+    const [testSourcePath, nestedSourcePath] = sourcemap.sources;
+
+    expect(testSourcePath).toBe('../../my-project-1/src/test.ts');
+    expect(nestedSourcePath).toBe('../../my-project-1/src/nested/test-nested.ts');
+
+    expect(
+      sourcemap.sourceRoot,
+      'sourceRoot should be cleared after path rebasing'
+    ).toBeUndefined();
+  }
+);
+
 test.sequential('should not fail if source maps are off', async () => {
   await expectNoError(
     rollup({

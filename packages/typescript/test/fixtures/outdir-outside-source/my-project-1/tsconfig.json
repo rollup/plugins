@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strict": true,
+    "baseUrl": ".",
+    "module": "esnext",
+    "outDir": "../dist/project-1",
+    "types": [],
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "declaration": true,
+    "inlineSources": true,
+    "rootDir": "./",
+    "allowJs": false,
+    "composite": false,
+    "declarationDir": "../dist/project-1",
+    "noEmitOnError": true,
+    "sourceMap": true
+  },
+  "include": ["**/*.ts"]
+}

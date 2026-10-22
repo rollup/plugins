@@ -4,7 +4,7 @@ import { promises as fs } from 'fs';
 
 import type typescript from 'typescript';
 
-import type { OutputOptions, PluginContext, SourceDescription } from 'rollup';
+import type { ExistingRawSourceMap, OutputOptions, PluginContext, SourceDescription } from 'rollup';
 import type { ParsedCommandLine } from 'typescript';
 
 import type TSCache from './tscache';
@@ -65,10 +65,17 @@ export function getEmittedFile(
 }
 
 /**
- * Finds the corresponding emitted Javascript files for a given Typescript file.
- * @param id Path to the Typescript file.
- * @param emittedFiles Map of file names to source code,
- * containing files emitted by the Typescript compiler.
+ * Finds the corresponding emitted JavaScript files for a given TypeScript file.
+ *
+ * Returns the transpiled code, an optional sourcemap (with rebased source paths),
+ * and a list of declaration file paths.
+ *
+ * @param ts The TypeScript module instance.
+ * @param parsedOptions The parsed TypeScript compiler options (tsconfig).
+ * @param id Absolute path to the original TypeScript source file.
+ * @param emittedFiles Map of output file paths to their content, populated by the TypeScript compiler during emission.
+ * @param tsCache A cache of previously emitted files for incremental builds.
+ * @returns An object containing the transpiled code, sourcemap with corrected paths, and declaration file paths.
  */
 export default function findTypescriptOutput(
   ts: typeof typescript,
@@ -86,9 +93,68 @@ export default function findTypescriptOutput(
   const codeFile = emittedFileNames.find(isCodeOutputFile);
   const mapFile = emittedFileNames.find(isMapOutputFile);
 
+  let map: ExistingRawSourceMap | string | undefined = getEmittedFile(
+    mapFile,
+    emittedFiles,
+    tsCache
+  );
+
+  // Rebase sourcemap `sources` paths from the map file's directory to the
+  // original source file's directory.
+  //
+  // Why this is needed:
+  //   TypeScript emits sourcemaps with `sources` relative to the **output**
+  //   map file location (inside `outDir`), optionally prefixed by `sourceRoot`.
+  //   For example, compiling `my-project/src/test.ts` with
+  //   `outDir: "../dist/project"` produces `dist/project/src/test.js.map`
+  //   containing:
+  //
+  //     { "sources": ["../../../my-project/src/test.ts"], "sourceRoot": "." }
+  //
+  //   This resolves correctly from the map file's directory:
+  //     resolve("dist/project/src", ".", "../../../my-project/src/test.ts")
+  //       → "my-project/src/test.ts"  ✅
+  //
+  //   However, Rollup's `getCollapsedSourcemap` resolves these paths relative
+  //   to `dirname(id)` — the **original source file's directory** — not the
+  //   output map file's directory. When `outDir` differs from the source tree
+  //   (common in monorepos), this mismatch produces incorrect absolute paths
+  //   that escape the project root.
+  //
+  // The fix resolves each source entry to an absolute path via the map file's
+  // directory (honoring `sourceRoot`), then re-relativizes it against the
+  // source file's directory so Rollup can consume it correctly.
+  if (map && mapFile) {
+    try {
+      const parsedMap: ExistingRawSourceMap = JSON.parse(map);
+
+      if (parsedMap.sources) {
+        const mapDir = path.dirname(mapFile);
+        const sourceDir = path.dirname(id);
+        const sourceRoot = parsedMap.sourceRoot || '.';
+
+        parsedMap.sources = parsedMap.sources.map((source) => {
+          // Resolve to absolute using the map file's directory + sourceRoot
+          const absolute = path.resolve(mapDir, sourceRoot, source);
+          // Re-relativize against the original source file's directory
+          return path.relative(sourceDir, absolute);
+        });
+
+        // sourceRoot has been folded into the rebased paths; remove it so
+        // Rollup does not double-apply it during sourcemap collapse.
+        delete parsedMap.sourceRoot;
+
+        map = parsedMap;
+      }
+    } catch (e) {
+      // If the map string is not valid JSON (shouldn't happen for TypeScript
+      // output), fall through and return the original map string unchanged.
+    }
+  }
+
   return {
     code: getEmittedFile(codeFile, emittedFiles, tsCache),
-    map: getEmittedFile(mapFile, emittedFiles, tsCache),
+    map,
     declarations: emittedFileNames.filter((name) => name !== codeFile && name !== mapFile)
   };
 }
