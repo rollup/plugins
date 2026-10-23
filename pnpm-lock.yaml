@@ -606,6 +606,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@1.20.0
+        version: rollup@1.20.0
       typescript:
         specifier: ^4.8.3
         version: 4.8.4
