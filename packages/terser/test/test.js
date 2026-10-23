@@ -1,6 +1,8 @@
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 
 const terser = require('../');
+
+const [rollupMajor] = VERSION.split('.').map(Number);
 
 test.sequential('minify', async () => {
   const bundle = await rollup({
@@ -24,7 +26,7 @@ test.sequential('minify with source map', async () => {
     format: 'cjs',
     sourcemap: true
   });
-  expect(result.output.length).toBe(2);
+  expect(result.output.length).toBe(rollupMajor < 3 ? 1 : 2);
   const [output] = result.output;
   expect(output.map).toBeTruthy();
   expect(output.map.version).toBe(3);
