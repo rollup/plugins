@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitest/config';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const isAutoInstallPackage = path.basename(process.cwd()) === 'auto-install';
+const earliestRollupPath = path.resolve(process.cwd(), 'node_modules/rollup-earliest');
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   test: {
     // Enable global APIs for CommonJS test files.
     globals: true,
@@ -26,10 +28,18 @@ export default defineConfig({
     fileParallelism: !isAutoInstallPackage,
     // Keep snapshots in the same location used by Ava.
     resolveSnapshotPath: (testPath, snapExt) =>
-      path.join(path.dirname(testPath), 'snapshots', path.basename(testPath) + snapExt)
+      path.join(path.dirname(testPath), 'snapshots', path.basename(testPath) + snapExt),
+    setupFiles:
+      mode === 'earliest'
+        ? [fileURLToPath(new URL('./vitest.setup.earliest.mts', import.meta.url))]
+        : []
   },
   resolve: {
     // Allow importing the current package under test via `~package`
-    alias: [{ find: /^~package$/, replacement: path.resolve(process.cwd()) }]
+    alias: [
+      { find: /^~package$/, replacement: path.resolve(process.cwd()) },
+      // In earliest mode, resolve imports of rollup to the aliased earliest supported version.
+      ...(mode === 'earliest' ? [{ find: /^rollup$/, replacement: earliestRollupPath }] : [])
+    ]
   }
-});
+}));
