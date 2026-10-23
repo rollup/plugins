@@ -124,6 +124,14 @@ To run tests on a specific package:
 $ pnpm --filter ./packages/<name> test
 ```
 
+To also run the tests of a package against the earliest version of rollup it supports:
+
+```console
+$ pnpm --filter ./packages/<name> test:earliest
+```
+
+In this mode, snapshots are read from the `test/snapshots-earliest` directory of a package when a file with the same name exists there, falling back to the regular snapshots otherwise. Be careful when regenerating snapshots with `-u` in this mode: for test files without a counterpart in `test/snapshots-earliest`, this overwrites the regular snapshots with the output generated for the earliest rollup version. To add version-specific snapshots for a test file, first copy its snapshot file from `test/snapshots` to `test/snapshots-earliest`, then regenerate in this mode.
+
 Linting:
 
 To lint all packages which have changes:
