@@ -844,7 +844,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.68.9)
       make-dir:
         specifier: ^3.1.0
         version: 3.1.0
@@ -859,8 +859,11 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.68.9
+      rollup-earliest:
+        specifier: npm:rollup@1.20.0
+        version: rollup@1.20.0
 
   packages/virtual:
     devDependencies:
