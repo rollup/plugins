@@ -2,8 +2,18 @@ import { defineConfig } from 'vitest/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { getEarliestDependencies } from './vitest.earliest.mts';
+
 const isAutoInstallPackage = path.basename(process.cwd()) === 'auto-install';
-const earliestRollupPath = path.resolve(process.cwd(), 'node_modules/rollup-earliest');
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const getEarliestAliases = (mode: string) =>
+  mode === 'earliest'
+    ? getEarliestDependencies().map(({ name, path: dependencyPath }) => ({
+        find: new RegExp(`^${escapeRegExp(name)}$`),
+        replacement: dependencyPath
+      }))
+    : [];
 
 export default defineConfig(({ mode }) => ({
   test: {
@@ -38,8 +48,8 @@ export default defineConfig(({ mode }) => ({
     // Allow importing the current package under test via `~package`
     alias: [
       { find: /^~package$/, replacement: path.resolve(process.cwd()) },
-      // In earliest mode, resolve imports of rollup to the aliased earliest supported version.
-      ...(mode === 'earliest' ? [{ find: /^rollup$/, replacement: earliestRollupPath }] : [])
+      // In earliest mode, resolve imports of aliased dependencies to the earliest supported versions.
+      ...getEarliestAliases(mode)
     ]
   }
 }));
