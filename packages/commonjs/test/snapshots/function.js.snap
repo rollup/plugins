@@ -4340,7 +4340,11 @@ function requireMain () {
 	const externalMixed = require$$1;
 	const externalDefault = require$$2;
 
-	t.deepEqual(externalNamed, { foo: 'foo', default: { foo: 'foo' } }, 'external named');
+	t.deepEqual(
+	  externalNamed,
+	  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } },
+	  'external named'
+	);
 	t.deepEqual(externalMixed, { default: 'bar', foo: 'foo' }, 'external mixed');
 	t.deepEqual(externalDefault, { default: 'bar' }, 'external default');
 	return main$1;
@@ -4786,14 +4790,14 @@ exports[`expose-file-type-detection 1`] = `
 {
   "main.js": "'use strict';
 
-var other = require('./other-UXsUMMAz.js');
+var other = require('./other-BucbZjd3.js');
 
 var otherExports = other.requireOther();
 var foo = /*@__PURE__*/other.getDefaultExportFromCjs(otherExports);
 
 t.is(foo, 'foo');
 ",
-  "other-UXsUMMAz.js": "'use strict';
+  "other-BucbZjd3.js": "'use strict';
 
 function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -4814,7 +4818,7 @@ exports.requireOther = requireOther;
 ",
   "other.js": "'use strict';
 
-var other$1 = require('./other-UXsUMMAz.js');
+var other$1 = require('./other-BucbZjd3.js');
 
 var otherExports = other$1.requireOther();
 var other = /*@__PURE__*/other$1.getDefaultExportFromCjs(otherExports);
@@ -5103,7 +5107,11 @@ function requireMain () {
 	t.deepEqual(mixedExports, { foo: 'foo', default: 'bar' }, 'mixed exports');
 	t.deepEqual(defaultExport, 'bar', 'default export');
 	t.deepEqual(noExports, {}, 'no exports');
-	t.deepEqual(externalNamed, { foo: 'foo', default: { foo: 'foo' } }, 'external named');
+	t.deepEqual(
+	  externalNamed,
+	  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } },
+	  'external named'
+	);
 	t.deepEqual(externalMixed, { foo: 'foo', default: 'bar' }, 'external mixed');
 	t.deepEqual(externalDefault, 'bar', 'external default');
 	return main$1;
@@ -5246,7 +5254,11 @@ function requireMain () {
 	t.deepEqual(mixedExports, { foo: 'foo', default: 'bar' }, 'mixed exports');
 	t.deepEqual(defaultExport, { default: 'bar' }, 'default export');
 	t.deepEqual(noExports, {}, 'no exports');
-	t.deepEqual(externalNamed, { foo: 'foo', default: { foo: 'foo' } }, 'external named');
+	t.deepEqual(
+	  externalNamed,
+	  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } },
+	  'external named'
+	);
 	t.deepEqual(externalMixed, { foo: 'foo', default: 'bar' }, 'external mixed');
 	t.deepEqual(externalDefault, { default: 'bar' }, 'external default');
 
@@ -5550,7 +5562,11 @@ function requireMain () {
 	const externalMixed = require$$1__default.default;
 	const externalDefault = require$$2;
 
-	t.deepEqual(externalNamed, { foo: 'foo', default: { foo: 'foo' } }, 'named');
+	t.deepEqual(
+	  externalNamed,
+	  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } },
+	  'named'
+	);
 	t.deepEqual(externalMixed, 'bar', 'mixed');
 	t.deepEqual(externalDefault, { default: 'bar' }, 'default');
 	return main$1;
@@ -5652,7 +5668,11 @@ function requireMain () {
 	t.deepEqual(mixedExports, { foo: 'foo', default: 'bar' }, 'mixed exports');
 	t.deepEqual(defaultExport, { default: 'bar' }, 'default export');
 	t.deepEqual(noExports, {}, 'no exports');
-	t.deepEqual(externalNamed, { foo: 'foo', default: { foo: 'foo' } }, 'external named');
+	t.deepEqual(
+	  externalNamed,
+	  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } },
+	  'external named'
+	);
 	t.deepEqual(externalMixed, { foo: 'foo', default: 'bar' }, 'external mixed');
 	t.deepEqual(externalDefault, { default: 'bar' }, 'external default');
 	return main$1;
@@ -5947,7 +5967,11 @@ function requireMain () {
 	t.deepEqual(mixedExports, { foo: 'foo', default: 'bar' }, 'mixed exports');
 	t.deepEqual(defaultExport, { default: 'bar' }, 'default export');
 	t.deepEqual(noExports, {}, 'no exports');
-	t.deepEqual(externalNamed, { foo: 'foo', default: { foo: 'foo' } }, 'external named');
+	t.deepEqual(
+	  externalNamed,
+	  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } },
+	  'external named'
+	);
 	t.deepEqual(externalMixed, { foo: 'foo', default: 'bar' }, 'external mixed');
 	t.deepEqual(externalDefault, { default: 'bar' }, 'external default');
 	return main$1;
@@ -6143,16 +6167,6 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var foo;
-var hasRequiredFoo;
-
-function requireFoo () {
-	if (hasRequiredFoo) return foo;
-	hasRequiredFoo = 1;
-	foo = 1;
-	return foo;
-}
-
 var multiply;
 var hasRequiredMultiply;
 
@@ -6163,6 +6177,16 @@ function requireMultiply () {
 	  return a * b;
 	};
 	return multiply;
+}
+
+var foo;
+var hasRequiredFoo;
+
+function requireFoo () {
+	if (hasRequiredFoo) return foo;
+	hasRequiredFoo = 1;
+	foo = 1;
+	return foo;
 }
 
 /* eslint-disable global-require */
@@ -6564,7 +6588,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('main.js', document.baseURI).href)));
+node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('main.js', document.baseURI).href)));
 
 var main$1;
 var hasRequiredMain;
@@ -6640,22 +6664,22 @@ exports[`module-side-effects-late-entry 1`] = `
 {
   "generated-foo.js": "'use strict';
 
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-// This side-effect will only be respected if this is an entry point
-commonjsGlobal.foo = 'foo';
-",
-  "generated-foo2.js": "'use strict';
-
-require('./generated-foo.js');
+require('./generated-foo2.js');
 
 var foo = {};
 
 module.exports = foo;
 ",
+  "generated-foo2.js": "'use strict';
+
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+// This side-effect will only be respected if this is an entry point
+commonjsGlobal.foo = 'foo';
+",
   "main.js": "'use strict';
 
-require('./generated-foo.js');
+require('./generated-foo2.js');
 
 var main = 'main';
 
@@ -7308,7 +7332,7 @@ module.exports = main;
 
 exports[`pass-require-to-node-resolve 1`] = `
 {
-  "bar-imported-QFe_5Jm2.js": "'use strict';
+  "bar-imported-D3D8389F.js": "'use strict';
 
 var barImported = 'imported';
 
@@ -7341,7 +7365,7 @@ function requireRequiring () {
 	hasRequiredRequiring = 1;
 	requiring.foo = requireFooRequired();
 
-	requiring.barPromise = Promise.resolve().then(function () { return require('./bar-imported-QFe_5Jm2.js'); });
+	requiring.barPromise = Promise.resolve().then(function () { return require('./bar-imported-D3D8389F.js'); });
 	return requiring;
 }
 
@@ -7351,7 +7375,7 @@ var required = /*@__PURE__*/getDefaultExportFromCjs(requiringExports);
 t.is(foo, 'imported');
 t.is(required.foo, 'required');
 
-var main = Promise.all([Promise.resolve().then(function () { return require('./bar-imported-QFe_5Jm2.js'); }), required.barPromise]);
+var main = Promise.all([Promise.resolve().then(function () { return require('./bar-imported-D3D8389F.js'); }), required.barPromise]);
 
 module.exports = main;
 ",
@@ -8447,8 +8471,8 @@ function requireMain () {
 	main$1.conditionalTrue = requireB() ;
 	main$1.conditionalFalse = requireB();
 	main$1.logicalAnd1 = requireB();
-	main$1.logicalAnd2 = false ;
-	main$1.logicalOr1 = true ;
+	main$1.logicalAnd2 = false;
+	main$1.logicalOr1 = true;
 	main$1.logicalOr2 = requireB();
 	return main$1;
 }
@@ -8527,9 +8551,9 @@ const readable = new stream.Readable({});
 
 var main = { Readable: stream.Readable, readable };
 
-var main$1 = /*@__PURE__*/getDefaultExportFromCjs(main);
+var main_default = /*@__PURE__*/getDefaultExportFromCjs(main);
 
-module.exports = main$1;
+module.exports = main_default;
 ",
 }
 `;
@@ -8553,9 +8577,9 @@ const readable = new stream.Readable({});
 
 var main = { Readable: stream.Readable, readable };
 
-var main$1 = /*@__PURE__*/getDefaultExportFromCjs(main);
+var main_default = /*@__PURE__*/getDefaultExportFromCjs(main);
 
-module.exports = main$1;
+module.exports = main_default;
 ",
 }
 `;
@@ -8712,14 +8736,14 @@ exports[`strict-requires-debug-none 1`] = `
   "main.js": "'use strict';
 
 function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	return x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
 var main = 'bar';
 
-var main$1 = /*@__PURE__*/getDefaultExportFromCjs(main);
+var main_default = /*@__PURE__*/getDefaultExportFromCjs(main);
 
-module.exports = main$1;
+module.exports = main_default;
 ",
 }
 `;
@@ -9698,7 +9722,7 @@ t.is(external__default.default, 'bar');
 
 exports[`transpiled-esm-entry-default 1`] = `
 {
-  "entry-ix7rhf3Z.js": "'use strict';
+  "entry-BHDxPxXK.js": "'use strict';
 
 function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -9721,7 +9745,7 @@ exports.requireEntry = requireEntry;
 ",
   "entry.js": "'use strict';
 
-var entry$1 = require('./entry-ix7rhf3Z.js');
+var entry$1 = require('./entry-BHDxPxXK.js');
 
 var entryExports = entry$1.requireEntry();
 var entry = /*@__PURE__*/entry$1.getDefaultExportFromCjs(entryExports);
@@ -9730,7 +9754,7 @@ module.exports = entry;
 ",
   "main.js": "'use strict';
 
-var entry$2 = require('./entry-ix7rhf3Z.js');
+var entry$2 = require('./entry-BHDxPxXK.js');
 
 function _mergeNamespaces(n, m) {
 	m.forEach(function (e) {
@@ -9762,7 +9786,7 @@ t.deepEqual(entry$1, { default: 'default' });
 
 exports[`transpiled-esm-entry-mixed 1`] = `
 {
-  "entry-Fl2t-jMB.js": "'use strict';
+  "entry-wxX_Yv_b.js": "'use strict';
 
 function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -9786,7 +9810,7 @@ exports.requireEntry = requireEntry;
 ",
   "entry.js": "'use strict';
 
-var entry$1 = require('./entry-Fl2t-jMB.js');
+var entry$1 = require('./entry-wxX_Yv_b.js');
 
 var entryExports = entry$1.requireEntry();
 var entry = /*@__PURE__*/entry$1.getDefaultExportFromCjs(entryExports);
@@ -9795,7 +9819,7 @@ module.exports = entry;
 ",
   "main.js": "'use strict';
 
-var entry$2 = require('./entry-Fl2t-jMB.js');
+var entry$2 = require('./entry-wxX_Yv_b.js');
 
 function _mergeNamespaces(n, m) {
 	m.forEach(function (e) {
@@ -10185,10 +10209,10 @@ t.deepEqual(dep$1, {
   named: 'named'
 });
 
-t.deepEqual(external__namespace, {
-  foo: 'foo',
-  default: { foo: 'foo' }
-});
+t.deepEqual(
+  external__namespace,
+  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } }
+);
 ",
 }
 `;

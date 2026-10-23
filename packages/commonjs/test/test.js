@@ -5,7 +5,7 @@ const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const { getLocator } = require('locate-character');
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 const { install } = require('source-map-support');
 
 const { testBundle } = require('../../../util/test');
@@ -17,6 +17,12 @@ const {
   getCodeFromBundle,
   normalizePathSlashes
 } = require('./helpers/util.js');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
+
+// rollup 4.13.0 augments plugin warnings and errors with a "[plugin commonjs] " prefix
+const pluginMessagePrefix =
+  rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13) ? '[plugin commonjs] ' : '';
 
 const avaAssertions = {
   is(actual, expected, message) {
@@ -506,9 +512,19 @@ test('creates an error with a code frame when parsing fails', async () => {
       plugins: [commonjs()]
     });
   } catch (error) {
-    expect(error.frame).toBe(`1: /* eslint-disable */
+    expect(error.frame).toBe(
+      rollupMajor < 4
+        ? `1: /* eslint-disable */
 2: export const foo = 2,
-                       ^`);
+                        ^`
+        : rollupMajor === 4 && rollupMinor < 48
+        ? `1: /* eslint-disable */
+2: export const foo = 2,
+                       ^`
+        : `1: /* eslint-disable */
+2: export const foo = 2,
+                        ^`
+    );
   }
 });
 
@@ -640,7 +656,7 @@ test('logs a warning when the deprecated namedExports option is used', async () 
   });
   await getCodeFromBundle(bundle);
   expect(message).toBe(
-    'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
+    `${pluginMessagePrefix}The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.`
   );
 });
 
@@ -659,7 +675,7 @@ if (Number(/^v(\d+)/.exec(process.version)[1]) >= 12) {
     const getRollupUpCodeWithCache = new Worker(
       path.join(__dirname, 'fixtures/samples/caching/rollupWorker.js'),
       {
-        workerData: cache
+        workerData: { cache, rollupPath: require.resolve('rollup') }
       }
     );
     expect(code).toBe(await new Promise((done) => getRollupUpCodeWithCache.on('message', done)));
@@ -736,8 +752,13 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
   const minimalDynamicRequireRoot = normalizePathSlashes(
     path.join(cwd, 'fixtures/samples/dynamic-require-outside-root')
   );
+  // rollup 4.13.0 also prepends the relative id and error position to augmented plugin errors
+  const augmentedErrorPrefix =
+    rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+      ? `${pluginMessagePrefix}${normalizePathSlashes(path.relative(cwd, id))} (3:9): `
+      : '';
   expect(error).toMatchObject({
-    message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
+    message: `${augmentedErrorPrefix}"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
     pluginCode: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
     normalizedId: id,
     normalizedDynamicRequireRoot: dynamicRequireRoot
@@ -1322,7 +1343,7 @@ test('allows the config to be reused', async () => {
   });
   expect(bundle.cache.modules.map(({ id }) => id)).toEqual(['bar.js']);
 });
-test('keep the shebang at the top of the file content', async () => {
+test.skipIf(rollupMajor < 3)('keep the shebang at the top of the file content', async () => {
   const bundle = await rollup({
     input: ['fixtures/samples/shebang/main.js'],
     plugins: [commonjs()]
