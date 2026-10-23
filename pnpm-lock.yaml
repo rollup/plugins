@@ -112,13 +112,13 @@ importers:
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
-        version: 15.0.0(rollup@4.0.0-24)
+        version: 15.0.0(rollup@4.65.1)
       '@rollup/plugin-node-resolve-earliest':
         specifier: npm:@rollup/plugin-node-resolve@11.2.1
-        version: '@rollup/plugin-node-resolve@11.2.1(rollup@4.0.0-24)'
+        version: '@rollup/plugin-node-resolve@11.2.1(rollup@4.65.1)'
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@4.65.1)(tslib@2.4.0)(typescript@4.8.4)
       del:
         specifier: ^6.1.1
         version: 6.1.1
@@ -126,8 +126,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -254,6 +254,9 @@ importers:
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
         version: 15.0.0(rollup@4.0.0-24)
+      '@rollup/plugin-node-resolve-earliest':
+        specifier: npm:@rollup/plugin-node-resolve@13.3.0
+        version: '@rollup/plugin-node-resolve@13.3.0(rollup@4.0.0-24)'
       locate-character:
         specifier: ^2.0.5
         version: 2.0.5
@@ -263,6 +266,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@2.68.0
+        version: rollup@2.68.0
       source-map:
         specifier: ^0.7.4
         version: 0.7.4
@@ -1878,6 +1884,12 @@ packages:
     engines: {node: '>= 10.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0
+
+  '@rollup/plugin-node-resolve@13.3.0':
+    resolution: {integrity: sha512-Lus8rbUo1eEcnS4yTFKLZrVumLPY+YayBdWXgFSHYhTT2iJbMhoaaBL3xl5NCdeRytErGr8tZ0L71BMRmnlwSw==}
+    engines: {node: '>= 10.0.0'}
+    peerDependencies:
+      rollup: ^2.42.0
 
   '@rollup/plugin-node-resolve@15.0.0':
     resolution: {integrity: sha512-iwJbzfTzlzDDQcGmkS7EkCKwe2kSkdBrjX87Fy/KrNjr6UNnLpod0t6X66e502LRe5JJCA4FFqrEscWPnZAkig==}
@@ -4916,6 +4928,11 @@ packages:
     engines: {node: '>=10.0.0'}
     hasBin: true
 
+  rollup@2.68.0:
+    resolution: {integrity: sha512-XrMKOYK7oQcTio4wyTz466mucnd8LzkiZLozZ4Rz0zQD+HeX4nUK4B8GrTX/2EvN2/vBF/i2WnaXboPxo0JylA==}
+    engines: {node: '>=10.0.0'}
+    hasBin: true
+
   rollup@2.78.0:
     resolution: {integrity: sha512-4+YfbQC9QEVvKTanHhIAFVUFSRsezvQF8vFOJwtGfb9Bb+r014S+qryr9PSmw8x6sMnPkmFBGAvIFVQxvJxjtg==}
     engines: {node: '>=10.0.0'}
@@ -6717,16 +6734,6 @@ snapshots:
     optionalDependencies:
       rollup: 4.65.1
 
-  '@rollup/plugin-node-resolve@11.2.1(rollup@4.0.0-24)':
-    dependencies:
-      '@rollup/pluginutils': 3.1.0(rollup@4.0.0-24)
-      '@types/resolve': 1.17.1
-      builtin-modules: 3.3.0
-      deepmerge: 4.2.2
-      is-module: 1.0.0
-      resolve: 1.22.1
-      rollup: 4.0.0-24
-
   '@rollup/plugin-node-resolve@11.2.1(rollup@4.65.1)':
     dependencies:
       '@rollup/pluginutils': 3.1.0(rollup@4.65.1)
@@ -6736,6 +6743,16 @@ snapshots:
       is-module: 1.0.0
       resolve: 1.22.1
       rollup: 4.65.1
+
+  '@rollup/plugin-node-resolve@13.3.0(rollup@4.0.0-24)':
+    dependencies:
+      '@rollup/pluginutils': 3.1.0(rollup@4.0.0-24)
+      '@types/resolve': 1.17.1
+      deepmerge: 4.2.2
+      is-builtin-module: 3.2.0
+      is-module: 1.0.0
+      resolve: 1.22.1
+      rollup: 4.0.0-24
 
   '@rollup/plugin-node-resolve@15.0.0(rollup@4.0.0-24)':
     dependencies:
@@ -9946,6 +9963,10 @@ snapshots:
       fsevents: 2.1.3
 
   rollup@2.53.1:
+    optionalDependencies:
+      fsevents: 2.3.3
+
+  rollup@2.68.0:
     optionalDependencies:
       fsevents: 2.3.3
 

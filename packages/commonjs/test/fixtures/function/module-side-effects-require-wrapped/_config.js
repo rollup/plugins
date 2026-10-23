@@ -6,7 +6,7 @@ module.exports = {
         name: 'test',
         async resolveId(source, importer, options) {
           if (source.endsWith('./foo.js')) {
-            const resolved = await this.resolve(source, importer, options);
+            const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
             return { ...resolved, moduleSideEffects: false };
           }
           return null;
