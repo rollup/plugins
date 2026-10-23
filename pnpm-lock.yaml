@@ -330,7 +330,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.65.1)
       astring:
         specifier: ^1.8.5
         version: 1.8.5
@@ -351,8 +351,8 @@ importers:
         specifier: ^2.7.1
         version: 2.7.1
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -857,6 +857,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@1.20.0
+        version: rollup@1.20.0
 
   packages/virtual:
     devDependencies:

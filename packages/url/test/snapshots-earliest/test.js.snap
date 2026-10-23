@@ -1,0 +1,212 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`copy "large" binary files, limit: 10 1`] = `
+"var svg = "98ea1a8cc8cd9baf.svg";
+
+export default svg;
+"
+`;
+
+exports[`copy "large" binary files, limit: 10 2`] = `
+[
+  "output/98ea1a8cc8cd9baf.svg",
+]
+`;
+
+exports[`copy files with include by absolute path, limit: 0 1`] = `
+"var svg = "98ea1a8cc8cd9baf.svg";
+
+export default svg;
+"
+`;
+
+exports[`copy files with include by absolute path, limit: 0 2`] = `
+[
+  "output/98ea1a8cc8cd9baf.svg",
+]
+`;
+
+exports[`copy files, limit: 0 1`] = `
+"var svg = "98ea1a8cc8cd9baf.svg";
+
+export default svg;
+"
+`;
+
+exports[`copy files, limit: 0 2`] = `
+[
+  "output/98ea1a8cc8cd9baf.svg",
+]
+`;
+
+exports[`copy the file according to destDir option 1`] = `
+"var png = "fixtures/6b71fbe07b498a82.png";
+
+export default png;
+"
+`;
+
+exports[`copy the file according to destDir option 2`] = `
+[
+  "output/dest/fixtures/6b71fbe07b498a82.png",
+]
+`;
+
+exports[`create a file with the name and extension of the file 1`] = `
+"var png = "png.png";
+
+export default png;
+"
+`;
+
+exports[`create a file with the name and extension of the file 2`] = `
+[
+  "output/png.png",
+]
+`;
+
+exports[`create a file with the name, hash and extension of the file 1`] = `
+"var png = "png-6b71fbe07b498a82.png";
+
+export default png;
+"
+`;
+
+exports[`create a file with the name, hash and extension of the file 2`] = `
+[
+  "output/png-6b71fbe07b498a82.png",
+]
+`;
+
+exports[`create a nested directory for the output, if required 1`] = `
+"var png = "joker/6b71fbe07b498a82.png";
+
+export default png;
+"
+`;
+
+exports[`create a nested directory for the output, if required 2`] = `
+[
+  "output/joker/6b71fbe07b498a82.png",
+]
+`;
+
+exports[`inline "large" files 1`] = `
+"var svg = "98ea1a8cc8cd9baf.svg";
+
+export default svg;
+"
+`;
+
+exports[`inline "large" files 2`] = `[]`;
+
+exports[`inline gif files 1`] = `
+"var gif = "data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAAAAAAAIf8LSW1hZ2VNYWdpY2sOZ2FtbWE9MC40NTQ1NDUALAAAAAABAAEAAAICRAEAOw==";
+
+export default gif;
+"
+`;
+
+exports[`inline gif files 2`] = `[]`;
+
+exports[`inline jpeg files 1`] = `
+"var jpeg = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAABP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8Aa//Z";
+
+export default jpeg;
+"
+`;
+
+exports[`inline jpeg files 2`] = `[]`;
+
+exports[`inline jpg files 1`] = `
+"var jpg = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAABP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8Aa//Z";
+
+export default jpg;
+"
+`;
+
+exports[`inline jpg files 2`] = `[]`;
+
+exports[`inline png files 1`] = `
+"var png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR4nGP6DwABBQECz6AuzQAAAABJRU5ErkJggg==";
+
+export default png;
+"
+`;
+
+exports[`inline png files 2`] = `[]`;
+
+exports[`inline text files 1`] = `
+"var svg = "data:image/svg+xml,%3Csvg%3E%3Cpath%20d%3D%22%22%2F%3E%3C%2Fsvg%3E";
+
+export default svg;
+"
+`;
+
+exports[`inline text files 2`] = `[]`;
+
+exports[`inline webp files 1`] = `
+"var webp = "data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAB0CWJaQAA3AA/u9gAAA=";
+
+export default webp;
+"
+`;
+
+exports[`inline webp files 2`] = `[]`;
+
+exports[`limit: 0, emitFiles: false, publicPath: empty 1`] = `
+"var svg = "98ea1a8cc8cd9baf.svg";
+
+export default svg;
+"
+`;
+
+exports[`limit: 0, emitFiles: false, publicPath: empty 2`] = `[]`;
+
+exports[`prefix the file with the parent directory of the source file 1`] = `
+"var png = "fixtures/6b71fbe07b498a82.png";
+
+export default png;
+"
+`;
+
+exports[`prefix the file with the parent directory of the source file 2`] = `
+[
+  "output/fixtures/6b71fbe07b498a82.png",
+]
+`;
+
+exports[`prefix the file with the parent directory of the source file, relative to the sourceDir option 1`] = `
+"var png = "test/fixtures/6b71fbe07b498a82.png";
+
+export default png;
+"
+`;
+
+exports[`prefix the file with the parent directory of the source file, relative to the sourceDir option 2`] = `
+[
+  "output/test/fixtures/6b71fbe07b498a82.png",
+]
+`;
+
+exports[`use publicPath 1`] = `
+"var png = "/batman/6b71fbe07b498a82.png";
+
+export default png;
+"
+`;
+
+exports[`use publicPath 2`] = `[]`;
+
+exports[`use publicPath with file that has empty dirname 1`] = `
+"var png = "/batman/6b71fbe07b498a82.png";
+
+export default png;
+"
+`;
+
+exports[`use publicPath with file that has empty dirname 2`] = `
+[
+  "output/6b71fbe07b498a82.png",
+]
+`;
