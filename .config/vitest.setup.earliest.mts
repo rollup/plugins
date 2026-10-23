@@ -1,9 +1,9 @@
-// The vite alias in vitest.config.mts redirects ESM imports of "rollup" to the aliased
-// earliest supported version, but it does not affect require("rollup"). Patch the Node
-// module resolution so CommonJS tests resolve the same version.
+// The vite aliases in vitest.config.mts redirect ESM imports of the aliased dependencies to
+// their earliest supported versions, but they do not affect require(...). Patch the Node
+// module resolution so CommonJS tests resolve the same versions.
 import Module from 'node:module';
-import path from 'node:path';
-import { existsSync } from 'node:fs';
+
+import { getEarliestDependencies } from './vitest.earliest.mts';
 
 type ResolveFilename = (
   request: string,
@@ -12,25 +12,21 @@ type ResolveFilename = (
   options?: unknown
 ) => string;
 
-const earliestRollupPath = path.resolve(process.cwd(), 'node_modules/rollup-earliest');
+const earliestPaths = new Map(
+  getEarliestDependencies().map(({ name, path }) => [name, path] as const)
+);
 
-// Without the aliased version installed, tests would silently run against the
-// current dev version of rollup. Fail loudly instead of passing for the wrong reason.
-if (!existsSync(earliestRollupPath)) {
-  throw new Error(
-    `Missing "${earliestRollupPath}". Run "pnpm install" to test against the earliest supported version.`
-  );
-}
+const originalResolveFilename = (Module as { _resolveFilename?: ResolveFilename })._resolveFilename;
 
-const originalResolveFilename = (Module as { _resolveFilename?: ResolveFilename })
-  ._resolveFilename;
-
-if (originalResolveFilename && !originalResolveFilename.name.includes('earliestRollup')) {
+if (
+  originalResolveFilename &&
+  !originalResolveFilename.name.includes('redirectEarliestDependencies')
+) {
   (Module as { _resolveFilename: ResolveFilename })._resolveFilename =
-    function earliestRollup(this: unknown, request, parent, isMain, options) {
+    function redirectEarliestDependencies(this: unknown, request, parent, isMain, options) {
       return originalResolveFilename.call(
         this,
-        request === 'rollup' ? earliestRollupPath : request,
+        earliestPaths.get(request) ?? request,
         parent,
         isMain,
         options
