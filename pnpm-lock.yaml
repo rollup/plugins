@@ -273,6 +273,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@1.20.0
+        version: rollup@1.20.0
       typescript:
         specifier: ^4.8.3
         version: 4.8.4
@@ -421,17 +424,17 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.65.1)
       mini-svg-data-uri:
         specifier: ^1.4.4
         version: 1.4.4
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
-        version: 1.0.0(rollup@4.0.0-24)
+        version: 1.0.0(rollup@4.65.1)
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -6567,6 +6570,14 @@ snapshots:
       buble: 0.20.0
     optionalDependencies:
       rollup: 4.0.0-24
+
+  '@rollup/plugin-buble@1.0.0(rollup@4.65.1)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      '@types/buble': 0.19.2
+      buble: 0.20.0
+    optionalDependencies:
+      rollup: 4.65.1
 
   '@rollup/plugin-commonjs@23.0.0(rollup@4.0.0-24)':
     dependencies:
