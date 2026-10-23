@@ -494,9 +494,15 @@ importers:
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
         version: 15.0.0(rollup@4.0.0-24)
+      '@rollup/plugin-node-resolve-earliest':
+        specifier: npm:@rollup/plugin-node-resolve@11.2.1
+        version: '@rollup/plugin-node-resolve@11.2.1(rollup@4.0.0-24)'
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@1.20.0
+        version: rollup@1.20.0
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
@@ -626,14 +632,14 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.65.1)
       magic-string:
         specifier: ^0.30.3
         version: 0.30.3
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
-        version: 1.0.0(rollup@4.0.0-24)
+        version: 1.0.0(rollup@4.65.1)
       del-cli:
         specifier: ^5.0.0
         version: 5.0.0
@@ -641,8 +647,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -1852,6 +1858,12 @@ packages:
       rollup:
         optional: true
 
+  '@rollup/plugin-node-resolve@11.2.1':
+    resolution: {integrity: sha512-yc2n43jcqVyGE2sqV5/YCmocy9ArjVAP/BeXyTtADTBBX6V0e5UMqwO8CdQ0kzjb6zu5P1qMzsScCMRvE9OlVg==}
+    engines: {node: '>= 10.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+
   '@rollup/plugin-node-resolve@15.0.0':
     resolution: {integrity: sha512-iwJbzfTzlzDDQcGmkS7EkCKwe2kSkdBrjX87Fy/KrNjr6UNnLpod0t6X66e502LRe5JJCA4FFqrEscWPnZAkig==}
     engines: {node: '>=14.0.0'}
@@ -1882,6 +1894,12 @@ packages:
     peerDependenciesMeta:
       rollup:
         optional: true
+
+  '@rollup/pluginutils@3.1.0':
+    resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
 
   '@rollup/pluginutils@4.2.1':
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
@@ -2343,6 +2361,9 @@ packages:
 
   '@types/picomatch@2.3.0':
     resolution: {integrity: sha512-O397rnSS9iQI4OirieAtsDqvCj4+3eY1J+EPdNTKuHuRWIfUoGyzX294o8C4KJYaLqgSrd2o60c5EqCU8Zv02g==}
+
+  '@types/resolve@1.17.1':
+    resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -3351,6 +3372,9 @@ packages:
 
   estree-walker@0.6.1:
     resolution: {integrity: sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==}
+
+  estree-walker@1.0.1:
+    resolution: {integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==}
 
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
@@ -6672,6 +6696,16 @@ snapshots:
     optionalDependencies:
       rollup: 4.0.0-24
 
+  '@rollup/plugin-node-resolve@11.2.1(rollup@4.0.0-24)':
+    dependencies:
+      '@rollup/pluginutils': 3.1.0(rollup@4.0.0-24)
+      '@types/resolve': 1.17.1
+      builtin-modules: 3.3.0
+      deepmerge: 4.2.2
+      is-module: 1.0.0
+      resolve: 1.22.1
+      rollup: 4.0.0-24
+
   '@rollup/plugin-node-resolve@15.0.0(rollup@4.0.0-24)':
     dependencies:
       '@rollup/pluginutils': 4.2.1
@@ -6724,6 +6758,13 @@ snapshots:
   '@rollup/plugin-virtual@3.0.0(rollup@4.65.1)':
     optionalDependencies:
       rollup: 4.65.1
+
+  '@rollup/pluginutils@3.1.0(rollup@4.0.0-24)':
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.3.1
+      rollup: 4.0.0-24
 
   '@rollup/pluginutils@4.2.1':
     dependencies:
@@ -7069,6 +7110,10 @@ snapshots:
   '@types/parse-json@4.0.0': {}
 
   '@types/picomatch@2.3.0': {}
+
+  '@types/resolve@1.17.1':
+    dependencies:
+      '@types/node': 14.18.30
 
   '@types/resolve@1.20.2': {}
 
@@ -8369,6 +8414,8 @@ snapshots:
   estraverse@5.3.0: {}
 
   estree-walker@0.6.1: {}
+
+  estree-walker@1.0.1: {}
 
   estree-walker@2.0.2: {}
 
