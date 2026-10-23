@@ -446,6 +446,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@1.21.0
+        version: rollup@1.21.0
       rollup-plugin-postcss:
         specifier: ^4.0.2
         version: 4.0.2(postcss@8.4.17)(ts-node@10.9.1(@swc/core@1.3.78)(@types/node@20.19.23)(typescript@4.8.4))
@@ -840,7 +843,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.65.1)
       make-dir:
         specifier: ^3.1.0
         version: 3.1.0
@@ -855,8 +858,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -4934,6 +4937,10 @@ packages:
 
   rollup@1.20.0:
     resolution: {integrity: sha512-zW80j9RSJ0VV0VOxP1i7cF279+IlAaD49Ihwqb87PDR0555Fvk10HKmh2yUtXCdBb37bELuhHWZTJc4uoCo8Vw==}
+    hasBin: true
+
+  rollup@1.21.0:
+    resolution: {integrity: sha512-FDIPkcIdLg7262zzqteTWNr7GxU7hw3nJiiKY9P38LE3BAZ7tFC0Di/AzISIxHEQBvneu5bW51a7o50P1NgDCg==}
     hasBin: true
 
   rollup@2.0.0:
@@ -9953,6 +9960,12 @@ snapshots:
       estree-walker: 0.6.1
 
   rollup@1.20.0:
+    dependencies:
+      '@types/estree': 0.0.39
+      '@types/node': 12.20.55
+      acorn: 7.4.1
+
+  rollup@1.21.0:
     dependencies:
       '@types/estree': 0.0.39
       '@types/node': 12.20.55
