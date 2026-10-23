@@ -35,6 +35,7 @@
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
@@ -65,7 +66,8 @@
     "mlly": "^1.7.4"
   },
   "devDependencies": {
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@2.0.0",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts"
