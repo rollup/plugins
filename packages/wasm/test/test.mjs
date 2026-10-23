@@ -27,6 +27,19 @@ const testBundle = async (t, bundle) => {
   const func = new AsyncFunction('t', `let result;\n\n${code}\n\nreturn result;`);
   return func(t);
 };
+// From rollup 4.16.0 on, function parameter tracking removes the file-loading branch of the
+// helper from the bundle when the wasm module is inlined. Asserting on a build where the
+// file-loading variant is used keeps all helper branches in the bundle for every rollup version.
+const getFileVariantCode = (targetEnv) =>
+  rollup({
+    input: 'fixtures/async.js',
+    plugins: [
+      wasmPlugin({
+        targetEnv,
+        maxFileSize: 0
+      })
+    ]
+  }).then(getCode);
 test('async compiling', async () => {
   expect.assertions(2);
   const bundle = await rollup({
@@ -150,8 +163,8 @@ test('target environment auto', async () => {
       })
     ]
   });
-  const code = await getCode(bundle);
   await testBundle(avaAssertions, bundle);
+  const code = await getFileVariantCode('auto');
   expect(code.includes(`require("fs")`)).toBe(true);
   expect(code.includes(`require("path")`)).toBe(true);
   expect(code.includes(`fetch`)).toBe(true);
@@ -183,8 +196,8 @@ test('target environment browser', async () => {
       })
     ]
   });
-  const code = await getCode(bundle);
   await testBundle(avaAssertions, bundle);
+  const code = await getFileVariantCode('browser');
   expect(!code.includes(`require("`)).toBe(true);
   expect(code.includes(`fetch`)).toBe(true);
 });
@@ -198,8 +211,8 @@ test('target environment node', async () => {
       })
     ]
   });
-  const code = await getCode(bundle);
   await testBundle(avaAssertions, bundle);
+  const code = await getFileVariantCode('node');
   expect(code.includes(`require("`)).toBe(true);
   expect(!code.includes(`fetch`)).toBe(true);
 });
