@@ -2,13 +2,20 @@ const path = require('path');
 const fs = require('fs');
 
 const commonjs = require('@rollup/plugin-commonjs');
-const { rollup, watch } = require('rollup');
+const { rollup, VERSION, watch } = require('rollup');
 const ts = require('typescript');
 
 const { evaluateBundle, getCode, getFiles, onwarn } = require('../../../util/test');
 const typescript = require('..');
 
 const { fakeTypescript, forceRemove, waitForWatcherEvent } = require('./helpers');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
+// bundle.close() was added in rollup 2.35.0
+const hasBundleClose = rollupMajor > 2 || (rollupMajor === 2 && rollupMinor >= 35);
+// rollup 4.13.0 augments plugin warnings and errors with a "[plugin <name>]" message prefix
+// and, if the log has a location, an additional "relativeId (line:column)" segment
+const hasAugmentedPluginLogs = rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13);
 
 beforeEach(() => process.chdir(__dirname));
 const outputOptions = {
@@ -375,14 +382,23 @@ test.sequential('warns for invalid module types', async () => {
       }
     })
   );
-  expect(warnings).toEqual([
+  const expectedWarnings = [
     {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
       pluginCode: 'TS6046',
-      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
+      message: `${
+        hasAugmentedPluginLogs ? '[plugin typescript] ' : ''
+      }@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
     }
-  ]);
+  ];
+  if (hasAugmentedPluginLogs) {
+    // rollup marks augmented warnings with an internal symbol; include it in the expectation
+    for (const [index, warning] of warnings.entries()) {
+      expectedWarnings[index][Object.getOwnPropertySymbols(warning)[0]] = true;
+    }
+  }
+  expect(warnings).toEqual(expectedWarnings);
 });
 test.sequential('ignores case of module types', async () => {
   await expectNoError(
@@ -472,7 +488,13 @@ test.sequential('reports diagnostics and throws if errors occur during transpila
       onwarn
     })
   );
-  expect(caughtError.message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+  expect(caughtError.message).toBe(
+    `${
+      hasAugmentedPluginLogs
+        ? '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): '
+        : ''
+    }@rollup/plugin-typescript TS1110: Type expected.`
+  );
   expect(caughtError.pluginCode).toBe('TS1110');
 });
 test.sequential('ignore type errors if noEmitOnError is false', async () => {
@@ -494,7 +516,13 @@ test.sequential('ignore type errors if noEmitOnError is false', async () => {
   expect(warnings[0].code).toBe('PLUGIN_WARNING');
   expect(warnings[0].plugin).toBe('typescript');
   expect(warnings[0].pluginCode).toBe('TS1110');
-  expect(warnings[0].message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+  expect(warnings[0].message).toBe(
+    `${
+      hasAugmentedPluginLogs
+        ? '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): '
+        : ''
+    }@rollup/plugin-typescript TS1110: Type expected.`
+  );
   expect(warnings[0].loc.line).toBe(1);
   expect(warnings[0].loc.column).toBe(8);
   expect(warnings[0].loc.file.includes('missing-type.ts')).toBe(true);
@@ -772,14 +800,23 @@ test.sequential('should throw on bad options', async () => {
       message: "@rollup/plugin-typescript: Couldn't process compiler options"
     }
   );
-  expect(warnings).toEqual([
+  const expectedWarnings = [
     {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
       pluginCode: 'TS5023',
-      message: `@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
+      message: `${
+        hasAugmentedPluginLogs ? '[plugin typescript] ' : ''
+      }@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
     }
-  ]);
+  ];
+  if (hasAugmentedPluginLogs) {
+    // rollup marks augmented warnings with an internal symbol; include it in the expectation
+    for (const [index, warning] of warnings.entries()) {
+      expectedWarnings[index][Object.getOwnPropertySymbols(warning)[0]] = true;
+    }
+  }
+  expect(warnings).toEqual(expectedWarnings);
 });
 test.sequential('should handle re-exporting types', async () => {
   const bundle = await rollup({
@@ -900,20 +937,21 @@ test.sequential('should allow merging an exported function and namespace', async
   expect(f.foo).toBe('2');
 });
 test.sequential('supports dynamic imports', async () => {
+  // inlineDynamicImports became an output option in rollup 2.18.0; before that, it was an input option
+  const inlineDynamicImportsOnOutput = rollupMajor > 2 || (rollupMajor === 2 && rollupMinor >= 18);
+  const bundle = await rollup({
+    input: 'fixtures/dynamic-imports/main.ts',
+    plugins: [
+      typescript({
+        tsconfig: 'fixtures/dynamic-imports/tsconfig.json'
+      })
+    ],
+    onwarn,
+    ...(inlineDynamicImportsOnOutput ? {} : { inlineDynamicImports: true })
+  });
   const code = await getCode(
-    await rollup({
-      input: 'fixtures/dynamic-imports/main.ts',
-      plugins: [
-        typescript({
-          tsconfig: 'fixtures/dynamic-imports/tsconfig.json'
-        })
-      ],
-      onwarn
-    }),
-    {
-      ...outputOptions,
-      inlineDynamicImports: true
-    }
+    bundle,
+    inlineDynamicImportsOnOutput ? { ...outputOptions, inlineDynamicImports: true } : outputOptions
   );
   expect(code.includes("console.log('dynamic')")).toBe(true);
 });
@@ -932,7 +970,13 @@ test.sequential('supports CommonJS imports when the output format is CommonJS', 
     onwarn
   });
   const output = await evaluateBundle(bundle);
-  expect(output).toBe('exported from commonjs');
+  // @rollup/plugin-commonjs 14, pinned for the earliest rollup, does not unwrap
+  // the default export of modules marked with __esModule
+  if (rollupMajor >= 3) {
+    expect(output).toBe('exported from commonjs');
+  } else {
+    expect(output).toEqual({ __esModule: true, default: 'exported from commonjs' });
+  }
 });
 test.sequential('supports optional chaining', async () => {
   const bundle = await rollup({
@@ -1357,8 +1401,14 @@ test.sequential('normalizes resolved ids to avoid duplicate output on windows', 
     true
   );
   expect(files.length).toBe(2);
-  expect(files[0].fileName.includes('two.js'), files[1].fileName).toBe(true);
-  expect(files[0].code.includes("import { one } from './one.js';"), files[1].code).toBe(true);
+  // rollup 3.17.0 reversed the order in which entry chunks are emitted
+  if (rollupMajor >= 4 || (rollupMajor === 3 && rollupMinor >= 17)) {
+    expect(files[0].fileName.includes('two.js'), files[1].fileName).toBe(true);
+    expect(files[0].code.includes("import { one } from './one.js';"), files[1].code).toBe(true);
+  } else {
+    expect(files[1].fileName.includes('two.js'), files[0].fileName).toBe(true);
+    expect(files[1].code.includes("import { one } from './one.js';"), files[0].code).toBe(true);
+  }
 });
 test.sequential('does it support tsconfig.rootDir for filtering', async () => {
   process.chdir('fixtures/root-dir/packages/test-1');
@@ -1944,7 +1994,9 @@ test.sequential(
       };
       expect(bundle.watchFiles.every((f) => !isInside(outDirAbs, f))).toBe(true);
     } finally {
-      await bundle.close();
+      if (hasBundleClose) {
+        await bundle.close();
+      }
       fs.rmSync(outDir, {
         recursive: true,
         force: true
@@ -2042,7 +2094,9 @@ test.sequential(
         }
       ]);
     } finally {
-      await bundle.close();
+      if (hasBundleClose) {
+        await bundle.close();
+      }
       // tidy emitted file to avoid cross-test interference if ordering changes
       if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
     }
@@ -2129,7 +2183,9 @@ test.sequential('recreates typeChecker-based transformers per rebuild in watch m
     );
     expect(observations).toEqual(['tc-one', 'tc-two']);
   } finally {
-    await bundle.close();
+    if (hasBundleClose) {
+      await bundle.close();
+    }
     // tidy emitted file to avoid cross-test interference if ordering changes
     if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
   }
@@ -2209,7 +2265,9 @@ test.sequential('defaults to legacy behavior: reuses factories across watch rebu
       }
     ]);
   } finally {
-    await bundle.close();
+    if (hasBundleClose) {
+      await bundle.close();
+    }
     if (fs.existsSync(outputJs)) fs.unlinkSync(outputJs);
   }
 });
