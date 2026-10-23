@@ -449,7 +449,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.65.1)
       estree-walker:
         specifier: ^2.0.2
         version: 2.0.2
@@ -459,7 +459,7 @@ importers:
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
-        version: 1.0.0(rollup@4.0.0-24)
+        version: 1.0.0(rollup@4.65.1)
       del-cli:
         specifier: ^5.0.0
         version: 5.0.0
@@ -467,8 +467,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -659,6 +659,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@2.0.0
+        version: rollup@2.0.0
       sinon:
         specifier: ^14.0.0
         version: 14.0.1
@@ -3452,6 +3455,11 @@ packages:
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
+  fsevents@2.1.3:
+    resolution: {integrity: sha512-Auw9a4AxqWpa9GUfj370BMPzzyncfBABW8Mab7BGWBYDj4Isgq+cDKtx0i6u9jcX9pQDnswsaaOTgTmA5pEjuQ==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -4836,6 +4844,11 @@ packages:
 
   rollup@1.20.0:
     resolution: {integrity: sha512-zW80j9RSJ0VV0VOxP1i7cF279+IlAaD49Ihwqb87PDR0555Fvk10HKmh2yUtXCdBb37bELuhHWZTJc4uoCo8Vw==}
+    hasBin: true
+
+  rollup@2.0.0:
+    resolution: {integrity: sha512-tbvWownITR+0ebaX6iRr7IcLkziTCJacRpmWz03NIj3CZDmGlergYSwdG8wPx68LT0ms1YzqmbjUQHb6ut8pdw==}
+    engines: {node: '>=10.0.0'}
     hasBin: true
 
   rollup@2.78.0:
@@ -8447,6 +8460,9 @@ snapshots:
 
   fs.realpath@1.0.0: {}
 
+  fsevents@2.1.3:
+    optional: true
+
   fsevents@2.3.3:
     optional: true
 
@@ -9800,6 +9816,10 @@ snapshots:
       '@types/estree': 0.0.39
       '@types/node': 12.20.55
       acorn: 7.4.1
+
+  rollup@2.0.0:
+    optionalDependencies:
+      fsevents: 2.1.3
 
   rollup@2.78.0:
     optionalDependencies:
