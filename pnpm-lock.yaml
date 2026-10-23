@@ -499,17 +499,17 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.65.1)
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
-        version: 1.0.0(rollup@4.0.0-24)
+        version: 1.0.0(rollup@4.65.1)
       del-cli:
         specifier: ^5.0.0
         version: 5.0.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -836,7 +836,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.3.0
-        version: 5.3.0(rollup@4.0.0-24)
+        version: 5.3.0(rollup@4.65.1)
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -846,13 +846,16 @@ importers:
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
-        version: 15.0.0(rollup@4.0.0-24)
+        version: 15.0.0(rollup@4.65.1)
       del-cli:
         specifier: ^5.0.0
         version: 5.0.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
+      rollup-earliest:
+        specifier: npm:rollup@2.78.0
+        version: rollup@2.78.0
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
@@ -6695,13 +6698,13 @@ snapshots:
     optionalDependencies:
       rollup: 4.0.0-24
 
-  '@rollup/pluginutils@5.3.0(rollup@4.0.0-24)':
+  '@rollup/pluginutils@5.3.0(rollup@4.65.1)':
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
       picomatch: 4.0.3
     optionalDependencies:
-      rollup: 4.0.0-24
+      rollup: 4.65.1
 
   '@rollup/rollup-android-arm-eabi@4.0.0':
     optional: true
