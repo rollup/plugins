@@ -3,11 +3,13 @@
 import { createRequire } from 'module';
 
 import { test, expect } from 'vitest';
-import { rollup } from 'rollup';
+import { rollup, VERSION } from 'rollup';
 
 import multiEntry from 'current-package';
 
 import { getCode } from '../../../util/test.js';
+
+const [rollupMajor] = VERSION.split('.').map(Number);
 
 test('takes a single file as input', async () => {
   const bundle = await rollup({ input: 'test/fixtures/0.js', plugins: [multiEntry()] });
@@ -92,7 +94,7 @@ test('works as CJS plugin', async () => {
   expect(code.includes('exports.zero = zero;')).toBeTruthy();
 });
 
-test('maintains filename when preserveModules = true', async () => {
+test.skipIf(rollupMajor < 3)('maintains filename when preserveModules = true', async () => {
   const bundle = await rollup({
     input: 'test/fixtures/{0,1}.js',
     plugins: [multiEntry({ preserveModules: true, entryFileName: 'testing.js' })]
@@ -108,29 +110,32 @@ test('maintains filename when preserveModules = true', async () => {
   expect(nonVirtualFiles.find(({ fileName }) => fileName === '1.js')).toBeTruthy();
 });
 
-test('makes a bundle with entryFileName as the output.entryFileName when preserveModules = true and entryName is not set', async () => {
-  const bundle = await rollup({
-    input: 'test/fixtures/{0,1}.js',
-    plugins: [multiEntry({ preserveModules: true })]
-  });
+test.skipIf(rollupMajor < 3)(
+  'makes a bundle with entryFileName as the output.entryFileName when preserveModules = true and entryName is not set',
+  async () => {
+    const bundle = await rollup({
+      input: 'test/fixtures/{0,1}.js',
+      plugins: [multiEntry({ preserveModules: true })]
+    });
 
-  const files = await getCode(
-    bundle,
-    {
-      format: 'cjs',
-      preserveModules: true,
-      entryFileNames: (c) => `entry-${c.name}.js`
-    },
-    true
-  );
+    const files = await getCode(
+      bundle,
+      {
+        format: 'cjs',
+        preserveModules: true,
+        entryFileNames: (c) => `entry-${c.name}.js`
+      },
+      true
+    );
 
-  const nonVirtualFiles = files.filter(({ fileName }) => !fileName.includes('_virtual/'));
+    const nonVirtualFiles = files.filter(({ fileName }) => !fileName.includes('_virtual/'));
 
-  expect(nonVirtualFiles.length).toBe(2);
+    expect(nonVirtualFiles.length).toBe(2);
 
-  expect(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-0.js')).toBeTruthy();
-  expect(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-1.js')).toBeTruthy();
-});
+    expect(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-0.js')).toBeTruthy();
+    expect(nonVirtualFiles.find(({ fileName }) => fileName === 'entry-1.js')).toBeTruthy();
+  }
+);
 
 test('deterministic output, regardless of input order', async () => {
   const bundle1 = await rollup({
