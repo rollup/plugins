@@ -170,17 +170,14 @@ exports[`dynamic_imports_not_loaded 1`] = `
 [
   {
     "code": "if (Math.random() % 2) {
-  import('./batman-w40geAFS.js');
+  Promise.resolve().then(function () { return batman; });
 }
+
+var batman = /*#__PURE__*/Object.freeze({
+  __proto__: null
+});
 ",
     "fileName": "catwoman.js",
-    "map": null,
-    "source": undefined,
-  },
-  {
-    "code": "
-",
-    "fileName": "batman-w40geAFS.js",
     "map": null,
     "source": undefined,
   },
@@ -471,8 +468,9 @@ exports[`unsupported output format 2`] = `
   },
   {
     "code": "PLUGIN_WARNING",
-    "message": "plugin-html: The output format 'cjs' is not directly supported. A custom \`template\` is probably required. Supported formats include: es, esm, iife, umd",
+    "message": "[plugin html] plugin-html: The output format 'cjs' is not directly supported. A custom \`template\` is probably required. Supported formats include: es, esm, iife, umd",
     "plugin": "html",
+    Symbol(augmented): true,
   },
 ]
 `;

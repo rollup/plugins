@@ -35,6 +35,7 @@
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest",
     "test:ts": "tsc --noEmit"
   },
   "files": [
@@ -62,7 +63,8 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^9.0.1",
     "postcss": "^8.4.16",
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@1.21.0",
     "rollup-plugin-postcss": "^4.0.2",
     "typescript": "^4.8.3"
   },
