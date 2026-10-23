@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import path from 'node:path';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { getEarliestDependencies } from './vitest.earliest.mts';
@@ -14,6 +15,21 @@ const getEarliestAliases = (mode: string) =>
         replacement: dependencyPath
       }))
     : [];
+
+const getSnapshotPath = (testPath: string, snapExt: string, mode: string) => {
+  const defaultPath = path.join(
+    path.dirname(testPath),
+    'snapshots',
+    path.basename(testPath) + snapExt
+  );
+  // Packages opt in to version-specific snapshots by adding the file to this directory.
+  const earliestPath = path.join(
+    path.dirname(testPath),
+    'snapshots-earliest',
+    path.basename(testPath) + snapExt
+  );
+  return mode === 'earliest' && existsSync(earliestPath) ? earliestPath : defaultPath;
+};
 
 export default defineConfig(({ mode }) => ({
   test: {
@@ -32,13 +48,13 @@ export default defineConfig(({ mode }) => ({
       '**/test/recipes/**',
       '**/test/output/**',
       '**/test/snapshots/**',
+      '**/test/snapshots-earliest/**',
       '**/test/types.ts'
     ],
     // These tests switch process cwd and invoke package managers; run files serially there.
     fileParallelism: !isAutoInstallPackage,
     // Keep snapshots in the same location used by Ava.
-    resolveSnapshotPath: (testPath, snapExt) =>
-      path.join(path.dirname(testPath), 'snapshots', path.basename(testPath) + snapExt),
+    resolveSnapshotPath: (testPath, snapExt) => getSnapshotPath(testPath, snapExt, mode),
     setupFiles:
       mode === 'earliest'
         ? [fileURLToPath(new URL('./vitest.setup.earliest.mts', import.meta.url))]
