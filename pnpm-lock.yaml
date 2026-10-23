@@ -521,14 +521,14 @@ importers:
     dependencies:
       '@rollup/plugin-virtual':
         specifier: ^3.0.0
-        version: 3.0.0(rollup@4.0.0-24)
+        version: 3.0.0(rollup@4.65.1)
       tinyglobby:
         specifier: ^0.2.14
         version: 0.2.14
     devDependencies:
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -750,6 +750,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@2.0.0
+        version: rollup@2.0.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -6701,9 +6704,9 @@ snapshots:
       rollup: 4.65.1
       tslib: 2.4.0
 
-  '@rollup/plugin-virtual@3.0.0(rollup@4.0.0-24)':
+  '@rollup/plugin-virtual@3.0.0(rollup@4.65.1)':
     optionalDependencies:
-      rollup: 4.0.0-24
+      rollup: 4.65.1
 
   '@rollup/pluginutils@4.2.1':
     dependencies:
