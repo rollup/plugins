@@ -2,9 +2,11 @@
 
 const { join } = require('path');
 
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 
 const dynamicImportVars = require('current-package');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
 
 process.chdir(join(__dirname, 'fixtures'));
 test('single dir', async () => {
@@ -158,7 +160,8 @@ test('throws an error on failure', async () => {
   }
   expect(thrown).toBe(true);
 });
-test('dynamic imports assertions', async () => {
+// import assertions were added to rollup's parser in rollup 3.0.0
+test.skipIf(rollupMajor < 3)('dynamic imports assertions', async () => {
   const bundle = await rollup({
     input: 'fixture-assert.js',
     plugins: [dynamicImportVars()]
@@ -208,6 +211,11 @@ test('throws if no files in dir when `errorWhenNoFilesFound` is set', async () =
   expect(thrown).toBe(true);
 });
 test('warns if no files in dir when `errorWhenNoFilesFound` and `warnOnError` are both set', async () => {
+  // rollup 4.13.0 prefixes plugin warnings with the plugin name and the id of the related file
+  const pluginMessagePrefix =
+    rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+      ? '[plugin rollup-plugin-dynamic-import-variables] fixture-no-files.js: '
+      : '';
   let warningEmitted = false;
   await rollup({
     input: 'fixture-no-files.js',
@@ -219,7 +227,7 @@ test('warns if no files in dir when `errorWhenNoFilesFound` and `warnOnError` ar
     ],
     onwarn(warning) {
       expect(warning.message).toEqual(
-        `No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
+        `${pluginMessagePrefix}No files found in ./module-dir-c/*.js when trying to dynamically load concatted string from ${require.resolve(
           './fixtures/fixture-no-files.js'
         )}`
       );
