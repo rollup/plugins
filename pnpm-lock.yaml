@@ -587,13 +587,13 @@ importers:
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^23.0.0
-        version: 23.0.0(rollup@4.0.0-24)
+        version: 23.0.0(rollup@4.65.1)
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
-        version: 15.0.0(rollup@4.0.0-24)
+        version: 15.0.0(rollup@4.65.1)
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@4.65.1)(tslib@2.4.0)(typescript@4.8.4)
       '@types/node':
         specifier: ^14.18.30
         version: 14.18.31
@@ -604,8 +604,8 @@ importers:
         specifier: ^8.8.0
         version: 8.8.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
@@ -681,6 +681,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@1.20.0
+        version: rollup@1.20.0
 
   packages/sucrase:
     dependencies:
@@ -6604,6 +6607,17 @@ snapshots:
       magic-string: 0.26.7
     optionalDependencies:
       rollup: 4.0.0-24
+
+  '@rollup/plugin-commonjs@23.0.0(rollup@4.65.1)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      commondir: 1.0.1
+      estree-walker: 2.0.2
+      glob: 8.1.0
+      is-reference: 1.2.1
+      magic-string: 0.26.7
+    optionalDependencies:
+      rollup: 4.65.1
 
   '@rollup/plugin-json@5.0.0(rollup@4.0.0-24)':
     dependencies:
