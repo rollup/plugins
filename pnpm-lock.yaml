@@ -22,7 +22,7 @@ importers:
         version: 0.4.3
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@2.78.0)(tslib@2.4.0)(typescript@5.9.3)
+        version: 9.0.1(rollup@3.0.0)(tslib@2.4.0)(typescript@5.9.3)
       '@types/node':
         specifier: ^20.19.0
         version: 20.19.23
@@ -652,13 +652,13 @@ importers:
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@4.65.1)(tslib@2.4.0)(typescript@4.8.4)
       del:
         specifier: ^6.1.1
         version: 6.1.1
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.65.1
       rollup-earliest:
         specifier: npm:rollup@2.0.0
         version: rollup@2.0.0
@@ -722,6 +722,9 @@ importers:
       rollup:
         specifier: ^4.0.0-24
         version: 4.0.0-24
+      rollup-earliest:
+        specifier: npm:rollup@3.0.0
+        version: rollup@3.0.0
       typescript:
         specifier: ^4.8.3
         version: 4.8.4
@@ -4856,6 +4859,11 @@ packages:
     engines: {node: '>=10.0.0'}
     hasBin: true
 
+  rollup@3.0.0:
+    resolution: {integrity: sha512-iVomS2lySi4BM2QJb7lGZBjSndUEs6Ip+VDl25jcbM99VI5vWeEitvUSiNQkQkwqEiI4515m5shjyuwPcXS5Dg==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+    hasBin: true
+
   rollup@4.0.0:
     resolution: {integrity: sha512-dtlkoIdp/g2glVlQb6FzhMAMzhMYVIJ3KLGjhWKkwz/ambEuHeVZ7Eg6GALhHZOsDRD+ZWSjnUikZXPyb22puQ==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
@@ -6663,13 +6671,13 @@ snapshots:
     optionalDependencies:
       rollup: 4.65.1
 
-  '@rollup/plugin-typescript@9.0.1(rollup@2.78.0)(tslib@2.4.0)(typescript@5.9.3)':
+  '@rollup/plugin-typescript@9.0.1(rollup@3.0.0)(tslib@2.4.0)(typescript@5.9.3)':
     dependencies:
       '@rollup/pluginutils': 4.2.1
       resolve: 1.22.1
       typescript: 5.9.3
     optionalDependencies:
-      rollup: 2.78.0
+      rollup: 3.0.0
       tslib: 2.4.0
 
   '@rollup/plugin-typescript@9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)':
@@ -9822,6 +9830,10 @@ snapshots:
       fsevents: 2.1.3
 
   rollup@2.78.0:
+    optionalDependencies:
+      fsevents: 2.3.3
+
+  rollup@3.0.0:
     optionalDependencies:
       fsevents: 2.3.3
 
