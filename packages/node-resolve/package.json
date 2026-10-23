@@ -36,6 +36,7 @@
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "pnpm test:ts && vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
@@ -75,7 +76,8 @@
     "@rollup/plugin-commonjs": "^23.0.0",
     "@rollup/plugin-json": "^5.0.0",
     "es5-ext": "^0.10.62",
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@2.78.0",
     "source-map": "^0.7.4",
     "string-capitalize": "^1.0.1"
   },

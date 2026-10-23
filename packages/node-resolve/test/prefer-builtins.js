@@ -1,9 +1,11 @@
 const { join, resolve } = require('path');
 
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 
 const { getImports, testBundle } = require('../../../util/test');
 const { nodeResolve } = require('..');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
 
 process.chdir(join(__dirname, 'fixtures'));
 const avaAssertions = {
@@ -43,11 +45,15 @@ test('warning when preferring a builtin module, no explicit configuration', asyn
     plugins: [nodeResolve()]
   });
   const localPath = resolve('node_modules/events/index.js');
-  expect(warning).toBe(
+  const expectedWarning =
     `preferring built-in module 'events' over local alternative ` +
-      `at '${localPath}', pass 'preferBuiltins: false' to disable this behavior ` +
-      `or 'preferBuiltins: true' to disable this warning.` +
-      `or passing a function to 'preferBuiltins' to provide more fine-grained control over which built-in modules to prefer.`
+    `at '${localPath}', pass 'preferBuiltins: false' to disable this behavior ` +
+    `or 'preferBuiltins: true' to disable this warning.` +
+    `or passing a function to 'preferBuiltins' to provide more fine-grained control over which built-in modules to prefer.`;
+  expect(warning).toBe(
+    rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+      ? `[plugin node-resolve] ${expectedWarning}`
+      : expectedWarning
   );
 });
 test('true allows preferring a builtin to a local module of the same name', async () => {
