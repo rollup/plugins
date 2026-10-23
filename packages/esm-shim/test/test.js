@@ -1,6 +1,8 @@
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 
 const esmShim = require('../');
+
+const [rollupMajor] = VERSION.split('.').map(Number);
 
 test.sequential('inject cjs shim for esm output', async () => {
   const bundle = await rollup({
@@ -22,15 +24,17 @@ test.sequential('inject cjs shim for esm output with sourcemap', async () => {
   });
   const result = await bundle.generate({
     format: 'es',
-    sourcemap: true
+    sourcemap: 'hidden'
   });
-  expect(result.output.length).toBe(2);
+  expect(result.output.length).toBe(rollupMajor < 3 ? 1 : 2);
   const [output, map] = result.output;
   expect(output.code).toMatchSnapshot();
   expect(output.map).toBeTruthy();
   expect(output.map.file).toBe('cjs.js');
   expect(output.map.sources).toEqual(['test/fixtures/cjs.js']);
-  expect(map.fileName).toBe('cjs.js.map');
+  if (rollupMajor >= 3) {
+    expect(map.fileName).toBe('cjs.js.map');
+  }
 });
 test.sequential('not inject cjs shim for cjs output', async () => {
   const bundle = await rollup({
@@ -38,7 +42,8 @@ test.sequential('not inject cjs shim for cjs output', async () => {
     plugins: [esmShim()]
   });
   const result = await bundle.generate({
-    format: 'cjs'
+    format: 'cjs',
+    esModule: false
   });
   expect(result.output.length).toBe(1);
   const [output] = result.output;
