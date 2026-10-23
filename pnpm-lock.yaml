@@ -175,6 +175,9 @@ importers:
       rollup:
         specifier: catalog:rollup-next
         version: 5.0.0-3
+      rollup-earliest:
+        specifier: npm:rollup@2.78.0
+        version: rollup@2.78.0
       source-map:
         specifier: ^0.7.4
         version: 0.7.4
