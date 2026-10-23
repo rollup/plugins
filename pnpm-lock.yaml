@@ -391,20 +391,23 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@4.68.9)
       graphql-tag:
         specifier: ^2.12.6
         version: 2.12.6(graphql@16.6.0)
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
-        version: 1.0.0(rollup@4.0.0-24)
+        version: 1.0.0(rollup@4.68.9)
       graphql:
         specifier: ^16.6.0
         version: 16.6.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: 'catalog:'
+        version: 4.68.9
+      rollup-earliest:
+        specifier: npm:rollup@2.78.0
+        version: rollup@2.78.0
 
   packages/html:
     devDependencies:

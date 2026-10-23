@@ -36,6 +36,7 @@
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
@@ -70,7 +71,8 @@
   "devDependencies": {
     "@rollup/plugin-buble": "^1.0.0",
     "graphql": "^16.6.0",
-    "rollup": "^4.0.0-24"
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@2.78.0"
   },
   "types": "./types/index.d.ts"
 }
