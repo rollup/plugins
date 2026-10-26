@@ -5,11 +5,12 @@ import * as os from 'os';
 import { createFilter } from '@rollup/pluginutils';
 
 import type { Plugin, SourceDescription } from 'rollup';
-import type { Watch } from 'typescript';
+import type { Diagnostic, Watch } from 'typescript';
 
 import type { RollupTypescriptOptions } from '../types';
 
 import createFormattingHost from './diagnostics/host';
+import { emitDiagnostics } from './diagnostics/emit';
 import createModuleResolver from './moduleResolution';
 import { getPluginOptions } from './options/plugin';
 import { emitParsedOptionsErrors, parseTypescriptConfig } from './options/tsconfig';
@@ -42,6 +43,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   } = getPluginOptions(options);
   const tsCache = new TSCache(cacheDir);
   const emittedFiles = new Map<string, string>();
+  const diagnostics: Diagnostic[] = [];
+  const watchFiles = new Set<string>();
   const watchProgramHelper = new WatchProgramHelper();
   let autoOutDir: string | null = null;
   // Centralize temp outDir cleanup to avoid duplication/drift across hooks
@@ -149,7 +152,7 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
   return {
     name: 'typescript',
 
-    buildStart(rollupOptions) {
+    async buildStart(rollupOptions) {
       emitParsedOptionsErrors(ts, this, parsedOptions);
 
       preflight({
@@ -169,6 +172,8 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       }
       if (!program) {
         program = createWatchProgram(ts, this, {
+          diagnostics,
+          watchFiles,
           formatHost,
           resolveModule,
           parsedOptions,
@@ -185,10 +190,17 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
           recreateTransformersOnRebuild
         });
       }
+
+      await watchProgramHelper.wait();
+      // An error can abort before Rollup loads imported or type-only dependencies.
+      if (this.meta.watchMode && parsedOptions.options.noEmitOnError) {
+        watchFiles.forEach((fileName) => this.addWatchFile(fileName));
+      }
+      emitDiagnostics(ts, this, formatHost, diagnostics);
     },
 
     watchChange(id) {
-      if (!filter(id)) return;
+      if (!filter(id) && !watchFiles.has(normalizePath(id))) return;
 
       watchProgramHelper.watch();
     },
@@ -244,11 +256,10 @@ export default function typescript(options: RollupTypescriptOptions = {}): Plugi
       return null;
     },
 
-    async load(id) {
+    load(id) {
       if (!filter(id)) return null;
 
       this.addWatchFile(id);
-      await watchProgramHelper.wait();
 
       const fileName = normalizePath(id);
       if (!parsedOptions.fileNames.includes(fileName)) {
