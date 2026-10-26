@@ -17,6 +17,7 @@ import { buildDiagnosticReporter } from './diagnostics/emit';
 import type { DiagnosticsHost } from './diagnostics/host';
 import type { Resolver } from './moduleResolution';
 import { mergeTransformers } from './customTransformers';
+import { normalizePath } from './outputFile';
 
 const { DiagnosticCategory } = typescript;
 type BuilderProgram = EmitAndSemanticDiagnosticsBuilderProgram;
@@ -30,6 +31,10 @@ enum DiagnosticCode {
 }
 
 interface CreateProgramOptions {
+  /** Diagnostics from the current compilation, reported from Rollup hooks. */
+  diagnostics: Diagnostic[];
+  /** Compiler inputs to watch when an error prevents Rollup from loading them. */
+  watchFiles: Set<string>;
   /** Formatting host used to get some system functions and emit type errors. */
   formatHost: DiagnosticsHost;
   /** Parsed Typescript compiler options. */
@@ -143,6 +148,8 @@ function createWatchHost(
   ts: typeof typescript,
   context: PluginContext,
   {
+    diagnostics,
+    watchFiles,
     formatHost,
     parsedOptions,
     writeFile,
@@ -159,7 +166,9 @@ function createWatchHost(
     parsedOptions.options,
     ts.sys,
     createProgram,
-    buildDiagnosticReporter(ts, context, formatHost),
+    parsedOptions.options.noEmitOnError
+      ? (diagnostic) => diagnostics.push(diagnostic)
+      : buildDiagnosticReporter(ts, context, formatHost),
     status,
     parsedOptions.projectReferences
   );
@@ -169,6 +178,16 @@ function createWatchHost(
     ...baseHost,
     /** Override the created program so an in-memory emit is used */
     afterProgramCreate(program) {
+      diagnostics.splice(0);
+      if (parsedOptions.options.noEmitOnError) {
+        const currentProgram = program.getProgram();
+        watchFiles.clear();
+        currentProgram.getSourceFiles().forEach((file) => {
+          if (!currentProgram.isSourceFileDefaultLibrary(file)) {
+            watchFiles.add(normalizePath(file.fileName));
+          }
+        });
+      }
       // Optionally recompute custom transformers for each new builder program in watch mode
       // so factories capture the current Program/TypeChecker and any provided getters can
       // return the latest values. When disabled (default), legacy behavior reuses the
