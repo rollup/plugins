@@ -6,4 +6,5 @@ packages:
 #   "typescript": "catalog:"
 # and resolve to the range below.
 catalog:
+  rollup: ^4.65.1
   typescript: ^5.9.3
