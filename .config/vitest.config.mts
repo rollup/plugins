@@ -53,6 +53,8 @@ export default defineConfig(({ mode }) => ({
     ],
     // These tests switch process cwd and invoke package managers; run files serially there.
     fileParallelism: !isAutoInstallPackage,
+    // Some tests, e.g. TypeScript-based ones, can take several seconds on slow CI runners.
+    testTimeout: 20000,
     // Keep snapshots in the same location used by Ava.
     resolveSnapshotPath: (testPath, snapExt) => getSnapshotPath(testPath, snapExt, mode),
     setupFiles:
