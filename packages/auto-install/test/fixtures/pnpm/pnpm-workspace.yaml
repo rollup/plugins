@@ -1,0 +1,2 @@
+# Anchor pnpm workspace detection to this fixture so that package installs spawned here do not
+# operate on the monorepo workspace root and regenerate its lockfile.
