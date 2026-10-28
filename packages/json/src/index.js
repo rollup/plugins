@@ -9,10 +9,8 @@ export default function json(options = {}) {
 
     // eslint-disable-next-line no-shadow
     transform(code, id, transformOptions) {
-      if (!filter(id)) return null;
-      if (transformOptions) {
-        if (transformOptions.rawId.slice(-5) !== '.json') return null;
-      } else if (id.slice(-5) !== '.json') return null;
+      const rawId = (transformOptions && transformOptions.rawId) || id;
+      if (rawId.slice(-5) !== '.json' || !filter(rawId)) return null;
 
       try {
         const parsed = JSON.parse(code);
