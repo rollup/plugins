@@ -162,3 +162,25 @@ test('handles empty keys', async () => {
     'export var b = "c";\nexport default {\n\t"": "a",\n\tb: b\n};\n'
   );
 });
+test('handles transform options without rawId as passed by Rollup 4', async () => {
+  expect(json().transform(`{"a":"b"}`, 'input.json', { attributes: {} }).code).toEqual(
+    'export var a = "b";\nexport default {\n\ta: a\n};\n'
+  );
+});
+const idWithJsonAttributes = `input.json?attributes=${encodeURIComponent(
+  JSON.stringify({ type: 'json' })
+)}`;
+test('includes json files with import attributes', async () => {
+  expect(
+    json({ include: /\.json$/ }).transform(`{"a":"b"}`, idWithJsonAttributes, {
+      rawId: 'input.json'
+    }).code
+  ).toEqual('export var a = "b";\nexport default {\n\ta: a\n};\n');
+});
+test('excludes json files with import attributes', async () => {
+  expect(
+    json({ exclude: /\.json$/ }).transform(`{"a":"b"}`, idWithJsonAttributes, {
+      rawId: 'input.json'
+    })
+  ).toBeNull();
+});
