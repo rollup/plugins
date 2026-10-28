@@ -6,4 +6,5 @@ packages/yaml/test/fixtures/**/*
 **/dist/
 **/fixtures/
 **/snapshots/
+**/snapshots-earliest/
 pnpm-lock.yaml
