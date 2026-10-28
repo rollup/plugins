@@ -1,7 +1,9 @@
-import { rollup } from 'rollup';
+import { rollup, VERSION } from 'rollup';
 
 import typescript from '..';
 import { evaluateBundle, getCode, onwarn } from '../../../util/test.js';
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
 
 const captureThrownError = async (valueOrFactory) => {
   try {
@@ -79,6 +81,8 @@ test.sequential('fails without tslib installed', async () => {
   expect(error).toMatchSnapshot();
 });
 test.sequential('creates _tslib.js file when preserveModules is used', async () => {
+  // preserveModules became an output option in rollup 2.18.0; before that, it was an input option
+  const preserveModulesOnOutput = rollupMajor > 2 || (rollupMajor === 2 && rollupMinor >= 18);
   const bundle = await rollup({
     input: 'fixtures/preserve-modules/main.ts',
     plugins: [
@@ -86,14 +90,12 @@ test.sequential('creates _tslib.js file when preserveModules is used', async () 
         tsconfig: 'fixtures/preserve-modules/tsconfig.json'
       })
     ],
-    onwarn
+    onwarn,
+    ...(preserveModulesOnOutput ? {} : { preserveModules: true })
   });
   const files = await getCode(
     bundle,
-    {
-      format: 'es',
-      preserveModules: true
-    },
+    preserveModulesOnOutput ? { format: 'es', preserveModules: true } : { format: 'es' },
     true
   );
   expect(files[0].fileName.includes('main.js'), files[0].fileName).toBe(true);

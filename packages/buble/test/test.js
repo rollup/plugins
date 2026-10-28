@@ -2,6 +2,8 @@ const rollup = require('rollup');
 
 const buble = require('..');
 
+const [rollupMajor] = rollup.VERSION.split('.').map(Number);
+
 process.chdir(__dirname);
 
 const getChunksFromGenerated = (generated) => {
@@ -29,6 +31,8 @@ test('transforms files', async () => {
   const generated = await getChunksFromBundle(bundle);
   expect(generated.length).toBe(1);
   expect(generated[0].code).toBe(
-    'function main () { return 42; }\n\nexport { main as default };\n'
+    `function main () { return 42; }\n\n${
+      rollupMajor < 2 ? 'export default main;\n' : 'export { main as default };\n'
+    }`
   );
 });

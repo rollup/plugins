@@ -4,7 +4,7 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'url';
 
 import { test, expect } from 'vitest';
-import { rollup } from 'rollup';
+import { rollup, VERSION } from 'rollup';
 import jsonPlugin from '@rollup/plugin-json';
 import nodeResolvePlugin from '@rollup/plugin-node-resolve';
 import { createFilter } from '@rollup/pluginutils';
@@ -13,8 +13,13 @@ import babelPlugin, { getBabelOutputPlugin, createBabelInputPluginFactory } from
 
 import { getCode } from '../../../util/test.js';
 
+const [rollupMajor] = VERSION.split('.').map(Number);
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 const FIXTURES = `${DIRNAME}/fixtures/`;
+const getUnresolvedImportWarning = (source, importer) =>
+  rollupMajor < 3
+    ? `'${source}' is imported by ${importer}, but could not be resolved – treating it as an external dependency`
+    : `"${source}" is imported by "${importer}", but could not be resolved – treating it as an external dependency.`;
 function getLocation(source, charIndex) {
   const lines = source.split('\n');
   const len = lines.length;
@@ -250,7 +255,9 @@ test('allows transform-runtime to be used instead of bundled helpers', async () 
     {
       babelHelpers: 'runtime'
     },
-    {},
+    {
+      interop: 'default'
+    },
     {
       onwarn(warning) {
         warnings.push(warning.message);
@@ -258,8 +265,14 @@ test('allows transform-runtime to be used instead of bundled helpers', async () 
     }
   );
   expect(warnings).toEqual([
-    `"@babel/runtime/helpers/createClass" is imported by "test/fixtures/runtime-helpers/main.js", but could not be resolved – treating it as an external dependency.`,
-    `"@babel/runtime/helpers/classCallCheck" is imported by "test/fixtures/runtime-helpers/main.js", but could not be resolved – treating it as an external dependency.`
+    getUnresolvedImportWarning(
+      '@babel/runtime/helpers/createClass',
+      'test/fixtures/runtime-helpers/main.js'
+    ),
+    getUnresolvedImportWarning(
+      '@babel/runtime/helpers/classCallCheck',
+      'test/fixtures/runtime-helpers/main.js'
+    )
   ]);
   expect(code).toBe(`'use strict';
 
@@ -290,8 +303,14 @@ test('allows transform-runtime to inject esm version of helpers', async () => {
     }
   );
   expect(warnings).toEqual([
-    `"@babel/runtime/helpers/esm/createClass" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`,
-    `"@babel/runtime/helpers/esm/classCallCheck" is imported by "test/fixtures/runtime-helpers-esm/main.js", but could not be resolved – treating it as an external dependency.`
+    getUnresolvedImportWarning(
+      '@babel/runtime/helpers/esm/createClass',
+      'test/fixtures/runtime-helpers-esm/main.js'
+    ),
+    getUnresolvedImportWarning(
+      '@babel/runtime/helpers/esm/classCallCheck',
+      'test/fixtures/runtime-helpers-esm/main.js'
+    )
   ]);
   expect(code).toBe(`import _createClass from '@babel/runtime/helpers/esm/createClass';
 import _classCallCheck from '@babel/runtime/helpers/esm/classCallCheck';

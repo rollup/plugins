@@ -67,7 +67,6 @@ const require = cjsModule.createRequire(import.meta.url);
 const child = require('child');
 
 export { child };
-//# sourceMappingURL=cjs.js.map
 "
 `;
 

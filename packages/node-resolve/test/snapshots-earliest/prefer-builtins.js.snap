@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`false allows resolving a local module with the same name as a builtin module 1`] = `
+[
+  {
+    "chunkName": "prefer-builtin",
+    "code": "EMPTY_BUNDLE",
+    "message": "Generated an empty chunk: "prefer-builtin"",
+    "toString": [Function],
+  },
+]
+`;

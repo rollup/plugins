@@ -76,3 +76,6 @@ jobs:
 
       - name: Run Tests
         run: pnpm --filter "...[origin/master]" ci:coverage
+
+      - name: Run Tests Against Earliest Supported Rollup
+        run: pnpm --filter "...[origin/master]" test:earliest

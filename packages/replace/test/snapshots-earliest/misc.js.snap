@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`no explicit setting of preventAssignment 1`] = `
+[
+  {
+    "code": "PLUGIN_WARNING",
+    "message": "@rollup/plugin-replace: 'preventAssignment' currently defaults to false. It is recommended to set this option to \`true\`, as the next major version will default this option to \`true\`.",
+    "plugin": "replace",
+  },
+]
+`;
+
+exports[`no explicit setting of preventAssignment 2`] = `[]`;
+
+exports[`no explicit setting of preventAssignment 3`] = `[]`;

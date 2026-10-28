@@ -10,10 +10,11 @@ const modes = [
 function diagnostics(fixture, module, moduleResolution) {
   const program = ts.createProgram([path.join(__dirname, 'fixtures', 'types', fixture)], {
     esModuleInterop: true,
+    // The rollup type declarations reference Symbol.asyncDispose, which requires the disposable lib.
+    lib: ['lib.es2019.d.ts', 'lib.esnext.disposable.d.ts'],
     module,
     moduleResolution,
     noEmit: true,
-    skipLibCheck: false,
     strict: true,
     target: ts.ScriptTarget.ES2019,
     types: []

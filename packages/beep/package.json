@@ -23,7 +23,8 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "ci:test": "pnpm test -- --reporter=verbose",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "vitest --config ../../.config/vitest.config.mts run"
+    "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest"
   },
   "files": [
     "lib/",
@@ -46,7 +47,8 @@
     }
   },
   "devDependencies": {
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@1.20.0",
     "strip-ansi": "^7.0.1"
   },
   "types": "types/index.d.ts"

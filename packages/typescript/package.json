@@ -35,6 +35,7 @@
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest",
     "test:ts": "tsc --noEmit"
   },
   "files": [
@@ -71,10 +72,12 @@
   "devDependencies": {
     "@rollup/plugin-buble": "^1.0.0",
     "@rollup/plugin-commonjs": "^23.0.0",
+    "@rollup/plugin-commonjs-earliest": "npm:@rollup/plugin-commonjs@14.0.0",
     "@types/node": "^14.18.30",
     "@types/resolve": "^1.20.2",
     "buble": "^0.20.0",
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@2.14.0",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts"

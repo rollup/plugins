@@ -35,6 +35,7 @@
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
     "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest",
     "test:ts": "tsc types/index.d.ts test/types.ts --noEmit"
   },
   "files": [
@@ -80,7 +81,8 @@
     "@rollup/plugin-json": "^5.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@types/babel__core": "^7.1.9",
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@2.78.0",
     "source-map": "^0.7.4"
   },
   "types": "./types/index.d.ts",

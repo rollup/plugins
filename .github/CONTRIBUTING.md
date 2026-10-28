@@ -31,7 +31,7 @@ Any code change should be submitted as a pull request. Our guidelines for Pull R
 Some packages use Vitest for tests. When converting or running tests locally inside a package directory (e.g. `packages/alias`):
 
 - Tests import the package under test via `~package`. A shared config at `.config/vitest.config.mts` provides a runtime alias that resolves `~package` to the current working directory.
-- Snapshots are written alongside each test under a local `.snapshots` directory.
+- Snapshots are written to a `snapshots` directory alongside the tests.
 
 Example (from a package directory):
 
@@ -39,6 +39,8 @@ Example (from a package directory):
 pnpm build
 pnpm test
 ```
+
+To also run the tests against the earliest version of rollup the package supports, use `pnpm test:earliest`. In this mode, snapshots for a test file are taken from `test/snapshots-earliest` when a file with the same name exists there, falling back to the regular snapshots otherwise. When regenerating snapshots with `-u` in this mode, test files without a counterpart in `test/snapshots-earliest` get their regular snapshots overwritten with the output generated for the earliest rollup version, so when version-specific snapshots are intended, first copy the snapshot file into `test/snapshots-earliest` and then regenerate.
 
 ## Code review process
 

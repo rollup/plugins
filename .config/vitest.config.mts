@@ -1,9 +1,37 @@
 import { defineConfig } from 'vitest/config';
 import path from 'node:path';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+import { getEarliestDependencies } from './vitest.earliest.mts';
 
 const isAutoInstallPackage = path.basename(process.cwd()) === 'auto-install';
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-export default defineConfig({
+const getEarliestAliases = (mode: string) =>
+  mode === 'earliest'
+    ? getEarliestDependencies().map(({ name, path: dependencyPath }) => ({
+        find: new RegExp(`^${escapeRegExp(name)}$`),
+        replacement: dependencyPath
+      }))
+    : [];
+
+const getSnapshotPath = (testPath: string, snapExt: string, mode: string) => {
+  const defaultPath = path.join(
+    path.dirname(testPath),
+    'snapshots',
+    path.basename(testPath) + snapExt
+  );
+  // Packages opt in to version-specific snapshots by adding the file to this directory.
+  const earliestPath = path.join(
+    path.dirname(testPath),
+    'snapshots-earliest',
+    path.basename(testPath) + snapExt
+  );
+  return mode === 'earliest' && existsSync(earliestPath) ? earliestPath : defaultPath;
+};
+
+export default defineConfig(({ mode }) => ({
   test: {
     // Enable global APIs for CommonJS test files.
     globals: true,
@@ -20,16 +48,26 @@ export default defineConfig({
       '**/test/recipes/**',
       '**/test/output/**',
       '**/test/snapshots/**',
+      '**/test/snapshots-earliest/**',
       '**/test/types.ts'
     ],
     // These tests switch process cwd and invoke package managers; run files serially there.
     fileParallelism: !isAutoInstallPackage,
+    // Some tests, e.g. TypeScript-based ones, can take several seconds on slow CI runners.
+    testTimeout: 20000,
     // Keep snapshots in the same location used by Ava.
-    resolveSnapshotPath: (testPath, snapExt) =>
-      path.join(path.dirname(testPath), 'snapshots', path.basename(testPath) + snapExt)
+    resolveSnapshotPath: (testPath, snapExt) => getSnapshotPath(testPath, snapExt, mode),
+    setupFiles:
+      mode === 'earliest'
+        ? [fileURLToPath(new URL('./vitest.setup.earliest.mts', import.meta.url))]
+        : []
   },
   resolve: {
     // Allow importing the current package under test via `~package`
-    alias: [{ find: /^~package$/, replacement: path.resolve(process.cwd()) }]
+    alias: [
+      { find: /^~package$/, replacement: path.resolve(process.cwd()) },
+      // In earliest mode, resolve imports of aliased dependencies to the earliest supported versions.
+      ...getEarliestAliases(mode)
+    ]
   }
-});
+}));

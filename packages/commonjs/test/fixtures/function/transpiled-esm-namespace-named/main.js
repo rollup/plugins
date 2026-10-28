@@ -9,7 +9,7 @@ t.deepEqual(dep, {
   named: 'named'
 });
 
-t.deepEqual(external, {
-  foo: 'foo',
-  default: { foo: 'foo' }
-});
+t.deepEqual(
+  external,
+  rollupMajor < 3 ? { foo: 'foo' } : { foo: 'foo', default: { foo: 'foo' } }
+);

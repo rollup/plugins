@@ -1,6 +1,10 @@
 const path = require('path');
 const assert = require('assert');
 
+const { VERSION } = require('rollup');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
+
 const ID_MAIN = path.join(__dirname, 'main.js');
 
 const getLastPathFragment = (pathString) => pathString && pathString.split(/[\\/]/).slice(-1)[0];
@@ -20,9 +24,20 @@ module.exports = {
           });
         },
         buildEnd() {
+          const resolveIdOptions = (custom) => {
+            const options = { custom, isEntry: true };
+            if (rollupMajor < 4) {
+              return options;
+            }
+            // rollup 4.57.0 adds "importerAttributes" as an own property to resolveId options
+            return rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 57)
+              ? { attributes: {}, importerAttributes: undefined, ...options }
+              : { attributes: {}, ...options };
+          };
+
           assert.deepStrictEqual(resolveIdArgs, [
-            ['other.js', 'main.js', { attributes: {}, custom: { test: 42 }, isEntry: true }],
-            ['main.js', void 0, { attributes: {}, custom: {}, isEntry: true }]
+            ['other.js', 'main.js', resolveIdOptions({ test: 42 })],
+            ['main.js', void 0, resolveIdOptions({})]
           ]);
         },
         resolveId(source, importer, options) {
