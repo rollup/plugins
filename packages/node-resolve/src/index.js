@@ -3,7 +3,6 @@ import { dirname, normalize, resolve, sep } from 'path';
 
 import { builtinModules } from 'module';
 
-import deepMerge from 'deepmerge';
 import isModule from 'is-module';
 
 import { version, peerDependencies } from '../package.json';
@@ -27,6 +26,19 @@ const deepFreeze = (object) => {
 
   return object;
 };
+const deepClone = (object) => {
+  const result = Object.assign({}, object);
+
+  for (const [key, value] of Object.entries(result)) {
+    if (Array.isArray(value)) {
+      result[key] = Array.from(value);
+    } else if (typeof value === 'object') {
+      result[key] = deepClone(value);
+    }
+  }
+
+  return result;
+};
 
 const baseConditions = ['default', 'module'];
 const baseConditionsEsm = [...baseConditions, 'import'];
@@ -45,7 +57,7 @@ const defaults = {
 };
 const nodeImportPrefix = /^node:/;
 
-export const DEFAULTS = deepFreeze(deepMerge({}, defaults));
+export const DEFAULTS = deepFreeze(deepClone(defaults));
 
 export function nodeResolve(opts = {}) {
   const { warnings } = handleDeprecatedOptions(opts);
