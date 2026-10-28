@@ -170,14 +170,17 @@ exports[`dynamic_imports_not_loaded 1`] = `
 [
   {
     "code": "if (Math.random() % 2) {
-  Promise.resolve().then(function () { return batman; });
+  import('./riddler-DZ-01J5_.js');
 }
-
-var batman = /*#__PURE__*/Object.freeze({
-  __proto__: null
-});
 ",
     "fileName": "catwoman.js",
+    "map": null,
+    "source": undefined,
+  },
+  {
+    "code": "console.log('riddler loaded');
+",
+    "fileName": "riddler-DZ-01J5_.js",
     "map": null,
     "source": undefined,
   },

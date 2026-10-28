@@ -170,7 +170,7 @@ exports[`dynamic_imports_not_loaded 1`] = `
 [
   {
     "code": "if (Math.random() % 2) {
-  import('./batman-dce5b48d.js');
+  import('./riddler-7f846c2e.js');
 }
 ",
     "fileName": "catwoman.js",
@@ -178,9 +178,13 @@ exports[`dynamic_imports_not_loaded 1`] = `
     "source": undefined,
   },
   {
-    "code": "
+    "code": "var riddler = 'riddler';
+
+console.log('riddler loaded');
+
+export default riddler;
 ",
-    "fileName": "batman-dce5b48d.js",
+    "fileName": "riddler-7f846c2e.js",
     "map": null,
     "source": undefined,
   },
