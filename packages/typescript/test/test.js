@@ -1103,11 +1103,9 @@ test.sequential('supports consecutive rebuilds when watchMode is false', async (
     const secondRunCode = secondRun[0].code;
     expect(firstRunCode).not.toEqual(secondRunCode);
   } finally {
-    fs.copyFile('original.txt', 'main.ts', (err) => {
-      if (err) {
-        expect.unreachable(err);
-      }
-    });
+    // This must be awaited: the next test changes the working directory, which would
+    // otherwise make this relative copy fail with an unhandled error.
+    await fs.promises.copyFile('original.txt', 'main.ts');
   }
 });
 test.sequential('does not output to filesystem when outputToFilesystem is false', async () => {
