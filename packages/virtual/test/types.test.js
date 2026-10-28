@@ -1,7 +1,5 @@
 const path = require('path');
 
-const { existsSync } = require('fs');
-
 const ts = require('typescript');
 
 const modes = [
@@ -9,22 +7,14 @@ const modes = [
   ['NodeNext', ts.ModuleKind.NodeNext, ts.ModuleResolutionKind.NodeNext]
 ];
 
-// The rollup type declarations reference Symbol.asyncDispose, which requires the disposable lib.
-// Only TypeScript 5.2 and later ship that lib; older versions fall back to skipping lib checks.
-const disposableLib = 'lib.esnext.disposable.d.ts';
-const hasDisposableLib = existsSync(
-  path.join(path.dirname(require.resolve('typescript')), disposableLib)
-);
-
 function diagnostics(fixture, module, moduleResolution) {
   const program = ts.createProgram([path.join(__dirname, 'fixtures', 'types', fixture)], {
     esModuleInterop: true,
+    // The rollup type declarations reference Symbol.asyncDispose, which requires the disposable lib.
+    lib: ['lib.es2019.d.ts', 'lib.esnext.disposable.d.ts'],
     module,
     moduleResolution,
     noEmit: true,
-    ...(hasDisposableLib
-      ? { lib: ['lib.es2019.d.ts', disposableLib], skipLibCheck: false }
-      : { skipLibCheck: true }),
     strict: true,
     target: ts.ScriptTarget.ES2019,
     types: []

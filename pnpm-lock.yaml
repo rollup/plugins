@@ -877,7 +877,7 @@ importers:
         version: 15.0.0(rollup@4.65.1)
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.65.1)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@4.65.1)(tslib@2.4.0)(typescript@5.9.3)
       rollup:
         specifier: 'catalog:'
         version: 4.65.1
@@ -885,8 +885,8 @@ importers:
         specifier: npm:rollup@1.20.0
         version: rollup@1.20.0
       typescript:
-        specifier: ^4.8.3
-        version: 4.8.4
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/wasm:
     dependencies:
@@ -6741,6 +6741,15 @@ snapshots:
       '@rollup/pluginutils': 4.2.1
       resolve: 1.22.1
       typescript: 4.8.4
+    optionalDependencies:
+      rollup: 4.65.1
+      tslib: 2.4.0
+
+  '@rollup/plugin-typescript@9.0.1(rollup@4.65.1)(tslib@2.4.0)(typescript@5.9.3)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      resolve: 1.22.1
+      typescript: 5.9.3
     optionalDependencies:
       rollup: 4.65.1
       tslib: 2.4.0
