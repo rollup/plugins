@@ -34,9 +34,12 @@ test('pnpm, bare', async () => {
 }, 50000);
 
 afterAll(async () => {
-  expect(
-    readFileSync(rootLockfile).equals(originalLockfileContent),
-    'the workspace root lockfile was modified by a fixture install'
-  ).toBe(true);
-  await del(['node_modules', 'package.json', 'pnpm-lock.yaml']);
+  try {
+    expect(
+      readFileSync(rootLockfile).equals(originalLockfileContent),
+      'the workspace root lockfile was modified by a fixture install'
+    ).toBe(true);
+  } finally {
+    await del(['node_modules', 'package.json', 'pnpm-lock.yaml']);
+  }
 });
