@@ -567,13 +567,13 @@ importers:
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^23.0.0
-        version: 23.0.0(rollup@4.52.5)
+        version: 23.0.0(rollup@5.0.0-3)
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
-        version: 15.0.0(rollup@4.52.5)
+        version: 15.0.0(rollup@5.0.0-3)
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.52.5)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@5.0.0-3)(tslib@2.4.0)(typescript@4.8.4)
       '@types/node':
         specifier: ^14.18.30
         version: 14.18.31
@@ -584,8 +584,8 @@ importers:
         specifier: ^8.8.0
         version: 8.8.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.52.5
+        specifier: catalog:rollup-next
+        version: 5.0.0-3
       typescript:
         specifier: ^4.8.3
         version: 4.8.4
@@ -6645,17 +6645,6 @@ snapshots:
       resolve: 1.22.1
     optionalDependencies:
       rollup: 4.0.0-24
-
-  '@rollup/plugin-node-resolve@15.0.0(rollup@4.52.5)':
-    dependencies:
-      '@rollup/pluginutils': 4.2.1
-      '@types/resolve': 1.20.2
-      deepmerge: 4.2.2
-      is-builtin-module: 3.2.0
-      is-module: 1.0.0
-      resolve: 1.22.1
-    optionalDependencies:
-      rollup: 4.52.5
 
   '@rollup/plugin-node-resolve@15.0.0(rollup@5.0.0-3)':
     dependencies:
