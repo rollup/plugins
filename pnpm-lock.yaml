@@ -626,13 +626,13 @@ importers:
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.52.5)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@5.0.0-3)(tslib@2.4.0)(typescript@4.8.4)
       del:
         specifier: ^6.1.1
         version: 6.1.1
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.52.5
+        specifier: catalog:rollup-next
+        version: 5.0.0-3
       sinon:
         specifier: ^14.0.0
         version: 14.0.1
@@ -6664,15 +6664,6 @@ snapshots:
       typescript: 4.8.4
     optionalDependencies:
       rollup: 4.0.0-24
-      tslib: 2.4.0
-
-  '@rollup/plugin-typescript@9.0.1(rollup@4.52.5)(tslib@2.4.0)(typescript@4.8.4)':
-    dependencies:
-      '@rollup/pluginutils': 4.2.1
-      resolve: 1.22.1
-      typescript: 4.8.4
-    optionalDependencies:
-      rollup: 4.52.5
       tslib: 2.4.0
 
   '@rollup/plugin-typescript@9.0.1(rollup@5.0.0-3)(tslib@2.4.0)(typescript@4.8.4)':
