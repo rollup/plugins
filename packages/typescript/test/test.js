@@ -2,13 +2,19 @@ const path = require('path');
 const fs = require('fs');
 
 const commonjs = require('@rollup/plugin-commonjs');
-const { rollup, watch } = require('rollup');
+const { rollup, VERSION, watch } = require('rollup');
 const ts = require('typescript');
 
 const { evaluateBundle, getCode, getFiles, onwarn } = require('../../../util/test');
 const typescript = require('..');
 
 const { fakeTypescript, forceRemove, waitForWatcherEvent } = require('./helpers');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
+// rollup 4.13.0 augments plugin warnings and errors with a "[plugin <name>]" message prefix
+// and, if the log has a location, an additional "relativeId (line:column)" segment
+const hasAugmentedPluginLogs = rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13);
+const COLD_START_TEST_TIMEOUT = 30_000;
 
 beforeEach(() => process.chdir(__dirname));
 const outputOptions = {
@@ -27,7 +33,7 @@ const captureThrownError = async (valueOrFactory) => {
 
 const expectNoError = (valueOrFactory) =>
   typeof valueOrFactory === 'function' ? valueOrFactory() : valueOrFactory;
-test.sequential('runs code through typescript', async () => {
+test.sequential('runs code through typescript', { timeout: COLD_START_TEST_TIMEOUT }, async () => {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
     plugins: [
@@ -375,14 +381,23 @@ test.sequential('warns for invalid module types', async () => {
       }
     })
   );
-  expect(warnings).toEqual([
+  const expectedWarnings = [
     {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
       pluginCode: 'TS6046',
-      message: `@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
+      message: `${
+        hasAugmentedPluginLogs ? '[plugin typescript] ' : ''
+      }@rollup/plugin-typescript TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.`
     }
-  ]);
+  ];
+  if (hasAugmentedPluginLogs) {
+    // rollup marks augmented warnings with an internal symbol; include it in the expectation
+    for (const [index, warning] of warnings.entries()) {
+      expectedWarnings[index][Object.getOwnPropertySymbols(warning)[0]] = true;
+    }
+  }
+  expect(warnings).toEqual(expectedWarnings);
 });
 test.sequential('ignores case of module types', async () => {
   await expectNoError(
@@ -472,7 +487,13 @@ test.sequential('reports diagnostics and throws if errors occur during transpila
       onwarn
     })
   );
-  expect(caughtError.message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+  expect(caughtError.message).toBe(
+    `${
+      hasAugmentedPluginLogs
+        ? '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): '
+        : ''
+    }@rollup/plugin-typescript TS1110: Type expected.`
+  );
   expect(caughtError.pluginCode).toBe('TS1110');
 });
 test.sequential('ignore type errors if noEmitOnError is false', async () => {
@@ -494,7 +515,13 @@ test.sequential('ignore type errors if noEmitOnError is false', async () => {
   expect(warnings[0].code).toBe('PLUGIN_WARNING');
   expect(warnings[0].plugin).toBe('typescript');
   expect(warnings[0].pluginCode).toBe('TS1110');
-  expect(warnings[0].message).toBe('@rollup/plugin-typescript TS1110: Type expected.');
+  expect(warnings[0].message).toBe(
+    `${
+      hasAugmentedPluginLogs
+        ? '[plugin typescript] fixtures/syntax-error/missing-type.ts (1:8): '
+        : ''
+    }@rollup/plugin-typescript TS1110: Type expected.`
+  );
   expect(warnings[0].loc.line).toBe(1);
   expect(warnings[0].loc.column).toBe(8);
   expect(warnings[0].loc.file.includes('missing-type.ts')).toBe(true);
@@ -772,14 +799,23 @@ test.sequential('should throw on bad options', async () => {
       message: "@rollup/plugin-typescript: Couldn't process compiler options"
     }
   );
-  expect(warnings).toEqual([
+  const expectedWarnings = [
     {
       code: 'PLUGIN_WARNING',
       plugin: 'typescript',
       pluginCode: 'TS5023',
-      message: `@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
+      message: `${
+        hasAugmentedPluginLogs ? '[plugin typescript] ' : ''
+      }@rollup/plugin-typescript TS5023: Unknown compiler option 'foo'.`
     }
-  ]);
+  ];
+  if (hasAugmentedPluginLogs) {
+    // rollup marks augmented warnings with an internal symbol; include it in the expectation
+    for (const [index, warning] of warnings.entries()) {
+      expectedWarnings[index][Object.getOwnPropertySymbols(warning)[0]] = true;
+    }
+  }
+  expect(warnings).toEqual(expectedWarnings);
 });
 test.sequential('should handle re-exporting types', async () => {
   const bundle = await rollup({
@@ -1059,11 +1095,9 @@ test.sequential('supports consecutive rebuilds when watchMode is false', async (
     const secondRunCode = secondRun[0].code;
     expect(firstRunCode).not.toEqual(secondRunCode);
   } finally {
-    fs.copyFile('original.txt', 'main.ts', (err) => {
-      if (err) {
-        expect.unreachable(err);
-      }
-    });
+    // This must be awaited: the next test changes the working directory, which would
+    // otherwise make this relative copy fail with an unhandled error.
+    await fs.promises.copyFile('original.txt', 'main.ts');
   }
 });
 test.sequential('does not output to filesystem when outputToFilesystem is false', async () => {
