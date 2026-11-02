@@ -53,7 +53,7 @@
     "rollup-plugin"
   ],
   "peerDependencies": {
-    "rollup": "^2.0.0||^3.0.0||^4.0.0"
+    "rollup": "^2.0.0||^3.0.0||^4.0.0||^5.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -65,7 +65,7 @@
     "mlly": "^1.7.4"
   },
   "devDependencies": {
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:rollup-next",
     "typescript": "^4.8.3"
   },
   "types": "./types/index.d.ts"

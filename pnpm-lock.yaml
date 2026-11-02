@@ -369,8 +369,8 @@ importers:
         version: 1.7.4
     devDependencies:
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-2
       typescript:
         specifier: ^4.8.3
         version: 4.8.4
