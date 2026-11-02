@@ -44,7 +44,7 @@ test('warning when preferring a builtin module, no explicit configuration', asyn
   });
   const localPath = resolve('node_modules/events/index.js');
   expect(warning).toBe(
-    `preferring built-in module 'events' over local alternative ` +
+    `[plugin node-resolve] preferring built-in module 'events' over local alternative ` +
       `at '${localPath}', pass 'preferBuiltins: false' to disable this behavior ` +
       `or 'preferBuiltins: true' to disable this warning.` +
       `or passing a function to 'preferBuiltins' to provide more fine-grained control over which built-in modules to prefer.`

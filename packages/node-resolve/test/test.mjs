@@ -542,6 +542,8 @@ test('passes on "isEntry" flag and original importee', async () => {
       {
         attributes: {},
         custom: {},
+        importerAttributes: {},
+        importerRawId: 'entry/main.js',
         isEntry: true
       }
     ],
@@ -551,6 +553,8 @@ test('passes on "isEntry" flag and original importee', async () => {
       {
         attributes: {},
         custom: {},
+        importerAttributes: {},
+        importerRawId: void 0,
         isEntry: true
       }
     ],
@@ -568,6 +572,8 @@ test('passes on "isEntry" flag and original importee', async () => {
             importee: './other.js'
           }
         },
+        importerAttributes: {},
+        importerRawId: 'entry/main.js',
         isEntry: true
       }
     ],
@@ -585,6 +591,8 @@ test('passes on "isEntry" flag and original importee', async () => {
             importee: 'entry/main.js'
           }
         },
+        importerAttributes: {},
+        importerRawId: void 0,
         isEntry: true
       }
     ],
@@ -594,6 +602,8 @@ test('passes on "isEntry" flag and original importee', async () => {
       {
         attributes: {},
         custom: {},
+        importerAttributes: {},
+        importerRawId: join(DIRNAME, 'fixtures', 'entry', 'main.js'),
         isEntry: false
       }
     ],
@@ -611,6 +621,8 @@ test('passes on "isEntry" flag and original importee', async () => {
             importee: './dep.js'
           }
         },
+        importerAttributes: {},
+        importerRawId: join(DIRNAME, 'fixtures', 'entry', 'main.js'),
         isEntry: false
       }
     ]
@@ -653,6 +665,8 @@ test('passes on custom options', async () => {
         custom: {
           test: 42
         },
+        importerAttributes: {},
+        importerRawId: void 0,
         isEntry: false
       }
     ],
@@ -671,6 +685,8 @@ test('passes on custom options', async () => {
             importee: 'entry/main.js'
           }
         },
+        importerAttributes: {},
+        importerRawId: void 0,
         isEntry: false
       }
     ],
@@ -680,6 +696,8 @@ test('passes on custom options', async () => {
       {
         attributes: {},
         custom: {},
+        importerAttributes: {},
+        importerRawId: void 0,
         isEntry: true
       }
     ],
@@ -697,6 +715,8 @@ test('passes on custom options', async () => {
             importee: 'entry/other.js'
           }
         },
+        importerAttributes: {},
+        importerRawId: void 0,
         isEntry: true
       }
     ]
