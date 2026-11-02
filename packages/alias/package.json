@@ -48,7 +48,7 @@
     "rollup-plugin"
   ],
   "peerDependencies": {
-    "rollup": ">=4.0.0"
+    "rollup": "^4.0.0||^5.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -58,7 +58,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.0",
     "del-cli": "^5.0.0",
-    "rollup": "^4.0.0",
+    "rollup": "catalog:rollup-next",
     "typescript": "catalog:"
   },
   "types": "./dist/index.d.ts",
