@@ -332,14 +332,14 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.1.0(rollup@4.0.0-24)
+        version: 5.1.0(rollup@5.0.0-2)
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
-        version: 15.0.0(rollup@4.0.0-24)
+        version: 15.0.0(rollup@5.0.0-2)
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@5.0.0-2)(tslib@2.4.0)(typescript@4.8.4)
       '@types/eslint':
         specifier: ^8.56.12
         version: 8.56.12
@@ -353,8 +353,8 @@ importers:
         specifier: ^2.7.3
         version: 2.7.3
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-2
       typescript:
         specifier: ^4.8.3
         version: 4.8.4
@@ -6714,6 +6714,14 @@ snapshots:
       picomatch: 2.3.1
     optionalDependencies:
       rollup: 4.0.0-24
+
+  '@rollup/pluginutils@5.1.0(rollup@5.0.0-2)':
+    dependencies:
+      '@types/estree': 1.0.0
+      estree-walker: 2.0.2
+      picomatch: 2.3.1
+    optionalDependencies:
+      rollup: 5.0.0-2
 
   '@rollup/pluginutils@5.3.0(rollup@4.0.0-24)':
     dependencies:
