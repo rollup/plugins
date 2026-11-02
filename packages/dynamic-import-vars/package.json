@@ -56,7 +56,7 @@
     "rollup-plugin"
   ],
   "peerDependencies": {
-    "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0"
+    "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0||^5.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -73,7 +73,7 @@
   "devDependencies": {
     "acorn": "^8.8.0",
     "prettier": "^2.7.1",
-    "rollup": "^4.0.0-24"
+    "rollup": "catalog:rollup-next"
   },
   "types": "./types/index.d.ts"
 }

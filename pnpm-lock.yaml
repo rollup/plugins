@@ -304,7 +304,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@5.0.0-2)
       astring:
         specifier: ^1.8.5
         version: 1.8.5
@@ -325,8 +325,8 @@ importers:
         specifier: ^2.7.1
         version: 2.7.1
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-2
 
   packages/eslint:
     dependencies:
