@@ -214,7 +214,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@5.0.0-2)
       commondir:
         specifier: ^1.0.1
         version: 1.0.1
@@ -236,10 +236,10 @@ importers:
     devDependencies:
       '@rollup/plugin-json':
         specifier: ^5.0.0
-        version: 5.0.0(rollup@4.0.0-24)
+        version: 5.0.0(rollup@5.0.0-2)
       '@rollup/plugin-node-resolve':
         specifier: ^15.0.0
-        version: 15.0.0(rollup@4.0.0-24)
+        version: 15.0.0(rollup@5.0.0-2)
       locate-character:
         specifier: ^2.0.5
         version: 2.0.5
@@ -247,8 +247,8 @@ importers:
         specifier: ^0.8.7
         version: 0.8.7
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-2
       source-map:
         specifier: ^0.7.4
         version: 0.7.4
@@ -6619,6 +6619,12 @@ snapshots:
       '@rollup/pluginutils': 4.2.1
     optionalDependencies:
       rollup: 4.0.0-24
+
+  '@rollup/plugin-json@5.0.0(rollup@5.0.0-2)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+    optionalDependencies:
+      rollup: 5.0.0-2
 
   '@rollup/plugin-node-resolve@15.0.0(rollup@4.0.0-24)':
     dependencies:

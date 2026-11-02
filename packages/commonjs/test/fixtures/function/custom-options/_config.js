@@ -21,8 +21,28 @@ module.exports = {
         },
         buildEnd() {
           assert.deepStrictEqual(resolveIdArgs, [
-            ['other.js', 'main.js', { attributes: {}, custom: { test: 42 }, isEntry: true }],
-            ['main.js', void 0, { attributes: {}, custom: {}, isEntry: true }]
+            [
+              'other.js',
+              'main.js',
+              {
+                attributes: {},
+                custom: { test: 42 },
+                importerAttributes: {},
+                importerRawId: ID_MAIN,
+                isEntry: true
+              }
+            ],
+            [
+              'main.js',
+              void 0,
+              {
+                attributes: {},
+                custom: {},
+                importerAttributes: {},
+                importerRawId: void 0,
+                isEntry: true
+              }
+            ]
           ]);
         },
         resolveId(source, importer, options) {

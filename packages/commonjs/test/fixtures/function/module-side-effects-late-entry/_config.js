@@ -2,7 +2,7 @@ const path = require('path');
 const assert = require('assert');
 
 let referenceId;
-const testEntry = 'generated-foo2.js';
+const testEntry = 'generated-foo.js';
 
 module.exports = {
   description:

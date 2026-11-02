@@ -18,6 +18,9 @@ module.exports = {
   exports() {
     assert.strictEqual(warnings.length, 1);
     assert.deepStrictEqual(warnings[0].ids, []);
-    assert.strictEqual(warnings[0].message, 'The commonjs plugin did not wrap any files.');
+    assert.strictEqual(
+      warnings[0].message,
+      '[plugin commonjs] The commonjs plugin did not wrap any files.'
+    );
   }
 };

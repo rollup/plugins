@@ -508,7 +508,7 @@ test('creates an error with a code frame when parsing fails', async () => {
   } catch (error) {
     expect(error.frame).toBe(`1: /* eslint-disable */
 2: export const foo = 2,
-                       ^`);
+                        ^`);
   }
 });
 
@@ -640,7 +640,7 @@ test('logs a warning when the deprecated namedExports option is used', async () 
   });
   await getCodeFromBundle(bundle);
   expect(message).toBe(
-    'The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
+    '[plugin commonjs] The namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.'
   );
 });
 
@@ -737,7 +737,7 @@ test('throws when there is a dynamic require from outside dynamicRequireRoot', a
     path.join(cwd, 'fixtures/samples/dynamic-require-outside-root')
   );
   expect(error).toMatchObject({
-    message: `"${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
+    message: `[plugin commonjs] fixtures/samples/dynamic-require-outside-root/main.js (3:9): "${id}" contains dynamic require statements but it is not within the current dynamicRequireRoot "${dynamicRequireRoot}". You should set dynamicRequireRoot to "${minimalDynamicRequireRoot}" or one of its parent directories.`,
     pluginCode: 'DYNAMIC_REQUIRE_OUTSIDE_ROOT',
     normalizedId: id,
     normalizedDynamicRequireRoot: dynamicRequireRoot
