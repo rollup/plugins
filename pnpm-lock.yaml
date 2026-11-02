@@ -432,7 +432,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.52.5)
+        version: 5.0.1(rollup@5.0.0-3)
       estree-walker:
         specifier: ^2.0.2
         version: 2.0.2
@@ -442,7 +442,7 @@ importers:
     devDependencies:
       '@rollup/plugin-buble':
         specifier: ^1.0.0
-        version: 1.0.0(rollup@4.52.5)
+        version: 1.0.0(rollup@5.0.0-3)
       del-cli:
         specifier: ^5.0.0
         version: 5.0.0
@@ -450,8 +450,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.52.5
+        specifier: catalog:rollup-next
+        version: 5.0.0-3
       source-map:
         specifier: ^0.7.4
         version: 0.7.4
@@ -6592,6 +6592,14 @@ snapshots:
       buble: 0.20.0
     optionalDependencies:
       rollup: 4.52.5
+
+  '@rollup/plugin-buble@1.0.0(rollup@5.0.0-3)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      '@types/buble': 0.19.2
+      buble: 0.20.0
+    optionalDependencies:
+      rollup: 5.0.0-3
 
   '@rollup/plugin-commonjs@23.0.0(rollup@4.52.5)':
     dependencies:
