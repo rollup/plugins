@@ -176,8 +176,8 @@ importers:
   packages/beep:
     devDependencies:
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-2
       strip-ansi:
         specifier: ^7.0.1
         version: 7.0.1
