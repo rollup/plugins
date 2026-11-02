@@ -644,7 +644,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.52.5)
+        version: 5.0.1(rollup@5.0.0-3)
       estree-walker:
         specifier: ^2.0.2
         version: 2.0.2
@@ -656,8 +656,8 @@ importers:
         specifier: ^8.8.0
         version: 8.8.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.52.5
+        specifier: catalog:rollup-next
+        version: 5.0.0-3
 
   packages/sucrase:
     dependencies:
