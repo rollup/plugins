@@ -54,7 +54,7 @@
     "rollup-plugin"
   ],
   "peerDependencies": {
-    "rollup": "^2.0.0||^3.0.0||^4.0.0"
+    "rollup": "^2.0.0||^3.0.0||^4.0.0||^5.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@types/serialize-javascript": "^5.0.4",
-    "rollup": "^4.0.0-24",
+    "rollup": "catalog:rollup-next",
     "typescript": "catalog:"
   },
   "types": "./types/index.d.ts"
