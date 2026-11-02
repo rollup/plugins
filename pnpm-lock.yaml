@@ -498,14 +498,14 @@ importers:
     dependencies:
       '@rollup/plugin-virtual':
         specifier: ^3.0.0
-        version: 3.0.0(rollup@4.0.0-24)
+        version: 3.0.0(rollup@5.0.0-2)
       tinyglobby:
         specifier: ^0.2.14
         version: 0.2.14
     devDependencies:
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-2
 
   packages/node-resolve:
     dependencies:
@@ -6682,9 +6682,9 @@ snapshots:
     optionalDependencies:
       tslib: 2.4.0
 
-  '@rollup/plugin-virtual@3.0.0(rollup@4.0.0-24)':
+  '@rollup/plugin-virtual@3.0.0(rollup@5.0.0-2)':
     optionalDependencies:
-      rollup: 4.0.0-24
+      rollup: 5.0.0-2
 
   '@rollup/pluginutils@4.2.1':
     dependencies:
