@@ -679,7 +679,7 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.1
-        version: 5.0.1(rollup@4.0.0-24)
+        version: 5.0.1(rollup@5.0.0-2)
       smob:
         specifier: ^1.4.0
         version: 1.4.0
@@ -688,8 +688,8 @@ importers:
         specifier: ^1.3.78
         version: 1.3.78
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-2
       typescript:
         specifier: ^4.8.3
         version: 4.8.4
