@@ -170,7 +170,7 @@ exports[`dynamic_imports_not_loaded 1`] = `
 [
   {
     "code": "if (Math.random() % 2) {
-  import('./batman-w40geAFS.js');
+  import('./riddler-DZ-01J5_.js');
 }
 ",
     "fileName": "catwoman.js",
@@ -178,9 +178,9 @@ exports[`dynamic_imports_not_loaded 1`] = `
     "source": undefined,
   },
   {
-    "code": "
+    "code": "console.log('riddler loaded');
 ",
-    "fileName": "batman-w40geAFS.js",
+    "fileName": "riddler-DZ-01J5_.js",
     "map": null,
     "source": undefined,
   },
@@ -471,8 +471,9 @@ exports[`unsupported output format 2`] = `
   },
   {
     "code": "PLUGIN_WARNING",
-    "message": "plugin-html: The output format 'cjs' is not directly supported. A custom \`template\` is probably required. Supported formats include: es, esm, iife, umd",
+    "message": "[plugin html] plugin-html: The output format 'cjs' is not directly supported. A custom \`template\` is probably required. Supported formats include: es, esm, iife, umd",
     "plugin": "html",
+    Symbol(augmented): true,
   },
 ]
 `;
