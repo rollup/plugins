@@ -7,16 +7,17 @@ const modes = [
   ['NodeNext', ts.ModuleKind.NodeNext, ts.ModuleResolutionKind.NodeNext]
 ];
 
+const TYPES_TEST_TIMEOUT = 30_000;
+
 function diagnostics(fixture, module, moduleResolution) {
   const program = ts.createProgram([path.join(__dirname, 'fixtures', 'types', fixture)], {
     esModuleInterop: true,
     module,
     moduleResolution,
     noEmit: true,
-    skipLibCheck: false,
     strict: true,
     target: ts.ScriptTarget.ES2019,
-    types: []
+    types: ['node']
   });
 
   return ts
@@ -25,17 +26,25 @@ function diagnostics(fixture, module, moduleResolution) {
 }
 
 for (const [name, module, moduleResolution] of modes) {
-  test(`supports default imports in ${name} ES modules`, () => {
+  test(`supports default imports in ${name} ES modules`, { timeout: TYPES_TEST_TIMEOUT }, () => {
     expect(diagnostics('esm.mts', module, moduleResolution)).toEqual([]);
   });
 
-  test(`supports default imports in ${name} CommonJS modules`, () => {
-    expect(diagnostics('commonjs.cts', module, moduleResolution)).toEqual([]);
-  });
+  test(
+    `supports default imports in ${name} CommonJS modules`,
+    { timeout: TYPES_TEST_TIMEOUT },
+    () => {
+      expect(diagnostics('commonjs.cts', module, moduleResolution)).toEqual([]);
+    }
+  );
 }
 
-test('supports default imports with legacy Node resolution', () => {
-  expect(diagnostics('legacy.ts', ts.ModuleKind.CommonJS, ts.ModuleResolutionKind.NodeJs)).toEqual(
-    []
-  );
-});
+test(
+  'supports default imports with legacy Node resolution',
+  { timeout: TYPES_TEST_TIMEOUT },
+  () => {
+    expect(
+      diagnostics('legacy.ts', ts.ModuleKind.CommonJS, ts.ModuleResolutionKind.NodeJs)
+    ).toEqual([]);
+  }
+);

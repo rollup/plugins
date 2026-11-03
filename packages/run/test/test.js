@@ -91,7 +91,7 @@ test('throws an error when bundle is not written to disk', async () => {
 
   expect(error).toBeInstanceOf(Error);
   expect(error.message).toBe(
-    '@rollup/plugin-run currently only works with bundles that are written to disk'
+    '[plugin run] @rollup/plugin-run currently only works with bundles that are written to disk'
   );
 });
 
@@ -105,7 +105,7 @@ test('throws an error when input option is invalid', async () => {
   const error = await bundle.write(outputDirOptions).catch((caught) => caught);
 
   expect(error).toBeInstanceOf(Error);
-  expect(error.message).toBe('@rollup/plugin-run could not find output chunk');
+  expect(error.message).toBe('[plugin run] @rollup/plugin-run could not find output chunk');
 });
 
 test('throws an error when there are multiple entry points', async () => {

@@ -12,10 +12,10 @@ export { importModule };
 exports[`complex concatenation 1`] = `
 "function __variableDynamicImportRuntime0__(path) {
   switch (path) {
-    case './module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case './module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
-    case './module-dir-b/module-b-1.js': return import('./module-b-1-3qdzaV4G.js');
-    case './module-dir-b/module-b-2.js': return import('./module-b-2-_8gpxG1i.js');
+    case './module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case './module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
+    case './module-dir-b/module-b-1.js': return import('./module-b-1-B1WHOdOw.js');
+    case './module-dir-b/module-b-2.js': return import('./module-b-2-BrHQGuGy.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -36,7 +36,7 @@ exports[`doesn't change imports that should not be changed 1`] = `
 "console.log('a-1');
 
 function importModuleA() {
-  return import('./module-a-2-qepdcyXv.js');
+  return import('./module-a-2-CBwBchsa.js');
 }
 
 function importModuleB() {
@@ -50,8 +50,8 @@ export { importModuleA, importModuleB };
 exports[`dynamic imports assertions 1`] = `
 "function __variableDynamicImportRuntime0__(path) {
   switch (path) {
-    case './module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case './module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
+    case './module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case './module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -71,11 +71,11 @@ export { importModule };
 exports[`multiple dirs 1`] = `
 "function __variableDynamicImportRuntime0__(path) {
   switch (path) {
-    case './module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case './module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
-    case './module-dir-b/module-b-1.js': return import('./module-b-1-3qdzaV4G.js');
-    case './module-dir-b/module-b-2.js': return import('./module-b-2-_8gpxG1i.js');
-    case './sub-dir/fixture-upwards-path.js': return import('./fixture-upwards-path-jrfqlYMu.js');
+    case './module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case './module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
+    case './module-dir-b/module-b-1.js': return import('./module-b-1-B1WHOdOw.js');
+    case './module-dir-b/module-b-2.js': return import('./module-b-2-BrHQGuGy.js');
+    case './sub-dir/fixture-upwards-path.js': return import('./fixture-upwards-path-CrflyznY.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -95,11 +95,11 @@ export { importModule };
 exports[`multiple dynamic imports 1`] = `
 "function __variableDynamicImportRuntime2__(path) {
   switch (path) {
-    case './module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case './module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
-    case './module-dir-b/module-b-1.js': return import('./module-b-1-3qdzaV4G.js');
-    case './module-dir-b/module-b-2.js': return import('./module-b-2-_8gpxG1i.js');
-    case './sub-dir/fixture-upwards-path.js': return import('./fixture-upwards-path-jrfqlYMu.js');
+    case './module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case './module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
+    case './module-dir-b/module-b-1.js': return import('./module-b-1-B1WHOdOw.js');
+    case './module-dir-b/module-b-2.js': return import('./module-b-2-BrHQGuGy.js');
+    case './sub-dir/fixture-upwards-path.js': return import('./fixture-upwards-path-CrflyznY.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -110,8 +110,8 @@ exports[`multiple dynamic imports 1`] = `
 
 function __variableDynamicImportRuntime1__(path) {
   switch (path) {
-    case './module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case './module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
+    case './module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case './module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -122,8 +122,8 @@ function __variableDynamicImportRuntime1__(path) {
 
 function __variableDynamicImportRuntime0__(path) {
   switch (path) {
-    case './module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case './module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
+    case './module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case './module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -153,8 +153,8 @@ export { Foo, importModuleFromDir };
 exports[`own directory 1`] = `
 "function __variableDynamicImportRuntime0__(path) {
   switch (path) {
-    case './root-module-a.js': return import('./root-module-a-lF5i40jF.js');
-    case './root-module-b.js': return import('./root-module-b-F1yin99u.js');
+    case './root-module-a.js': return import('./root-module-a-D2fW8xde.js');
+    case './root-module-b.js': return import('./root-module-b-DYGa4ib9.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -174,8 +174,8 @@ export { importModule };
 exports[`single dir 1`] = `
 "function __variableDynamicImportRuntime0__(path) {
   switch (path) {
-    case './module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case './module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
+    case './module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case './module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
@@ -195,8 +195,8 @@ export { importModule };
 exports[`upwards dir path 1`] = `
 "function __variableDynamicImportRuntime0__(path) {
   switch (path) {
-    case '../module-dir-a/module-a-1.js': return import('./module-a-1-fiunS6HF.js');
-    case '../module-dir-a/module-a-2.js': return import('./module-a-2-qepdcyXv.js');
+    case '../module-dir-a/module-a-1.js': return import('./module-a-1-DigFCZAs.js');
+    case '../module-dir-a/module-a-2.js': return import('./module-a-2-CBwBchsa.js');
     default: return new Promise(function(resolve, reject) {
       (typeof queueMicrotask === 'function' ? queueMicrotask : setTimeout)(
         reject.bind(null, new Error("Unknown variable dynamic import: " + path))
