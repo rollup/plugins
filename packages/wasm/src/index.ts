@@ -33,21 +33,23 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       return null;
     },
 
-    load(id) {
+    load(id, loadOptions) {
       if (id === HELPERS_ID) {
         return getHelpersModule(targetEnv);
       }
 
-      if (!filter(id)) {
+      const rawId = loadOptions?.rawId ?? id;
+
+      if (!filter(rawId)) {
         return null;
       }
 
-      if (!/\.wasm$/.test(id)) {
+      if (!/\.wasm$/.test(rawId)) {
         return null;
       }
-      this.addWatchFile(id);
+      this.addWatchFile(rawId);
 
-      return Promise.all([fs.promises.stat(id), fs.promises.readFile(id)]).then(
+      return Promise.all([fs.promises.stat(rawId), fs.promises.readFile(rawId)]).then(
         ([stats, buffer]) => {
           if (targetEnv === 'auto-inline') {
             return buffer.toString('binary');
@@ -55,8 +57,8 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
 
           if ((maxFileSize && stats.size > maxFileSize) || maxFileSize === 0) {
             const hash = createHash('sha1').update(buffer).digest('hex').substr(0, 16);
-            const ext = path.extname(id);
-            const name = path.basename(id, ext);
+            const ext = path.extname(rawId);
+            const name = path.basename(rawId, ext);
 
             const outputFileName = fileName
               .replace(/\[hash\]/g, hash)
@@ -66,8 +68,8 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
             const publicFilepath = `${publicPath}${outputFileName}`;
 
             // only copy if the file is not marked `sync`, `sync` files are always inlined
-            if (syncFiles.indexOf(id) === -1) {
-              copies[id] = {
+            if (syncFiles.indexOf(rawId) === -1) {
+              copies[rawId] = {
                 filename: outputFileName,
                 publicFilepath,
                 buffer
@@ -80,14 +82,16 @@ export function wasm(options: RollupWasmOptions = {}): Plugin {
       );
     },
 
-    transform(code, id) {
-      if (!filter(id)) {
+    transform(code, id, transformOptions) {
+      const rawId = transformOptions?.rawId ?? id;
+
+      if (!filter(rawId)) {
         return null;
       }
 
-      if (code && /\.wasm$/.test(id)) {
-        const isSync = syncFiles.indexOf(id) !== -1;
-        const publicFilepath = copies[id] ? `'${copies[id].publicFilepath}'` : null;
+      if (code && /\.wasm$/.test(rawId)) {
+        const isSync = syncFiles.indexOf(rawId) !== -1;
+        const publicFilepath = copies[rawId] ? `'${copies[rawId].publicFilepath}'` : null;
         let src;
 
         if (publicFilepath === null) {
