@@ -193,7 +193,7 @@ export default function inject(options) {
         return {
           code,
           ast,
-          map: sourceMap ? magicString.generateMap({ hires: true }) : null
+          map: null
         };
       }
       const importBlock = Array.from(newImports.values()).join('\n\n');
