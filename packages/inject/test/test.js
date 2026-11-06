@@ -70,6 +70,19 @@ test('handles shadowed variables', () => {
   compare('shadowing', { $: 'jquery' });
 });
 
+test('returns no sourcemap when nothing is injected', () => {
+  const filename = path.resolve('test/fixtures/shadowing/input.js');
+  const input = fs.readFileSync(filename, 'utf-8');
+  const output = inject({ $: 'jquery' }).transform.call(
+    { parse: (code) => acorn.parse(code, { sourceType: 'module', ecmaVersion: 9 }) },
+    input,
+    filename
+  );
+
+  expect(output.code).toBe(input);
+  expect(output.map).toBeNull();
+});
+
 test('handles shorthand properties', () => {
   compare('shorthand', { Promise: ['es6-promise', 'Promise'] });
 });
