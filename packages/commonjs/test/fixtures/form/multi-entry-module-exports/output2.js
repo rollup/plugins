@@ -1,6 +1,6 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 
-var input2;
+var input2 = {};
 var hasRequiredInput2;
 
 function requireInput2 () {

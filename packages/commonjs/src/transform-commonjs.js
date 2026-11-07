@@ -579,7 +579,9 @@ function ${requireName} () {
 \treturn ${exported};
 }`);
     if (exportMode === 'replace') {
-      magicString.prepend(`var ${exportsName};\n`);
+      // Start from an empty object like Node does, so that a circular require
+      // or a top-level `this` before the `module.exports =` assignment sees `{}`.
+      magicString.prepend(`var ${exportsName} = {};\n`);
     }
   }
 

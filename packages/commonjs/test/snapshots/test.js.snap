@@ -7,7 +7,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -32,7 +32,7 @@ module.exports = main;
 `;
 
 exports[`does not transform typeof exports for mixed modules 1`] = `
-"var foo$1;
+"var foo$1 = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -106,7 +106,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var second$1;
+var second$1 = {};
 var hasRequiredSecond;
 
 function requireSecond () {
@@ -170,7 +170,7 @@ var dep$1 = /*#__PURE__*/Object.freeze({
 
 var require$$0 = /*@__PURE__*/getAugmentedNamespace(dep$1);
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -205,7 +205,7 @@ function requireDep () {
 	return dep;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -240,7 +240,7 @@ function requireDep () {
 	return dep;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -406,7 +406,7 @@ function getDefaultExportFromCjs (x) {
 
 var require$$0 = "default";
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -468,7 +468,7 @@ var esm = /*#__PURE__*/Object.freeze({
 
 var require$$0 = /*@__PURE__*/getAugmentedNamespace(esm);
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {

@@ -138,7 +138,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var foo;
+var foo = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -148,7 +148,7 @@ function requireFoo () {
 	return foo;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -189,7 +189,7 @@ function requirePlatform () {
 	return platform;
 }
 
-var browser;
+var browser = {};
 var hasRequiredBrowser;
 
 function requireBrowser () {
@@ -314,7 +314,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var _export;
+var _export = {};
 var hasRequired_export;
 
 function require_export () {
@@ -496,7 +496,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var dashName;
+var dashName = {};
 var hasRequiredDashName;
 
 function requireDashName () {
@@ -559,7 +559,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var foo_bar;
+var foo_bar = {};
 var hasRequiredFoo_bar;
 
 function requireFoo_bar () {
@@ -647,7 +647,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var dep$1;
+var dep$1 = {};
 var hasRequiredDep;
 
 function requireDep () {
@@ -774,7 +774,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule;
+var submodule = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -920,7 +920,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule;
+var submodule = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -1068,7 +1068,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var direct;
+var direct = {};
 var hasRequiredDirect;
 
 function requireDirect () {
@@ -1078,7 +1078,7 @@ function requireDirect () {
 	return direct;
 }
 
-var nested;
+var nested = {};
 var hasRequiredNested;
 
 function requireNested () {
@@ -1088,7 +1088,7 @@ function requireNested () {
 	return nested;
 }
 
-var parent;
+var parent = {};
 var hasRequiredParent;
 
 function requireParent () {
@@ -1248,7 +1248,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var stub;
+var stub = {};
 var hasRequiredStub;
 
 function requireStub () {
@@ -1412,7 +1412,7 @@ requireLib1();
 ",
   "main2.js": "'use strict';
 
-var target1;
+var target1 = {};
 var hasRequiredTarget1;
 
 function requireTarget1 () {
@@ -1422,7 +1422,7 @@ function requireTarget1 () {
 	return target1;
 }
 
-var target2;
+var target2 = {};
 var hasRequiredTarget2;
 
 function requireTarget2 () {
@@ -1558,7 +1558,7 @@ exports[`dynamic-require-different-loader 1`] = `
 {
   "main.js": "'use strict';
 
-var submodule2;
+var submodule2 = {};
 var hasRequiredSubmodule2;
 
 function requireSubmodule2 () {
@@ -1723,7 +1723,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule;
+var submodule = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -1827,7 +1827,7 @@ function normalize (path) {
 
 /* eslint-disable import/no-dynamic-require, global-require */
 
-var importer;
+var importer = {};
 var hasRequiredImporter;
 
 function requireImporter () {
@@ -1858,7 +1858,7 @@ exports[`dynamic-require-es-mixed-helpers 1`] = `
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-var submodule;
+var submodule = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -1890,7 +1890,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule;
+var submodule = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -2067,7 +2067,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule$1;
+var submodule$1 = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -2093,7 +2093,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule1;
+var submodule1 = {};
 var hasRequiredSubmodule1;
 
 function requireSubmodule1 () {
@@ -2103,7 +2103,7 @@ function requireSubmodule1 () {
 	return submodule1;
 }
 
-var submodule2;
+var submodule2 = {};
 var hasRequiredSubmodule2;
 
 function requireSubmodule2 () {
@@ -2113,7 +2113,7 @@ function requireSubmodule2 () {
 	return submodule2;
 }
 
-var extramodule1;
+var extramodule1 = {};
 var hasRequiredExtramodule1;
 
 function requireExtramodule1 () {
@@ -2256,7 +2256,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var direct;
+var direct = {};
 var hasRequiredDirect;
 
 function requireDirect () {
@@ -2266,7 +2266,7 @@ function requireDirect () {
 	return direct;
 }
 
-var main$2;
+var main$2 = {};
 var hasRequiredMain$1;
 
 function requireMain$1 () {
@@ -2581,7 +2581,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var entry$2;
+var entry$2 = {};
 var hasRequiredEntry$2;
 
 function requireEntry$2 () {
@@ -2591,7 +2591,7 @@ function requireEntry$2 () {
 	return entry$2;
 }
 
-var entry$1;
+var entry$1 = {};
 var hasRequiredEntry$1;
 
 function requireEntry$1 () {
@@ -2601,7 +2601,7 @@ function requireEntry$1 () {
 	return entry$1;
 }
 
-var entry;
+var entry = {};
 var hasRequiredEntry;
 
 function requireEntry () {
@@ -2712,7 +2712,7 @@ var main$1 = {};
 
 /* eslint-disable import/no-dynamic-require, global-require */
 
-var sub;
+var sub = {};
 var hasRequiredSub;
 
 function requireSub () {
@@ -2769,7 +2769,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var entry;
+var entry = {};
 var hasRequiredEntry;
 
 function requireEntry () {
@@ -2804,7 +2804,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule;
+var submodule = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -2814,7 +2814,7 @@ function requireSubmodule () {
 	return submodule;
 }
 
-var subsubmodule;
+var subsubmodule = {};
 var hasRequiredSubsubmodule;
 
 function requireSubsubmodule () {
@@ -2953,7 +2953,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var dynamicRequireResolveIndex;
+var dynamicRequireResolveIndex = {};
 var hasRequiredDynamicRequireResolveIndex;
 
 function requireDynamicRequireResolveIndex () {
@@ -2963,7 +2963,7 @@ function requireDynamicRequireResolveIndex () {
 	return dynamicRequireResolveIndex;
 }
 
-var sub$1;
+var sub$1 = {};
 var hasRequiredSub$1;
 
 function requireSub$1 () {
@@ -2973,7 +2973,7 @@ function requireSub$1 () {
 	return sub$1;
 }
 
-var customModule;
+var customModule = {};
 var hasRequiredCustomModule;
 
 function requireCustomModule () {
@@ -3084,7 +3084,7 @@ var main$1 = {};
 
 /* eslint-disable import/no-dynamic-require, global-require */
 
-var sub;
+var sub = {};
 var hasRequiredSub;
 
 function requireSub () {
@@ -3141,7 +3141,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var customModule2;
+var customModule2 = {};
 var hasRequiredCustomModule2;
 
 function requireCustomModule2 () {
@@ -3246,7 +3246,7 @@ function normalize (path) {
 	return path;
 }
 
-var customModule;
+var customModule = {};
 var hasRequiredCustomModule;
 
 function requireCustomModule () {
@@ -3288,7 +3288,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var submodule;
+var submodule = {};
 var hasRequiredSubmodule;
 
 function requireSubmodule () {
@@ -3509,7 +3509,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var dynamicRequireSlashAccess;
+var dynamicRequireSlashAccess = {};
 var hasRequiredDynamicRequireSlashAccess;
 
 function requireDynamicRequireSlashAccess () {
@@ -3519,7 +3519,7 @@ function requireDynamicRequireSlashAccess () {
 	return dynamicRequireSlashAccess;
 }
 
-var sub$2;
+var sub$2 = {};
 var hasRequiredSub$2;
 
 function requireSub$2 () {
@@ -3529,7 +3529,7 @@ function requireSub$2 () {
 	return sub$2;
 }
 
-var sub$1;
+var sub$1 = {};
 var hasRequiredSub$1;
 
 function requireSub$1 () {
@@ -3539,7 +3539,7 @@ function requireSub$1 () {
 	return sub$1;
 }
 
-var customModule;
+var customModule = {};
 var hasRequiredCustomModule;
 
 function requireCustomModule () {
@@ -3651,7 +3651,7 @@ var main$1 = {};
 
 /* eslint-disable import/no-dynamic-require, global-require */
 
-var sub;
+var sub = {};
 var hasRequiredSub;
 
 function requireSub () {
@@ -3709,7 +3709,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var dep1;
+var dep1 = {};
 var hasRequiredDep1;
 
 function requireDep1 () {
@@ -3846,7 +3846,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var dep1;
+var dep1 = {};
 var hasRequiredDep1;
 
 function requireDep1 () {
@@ -4717,7 +4717,7 @@ function requireFoo () {
 	return foo;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -4786,20 +4786,20 @@ exports[`expose-file-type-detection 1`] = `
 {
   "main.js": "'use strict';
 
-var other = require('./other-UXsUMMAz.js');
+var other = require('./other-6XkLAs04.js');
 
 var otherExports = other.requireOther();
 var foo = /*@__PURE__*/other.getDefaultExportFromCjs(otherExports);
 
 t.is(foo, 'foo');
 ",
-  "other-UXsUMMAz.js": "'use strict';
+  "other-6XkLAs04.js": "'use strict';
 
 function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var other;
+var other = {};
 var hasRequiredOther;
 
 function requireOther () {
@@ -4814,7 +4814,7 @@ exports.requireOther = requireOther;
 ",
   "other.js": "'use strict';
 
-var other$1 = require('./other-UXsUMMAz.js');
+var other$1 = require('./other-6XkLAs04.js');
 
 var otherExports = other$1.requireOther();
 var other = /*@__PURE__*/other$1.getDefaultExportFromCjs(otherExports);
@@ -4838,7 +4838,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -4982,7 +4982,7 @@ function getDefaultExportFromCjs (x) {
 
 /* eslint-disable */
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -6071,7 +6071,7 @@ string
 	return dep;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -6106,7 +6106,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var foo;
+var foo = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -6143,7 +6143,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var foo;
+var foo = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -6153,7 +6153,7 @@ function requireFoo () {
 	return foo;
 }
 
-var multiply;
+var multiply = {};
 var hasRequiredMultiply;
 
 function requireMultiply () {
@@ -6167,7 +6167,7 @@ function requireMultiply () {
 
 /* eslint-disable global-require */
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -6323,7 +6323,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var other;
+var other = {};
 var hasRequiredOther;
 
 function requireOther () {
@@ -6351,7 +6351,7 @@ function getDefaultExportFromCjs (x) {
  * This comment could be really important and should not be removed
  */
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -6483,7 +6483,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var foo;
+var foo = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -6493,7 +6493,7 @@ function requireFoo () {
 	return foo;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -6566,7 +6566,7 @@ function getDefaultExportFromCjs (x) {
 
 node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('main.js', document.baseURI).href)));
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -6595,7 +6595,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -6895,7 +6895,7 @@ function require_export () {
 	return _export;
 }
 
-var reexport;
+var reexport = {};
 var hasRequiredReexport;
 
 function requireReexport () {
@@ -7111,7 +7111,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var dep;
+var dep = {};
 var hasRequiredDep;
 
 function requireDep () {
@@ -7249,7 +7249,7 @@ var main$1 = {};
 
 var foo = {};
 
-var shared;
+var shared = {};
 var hasRequiredShared;
 
 function requireShared () {
@@ -7273,7 +7273,7 @@ function requireFoo () {
 	return foo;
 }
 
-var bar;
+var bar = {};
 var hasRequiredBar;
 
 function requireBar () {
@@ -7324,7 +7324,7 @@ function getDefaultExportFromCjs (x) {
 
 var requiring = {};
 
-var fooRequired;
+var fooRequired = {};
 var hasRequiredFooRequired;
 
 function requireFooRequired () {
@@ -7370,7 +7370,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var dep;
+var dep = {};
 var hasRequiredDep;
 
 function requireDep () {
@@ -7381,7 +7381,7 @@ function requireDep () {
 	return dep;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -7491,7 +7491,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -7850,7 +7850,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var foo_1;
+var foo_1 = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -8091,7 +8091,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var dep;
+var dep = {};
 var hasRequiredDep;
 
 function requireDep () {
@@ -8268,7 +8268,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var foo;
+var foo = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -8353,7 +8353,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -8389,7 +8389,7 @@ function commonjsRequire(path) {
 	throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -8425,7 +8425,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var b;
+var b = {};
 var hasRequiredB;
 
 function requireB () {
@@ -8599,6 +8599,57 @@ module.exports = main;
 }
 `;
 
+exports[`strict-requires-circular-replace 1`] = `
+{
+  "main.js": "'use strict';
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var main$1 = {};
+
+var b = {};
+var hasRequiredB;
+
+function requireB () {
+	if (hasRequiredB) return b;
+	hasRequiredB = 1;
+	const a = requireA();
+
+	b = { seen: typeof a };
+	return b;
+}
+
+var a = {};
+var hasRequiredA;
+
+function requireA () {
+	if (hasRequiredA) return a;
+	hasRequiredA = 1;
+	const b = requireB();
+
+	a = { seenByB: b.seen };
+	return a;
+}
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	t.deepEqual(requireA(), { seenByB: 'object' });
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
+
 exports[`strict-requires-cycle-detection 1`] = `
 {
   "main.js": "'use strict';
@@ -8746,7 +8797,7 @@ function requireThrows () {
 	throw new Error('This should never be executed or imported');
 }
 
-var hoisted;
+var hoisted = {};
 var hasRequiredHoisted;
 
 function requireHoisted () {
@@ -8998,7 +9049,7 @@ var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof win
 
 var main = {};
 
-var replaceModuleExports;
+var replaceModuleExports = {};
 var hasRequiredReplaceModuleExports;
 
 function requireReplaceModuleExports () {
@@ -9061,7 +9112,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -9087,7 +9138,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -9255,6 +9306,45 @@ module.exports = other;
 }
 `;
 
+exports[`strict-requires-this-before-replace 1`] = `
+{
+  "main.js": "'use strict';
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var main$1 = {};
+
+var other = {};
+var hasRequiredOther;
+
+function requireOther () {
+	if (hasRequiredOther) return other;
+	hasRequiredOther = 1;
+	other.x = 1;
+
+	other = { y: 2 };
+	return other;
+}
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	t.deepEqual(requireOther(), { y: 2 });
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
+
 exports[`this 1`] = `
 {
   "main.js": "'use strict';
@@ -9331,7 +9421,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var dep1;
+var dep1 = {};
 var hasRequiredDep1;
 
 function requireDep1 () {
@@ -9344,7 +9434,7 @@ function requireDep1 () {
 	return dep1;
 }
 
-var dep2;
+var dep2 = {};
 var hasRequiredDep2;
 
 function requireDep2 () {
@@ -9357,7 +9447,7 @@ function requireDep2 () {
 	return dep2;
 }
 
-var dep3;
+var dep3 = {};
 var hasRequiredDep3;
 
 function requireDep3 () {
@@ -9370,7 +9460,7 @@ function requireDep3 () {
 	return dep3;
 }
 
-var dep4;
+var dep4 = {};
 var hasRequiredDep4;
 
 function requireDep4 () {
@@ -9418,7 +9508,7 @@ function getDefaultExportFromCjs (x) {
 
 /* eslint-disable */
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -9447,7 +9537,7 @@ function getDefaultExportFromCjs (x) {
 
 var foo = {exports: {}};
 
-var bar;
+var bar = {};
 var hasRequiredBar;
 
 function requireBar () {
@@ -9476,7 +9566,7 @@ function requireFoo () {
 	return foo.exports;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
@@ -9506,7 +9596,7 @@ function getDefaultExportFromCjs (x) {
 
 var main$1 = {};
 
-var foo;
+var foo = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -9568,7 +9658,7 @@ function getAugmentedNamespace(n) {
 	return a;
 }
 
-var other$1;
+var other$1 = {};
 var hasRequiredOther;
 
 function requireOther () {
@@ -10279,7 +10369,7 @@ function requireDep () {
 	return dep$1;
 }
 
-var proxy;
+var proxy = {};
 var hasRequiredProxy;
 
 function requireProxy () {
@@ -10332,7 +10422,7 @@ function requireEntry () {
 	return entry$1;
 }
 
-var proxy$1;
+var proxy$1 = {};
 var hasRequiredProxy;
 
 function requireProxy () {
@@ -10391,7 +10481,7 @@ function requireEntry () {
 	return entry$1;
 }
 
-var proxy$1;
+var proxy$1 = {};
 var hasRequiredProxy;
 
 function requireProxy () {
@@ -10449,7 +10539,7 @@ function requireEntry () {
 	return entry$1;
 }
 
-var proxy$1;
+var proxy$1 = {};
 var hasRequiredProxy;
 
 function requireProxy () {
@@ -10498,7 +10588,7 @@ function requireDep () {
 	return dep$1;
 }
 
-var proxy;
+var proxy = {};
 var hasRequiredProxy;
 
 function requireProxy () {
@@ -10533,7 +10623,7 @@ function requireDep () {
 	return dep;
 }
 
-var proxy;
+var proxy = {};
 var hasRequiredProxy;
 
 function requireProxy () {
@@ -10945,7 +11035,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var foo;
+var foo = {};
 var hasRequiredFoo;
 
 function requireFoo () {
@@ -10955,7 +11045,7 @@ function requireFoo () {
 	return foo;
 }
 
-var main$1;
+var main$1 = {};
 var hasRequiredMain;
 
 function requireMain () {
