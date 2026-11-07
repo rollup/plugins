@@ -7,12 +7,13 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var main$1 = {};
+var main$1;
 var hasRequiredMain;
 
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const obj = {
 	  a: 'b',
 	  b: 'c'
@@ -32,12 +33,13 @@ module.exports = main;
 `;
 
 exports[`does not transform typeof exports for mixed modules 1`] = `
-"var foo$1 = {};
+"var foo$1;
 var hasRequiredFoo;
 
 function requireFoo () {
 	if (hasRequiredFoo) return foo$1;
 	hasRequiredFoo = 1;
+	foo$1 = {};
 	foo$1 = 21;
 	return foo$1;
 }
@@ -106,12 +108,13 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var second$1 = {};
+var second$1;
 var hasRequiredSecond;
 
 function requireSecond () {
 	if (hasRequiredSecond) return second$1;
 	hasRequiredSecond = 1;
+	second$1 = {};
 	second$1 = require$$0.second;
 	return second$1;
 }
@@ -170,12 +173,13 @@ var dep$1 = /*#__PURE__*/Object.freeze({
 
 var require$$0 = /*@__PURE__*/getAugmentedNamespace(dep$1);
 
-var main$1 = {};
+var main$1;
 var hasRequiredMain;
 
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = require$$0.dep;
 	return main$1;
 }
@@ -205,12 +209,13 @@ function requireDep () {
 	return dep;
 }
 
-var main$1 = {};
+var main$1;
 var hasRequiredMain;
 
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = requireDep().dep;
 	return main$1;
 }
@@ -240,12 +245,13 @@ function requireDep () {
 	return dep;
 }
 
-var main$1 = {};
+var main$1;
 var hasRequiredMain;
 
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = requireDep().dep;
 	return main$1;
 }
@@ -406,12 +412,13 @@ function getDefaultExportFromCjs (x) {
 
 var require$$0 = "default";
 
-var main$1 = {};
+var main$1;
 var hasRequiredMain;
 
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = require$$0;
 	return main$1;
 }
@@ -468,12 +475,13 @@ var esm = /*#__PURE__*/Object.freeze({
 
 var require$$0 = /*@__PURE__*/getAugmentedNamespace(esm);
 
-var main$1 = {};
+var main$1;
 var hasRequiredMain;
 
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = require$$0;
 	return main$1;
 }

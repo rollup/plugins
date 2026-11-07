@@ -35,7 +35,8 @@ export function rewriteExportsAndGetExportsBlock(
   exportMode,
   defaultIsModuleExports,
   usesRequireWrapper,
-  requireName
+  requireName,
+  usesTopLevelThis
 ) {
   const exports = [];
   const exportDeclarations = [];
@@ -62,7 +63,8 @@ export function rewriteExportsAndGetExportsBlock(
       firstTopLevelModuleExportsAssignment,
       exportsName,
       defaultIsModuleExports,
-      HELPERS_NAME
+      HELPERS_NAME,
+      usesTopLevelThis
     );
   } else {
     if (exportMode === 'module') {
@@ -149,12 +151,19 @@ function getExportsForReplacedModuleExports(
   firstTopLevelModuleExportsAssignment,
   exportsName,
   defaultIsModuleExports,
-  HELPERS_NAME
+  HELPERS_NAME,
+  usesTopLevelThis
 ) {
   for (const { left } of moduleExportsAssignments) {
     magicString.overwrite(left.start, left.end, exportsName);
   }
-  magicString.prependRight(firstTopLevelModuleExportsAssignment.left.start, 'var ');
+  if (usesTopLevelThis) {
+    // Top-level `this` is rewritten to exportsName and may run before the
+    // assignment, so the variable must already hold Node's initial `{}`.
+    magicString.prepend(`var ${exportsName} = {};\n`);
+  } else {
+    magicString.prependRight(firstTopLevelModuleExportsAssignment.left.start, 'var ');
+  }
   exports.push(`${exportsName} as __moduleExports`);
   exportDeclarations.push(
     getDefaultExportDeclaration(exportsName, defaultIsModuleExports, HELPERS_NAME)

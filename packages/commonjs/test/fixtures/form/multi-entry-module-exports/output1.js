@@ -1,12 +1,13 @@
 import * as commonjsHelpers from "_commonjsHelpers.js";
 import require$$0 from "\u0000CWD/fixtures/form/multi-entry-module-exports/input2.js?commonjs-proxy";
 
-var input1 = {};
+var input1;
 var hasRequiredInput1;
 
 function requireInput1 () {
 	if (hasRequiredInput1) return input1;
 	hasRequiredInput1 = 1;
+	input1 = {};
 	const t2 = require$$0;
 
 	console.log(t2);
