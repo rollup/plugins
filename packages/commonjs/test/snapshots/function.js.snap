@@ -144,6 +144,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo;
 	hasRequiredFoo = 1;
+	foo = {};
 	foo = 21;
 	return foo;
 }
@@ -154,6 +155,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const foo = requireFoo();
 
 	main$1 = foo * 2;
@@ -195,6 +197,7 @@ var hasRequiredBrowser;
 function requireBrowser () {
 	if (hasRequiredBrowser) return browser;
 	hasRequiredBrowser = 1;
+	browser = {};
 	browser = 'browser';
 	return browser;
 }
@@ -320,6 +323,7 @@ var hasRequired_export;
 function require_export () {
 	if (hasRequired_export) return _export;
 	hasRequired_export = 1;
+	_export = {};
 	_export = {
 	  test: 42
 	};
@@ -502,6 +506,7 @@ var hasRequiredDashName;
 function requireDashName () {
 	if (hasRequiredDashName) return dashName;
 	hasRequiredDashName = 1;
+	dashName = {};
 	dashName = true;
 	return dashName;
 }
@@ -565,6 +570,7 @@ var hasRequiredFoo_bar;
 function requireFoo_bar () {
 	if (hasRequiredFoo_bar) return foo_bar;
 	hasRequiredFoo_bar = 1;
+	foo_bar = {};
 	foo_bar = 'fubar';
 	return foo_bar;
 }
@@ -653,6 +659,7 @@ var hasRequiredDep;
 function requireDep () {
 	if (hasRequiredDep) return dep$1;
 	hasRequiredDep = 1;
+	dep$1 = {};
 	dep$1 = 'first';
 	dep$1 = 'second';
 	return dep$1;
@@ -780,6 +787,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule;
 	hasRequiredSubmodule = 1;
+	submodule = {};
 	submodule = function () {
 	  return 'Hello there';
 	};
@@ -926,6 +934,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule;
 	hasRequiredSubmodule = 1;
+	submodule = {};
 	submodule = function () {
 	  return 'Hello there';
 	};
@@ -1074,6 +1083,7 @@ var hasRequiredDirect;
 function requireDirect () {
 	if (hasRequiredDirect) return direct;
 	hasRequiredDirect = 1;
+	direct = {};
 	direct = 'direct';
 	return direct;
 }
@@ -1084,6 +1094,7 @@ var hasRequiredNested;
 function requireNested () {
 	if (hasRequiredNested) return nested;
 	hasRequiredNested = 1;
+	nested = {};
 	nested = 'nested';
 	return nested;
 }
@@ -1094,6 +1105,7 @@ var hasRequiredParent;
 function requireParent () {
 	if (hasRequiredParent) return parent;
 	hasRequiredParent = 1;
+	parent = {};
 	parent = 'parent';
 	return parent;
 }
@@ -1254,6 +1266,7 @@ var hasRequiredStub;
 function requireStub () {
 	if (hasRequiredStub) return stub;
 	hasRequiredStub = 1;
+	stub = {};
 	stub = function () {
 	  return 'Hello there';
 	};
@@ -1418,6 +1431,7 @@ var hasRequiredTarget1;
 function requireTarget1 () {
 	if (hasRequiredTarget1) return target1;
 	hasRequiredTarget1 = 1;
+	target1 = {};
 	target1 = '1';
 	return target1;
 }
@@ -1428,6 +1442,7 @@ var hasRequiredTarget2;
 function requireTarget2 () {
 	if (hasRequiredTarget2) return target2;
 	hasRequiredTarget2 = 1;
+	target2 = {};
 	target2 = '2';
 	return target2;
 }
@@ -1564,6 +1579,7 @@ var hasRequiredSubmodule2;
 function requireSubmodule2 () {
 	if (hasRequiredSubmodule2) return submodule2;
 	hasRequiredSubmodule2 = 1;
+	submodule2 = {};
 	submodule2 = function () {
 	  return 'Hello there';
 	};
@@ -1729,6 +1745,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule;
 	hasRequiredSubmodule = 1;
+	submodule = {};
 	submodule = 'submodule';
 	return submodule;
 }
@@ -1833,6 +1850,7 @@ var hasRequiredImporter;
 function requireImporter () {
 	if (hasRequiredImporter) return importer;
 	hasRequiredImporter = 1;
+	importer = {};
 	function takeModule(withName) {
 	  return createCommonjsRequire("/fixtures/function/dynamic-require-es-entry")(\`./\${withName}\`);
 	}
@@ -1864,6 +1882,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule;
 	hasRequiredSubmodule = 1;
+	submodule = {};
 	commonjsGlobal.hasSubmoduleRun = true;
 	submodule = 'submodule';
 	return submodule;
@@ -1896,6 +1915,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule;
 	hasRequiredSubmodule = 1;
+	submodule = {};
 	submodule = { name: 'submodule', value: null };
 	return submodule;
 }
@@ -2073,6 +2093,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule$1;
 	hasRequiredSubmodule = 1;
+	submodule$1 = {};
 	submodule$1 = 'submodule';
 	return submodule$1;
 }
@@ -2099,6 +2120,7 @@ var hasRequiredSubmodule1;
 function requireSubmodule1 () {
 	if (hasRequiredSubmodule1) return submodule1;
 	hasRequiredSubmodule1 = 1;
+	submodule1 = {};
 	submodule1 = 'submodule1';
 	return submodule1;
 }
@@ -2109,6 +2131,7 @@ var hasRequiredSubmodule2;
 function requireSubmodule2 () {
 	if (hasRequiredSubmodule2) return submodule2;
 	hasRequiredSubmodule2 = 1;
+	submodule2 = {};
 	submodule2 = 'submodule2';
 	return submodule2;
 }
@@ -2119,6 +2142,7 @@ var hasRequiredExtramodule1;
 function requireExtramodule1 () {
 	if (hasRequiredExtramodule1) return extramodule1;
 	hasRequiredExtramodule1 = 1;
+	extramodule1 = {};
 	extramodule1 = 'extramodule1';
 	return extramodule1;
 }
@@ -2262,6 +2286,7 @@ var hasRequiredDirect;
 function requireDirect () {
 	if (hasRequiredDirect) return direct;
 	hasRequiredDirect = 1;
+	direct = {};
 	direct = { name: 'direct', value: null };
 	return direct;
 }
@@ -2272,6 +2297,7 @@ var hasRequiredMain$1;
 function requireMain$1 () {
 	if (hasRequiredMain$1) return main$2;
 	hasRequiredMain$1 = 1;
+	main$2 = {};
 	main$2 = { name: 'package', value: null };
 	return main$2;
 }
@@ -2587,6 +2613,7 @@ var hasRequiredEntry$2;
 function requireEntry$2 () {
 	if (hasRequiredEntry$2) return entry$2;
 	hasRequiredEntry$2 = 1;
+	entry$2 = {};
 	entry$2 = 'same-directory';
 	return entry$2;
 }
@@ -2597,6 +2624,7 @@ var hasRequiredEntry$1;
 function requireEntry$1 () {
 	if (hasRequiredEntry$1) return entry$1;
 	hasRequiredEntry$1 = 1;
+	entry$1 = {};
 	entry$1 = 'sub';
 	return entry$1;
 }
@@ -2607,6 +2635,7 @@ var hasRequiredEntry;
 function requireEntry () {
 	if (hasRequiredEntry) return entry;
 	hasRequiredEntry = 1;
+	entry = {};
 	entry = 'custom-module';
 	return entry;
 }
@@ -2718,6 +2747,7 @@ var hasRequiredSub;
 function requireSub () {
 	if (hasRequiredSub) return sub;
 	hasRequiredSub = 1;
+	sub = {};
 	function takeModule(name) {
 	  return createCommonjsRequire("/fixtures/function/dynamic-require-package/sub")(name);
 	}
@@ -2775,6 +2805,7 @@ var hasRequiredEntry;
 function requireEntry () {
 	if (hasRequiredEntry) return entry;
 	hasRequiredEntry = 1;
+	entry = {};
 	entry = 'custom-module';
 	return entry;
 }
@@ -2810,6 +2841,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule;
 	hasRequiredSubmodule = 1;
+	submodule = {};
 	submodule = 'submodule';
 	return submodule;
 }
@@ -2820,6 +2852,7 @@ var hasRequiredSubsubmodule;
 function requireSubsubmodule () {
 	if (hasRequiredSubsubmodule) return subsubmodule;
 	hasRequiredSubsubmodule = 1;
+	subsubmodule = {};
 	subsubmodule = 'subsubmodule';
 	return subsubmodule;
 }
@@ -2959,6 +2992,7 @@ var hasRequiredDynamicRequireResolveIndex;
 function requireDynamicRequireResolveIndex () {
 	if (hasRequiredDynamicRequireResolveIndex) return dynamicRequireResolveIndex;
 	hasRequiredDynamicRequireResolveIndex = 1;
+	dynamicRequireResolveIndex = {};
 	dynamicRequireResolveIndex = 'same-directory';
 	return dynamicRequireResolveIndex;
 }
@@ -2969,6 +3003,7 @@ var hasRequiredSub$1;
 function requireSub$1 () {
 	if (hasRequiredSub$1) return sub$1;
 	hasRequiredSub$1 = 1;
+	sub$1 = {};
 	sub$1 = 'sub';
 	return sub$1;
 }
@@ -2979,6 +3014,7 @@ var hasRequiredCustomModule;
 function requireCustomModule () {
 	if (hasRequiredCustomModule) return customModule;
 	hasRequiredCustomModule = 1;
+	customModule = {};
 	customModule = 'custom-module';
 	return customModule;
 }
@@ -3090,6 +3126,7 @@ var hasRequiredSub;
 function requireSub () {
 	if (hasRequiredSub) return sub;
 	hasRequiredSub = 1;
+	sub = {};
 	function takeModule(name) {
 	  return createCommonjsRequire("/fixtures/function/dynamic-require-resolve-index/sub")(name);
 	}
@@ -3147,6 +3184,7 @@ var hasRequiredCustomModule2;
 function requireCustomModule2 () {
 	if (hasRequiredCustomModule2) return customModule2;
 	hasRequiredCustomModule2 = 1;
+	customModule2 = {};
 	customModule2 = () => createCommonjsRequire("/fixtures/function/dynamic-require-resolve-reference/node_modules/custom-module2").resolve('custom-module');
 	return customModule2;
 }
@@ -3252,6 +3290,7 @@ var hasRequiredCustomModule;
 function requireCustomModule () {
 	if (hasRequiredCustomModule) return customModule;
 	hasRequiredCustomModule = 1;
+	customModule = {};
 	customModule = () => createCommonjsRequire("/fixtures/function/dynamic-require-resolve-reference/node_modules/custom-module").resolve('custom-module2');
 	return customModule;
 }
@@ -3294,6 +3333,7 @@ var hasRequiredSubmodule;
 function requireSubmodule () {
 	if (hasRequiredSubmodule) return submodule;
 	hasRequiredSubmodule = 1;
+	submodule = {};
 	submodule = function () {
 	  return 'Hello there';
 	};
@@ -3515,6 +3555,7 @@ var hasRequiredDynamicRequireSlashAccess;
 function requireDynamicRequireSlashAccess () {
 	if (hasRequiredDynamicRequireSlashAccess) return dynamicRequireSlashAccess;
 	hasRequiredDynamicRequireSlashAccess = 1;
+	dynamicRequireSlashAccess = {};
 	dynamicRequireSlashAccess = 'same-directory';
 	return dynamicRequireSlashAccess;
 }
@@ -3525,6 +3566,7 @@ var hasRequiredSub$2;
 function requireSub$2 () {
 	if (hasRequiredSub$2) return sub$2;
 	hasRequiredSub$2 = 1;
+	sub$2 = {};
 	sub$2 = 'sub';
 	return sub$2;
 }
@@ -3535,6 +3577,7 @@ var hasRequiredSub$1;
 function requireSub$1 () {
 	if (hasRequiredSub$1) return sub$1;
 	hasRequiredSub$1 = 1;
+	sub$1 = {};
 	sub$1 = 'sub';
 	return sub$1;
 }
@@ -3545,6 +3588,7 @@ var hasRequiredCustomModule;
 function requireCustomModule () {
 	if (hasRequiredCustomModule) return customModule;
 	hasRequiredCustomModule = 1;
+	customModule = {};
 	customModule = 'custom-module' + ' + ' + requireSub$1();
 	return customModule;
 }
@@ -3657,6 +3701,7 @@ var hasRequiredSub;
 function requireSub () {
 	if (hasRequiredSub) return sub;
 	hasRequiredSub = 1;
+	sub = {};
 	function takeModule(name) {
 	  return createCommonjsRequire("/fixtures/function/dynamic-require-slash-access/sub")(name);
 	}
@@ -3715,6 +3760,7 @@ var hasRequiredDep1;
 function requireDep1 () {
 	if (hasRequiredDep1) return dep1;
 	hasRequiredDep1 = 1;
+	dep1 = {};
 	dep1 = 'dep';
 	return dep1;
 }
@@ -3852,6 +3898,7 @@ var hasRequiredDep1;
 function requireDep1 () {
 	if (hasRequiredDep1) return dep1;
 	hasRequiredDep1 = 1;
+	dep1 = {};
 	dep1 = 'dep';
 	return dep1;
 }
@@ -4723,6 +4770,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const { bar } = requireFoo();
 	const { baz } = requireFoo();
 
@@ -4786,14 +4834,14 @@ exports[`expose-file-type-detection 1`] = `
 {
   "main.js": "'use strict';
 
-var other = require('./other-UXsUMMAz.js');
+var other = require('./other-vhhLh6sA.js');
 
 var otherExports = other.requireOther();
 var foo = /*@__PURE__*/other.getDefaultExportFromCjs(otherExports);
 
 t.is(foo, 'foo');
 ",
-  "other-UXsUMMAz.js": "'use strict';
+  "other-vhhLh6sA.js": "'use strict';
 
 function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -4805,6 +4853,7 @@ var hasRequiredOther;
 function requireOther () {
 	if (hasRequiredOther) return other;
 	hasRequiredOther = 1;
+	other = {};
 	other = 'foo';
 	return other;
 }
@@ -4814,7 +4863,7 @@ exports.requireOther = requireOther;
 ",
   "other.js": "'use strict';
 
-var other$1 = require('./other-UXsUMMAz.js');
+var other$1 = require('./other-vhhLh6sA.js');
 
 var otherExports = other$1.requireOther();
 var other = /*@__PURE__*/other$1.getDefaultExportFromCjs(otherExports);
@@ -4844,6 +4893,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const foo = require$$0__default.default;
 
 	main$1 = foo;
@@ -4988,6 +5038,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	function foo() {
 	  const global = {};
 	  global.modified = true;
@@ -6077,6 +6128,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	requireDep();
 
 	main$1 = \`
@@ -6112,6 +6164,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo;
 	hasRequiredFoo = 1;
+	foo = {};
 	foo = 42;
 	return foo;
 }
@@ -6149,6 +6202,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo;
 	hasRequiredFoo = 1;
+	foo = {};
 	foo = 1;
 	return foo;
 }
@@ -6159,6 +6213,7 @@ var hasRequiredMultiply;
 function requireMultiply () {
 	if (hasRequiredMultiply) return multiply;
 	hasRequiredMultiply = 1;
+	multiply = {};
 	multiply = function (a, b) {
 	  return a * b;
 	};
@@ -6173,6 +6228,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = function () {
 	  return requireMultiply()(2, requireFoo());
 	};
@@ -6329,6 +6385,7 @@ var hasRequiredOther;
 function requireOther () {
 	if (hasRequiredOther) return other;
 	hasRequiredOther = 1;
+	other = {};
 	other = 'foo';
 	return other;
 }
@@ -6357,6 +6414,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 
 	main$1 = 'bar';
 	return main$1;
@@ -6489,6 +6547,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo;
 	hasRequiredFoo = 1;
+	foo = {};
 	foo = 21;
 	return foo;
 }
@@ -6499,6 +6558,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const foo = requireFoo();
 
 	main$1 = foo * 2;
@@ -6572,6 +6632,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 
 	main$1 = 1;
 	return main$1;
@@ -6601,6 +6662,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 
 	main$1 = 1;
 	return main$1;
@@ -6901,6 +6963,7 @@ var hasRequiredReexport;
 function requireReexport () {
 	if (hasRequiredReexport) return reexport;
 	hasRequiredReexport = 1;
+	reexport = {};
 	reexport = require_export();
 	return reexport;
 }
@@ -7117,6 +7180,7 @@ var hasRequiredDep;
 function requireDep () {
 	if (hasRequiredDep) return dep;
 	hasRequiredDep = 1;
+	dep = {};
 	dep = 42;
 	return dep;
 }
@@ -7255,6 +7319,7 @@ var hasRequiredShared;
 function requireShared () {
 	if (hasRequiredShared) return shared;
 	hasRequiredShared = 1;
+	shared = {};
 	shared = {
 	  fooLoaded: false
 	};
@@ -7279,6 +7344,7 @@ var hasRequiredBar;
 function requireBar () {
 	if (hasRequiredBar) return bar;
 	hasRequiredBar = 1;
+	bar = {};
 	const shared = requireShared();
 
 	bar = shared.fooLoaded;
@@ -7330,6 +7396,7 @@ var hasRequiredFooRequired;
 function requireFooRequired () {
 	if (hasRequiredFooRequired) return fooRequired;
 	hasRequiredFooRequired = 1;
+	fooRequired = {};
 	fooRequired = 'required';
 	return fooRequired;
 }
@@ -7376,6 +7443,7 @@ var hasRequiredDep;
 function requireDep () {
 	if (hasRequiredDep) return dep;
 	hasRequiredDep = 1;
+	dep = {};
 	t.is(commonjsGlobal.entryDetected, true);
 	dep = 'dep';
 	return dep;
@@ -7387,6 +7455,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	t.is(commonjsGlobal.entryDetected, true);
 	main$1 = requireDep();
 	return main$1;
@@ -7497,6 +7566,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	commonjsGlobal.main = 'main';
 	console.log('main');
 
@@ -7856,6 +7926,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo_1;
 	hasRequiredFoo = 1;
+	foo_1 = {};
 	function foo() {}
 	foo.something = false;
 
@@ -8097,6 +8168,7 @@ var hasRequiredDep;
 function requireDep () {
 	if (hasRequiredDep) return dep;
 	hasRequiredDep = 1;
+	dep = {};
 	dep = {
 	  foo: 'foo',
 	  update: () => (dep = { foo: 'bar' })
@@ -8274,6 +8346,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo;
 	hasRequiredFoo = 1;
+	foo = {};
 	foo = 'foo';
 	return foo;
 }
@@ -8359,6 +8432,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const HOST = {
 	    global: commonjsGlobal
 	};
@@ -8395,6 +8469,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const HOST = {
 	  require: commonjsRequire
 	};
@@ -8431,6 +8506,7 @@ var hasRequiredB;
 function requireB () {
 	if (hasRequiredB) return b;
 	hasRequiredB = 1;
+	b = {};
 	commonjsGlobal.b = 2;
 	b = 'b';
 	return b;
@@ -8599,6 +8675,111 @@ module.exports = main;
 }
 `;
 
+exports[`strict-requires-circular-replace 1`] = `
+{
+  "main.js": "'use strict';
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var main$1 = {};
+
+var b;
+var hasRequiredB;
+
+function requireB () {
+	if (hasRequiredB) return b;
+	hasRequiredB = 1;
+	b = {};
+	const a = requireA();
+
+	b = { seen: typeof a };
+	return b;
+}
+
+var a;
+var hasRequiredA;
+
+function requireA () {
+	if (hasRequiredA) return a;
+	hasRequiredA = 1;
+	a = {};
+	const b = requireB();
+
+	a = { seenByB: b.seen };
+	return a;
+}
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	t.deepEqual(requireA(), { seenByB: 'object' });
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
+
+exports[`strict-requires-circular-replace-mixed 1`] = `
+{
+  "main.js": "'use strict';
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var main$1 = {};
+
+var c;
+var hasRequiredC;
+
+function requireC () {
+	if (hasRequiredC) return c;
+	hasRequiredC = 1;
+	c = {};
+	c = requireA();
+	return c;
+}
+
+requireC();
+
+var a;
+var hasRequiredA;
+
+function requireA () {
+	if (hasRequiredA) return a;
+	hasRequiredA = 1;
+	a = {};
+	a = 42;
+	return a;
+}
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	t.is(requireA(), 42);
+	t.is(requireA(), 42);
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
+
 exports[`strict-requires-cycle-detection 1`] = `
 {
   "main.js": "'use strict';
@@ -8752,6 +8933,7 @@ var hasRequiredHoisted;
 function requireHoisted () {
 	if (hasRequiredHoisted) return hoisted;
 	hasRequiredHoisted = 1;
+	hoisted = {};
 	hoisted = 'this should be top-level';
 	return hoisted;
 }
@@ -9004,6 +9186,7 @@ var hasRequiredReplaceModuleExports;
 function requireReplaceModuleExports () {
 	if (hasRequiredReplaceModuleExports) return replaceModuleExports;
 	hasRequiredReplaceModuleExports = 1;
+	replaceModuleExports = {};
 	replaceModuleExports = { foo: 'foo' };
 	commonjsGlobal.hasReplaceModuleExportsRun = true;
 	return replaceModuleExports;
@@ -9067,6 +9250,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = 42;
 	return main$1;
 }
@@ -9093,6 +9277,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = 42;
 	return main$1;
 }
@@ -9255,6 +9440,46 @@ module.exports = other;
 }
 `;
 
+exports[`strict-requires-this-before-replace 1`] = `
+{
+  "main.js": "'use strict';
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var main$1 = {};
+
+var other;
+var hasRequiredOther;
+
+function requireOther () {
+	if (hasRequiredOther) return other;
+	hasRequiredOther = 1;
+	other = {};
+	other.x = 1;
+
+	other = { y: 2 };
+	return other;
+}
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	t.deepEqual(requireOther(), { y: 2 });
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
+
 exports[`this 1`] = `
 {
   "main.js": "'use strict';
@@ -9321,6 +9546,42 @@ module.exports = main;
 }
 `;
 
+exports[`this-before-replace-auto 1`] = `
+{
+  "main.js": "'use strict';
+
+var main = {};
+
+var other = {};
+other.x = 1;
+
+other = { y: 2 };
+
+t.deepEqual(other, { y: 2 });
+
+module.exports = main;
+",
+}
+`;
+
+exports[`this-before-replace-unwrapped 1`] = `
+{
+  "main.js": "'use strict';
+
+var main = {};
+
+var other = {};
+other.x = 1;
+
+other = { y: 2 };
+
+t.deepEqual(other, { y: 2 });
+
+module.exports = main;
+",
+}
+`;
+
 exports[`top-level-and-nested-module-exports-reassignment 1`] = `
 {
   "main.js": "'use strict';
@@ -9337,6 +9598,7 @@ var hasRequiredDep1;
 function requireDep1 () {
 	if (hasRequiredDep1) return dep1;
 	hasRequiredDep1 = 1;
+	dep1 = {};
 	dep1 = 'original';
 	if (reassignFirstModuleExports) {
 	  dep1 = 'reassigned';
@@ -9350,6 +9612,7 @@ var hasRequiredDep2;
 function requireDep2 () {
 	if (hasRequiredDep2) return dep2;
 	hasRequiredDep2 = 1;
+	dep2 = {};
 	dep2 = 'original';
 	if (reassignSecondModuleExports) {
 	  dep2 = 'reassigned';
@@ -9363,6 +9626,7 @@ var hasRequiredDep3;
 function requireDep3 () {
 	if (hasRequiredDep3) return dep3;
 	hasRequiredDep3 = 1;
+	dep3 = {};
 	if (reassignFirstModuleExports) {
 	  dep3 = 'reassigned';
 	}
@@ -9376,6 +9640,7 @@ var hasRequiredDep4;
 function requireDep4 () {
 	if (hasRequiredDep4) return dep4;
 	hasRequiredDep4 = 1;
+	dep4 = {};
 	if (reassignSecondModuleExports) {
 	  dep4 = 'reassigned';
 	}
@@ -9424,6 +9689,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 
 	main$1 = 'foo';
 	return main$1;
@@ -9453,6 +9719,7 @@ var hasRequiredBar;
 function requireBar () {
 	if (hasRequiredBar) return bar;
 	hasRequiredBar = 1;
+	bar = {};
 	bar = function () {
 	  return true;
 	};
@@ -9482,6 +9749,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const foo = requireFoo();
 
 	main$1 = foo;
@@ -9512,6 +9780,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo;
 	hasRequiredFoo = 1;
+	foo = {};
 	foo = 42;
 	return foo;
 }
@@ -9574,6 +9843,7 @@ var hasRequiredOther;
 function requireOther () {
 	if (hasRequiredOther) return other$1;
 	hasRequiredOther = 1;
+	other$1 = {};
 	other$1 = 'other';
 	return other$1;
 }
@@ -10285,6 +10555,7 @@ var hasRequiredProxy;
 function requireProxy () {
 	if (hasRequiredProxy) return proxy;
 	hasRequiredProxy = 1;
+	proxy = {};
 	proxy = requireDep();
 	return proxy;
 }
@@ -10338,6 +10609,7 @@ var hasRequiredProxy;
 function requireProxy () {
 	if (hasRequiredProxy) return proxy$1;
 	hasRequiredProxy = 1;
+	proxy$1 = {};
 	proxy$1 = requireEntry();
 	return proxy$1;
 }
@@ -10397,6 +10669,7 @@ var hasRequiredProxy;
 function requireProxy () {
 	if (hasRequiredProxy) return proxy$1;
 	hasRequiredProxy = 1;
+	proxy$1 = {};
 	proxy$1 = requireEntry();
 	return proxy$1;
 }
@@ -10455,6 +10728,7 @@ var hasRequiredProxy;
 function requireProxy () {
 	if (hasRequiredProxy) return proxy$1;
 	hasRequiredProxy = 1;
+	proxy$1 = {};
 	proxy$1 = requireEntry();
 	return proxy$1;
 }
@@ -10504,6 +10778,7 @@ var hasRequiredProxy;
 function requireProxy () {
 	if (hasRequiredProxy) return proxy;
 	hasRequiredProxy = 1;
+	proxy = {};
 	proxy = requireDep();
 	return proxy;
 }
@@ -10539,6 +10814,7 @@ var hasRequiredProxy;
 function requireProxy () {
 	if (hasRequiredProxy) return proxy;
 	hasRequiredProxy = 1;
+	proxy = {};
 	proxy = requireDep();
 	return proxy;
 }
@@ -10951,6 +11227,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo;
 	hasRequiredFoo = 1;
+	foo = {};
 	foo = 21;
 	return foo;
 }
@@ -10961,6 +11238,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const foo = requireFoo();
 
 	main$1 = foo * 2;

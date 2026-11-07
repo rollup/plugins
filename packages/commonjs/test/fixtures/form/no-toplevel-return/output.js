@@ -6,6 +6,7 @@ var hasRequiredInput;
 function requireInput () {
 	if (hasRequiredInput) return input;
 	hasRequiredInput = 1;
+	input = {};
 	var foo = function () {
 		return;
 	};

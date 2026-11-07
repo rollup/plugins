@@ -7,6 +7,7 @@ var hasRequiredInput1;
 function requireInput1 () {
 	if (hasRequiredInput1) return input1;
 	hasRequiredInput1 = 1;
+	input1 = {};
 	const t2 = require$$0;
 
 	console.log(t2);

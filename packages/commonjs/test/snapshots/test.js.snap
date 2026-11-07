@@ -13,6 +13,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	const obj = {
 	  a: 'b',
 	  b: 'c'
@@ -38,6 +39,7 @@ var hasRequiredFoo;
 function requireFoo () {
 	if (hasRequiredFoo) return foo$1;
 	hasRequiredFoo = 1;
+	foo$1 = {};
 	foo$1 = 21;
 	return foo$1;
 }
@@ -112,6 +114,7 @@ var hasRequiredSecond;
 function requireSecond () {
 	if (hasRequiredSecond) return second$1;
 	hasRequiredSecond = 1;
+	second$1 = {};
 	second$1 = require$$0.second;
 	return second$1;
 }
@@ -176,6 +179,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = require$$0.dep;
 	return main$1;
 }
@@ -211,6 +215,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = requireDep().dep;
 	return main$1;
 }
@@ -246,6 +251,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = requireDep().dep;
 	return main$1;
 }
@@ -412,6 +418,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = require$$0;
 	return main$1;
 }
@@ -474,6 +481,7 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$1;
 	hasRequiredMain = 1;
+	main$1 = {};
 	main$1 = require$$0;
 	return main$1;
 }

@@ -556,7 +556,8 @@ export default async function transformCommonjs(
         exportMode,
         defaultIsModuleExports,
         usesRequireWrapper,
-        requireName
+        requireName,
+        replacedThis.length > 0
       );
 
   if (shouldWrap) {
@@ -568,13 +569,18 @@ export default async function transformCommonjs(
       exclude: indentExclusionRanges
     });
     const exported = exportMode === 'module' ? `${moduleName}.exports` : exportsName;
+    // A replaced module.exports starts from an empty object like it does in Node,
+    // so that a circular require or a top-level `this` before the
+    // `module.exports =` assignment sees `{}`. It is set when the first require
+    // starts, so a value that a re-entrant require already completed is kept.
+    const initialExports = exportMode === 'replace' ? `\t${exportsName} = {};\n` : '';
     magicString.prepend(
       `var ${isRequiredName};
 
 function ${requireName} () {
 \tif (${isRequiredName}) return ${exported};
 \t${isRequiredName} = 1;
-`
+${initialExports}`
     ).append(`
 \treturn ${exported};
 }`);
