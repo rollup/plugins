@@ -27,6 +27,14 @@ const testBundle = async (t, bundle) => {
   const func = new AsyncFunction('t', `let result;\n\n${code}\n\nreturn result;`);
   return func(t);
 };
+test('loads wasm imported with import attributes', async () => {
+  expect.assertions(1);
+  const bundle = await rollup({
+    input: 'fixtures/attributes.js',
+    plugins: [wasmPlugin()]
+  });
+  await testBundle(avaAssertions, bundle);
+});
 test('async compiling', async () => {
   expect.assertions(2);
   const bundle = await rollup({
@@ -56,6 +64,18 @@ test('fetching WASM from separate file', async () => {
   await global.result;
   expect(await globby(glob)).toMatchSnapshot();
   await del(outputDir);
+});
+test('emits one asset when the same wasm is imported with and without attributes', async () => {
+  expect.assertions(2);
+  const warnings = [];
+  const bundle = await rollup({
+    input: 'fixtures/attributes-and-plain.js',
+    plugins: [wasmPlugin({ maxFileSize: 0 })],
+    onwarn: (warning) => warnings.push(warning)
+  });
+  const { output } = await bundle.generate({ format: 'cjs' });
+  expect(output.filter(({ fileName }) => fileName.endsWith('.wasm'))).toHaveLength(1);
+  expect(warnings).toEqual([]);
 });
 test('complex module decoding', async () => {
   expect.assertions(2);
@@ -148,7 +168,8 @@ test('target environment auto', async () => {
       wasmPlugin({
         targetEnv: 'auto'
       })
-    ]
+    ],
+    treeshake: false
   });
   const code = await getCode(bundle);
   await testBundle(avaAssertions, bundle);
@@ -164,7 +185,8 @@ test('target environment auto-inline', async () => {
       wasmPlugin({
         targetEnv: 'auto-inline'
       })
-    ]
+    ],
+    treeshake: false
   });
   const code = await getCode(bundle);
   await testBundle(avaAssertions, bundle);
@@ -181,7 +203,8 @@ test('target environment browser', async () => {
       wasmPlugin({
         targetEnv: 'browser'
       })
-    ]
+    ],
+    treeshake: false
   });
   const code = await getCode(bundle);
   await testBundle(avaAssertions, bundle);
@@ -196,7 +219,8 @@ test('target environment node', async () => {
       wasmPlugin({
         targetEnv: 'node'
       })
-    ]
+    ],
+    treeshake: false
   });
   const code = await getCode(bundle);
   await testBundle(avaAssertions, bundle);
