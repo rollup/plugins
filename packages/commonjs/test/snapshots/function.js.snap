@@ -10974,3 +10974,48 @@ module.exports = main;
 ",
 }
 `;
+
+exports[`wrapped-define-compiled-esm 1`] = `
+{
+  "main.js": "'use strict';
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var main$1 = {};
+
+var dep = {exports: {}};
+
+var hasRequiredDep;
+
+function requireDep () {
+	if (hasRequiredDep) return dep.exports;
+	hasRequiredDep = 1;
+	(function (module, exports) {
+
+		Object.defineProperty(exports, '__esModule', { value: true });
+		module.exports.type = 'object'; 
+	} (dep, dep.exports));
+	return dep.exports;
+}
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$1;
+	hasRequiredMain = 1;
+	const dep = requireDep();
+
+	t.is(dep.__esModule, true);
+	t.is(dep.type, 'object');
+	return main$1;
+}
+
+var mainExports = requireMain();
+var main = /*@__PURE__*/getDefaultExportFromCjs(mainExports);
+
+module.exports = main;
+",
+}
+`;
