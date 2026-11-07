@@ -473,6 +473,15 @@ export default async function transformCommonjs(
   // We cannot wrap ES/mixed modules
   shouldWrap = !isEsModule && (shouldWrap || (uses.exports && moduleExportsAssignments.length > 0));
 
+  // Top-level `Object.defineProperty([module.]exports, '__esModule', ...)` calls
+  // were skipped above, so they did not mark `exports` or `module` as used. A
+  // wrapped module keeps them as they are, so the wrapper must provide that name.
+  if (shouldWrap) {
+    for (const { type } of topLevelDefineCompiledEsmExpressions) {
+      uses[type] = true;
+    }
+  }
+
   if (
     !(
       shouldWrap ||
