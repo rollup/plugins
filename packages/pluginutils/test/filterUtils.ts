@@ -90,3 +90,11 @@ test('wordRegex supports flags and escapes special characters', () => {
   expect(regex.test('FOO.BAR')).toBe(true);
   expect(regex.test('foo.barx')).toBe(false);
 });
+
+test('wordRegex supports hyphens with the Unicode flag', () => {
+  const regex = wordRegex('foo-bar', 'u');
+
+  expect(regex.toString()).toBe('/\\bfoo-bar\\b/u');
+  expect(regex.test('foo-bar')).toBe(true);
+  expect(regex.test('foo-barx')).toBe(false);
+});
