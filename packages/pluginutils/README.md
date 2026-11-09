@@ -240,6 +240,22 @@ exactRegex(['foo', 'bar']); // /^(?:foo|bar)$/
 exactRegex('foo(bar)', 'i'); // /^foo\(bar\)$/i
 ```
 
+### wordRegex
+
+Constructs a RegExp that matches the specified string with word boundaries. This is useful when matching a complete word-like token, such as `node_modules` but not `node_modulesa`.
+
+Parameters: `(str: String, flags?: String)`<br>
+Returns: `RegExp`
+
+#### Usage
+
+```js
+import { wordRegex } from '@rollup/pluginutils';
+
+wordRegex('node_modules'); // /\bnode_modules\b/
+wordRegex('foo.bar', 'i'); // /\bfoo\.bar\b/i
+```
+
 ### makeLegalIdentifier
 
 Constructs a bundle-safe identifier from a `String`.

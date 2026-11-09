@@ -99,6 +99,13 @@ export function prefixRegex(str: string | string[], flags?: string): RegExp;
  */
 export function suffixRegex(str: string | string[], flags?: string): RegExp;
 
+/**
+ * Constructs a RegExp that matches the specified string with word boundaries.
+ * @param str the string to match.
+ * @param flags flags for the RegExp.
+ */
+export function wordRegex(str: string, flags?: string): RegExp;
+
 export type AddExtension = typeof addExtension;
 export type AttachScopes = typeof attachScopes;
 export type CreateFilter = typeof createFilter;
@@ -109,6 +116,7 @@ export type NormalizePath = typeof normalizePath;
 export type DataToEsm = typeof dataToEsm;
 export type PrefixRegex = typeof prefixRegex;
 export type SuffixRegex = typeof suffixRegex;
+export type WordRegex = typeof wordRegex;
 
 declare const defaultExport: {
   addExtension: AddExtension;
@@ -121,5 +129,6 @@ declare const defaultExport: {
   normalizePath: NormalizePath;
   prefixRegex: PrefixRegex;
   suffixRegex: SuffixRegex;
+  wordRegex: WordRegex;
 };
 export default defaultExport;

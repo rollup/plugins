@@ -1,4 +1,4 @@
-import { exactRegex, prefixRegex, suffixRegex } from '../';
+import { exactRegex, prefixRegex, suffixRegex, wordRegex } from '../';
 
 test('exactRegex supports without flag parameter', () => {
   expect(exactRegex('foo').toString()).toBe('/^foo$/');
@@ -70,4 +70,31 @@ test('suffixRegex escapes special characters for Regex', () => {
 
 test('suffixRegex escapes special characters with multiple string for Regex', () => {
   expect(suffixRegex(['foo(bar)', 'baz(qux)']).toString()).toBe('/(?:foo\\(bar\\)|baz\\(qux\\))$/');
+});
+
+test('wordRegex matches complete word-like tokens', () => {
+  const regex = wordRegex('node_modules');
+
+  expect(regex.toString()).toBe('/\\bnode_modules\\b/');
+  expect(regex.test('node_modules')).toBe(true);
+  expect(regex.test('/node_modules/')).toBe(true);
+  expect(regex.test('foo/node_modules/bar')).toBe(true);
+  expect(regex.test('node_modulesa')).toBe(false);
+  expect(regex.test('anode_modules')).toBe(false);
+});
+
+test('wordRegex supports flags and escapes special characters', () => {
+  const regex = wordRegex('foo.bar', 'i');
+
+  expect(regex.toString()).toBe('/\\bfoo\\.bar\\b/i');
+  expect(regex.test('FOO.BAR')).toBe(true);
+  expect(regex.test('foo.barx')).toBe(false);
+});
+
+test('wordRegex supports hyphens with the Unicode flag', () => {
+  const regex = wordRegex('foo-bar', 'u');
+
+  expect(regex.toString()).toBe('/\\bfoo-bar\\b/u');
+  expect(regex.test('foo-bar')).toBe(true);
+  expect(regex.test('foo-barx')).toBe(false);
 });

@@ -10,7 +10,11 @@ export function suffixRegex(str: string | string[], flags?: string): RegExp {
   return new RegExp(`${combineMultipleStrings(str)}$`, flags);
 }
 
-const escapeRegexRE = /[-/\\^$*+?.()|[\]{}]/g;
+export function wordRegex(str: string, flags?: string): RegExp {
+  return new RegExp(`\\b${escapeRegex(str)}\\b`, flags);
+}
+
+const escapeRegexRE = /[/\\^$*+?.()|[\]{}]/g;
 function escapeRegex(str: string): string {
   return str.replace(escapeRegexRE, '\\$&');
 }
