@@ -144,13 +144,13 @@ export function getRequireResolver(
             .filter(({ id, external }) => !(external || parentRequireSet.has(id)))
             .map(async (resolved) => {
               if (isWrappedId(resolved.id, ES_IMPORT_SUFFIX)) {
+                const { meta } = await this.load(resolved);
+                // An entry proxy imports the ES import proxy by its already resolved ID.
+                const importee = meta.commonjs?.resolved ?? {
+                  id: unwrapId(resolved.id, ES_IMPORT_SUFFIX)
+                };
                 return (
-                  (await getTypeForImportedModule(
-                    (
-                      await this.load(resolved)
-                    ).meta.commonjs.resolved,
-                    this.load
-                  )) !== IS_WRAPPED_COMMONJS
+                  (await getTypeForImportedModule(importee, this.load)) !== IS_WRAPPED_COMMONJS
                 );
               }
               return (await getTypeForImportedModule(resolved, this.load)) === IS_WRAPPED_COMMONJS;

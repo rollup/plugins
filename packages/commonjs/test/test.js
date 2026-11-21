@@ -331,6 +331,24 @@ test.each([
   }
 });
 
+test('rebuilds wrapped entries with named exports from the Rollup cache', async () => {
+  const modules = { 'main.js': 'exports.answer = 42;' };
+  const options = {
+    input: 'main.js',
+    plugins: [loader(modules), commonjs({ namedExportsForEntries: true })]
+  };
+  let bundle = await rollup(options);
+  const code = await getCodeFromBundle(bundle, { format: 'es' });
+
+  bundle = await rollup({ ...options, cache: bundle.cache });
+  expect(await getCodeFromBundle(bundle, { format: 'es' })).toBe(code);
+
+  modules['main.js'] = 'exports.updated = 43;';
+  bundle = await rollup({ ...options, cache: bundle.cache });
+  const { exports } = await executeBundle(bundle, avaAssertions, { exports: 'named' });
+  expect(exports).toEqual({ default: { updated: 43 }, updated: 43 });
+});
+
 test('keeps accessor exports lazy and excludes computed names from the entry facade', async () => {
   const bundle = await rollup({
     input: 'main.js',
