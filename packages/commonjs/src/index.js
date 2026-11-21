@@ -276,16 +276,12 @@ export default function commonjs(options = {}) {
 
       // entry suffix is just appended to not mess up relative external resolution
       if (id.endsWith(ENTRY_SUFFIX)) {
-        const acutalId = id.slice(0, -ENTRY_SUFFIX.length);
-        const {
-          meta: { commonjs: commonjsMeta }
-        } = this.getModuleInfo(acutalId);
-        const shebang = commonjsMeta?.shebang ?? '';
+        const actualId = id.slice(0, -ENTRY_SUFFIX.length);
         return getEntryProxy(
-          acutalId,
-          getDefaultIsModuleExports(acutalId),
-          this.getModuleInfo,
-          shebang
+          actualId,
+          getDefaultIsModuleExports(actualId),
+          this.getModuleInfo(actualId),
+          options.namedExportsForEntries
         );
       }
 

@@ -63,6 +63,13 @@ You can also provide a [picomatch pattern](https://github.com/micromatch/picomat
 
 `"debug"` works like `"auto"` but after bundling, it will display a warning containing a list of ids that have been wrapped which can be used as picomatch pattern for fine-tuning or to avoid the potential race conditions mentioned for `"auto"`.
 
+### `namedExportsForEntries`
+
+Type: `boolean`<br>
+Default: `false`
+
+Set this to `true` to expose named exports when bundling a wrapped CommonJS module as an entry point. For example, `exports.Client = Client` or `module.exports.Client = Client` makes `Client` available as a named import from the generated bundle. Named exports snapshot own data properties when the entry finishes executing. Use the CommonJS exports object for computed names, getters, and later changes. The plugin omits names it sees defined as accessors. If a property becomes an accessor indirectly, its named export is `undefined` and its getter remains lazy.
+
 ### `requireNodeBuiltins`
 
 Type: `boolean`<br>
