@@ -16,13 +16,18 @@ export default function virtual(modules: RollupVirtualOptions): Plugin {
   return {
     name: 'virtual',
 
-    resolveId(id, importer) {
+    resolveId(
+      id,
+      importer,
+      resolveOptions?: { importerRawId?: string; attributes?: Record<string, string> }
+    ) {
       if (id in modules) return PREFIX + id;
 
       if (importer) {
-        const importerNoPrefix = importer.startsWith(PREFIX)
-          ? importer.slice(PREFIX.length)
-          : importer;
+        const rawImporter = (resolveOptions && resolveOptions.importerRawId) || importer;
+        const importerNoPrefix = rawImporter.startsWith(PREFIX)
+          ? rawImporter.slice(PREFIX.length)
+          : rawImporter;
         const resolved = path.resolve(path.dirname(importerNoPrefix), id);
         if (resolvedIds.has(resolved)) return PREFIX + resolved;
       }
@@ -30,9 +35,10 @@ export default function virtual(modules: RollupVirtualOptions): Plugin {
       return null;
     },
 
-    load(id) {
-      if (id.startsWith(PREFIX)) {
-        const idNoPrefix = id.slice(PREFIX.length);
+    load(id, loadOptions?: { rawId?: string; attributes?: Record<string, string> }) {
+      const rawId = (loadOptions && loadOptions.rawId) || id;
+      if (rawId.startsWith(PREFIX)) {
+        const idNoPrefix = rawId.slice(PREFIX.length);
 
         return idNoPrefix in modules ? modules[idNoPrefix] : resolvedIds.get(idNoPrefix);
       }
