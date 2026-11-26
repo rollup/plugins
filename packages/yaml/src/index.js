@@ -41,22 +41,28 @@ export default function yaml(opts = {}) {
   }
 
   const extensionsFilter = suffixRegex(extensions, 'i');
+  // Rollup 5 appends encoded import attributes to the id as a query
+  const extensionsWithQueryFilter = new RegExp(
+    extensionsFilter.source.replace(/\$$/, '(?:$|\\?)'),
+    extensionsFilter.flags
+  );
 
   return {
     name: 'yaml',
 
     transform: {
       filter: {
-        id: extensionsFilter
+        id: extensionsWithQueryFilter
       },
-      handler(content, id) {
-        if (extensions.length === 0 || !extensionsFilter.test(id)) return null;
-        if (!filter(id)) return null;
+      handler(content, id, transformOptions) {
+        const rawId = (transformOptions && transformOptions.rawId) || id;
+        if (extensions.length === 0 || !extensionsFilter.test(rawId)) return null;
+        if (!filter(rawId)) return null;
 
         let data = loadMethod(content);
 
         if (typeof options.transform === 'function') {
-          const result = options.transform(data, id);
+          const result = options.transform(data, rawId);
           // eslint-disable-next-line no-undefined
           if (result !== undefined) {
             data = result;
