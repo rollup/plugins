@@ -8,16 +8,19 @@ export default function graphql({ include, exclude } = {}) {
   const filter = createFilter(include, exclude);
   // only .graphql, .graphqls (schema), and .gql files
   const filterExt = /\.(graphqls?|gql)$/i;
+  // Rollup 5 appends encoded import attributes to the id as a query
+  const filterExtWithQuery = /\.(graphqls?|gql)(?:$|\?)/i;
 
   return {
     name: 'graphql',
     transform: {
       filter: {
-        id: filterExt
+        id: filterExtWithQuery
       },
-      handler(source, id) {
-        if (!filter(id)) return null;
-        if (!filterExt.test(id)) return null;
+      handler(source, id, transformOptions) {
+        const rawId = (transformOptions && transformOptions.rawId) || id;
+        if (!filter(rawId)) return null;
+        if (!filterExt.test(rawId)) return null;
 
         // XXX: this.cachable() in graphql-tag/loader
         const code = toESModules(

@@ -73,3 +73,15 @@ test('should support fragment imports with brackets and parentheses in file path
   expect('doc' in module.exports).toBeTruthy();
   expect(module.exports.doc.kind).toBe('Document');
 });
+
+test('should parse graphql files imported with import attributes', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/basic/index-with-type.js',
+    plugins: [graphql({ include: '**/*.graphql', exclude: /attributes/ })]
+  });
+
+  const { module } = await testBundle(null, bundle);
+
+  expect('doc' in module.exports).toBeTruthy();
+  expect(module.exports.doc.kind).toBe('Document');
+});
