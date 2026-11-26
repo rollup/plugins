@@ -49,3 +49,12 @@ test('imports an svg for dom, encodes for url', async () => {
 
   expect(await getCode(bundle)).toMatchSnapshot();
 });
+
+test('loads images imported with import attributes', async () => {
+  const bundle = await rollup.rollup({
+    input: 'fixtures/svg-with-type.js',
+    plugins: [image({ include: '**/*.svg', exclude: /attributes/ })]
+  });
+
+  expect(await getCode(bundle)).toContain('data:image/svg+xml,');
+});

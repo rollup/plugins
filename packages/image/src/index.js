@@ -40,21 +40,22 @@ export default function image(opts = {}) {
   return {
     name: 'image',
 
-    load(id) {
-      if (!filter(id)) {
+    load(id, loadOptions) {
+      const rawId = (loadOptions && loadOptions.rawId) || id;
+      if (!filter(rawId)) {
         return null;
       }
 
-      const mime = mimeTypes[extname(id)];
+      const mime = mimeTypes[extname(rawId)];
       if (!mime) {
         // not an image
         return null;
       }
 
-      this.addWatchFile(id);
+      this.addWatchFile(rawId);
       const isSvg = mime === mimeTypes['.svg'];
       const format = isSvg ? 'utf-8' : 'base64';
-      const source = readFileSync(id, format).replace(/[\r\n]+/gm, '');
+      const source = readFileSync(rawId, format).replace(/[\r\n]+/gm, '');
       const dataUri = getDataUri({ format, isSvg, mime, source });
       const code = options.dom ? domTemplate({ dataUri }) : constTemplate({ dataUri });
 
