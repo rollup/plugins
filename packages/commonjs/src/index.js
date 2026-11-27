@@ -113,8 +113,8 @@ export default function commonjs(options = {}) {
   // Initialized in buildStart
   let requireResolver;
 
-  function transformAndCheckExports(code, id) {
-    const normalizedId = normalizePathSlashes(id);
+  function transformAndCheckExports(code, id, rawId) {
+    const normalizedId = normalizePathSlashes(rawId);
     const { isEsModule, hasDefaultExport, hasNamedExports, ast } = analyzeTopLevelStatements(
       this.parse,
       code,
@@ -139,7 +139,7 @@ export default function commonjs(options = {}) {
     }
 
     const needsRequireWrapper =
-      !isEsModule && (dynamicRequireModules.has(normalizedId) || strictRequiresFilter(id));
+      !isEsModule && (dynamicRequireModules.has(normalizedId) || strictRequiresFilter(rawId));
 
     const checkDynamicRequire = (position) => {
       const normalizedDynamicRequireRoot = normalizePathSlashes(dynamicRequireRoot);
@@ -163,6 +163,7 @@ export default function commonjs(options = {}) {
       this.parse,
       code,
       id,
+      rawId,
       isEsModule,
       ignoreGlobal || isEsModule,
       ignoreRequire,
@@ -173,7 +174,7 @@ export default function commonjs(options = {}) {
       dynamicRequireModules,
       commonDir,
       ast,
-      getDefaultIsModuleExports(id),
+      getDefaultIsModuleExports(rawId),
       needsRequireWrapper,
       requireResolver.resolveRequireSourcesAndUpdateMeta(this),
       requireResolver.isRequiredId(id),
@@ -242,29 +243,34 @@ export default function commonjs(options = {}) {
       }
     },
 
-    async load(id) {
-      if (id === HELPERS_ID) {
+    async load(id, loadOptions) {
+      const rawId = loadOptions?.rawId || id;
+      // In Rollup 5, import attributes are part of the module id, and proxies
+      // need to reference the module instance with the same attributes
+      const idAttributes = rawId === id ? null : loadOptions.attributes;
+
+      if (rawId === HELPERS_ID) {
         return getHelpersModule();
       }
 
-      if (isWrappedId(id, MODULE_SUFFIX)) {
-        const name = getName(unwrapId(id, MODULE_SUFFIX));
+      if (isWrappedId(rawId, MODULE_SUFFIX)) {
+        const name = getName(unwrapId(rawId, MODULE_SUFFIX));
         return {
           code: `var ${name} = {exports: {}}; export {${name} as __module}`,
           meta: { commonjs: { isCommonJS: false } }
         };
       }
 
-      if (isWrappedId(id, EXPORTS_SUFFIX)) {
-        const name = getName(unwrapId(id, EXPORTS_SUFFIX));
+      if (isWrappedId(rawId, EXPORTS_SUFFIX)) {
+        const name = getName(unwrapId(rawId, EXPORTS_SUFFIX));
         return {
           code: `var ${name} = {}; export {${name} as __exports}`,
           meta: { commonjs: { isCommonJS: false } }
         };
       }
 
-      if (isWrappedId(id, EXTERNAL_SUFFIX)) {
-        const actualId = unwrapId(id, EXTERNAL_SUFFIX);
+      if (isWrappedId(rawId, EXTERNAL_SUFFIX)) {
+        const actualId = unwrapId(rawId, EXTERNAL_SUFFIX);
         if (requireNodeBuiltins === true && actualId.startsWith('node:')) {
           return getExternalBuiltinRequireProxy(actualId);
         }
@@ -275,30 +281,30 @@ export default function commonjs(options = {}) {
       }
 
       // entry suffix is just appended to not mess up relative external resolution
-      if (id.endsWith(ENTRY_SUFFIX)) {
-        const acutalId = id.slice(0, -ENTRY_SUFFIX.length);
-        const {
-          meta: { commonjs: commonjsMeta }
-        } = this.getModuleInfo(acutalId);
-        const shebang = commonjsMeta?.shebang ?? '';
+      if (rawId.endsWith(ENTRY_SUFFIX)) {
+        const actualId = rawId.slice(0, -ENTRY_SUFFIX.length);
+        const actualModuleInfo = this.getModuleInfo(
+          idAttributes ? { rawId: actualId, attributes: idAttributes } : actualId
+        );
         return getEntryProxy(
-          acutalId,
-          getDefaultIsModuleExports(acutalId),
-          this.getModuleInfo,
-          shebang
+          actualId,
+          idAttributes,
+          getDefaultIsModuleExports(actualId),
+          actualModuleInfo
         );
       }
 
-      if (isWrappedId(id, ES_IMPORT_SUFFIX)) {
-        const actualId = unwrapId(id, ES_IMPORT_SUFFIX);
+      if (isWrappedId(rawId, ES_IMPORT_SUFFIX)) {
+        const actualId = unwrapId(rawId, ES_IMPORT_SUFFIX);
         return getEsImportProxy(
           actualId,
+          idAttributes,
           getDefaultIsModuleExports(actualId),
-          (await this.load({ id: actualId })).moduleSideEffects
+          (await this.load({ id: actualId, attributes: idAttributes })).moduleSideEffects
         );
       }
 
-      if (id === DYNAMIC_MODULES_ID) {
+      if (rawId === DYNAMIC_MODULES_ID) {
         return getDynamicModuleRegistry(
           isDynamicRequireModulesEnabled,
           dynamicRequireModules,
@@ -307,8 +313,8 @@ export default function commonjs(options = {}) {
         );
       }
 
-      if (isWrappedId(id, PROXY_SUFFIX)) {
-        const actualId = unwrapId(id, PROXY_SUFFIX);
+      if (isWrappedId(rawId, PROXY_SUFFIX)) {
+        const actualId = unwrapId(rawId, PROXY_SUFFIX);
         return getStaticRequireProxy(actualId, getRequireReturnsDefault(actualId), this.load);
       }
 
@@ -319,11 +325,12 @@ export default function commonjs(options = {}) {
       return requireResolver.shouldTransformCachedModule.call(this, ...args);
     },
 
-    transform(code, id) {
-      if (!isPossibleCjsId(id)) return null;
+    transform(code, id, transformOptions) {
+      const rawId = transformOptions?.rawId || id;
+      if (!isPossibleCjsId(rawId)) return null;
 
       try {
-        return transformAndCheckExports.call(this, code, id);
+        return transformAndCheckExports.call(this, code, id, rawId);
       } catch (err) {
         return this.error(err, err.pos);
       }

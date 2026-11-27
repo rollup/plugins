@@ -30,7 +30,7 @@ function getCandidates(resolved, extensions) {
   );
 }
 
-export function resolveExtensions(importee, importer, extensions) {
+export function resolveExtensions(importee, importer, extensions, attributes) {
   // not our problem
   if (importee[0] !== '.' || !importer) return undefined;
 
@@ -40,7 +40,7 @@ export function resolveExtensions(importee, importer, extensions) {
   for (let i = 0; i < candidates.length; i += 1) {
     try {
       const stats = statSync(candidates[i]);
-      if (stats.isFile()) return { id: candidates[i] };
+      if (stats.isFile()) return { id: candidates[i], attributes };
     } catch (err) {
       /* noop */
     }
@@ -95,16 +95,17 @@ export default function getResolveId(extensions, isPossibleCjsId) {
       }
 
       if (importer) {
+        const rawImporter = resolveOptions.importerRawId || importer;
         if (
-          importer === DYNAMIC_MODULES_ID ||
+          rawImporter === DYNAMIC_MODULES_ID ||
           // Proxies are only importing resolved ids, no need to resolve again
-          isWrappedId(importer, PROXY_SUFFIX) ||
-          isWrappedId(importer, ES_IMPORT_SUFFIX) ||
-          importer.endsWith(ENTRY_SUFFIX)
+          isWrappedId(rawImporter, PROXY_SUFFIX) ||
+          isWrappedId(rawImporter, ES_IMPORT_SUFFIX) ||
+          rawImporter.endsWith(ENTRY_SUFFIX)
         ) {
           return importee;
         }
-        if (isWrappedId(importer, EXTERNAL_SUFFIX)) {
+        if (isWrappedId(rawImporter, EXTERNAL_SUFFIX)) {
           // We need to return null for unresolved imports so that the proper warning is shown
           if (
             !(await this.resolve(
@@ -131,7 +132,7 @@ export default function getResolveId(extensions, isPossibleCjsId) {
           importee,
           importer,
           Object.assign({ skipSelf: true }, resolveOptions)
-        )) || resolveExtensions(importee, importer, extensions);
+        )) || resolveExtensions(importee, importer, extensions, resolveOptions.attributes);
       // Make sure that even if other plugins resolve again, we ignore our own proxies
       if (
         !resolved ||
@@ -152,10 +153,14 @@ export default function getResolveId(extensions, isPossibleCjsId) {
           if (resolveOptions.isEntry) {
             moduleInfo.moduleSideEffects = true;
             // We must not precede entry proxies with a `\0` as that will mess up relative external resolution
-            return resolved.id + ENTRY_SUFFIX;
+            return { id: resolved.id + ENTRY_SUFFIX, attributes: resolved.attributes };
           }
           if (isCommonJS === IS_WRAPPED_COMMONJS) {
-            return { id: wrapId(resolved.id, ES_IMPORT_SUFFIX), meta: { commonjs: { resolved } } };
+            return {
+              id: wrapId(resolved.id, ES_IMPORT_SUFFIX),
+              attributes: resolved.attributes,
+              meta: { commonjs: { resolved: { ...resolved, id: moduleInfo.id } } }
+            };
           }
         }
       }

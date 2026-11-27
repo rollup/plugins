@@ -47,6 +47,7 @@ export default async function transformCommonjs(
   parse,
   code,
   id,
+  rawId,
   isEsModule,
   ignoreGlobal,
   ignoreRequire,
@@ -73,7 +74,8 @@ export default async function transformCommonjs(
     require: false
   };
   const virtualDynamicRequirePath =
-    isDynamicRequireModulesEnabled && getVirtualPathForDynamicRequirePath(dirname(id), commonDir);
+    isDynamicRequireModulesEnabled &&
+    getVirtualPathForDynamicRequirePath(dirname(rawId), commonDir);
   let scope = attachScopes(ast, 'scope');
   let lexicalDepth = 0;
   let programDepth = 0;
@@ -427,7 +429,7 @@ export default async function transformCommonjs(
     }
   });
 
-  const nameBase = getName(id);
+  const nameBase = getName(rawId);
   const exportsName = deconflict([...exportsAccessScopes], globals, nameBase);
   const moduleName = deconflict([...moduleAccessScopes], globals, `${nameBase}Module`);
   const requireName = deconflict([scope], globals, `require${capitalize(nameBase)}`);

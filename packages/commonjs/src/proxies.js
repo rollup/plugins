@@ -44,33 +44,37 @@ export async function getStaticRequireProxy(id, requireReturnsDefault, loadModul
   return `export { default } from ${JSON.stringify(id)};`;
 }
 
-export function getEntryProxy(id, defaultIsModuleExports, getModuleInfo, shebang) {
+const getImportSource = (id, attributes) =>
+  attributes ? `${JSON.stringify(id)} with ${JSON.stringify(attributes)}` : JSON.stringify(id);
+
+export function getEntryProxy(id, attributes, defaultIsModuleExports, moduleInfo) {
   const {
     meta: { commonjs: commonjsMeta },
     hasDefaultExport
-  } = getModuleInfo(id);
+  } = moduleInfo;
+  const shebang = commonjsMeta?.shebang ?? '';
   if (!commonjsMeta || commonjsMeta.isCommonJS !== IS_WRAPPED_COMMONJS) {
-    const stringifiedId = JSON.stringify(id);
-    let code = `export * from ${stringifiedId};`;
+    const importSource = getImportSource(id, attributes);
+    let code = `export * from ${importSource};`;
     if (hasDefaultExport) {
-      code += `export { default } from ${stringifiedId};`;
+      code += `export { default } from ${importSource};`;
     }
     return shebang + code;
   }
-  const result = getEsImportProxy(id, defaultIsModuleExports, true);
+  const result = getEsImportProxy(id, attributes, defaultIsModuleExports, true);
   return {
     ...result,
     code: shebang + result.code
   };
 }
 
-export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) {
+export function getEsImportProxy(id, attributes, defaultIsModuleExports, moduleSideEffects) {
   const name = getName(id);
   const exportsName = `${name}Exports`;
   const requireModule = `require${capitalize(name)}`;
   let code =
     `import { getDefaultExportFromCjs } from "${HELPERS_ID}";\n` +
-    `import { __require as ${requireModule} } from ${JSON.stringify(id)};\n` +
+    `import { __require as ${requireModule} } from ${getImportSource(id, attributes)};\n` +
     `var ${exportsName} = ${moduleSideEffects ? '' : '/*@__PURE__*/ '}${requireModule}();\n` +
     `export { ${exportsName} as __moduleExports };`;
   if (defaultIsModuleExports === true) {

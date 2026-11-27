@@ -25,8 +25,12 @@ module.exports = {
             ['main.js', void 0, { attributes: {}, custom: {}, isEntry: true }]
           ]);
         },
-        resolveId(source, importer, options) {
-          resolveIdArgs.push([getLastPathFragment(source), getLastPathFragment(importer), options]);
+        resolveId(source, importer, { attributes, custom, isEntry }) {
+          resolveIdArgs.push([
+            getLastPathFragment(source),
+            getLastPathFragment(importer),
+            { attributes, custom, isEntry }
+          ]);
         }
       }
     ]
