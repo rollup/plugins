@@ -264,3 +264,22 @@ test('does not process non-custom extensions', async () => {
 
   expect(output).toBeNull();
 });
+
+test('handles yaml files imported with import attributes', async () => {
+  let transformedFilePath;
+  const bundle = await rollup.rollup({
+    input: 'fixtures/basic/main-with-type.js',
+    plugins: [
+      yaml({
+        include: '**/*.yaml',
+        exclude: /attributes/,
+        transform(data, filePath) {
+          transformedFilePath = filePath;
+        }
+      })
+    ]
+  });
+  const { error } = await testBundle(null, bundle);
+  expect(error).toBeUndefined();
+  expect(transformedFilePath).toMatch(/config\.yaml$/);
+});
