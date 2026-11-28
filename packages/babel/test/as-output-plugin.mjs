@@ -2,12 +2,15 @@ import * as nodePath from 'path';
 import { fileURLToPath } from 'url';
 
 import { test, expect } from 'vitest';
-import { rollup } from 'rollup';
+import { rollup, VERSION } from 'rollup';
 
 import { getBabelOutputPlugin, createBabelOutputPluginFactory } from 'current-package';
 
 import { getCode } from '../../../util/test.js';
 
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
+// rollup 4.13.0 augments plugin warnings and errors with a "[plugin <name>]" message prefix
+const hasAugmentedPluginLogs = rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13);
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 const FIXTURES = `${DIRNAME}/fixtures/`;
 function getLocation(source, charIndex) {
@@ -192,7 +195,9 @@ test('warns when using the "include" option', async () => {
     }
   );
   expect(warnings).toEqual([
-    'The "include", "exclude" and "extensions" options are ignored when transforming the output.'
+    `${
+      hasAugmentedPluginLogs ? '[plugin babel] ' : ''
+    }The "include", "exclude" and "extensions" options are ignored when transforming the output.`
   ]);
 });
 test('transforms all chunks in a code-splitting setup', async () => {
@@ -212,8 +217,15 @@ test('transforms all chunks in a code-splitting setup', async () => {
     },
     true
   );
+  // the content hash algorithm changed in rollup 4.10.0
+  const depFileName =
+    rollupMajor < 3
+      ? 'dep-805038a5.js'
+      : rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 10)
+      ? 'dep-D_rFPbwT.js'
+      : 'dep--s88I99N.js';
   expect(output.map(({ code }) => code)).toEqual([
-    `import('./dep--s88I99N.js').then(function (result) {
+    `import('./${depFileName}').then(function (result) {
   return console.log(result);
 });
 `,
