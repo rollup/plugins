@@ -1,6 +1,10 @@
 const path = require('path');
 
+const { VERSION } = require('rollup');
+
 const commonjsPlugin = require('../..');
+
+const [rollupMajor] = VERSION.split('.').map(Number);
 
 function commonjs(options) {
   delete require.cache[require.resolve('../..')];
@@ -50,7 +54,7 @@ function runCodeSplitTest(codeMap, t, entryName = 'main.js', configContext = {})
     );
   }
   const global = {};
-  const context = { t, global, globalThis: global, ...configContext };
+  const context = { t, global, globalThis: global, rollupMajor, ...configContext };
   let exports;
   try {
     exports = requireWithContext(codeMap[entryName], {
@@ -65,7 +69,7 @@ function runCodeSplitTest(codeMap, t, entryName = 'main.js', configContext = {})
 
 async function getCodeMapFromBundle(bundle, options = {}) {
   const generated = await bundle.generate({
-    interop: 'compat',
+    interop: rollupMajor >= 3 ? 'compat' : undefined,
     exports: 'auto',
     format: 'cjs',
     ...options

@@ -8,10 +8,12 @@ const childProcess = require('child_process');
 const writeFile = require('util').promisify(fs.writeFile);
 
 const del = require('del');
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 const sinon = require('sinon');
 
 const run = require('../');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
 
 const cwd = join(__dirname, 'fixtures/');
 const outputDir = join(cwd, 'output');
@@ -91,7 +93,9 @@ test('throws an error when bundle is not written to disk', async () => {
 
   expect(error).toBeInstanceOf(Error);
   expect(error.message).toBe(
-    '@rollup/plugin-run currently only works with bundles that are written to disk'
+    rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+      ? '[plugin run] @rollup/plugin-run currently only works with bundles that are written to disk'
+      : '@rollup/plugin-run currently only works with bundles that are written to disk'
   );
 });
 
@@ -105,7 +109,11 @@ test('throws an error when input option is invalid', async () => {
   const error = await bundle.write(outputDirOptions).catch((caught) => caught);
 
   expect(error).toBeInstanceOf(Error);
-  expect(error.message).toBe('@rollup/plugin-run could not find output chunk');
+  expect(error.message).toBe(
+    rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+      ? '[plugin run] @rollup/plugin-run could not find output chunk'
+      : '@rollup/plugin-run could not find output chunk'
+  );
 });
 
 test('throws an error when there are multiple entry points', async () => {

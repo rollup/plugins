@@ -1,0 +1,59 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`allows custom moduleDirectories with legacy customResolveOptions.moduleDirectory 1`] = `
+[
+  {
+    "code": "PLUGIN_WARNING",
+    "message": "node-resolve: The \`customResolveOptions.moduleDirectory\` option has been deprecated. Use \`moduleDirectories\`, which must be an array.",
+    "plugin": "node-resolve",
+    "toString": [Function],
+  },
+]
+`;
+
+exports[`has default config 1`] = `
+{
+  "allowExportsFolderMapping": true,
+  "dedupe": [],
+  "extensions": [
+    ".mjs",
+    ".js",
+    ".json",
+    ".node",
+  ],
+  "ignoreSideEffectsForRoot": false,
+  "moduleDirectories": [
+    "node_modules",
+  ],
+  "modulePaths": [],
+  "resolveOnly": [],
+}
+`;
+
+exports[`throws error for removed customResolveOptions.basedir option 1`] = `[Error: node-resolve: \`customResolveOptions.basedir\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.extensions option 1`] = `[Error: node-resolve: \`customResolveOptions.extensions\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.includeCoreModules option 1`] = `[Error: node-resolve: \`customResolveOptions.includeCoreModules\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.isDirectory option 1`] = `[Error: node-resolve: \`customResolveOptions.isDirectory\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.isFile option 1`] = `[Error: node-resolve: \`customResolveOptions.isFile\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.package option 1`] = `[Error: node-resolve: \`customResolveOptions.package\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.packageFilter option 1`] = `[Error: node-resolve: \`customResolveOptions.packageFilter\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.packageIterator option 1`] = `[Error: node-resolve: \`customResolveOptions.packageIterator\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.pathFilter option 1`] = `[Error: node-resolve: \`customResolveOptions.pathFilter\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.paths option 1`] = `[Error: node-resolve: \`customResolveOptions.paths\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.preserveSymlinks option 1`] = `[Error: node-resolve: \`customResolveOptions.preserveSymlinks\` is no longer an option. We now always use the rollup \`preserveSymlinks\` option.]`;
+
+exports[`throws error for removed customResolveOptions.readFile option 1`] = `[Error: node-resolve: \`customResolveOptions.readFile\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error for removed customResolveOptions.realpath option 1`] = `[Error: node-resolve: \`customResolveOptions.realpath\` is no longer an option. If you need this, please open an issue.]`;
+
+exports[`throws error if local id is not resolved 1`] = `"Could not resolve './foo' from unresolved-local.js"`;

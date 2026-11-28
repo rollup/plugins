@@ -2,11 +2,13 @@
 
 const { join } = require('path');
 
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 
 const replace = require('..');
 
 const { getOutputFromGenerated } = require('./helpers/util');
+
+const [rollupMajor] = VERSION.split('.').map(Number);
 
 test('does not mutate the values map properties', async () => {
   const valuesMap = {
@@ -40,7 +42,7 @@ test('does not mutate the values map properties', async () => {
     ANSWER: '42'
   });
 });
-test('can be configured with output plugins', async () => {
+test.skipIf(rollupMajor < 3)('can be configured with output plugins', async () => {
   const bundle = await rollup({
     input: 'main.js',
     plugins: [
@@ -79,7 +81,7 @@ test.sequential('no explicit setting of preventAssignment', async () => {
     const warnings = [];
     await rollup({
       input: 'input.js',
-      onwarn: (warning) => warnings.push(warning),
+      onwarn: ({ code, message, plugin }) => warnings.push({ code, message, plugin }),
       plugins: [
         replace({
           preventAssignment: value

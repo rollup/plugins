@@ -3,13 +3,18 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 
 import { describe, it, expect } from 'vitest';
-import { rollup } from 'rollup';
+import { rollup, VERSION } from 'rollup';
 import nodeResolvePlugin from '@rollup/plugin-node-resolve';
 
 import alias from '~package';
 
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
 const isWindows = os.platform() === 'win32';
+
+// rollup 4.13.0 added a prefix to plugin warning messages
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
+const warningPrefix =
+  rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13) ? '[plugin alias] ' : '';
 
 /**
  * Helper function to test configuration with Rollup
@@ -506,9 +511,9 @@ describe('plugin-alias', () => {
     expect(warnList).toMatchObject([
       {
         message:
-          '[plugin alias] rewrote @/warn-importee.js to test/fixtures/folder/warn-importee.js but was not an absolute path and was not handled by other plugins. ' +
-          'This will lead to duplicated modules for the same path. ' +
-          'To avoid duplicating modules, you should resolve to an absolute path.',
+          `${warningPrefix}rewrote @/warn-importee.js to test/fixtures/folder/warn-importee.js but was not an absolute path and was not handled by other plugins. ` +
+          `This will lead to duplicated modules for the same path. ` +
+          `To avoid duplicating modules, you should resolve to an absolute path.`,
         code: 'PLUGIN_WARNING',
         plugin: 'alias'
       }

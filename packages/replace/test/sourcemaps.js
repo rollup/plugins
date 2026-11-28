@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 const { getLocator } = require('locate-character');
 // source-map uses the presence of fetch to detect browser environments which
 // breaks in Node 18
@@ -12,6 +12,8 @@ global.fetch = fetch;
 const replace = require('..');
 
 const { getOutputFromGenerated } = require('./helpers/util');
+
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
 
 function verifySourcemap(code, map) {
   return SourceMapConsumer.with(map, null, async (smc) => {
@@ -121,7 +123,11 @@ test('does not generate sourcemaps if disabled in plugin', async () => {
     input: 'main.js',
     onwarn(warning) {
       expect(warning.message).toBe(
-        "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+        rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+          ? "[plugin replace] Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+          : rollupMajor < 2
+          ? "Sourcemap is likely to be incorrect: a plugin ('replace') was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+          : "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },
@@ -149,7 +155,11 @@ test('does not generate sourcemaps if disabled in plugin (camelcase)', async () 
     input: 'main.js',
     onwarn(warning) {
       expect(warning.message).toBe(
-        "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+        rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+          ? "[plugin replace] Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+          : rollupMajor < 2
+          ? "Sourcemap is likely to be incorrect: a plugin ('replace') was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+          : "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },

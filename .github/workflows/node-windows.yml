@@ -50,3 +50,6 @@ jobs:
 
       - name: run tests
         run: pnpm --workspace-concurrency 1 --filter "...[origin/master]" ci:test
+
+      - name: run tests against earliest supported rollup
+        run: pnpm --workspace-concurrency 1 --filter "...[origin/master]" test:earliest

@@ -1,11 +1,13 @@
 const { readFileSync } = require('fs');
 
-const { rollup } = require('rollup');
+const { rollup, VERSION } = require('rollup');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
 const { testBundle } = require('../../../util/test');
 const json = require('..');
+
 // eslint-disable-line import/no-unresolved
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
 const avaAssertions = {
   is(actual, expected) {
     expect(actual).toBe(expected);
@@ -56,22 +58,25 @@ test('generates named exports', async () => {
   expect(result.version).toBe('1.33.7');
   expect(code.indexOf('this-should-be-excluded')).toBe(-1);
 });
-test('generates named exports including arbitrary names', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/arbitrary/main.js',
-    plugins: [
-      json({
-        includeArbitraryNames: true
-      })
-    ]
-  });
-  const { result } = await testBundle(avaAssertions, bundle, {
-    inject: {
-      exports: {}
-    }
-  });
-  expect(result.bar).toBe('baz');
-});
+test.skipIf(rollupMajor < 3 || (rollupMajor === 3 && rollupMinor < 9))(
+  'generates named exports including arbitrary names',
+  async () => {
+    const bundle = await rollup({
+      input: 'fixtures/arbitrary/main.js',
+      plugins: [
+        json({
+          includeArbitraryNames: true
+        })
+      ]
+    });
+    const { result } = await testBundle(avaAssertions, bundle, {
+      inject: {
+        exports: {}
+      }
+    });
+    expect(result.bar).toBe('baz');
+  }
+);
 test('resolves extensionless imports in conjunction with the node-resolve plugin', async () => {
   const bundle = await rollup({
     input: 'fixtures/extensionless/main.js',
@@ -100,8 +105,12 @@ test('handles garbage', async () => {
   }).catch((error) => error);
   expect(err.code).toBe('PLUGIN_ERROR');
   expect(err.plugin).toBe('json');
-  expect(err.message).toBe('Could not parse JSON file');
-  expect(err.name).toBe('RollupError');
+  expect(err.message).toBe(
+    rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 13)
+      ? '[plugin json] fixtures/garbage/bad.json: Could not parse JSON file'
+      : 'Could not parse JSON file'
+  );
+  expect(err.name).toBe(rollupMajor >= 3 ? 'RollupError' : 'Error');
   expect(err.cause.name).toBe('SyntaxError');
   expect(err.id).toMatch(/(.*)bad.json$/);
 });

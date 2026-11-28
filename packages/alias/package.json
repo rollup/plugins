@@ -32,7 +32,8 @@
     "prerelease": "pnpm build",
     "pretest": "pnpm build",
     "release": "pnpm --workspace-root package:release $(pwd)",
-    "test": "vitest --config ../../.config/vitest.config.mts run"
+    "test": "vitest --config ../../.config/vitest.config.mts run",
+    "test:earliest": "pnpm test -- --mode earliest"
   },
   "files": [
     "dist",
@@ -58,7 +59,8 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.0",
     "del-cli": "^5.0.0",
-    "rollup": "^4.0.0",
+    "rollup": "catalog:",
+    "rollup-earliest": "npm:rollup@4.0.0",
     "typescript": "catalog:"
   },
   "types": "./dist/index.d.ts",

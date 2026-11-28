@@ -1,13 +1,24 @@
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
+
 import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
-import { rollup } from 'rollup';
+import { rollup, VERSION } from 'rollup';
+
 import { nodeResolve, DEFAULTS } from 'current-package';
+
 import { evaluateBundle, getCode, getImports, testBundle } from '../../../util/test.js';
 
 const DIRNAME = fileURLToPath(new URL('.', import.meta.url));
+const [rollupMajor, rollupMinor] = VERSION.split('.').map(Number);
 process.chdir(join(DIRNAME, 'fixtures'));
+// the resolveId options gained an "assertions" property in rollup 3 and an "attributes" property in rollup 4
+const expectedResolveIdOptions = (options) =>
+  rollupMajor >= 4
+    ? { attributes: {}, ...options }
+    : rollupMajor >= 3
+    ? { assertions: {}, ...options }
+    : options;
 const avaAssertions = {
   is(actual, expected, message) {
     expect(actual, message).toBe(expected);
@@ -372,9 +383,15 @@ test('ignores deep-import non-modules', async () => {
   const imports = await getImports(bundle);
   expect(imports).toEqual(['foo/deep']);
   expect(warnings.length, 'number of warnings').toBe(1);
-  const [{ exporter, id }] = warnings;
-  expect(exporter, 'exporter').toBe('foo/deep');
-  expect(id.endsWith('deep-import-non-module.js'), 'id').toBe(true);
+  const [{ exporter, id, importer, source }] = warnings;
+  if (rollupMajor >= 3) {
+    expect(exporter, 'exporter').toBe('foo/deep');
+    expect(id.endsWith('deep-import-non-module.js'), 'id').toBe(true);
+  } else {
+    // rollup 2 names the unresolved module "source" and the importing module "importer"
+    expect(source, 'source').toBe('foo/deep');
+    expect(importer, 'importer').toBe('deep-import-non-module.js');
+  }
 });
 test('generates manual chunks', async () => {
   const chunkName = 'mychunk';
@@ -510,6 +527,11 @@ test('marks a module as external if the resolved version is external', async () 
 });
 test('passes on "isEntry" flag and original importee', async () => {
   const resolveOptions = [];
+  // the resolveId options gained an own "importerAttributes" property in rollup 4.57
+  const expectedImporterAttributes = (attributes) =>
+    rollupMajor > 4 || (rollupMajor === 4 && rollupMinor >= 57)
+      ? { importerAttributes: attributes }
+      : {};
   await rollup({
     input: 'entry/main.js',
     onwarn: failOnWarn,
@@ -539,26 +561,26 @@ test('passes on "isEntry" flag and original importee', async () => {
     [
       'other.js',
       'main.js',
-      {
-        attributes: {},
+      expectedResolveIdOptions({
+        ...expectedImporterAttributes(void 0),
         custom: {},
         isEntry: true
-      }
+      })
     ],
     [
       'main.js',
       void 0,
-      {
-        attributes: {},
+      expectedResolveIdOptions({
+        ...expectedImporterAttributes(void 0),
         custom: {},
         isEntry: true
-      }
+      })
     ],
     [
       'other.js',
       'main.js',
-      {
-        attributes: {},
+      expectedResolveIdOptions({
+        ...expectedImporterAttributes(void 0),
         custom: {
           'node-resolve': {
             resolved: {
@@ -569,13 +591,13 @@ test('passes on "isEntry" flag and original importee', async () => {
           }
         },
         isEntry: true
-      }
+      })
     ],
     [
       'main.js',
       void 0,
-      {
-        attributes: {},
+      expectedResolveIdOptions({
+        ...expectedImporterAttributes(void 0),
         custom: {
           'node-resolve': {
             resolved: {
@@ -586,22 +608,22 @@ test('passes on "isEntry" flag and original importee', async () => {
           }
         },
         isEntry: true
-      }
+      })
     ],
     [
       'dep.js',
       'main.js',
-      {
-        attributes: {},
+      expectedResolveIdOptions({
+        ...expectedImporterAttributes({}),
         custom: {},
         isEntry: false
-      }
+      })
     ],
     [
       'dep.js',
       'main.js',
-      {
-        attributes: {},
+      expectedResolveIdOptions({
+        ...expectedImporterAttributes({}),
         custom: {
           'node-resolve': {
             resolved: {
@@ -612,7 +634,7 @@ test('passes on "isEntry" flag and original importee', async () => {
           }
         },
         isEntry: false
-      }
+      })
     ]
   ]);
 });
@@ -648,19 +670,17 @@ test('passes on custom options', async () => {
     [
       'main.js',
       void 0,
-      {
-        attributes: {},
+      expectedResolveIdOptions({
         custom: {
           test: 42
         },
         isEntry: false
-      }
+      })
     ],
     [
       'main.js',
       void 0,
-      {
-        attributes: {},
+      expectedResolveIdOptions({
         custom: {
           test: 42,
           'node-resolve': {
@@ -672,22 +692,20 @@ test('passes on custom options', async () => {
           }
         },
         isEntry: false
-      }
+      })
     ],
     [
       'other.js',
       void 0,
-      {
-        attributes: {},
+      expectedResolveIdOptions({
         custom: {},
         isEntry: true
-      }
+      })
     ],
     [
       'other.js',
       void 0,
-      {
-        attributes: {},
+      expectedResolveIdOptions({
         custom: {
           'node-resolve': {
             resolved: {
@@ -698,7 +716,7 @@ test('passes on custom options', async () => {
           }
         },
         isEntry: true
-      }
+      })
     ]
   ]);
 });
@@ -769,5 +787,8 @@ test('error message for invalid entry', async () => {
     onwarn: failOnWarn,
     plugins: [nodeResolve()]
   }).catch((caught) => caught);
-  expect(error.message).toBe(`Could not resolve entry module "".`);
+  expect(error.message).toBe(
+    // rollup 3 changed the quoting of the entry module in this error message
+    rollupMajor >= 3 ? 'Could not resolve entry module "".' : 'Could not resolve entry module ().'
+  );
 });
