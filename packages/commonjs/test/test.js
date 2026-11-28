@@ -294,6 +294,107 @@ test('import CommonJS module with esm property should get default export ', asyn
   const result2 = await executeBundle(bundle2, avaAssertions);
   expect(result2.error.message).toBe('libExports is not a function');
 });
+test.each([
+  { strictRequires: true, namedExportsForEntries: true },
+  { strictRequires: false, namedExportsForEntries: true },
+  { strictRequires: true, namedExportsForEntries: false },
+  { strictRequires: false, namedExportsForEntries: false }
+])('wrapped entry exports with %o', async ({ strictRequires, namedExportsForEntries }) => {
+  const bundle = await rollup({
+    input: 'main.js',
+    plugins: [
+      loader({
+        'main.js': `
+          globalThis.calls = (globalThis.calls || 0) + 1;
+          exports.default = 42;
+          exports.class = 'reserved';
+          module.exports.answer = globalThis.calls;
+          module.exports.answer += 1;
+          module.exports['dynamic' + globalThis.calls] = 123;
+        `
+      }),
+      commonjs({ strictRequires, namedExportsForEntries })
+    ]
+  });
+  const {
+    output: [chunk]
+  } = await bundle.generate({ format: 'es' });
+  expect(chunk.exports).toEqual(
+    namedExportsForEntries ? ['answer', 'class', 'default'] : ['default']
+  );
+  const { exports, global } = await executeBundle(bundle, avaAssertions, { exports: 'named' });
+  expect(global.calls).toBe(1);
+  expect(exports.default).toEqual({ answer: 2, class: 'reserved', default: 42, dynamic1: 123 });
+  if (namedExportsForEntries) {
+    expect(exports.answer).toBe(exports.default.answer);
+    expect(exports.class).toBe('reserved');
+  }
+});
+
+test('rebuilds wrapped entries with named exports from the Rollup cache', async () => {
+  const modules = { 'main.js': 'exports.answer = 42;' };
+  const options = {
+    input: 'main.js',
+    plugins: [loader(modules), commonjs({ namedExportsForEntries: true })]
+  };
+  let bundle = await rollup(options);
+  const code = await getCodeFromBundle(bundle, { format: 'es' });
+
+  bundle = await rollup({ ...options, cache: bundle.cache });
+  expect(await getCodeFromBundle(bundle, { format: 'es' })).toBe(code);
+
+  modules['main.js'] = 'exports.updated = 43;';
+  bundle = await rollup({ ...options, cache: bundle.cache });
+  const { exports } = await executeBundle(bundle, avaAssertions, { exports: 'named' });
+  expect(exports).toEqual({ default: { updated: 43 }, updated: 43 });
+});
+
+test('keeps accessor exports lazy and excludes computed names from the entry facade', async () => {
+  const bundle = await rollup({
+    input: 'main.js',
+    plugins: [
+      loader({
+        'main.js': `
+          exports.lazy = undefined;
+          Object.defineProperty(exports, 'lazy', { get() { throw new Error('lazy getter'); } });
+          exports.indirect = 0;
+          const key = 'indirect';
+          Object.defineProperty(module.exports, key, { get() { throw new Error('indirect getter'); } });
+          exports.data = 1;
+          Object.defineProperty(exports, 'data', { value: 2 });
+          exports['not-an-identifier'] = 3;
+        `
+      }),
+      commonjs({ namedExportsForEntries: true })
+    ]
+  });
+  const {
+    output: [chunk]
+  } = await bundle.generate({ format: 'es' });
+  expect(chunk.exports).toEqual(['data', 'default', 'indirect']);
+  const result = await executeBundle(bundle, avaAssertions, { exports: 'named' });
+  expect(result.error).toBeUndefined();
+  expect(result.exports.data).toBe(2);
+  expect(result.exports.indirect).toBeUndefined();
+  expect(result.exports.default['not-an-identifier']).toBe(3);
+  expect(() => result.exports.default.lazy).toThrow('lazy getter');
+  expect(() => result.exports.default.indirect).toThrow('indirect getter');
+});
+
+test('allows wrapped entries to replace their exports after assigning properties', async () => {
+  const bundle = await rollup({
+    input: 'main.js',
+    plugins: [
+      loader({ 'main.js': 'exports.toString = () => "initial"; module.exports = null;' }),
+      commonjs({ namedExportsForEntries: true })
+    ]
+  });
+  const result = await executeBundle(bundle, avaAssertions, { exports: 'named' });
+  expect(result.error).toBeUndefined();
+  expect(result.exports.default).toBe(null);
+  expect(result.exports.toString).toBeUndefined();
+});
+
 test('identifies named exports from object literals', async () => {
   const bundle = await rollup({
     input: 'fixtures/samples/named-exports-from-object-literal/main.js',

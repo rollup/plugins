@@ -1,4 +1,4 @@
-import { HELPERS_ID, IS_WRAPPED_COMMONJS } from './helpers';
+import { ES_IMPORT_SUFFIX, HELPERS_ID, IS_WRAPPED_COMMONJS, wrapId } from './helpers';
 import { capitalize, getName } from './utils';
 
 export function getUnknownRequireProxy(id, requireReturnsDefault) {
@@ -44,24 +44,36 @@ export async function getStaticRequireProxy(id, requireReturnsDefault, loadModul
   return `export { default } from ${JSON.stringify(id)};`;
 }
 
-export function getEntryProxy(id, defaultIsModuleExports, getModuleInfo, shebang) {
-  const {
-    meta: { commonjs: commonjsMeta },
-    hasDefaultExport
-  } = getModuleInfo(id);
-  if (!commonjsMeta || commonjsMeta.isCommonJS !== IS_WRAPPED_COMMONJS) {
-    const stringifiedId = JSON.stringify(id);
-    let code = `export * from ${stringifiedId};`;
-    if (hasDefaultExport) {
-      code += `export { default } from ${stringifiedId};`;
-    }
-    return shebang + code;
+export function getEntryProxy(id, defaultIsModuleExports, moduleInfo, namedExportsForEntries) {
+  const { commonjs } = moduleInfo.meta;
+  const shebang = commonjs?.shebang ?? '';
+  const usesRequireWrapper = commonjs?.isCommonJS === IS_WRAPPED_COMMONJS;
+  const names = (namedExportsForEntries && commonjs?.entryExportNames) || [];
+  if (usesRequireWrapper && !names.length) {
+    const result = getEsImportProxy(id, defaultIsModuleExports, true);
+    return { ...result, code: shebang + result.code };
   }
-  const result = getEsImportProxy(id, defaultIsModuleExports, true);
-  return {
-    ...result,
-    code: shebang + result.code
-  };
+
+  // A wrapped module exposes its exports object through the ES import proxy.
+  const source = JSON.stringify(usesRequireWrapper ? wrapId(id, ES_IMPORT_SUFFIX) : id);
+  let code = `${shebang}export * from ${source};`;
+  if (usesRequireWrapper || moduleInfo.hasDefaultExport) {
+    code += `export { default } from ${source};`;
+  }
+  if (names.length) {
+    code += `
+import { __moduleExports as entry } from ${source};
+function getEntryExport(name) {
+  var descriptor = entry == null ? undefined : Object.getOwnPropertyDescriptor(entry, name);
+  return descriptor && descriptor.value;
+}`;
+    for (const name of names) {
+      code += `
+var named_${name} = /*@__PURE__*/getEntryExport(${JSON.stringify(name)});
+export { named_${name} as ${name} };`;
+    }
+  }
+  return code;
 }
 
 export function getEsImportProxy(id, defaultIsModuleExports, moduleSideEffects) {

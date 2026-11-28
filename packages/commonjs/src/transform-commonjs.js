@@ -8,7 +8,7 @@ import MagicString from 'magic-string';
 
 import {
   getKeypath,
-  getDefineCompiledEsmType,
+  getDefinedExport,
   isFalsy,
   isReference,
   isShorthandProperty,
@@ -100,6 +100,7 @@ export default async function transformCommonjs(
   const moduleExportsAssignments = [];
   let firstTopLevelModuleExportsAssignment = null;
   const exportsAssignmentsByName = new Map();
+  const accessorExports = new Set();
   const topLevelAssignments = new Set();
   const topLevelDefineCompiledEsmExpressions = [];
   const replacedGlobal = [];
@@ -184,7 +185,18 @@ export default async function transformCommonjs(
           }
           return;
         case 'CallExpression': {
-          const defineCompiledEsmType = getDefineCompiledEsmType(node);
+          const definedExport = getDefinedExport(node);
+          if (
+            definedExport?.isAccessor &&
+            !scope.contains('Object') &&
+            !scope.contains(definedExport.target)
+          ) {
+            accessorExports.add(definedExport.name);
+          }
+          const defineCompiledEsmType =
+            definedExport?.name === KEY_COMPILED_ESM &&
+            isTruthy(definedExport.value) &&
+            definedExport.target;
           if (defineCompiledEsmType) {
             if (programDepth === 3 && parent.type === 'ExpressionStatement') {
               // skip special handling for [module.]exports until we know we render this
@@ -592,6 +604,18 @@ function ${requireName} () {
     code: magicString.toString(),
     map: sourceMap ? magicString.generateMap() : null,
     syntheticNamedExports: isEsModule || usesRequireWrapper ? false : '__moduleExports',
-    meta: { commonjs: { ...commonjsMeta, shebang } }
+    meta: {
+      commonjs: {
+        ...commonjsMeta,
+        shebang,
+        entryExportNames:
+          usesRequireWrapper || shouldWrap
+            ? [...exportsAssignmentsByName.keys()].filter(
+                (name) =>
+                  name !== 'default' && name !== '__moduleExports' && !accessorExports.has(name)
+              )
+            : null
+      }
+    }
   };
 }

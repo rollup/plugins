@@ -74,53 +74,24 @@ export function getKeypath(node) {
 
 export const KEY_COMPILED_ESM = '__esModule';
 
-export function getDefineCompiledEsmType(node) {
-  const definedPropertyWithExports = getDefinePropertyCallName(node, 'exports');
-  const definedProperty =
-    definedPropertyWithExports || getDefinePropertyCallName(node, 'module.exports');
-  if (definedProperty && definedProperty.key === KEY_COMPILED_ESM) {
-    return isTruthy(definedProperty.value)
-      ? definedPropertyWithExports
-        ? 'exports'
-        : 'module'
-      : false;
+export function getDefinedExport(node) {
+  if (node.arguments.length !== 3 || getKeypath(node.callee)?.keypath !== 'Object.defineProperty') {
+    return null;
   }
-  return false;
-}
-
-function getDefinePropertyCallName(node, targetName) {
-  const {
-    callee: { object, property }
-  } = node;
-  if (!object || object.type !== 'Identifier' || object.name !== 'Object') return;
-  if (!property || property.type !== 'Identifier' || property.name !== 'defineProperty') return;
-  if (node.arguments.length !== 3) return;
-
-  const targetNames = targetName.split('.');
-  const [target, key, value] = node.arguments;
-  if (targetNames.length === 1) {
-    if (target.type !== 'Identifier' || target.name !== targetNames[0]) {
-      return;
-    }
+  const [target, propertyName, descriptor] = node.arguments;
+  const targetPath = getKeypath(target);
+  if (
+    (targetPath?.keypath !== 'exports' && targetPath?.keypath !== 'module.exports') ||
+    descriptor.type !== 'ObjectExpression' ||
+    typeof propertyName.value !== 'string'
+  ) {
+    return null;
   }
-
-  if (targetNames.length === 2) {
-    if (
-      target.type !== 'MemberExpression' ||
-      target.object.name !== targetNames[0] ||
-      target.property.name !== targetNames[1]
-    ) {
-      return;
-    }
-  }
-
-  if (value.type !== 'ObjectExpression' || !value.properties) return;
-
-  const valueProperty = value.properties.find((p) => p.key && p.key.name === 'value');
-  if (!valueProperty || !valueProperty.value) return;
-
-  // eslint-disable-next-line consistent-return
-  return { key: key.value, value: valueProperty.value };
+  const value = descriptor.properties.find((property) => property.key?.name === 'value');
+  const isAccessor = descriptor.properties.some(({ key, computed }) =>
+    ['get', 'set'].includes(computed ? key?.value : key?.name ?? key?.value)
+  );
+  return { name: propertyName.value, target: targetPath.name, value: value?.value, isAccessor };
 }
 
 export function isShorthandProperty(parent) {

@@ -99,6 +99,12 @@ interface RollupCommonJSOptions {
    */
   strictRequires?: boolean | FilterPattern;
   /**
+   * Expose statically detected property assignments as named exports of wrapped
+   * CommonJS entry points in the generated bundle.
+   * @default false
+   */
+  namedExportsForEntries?: boolean;
+  /**
    * Sometimes you have to leave require statements unconverted. Pass an array
    * containing the IDs or a `id => boolean` function.
    * @default []
