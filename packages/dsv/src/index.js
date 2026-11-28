@@ -6,10 +6,11 @@ import { createFilter } from '@rollup/pluginutils';
 import stripBom from 'strip-bom';
 
 const parsers = { '.csv': csvParse, '.tsv': tsvParse };
+// Rollup 5 appends encoded import attributes to the id as a query
 const idFilter = new RegExp(
   `\\.(?:${Object.keys(parsers)
     .map((ext) => ext.slice(1))
-    .join('|')})$`
+    .join('|')})(?:$|\\?)`
 );
 
 export default function dsv(options = {}) {
@@ -22,16 +23,17 @@ export default function dsv(options = {}) {
       filter: {
         id: idFilter
       },
-      handler(code, id) {
-        if (!filter(id)) return null;
+      handler(code, id, transformOptions) {
+        const rawId = (transformOptions && transformOptions.rawId) || id;
+        if (!filter(rawId)) return null;
 
-        const ext = extname(id);
+        const ext = extname(rawId);
         if (!(ext in parsers)) return null;
 
         let rows = parsers[ext](stripBom(code));
 
         if (options.processRow) {
-          rows = rows.map((row) => options.processRow(row, id) || row);
+          rows = rows.map((row) => options.processRow(row, rawId) || row);
         }
 
         return {

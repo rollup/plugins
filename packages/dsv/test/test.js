@@ -78,3 +78,21 @@ test('uses a custom processor with id', async () => {
   });
   return testBundle(bundle);
 });
+
+test('converts csv files imported with import attributes', async () => {
+  let processedId;
+  const bundle = await rollup({
+    input: 'fixtures/basic-csv/main-with-type.js',
+    plugins: [
+      dsv({
+        include: '**/*.csv',
+        exclude: /attributes/,
+        processRow(row, rowId) {
+          processedId = rowId;
+        }
+      })
+    ]
+  });
+  await testBundle(bundle);
+  expect(processedId).toMatch(/fruit\.csv$/);
+});
