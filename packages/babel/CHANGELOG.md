@@ -1,5 +1,13 @@
 # @rollup/plugin-babel ChangeLog
 
+## v7.2.0
+
+_2026-11-28_
+
+### Features
+
+- babel: support rollup 5 ([#2039](https://github.com/rollup/plugins/issues/2039))
+
 ## v7.1.0
 
 _2026-05-29_
