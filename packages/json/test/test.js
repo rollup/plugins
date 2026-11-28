@@ -100,7 +100,7 @@ test('handles garbage', async () => {
   }).catch((error) => error);
   expect(err.code).toBe('PLUGIN_ERROR');
   expect(err.plugin).toBe('json');
-  expect(err.message).toBe('Could not parse JSON file');
+  expect(err.message).toBe('[plugin json] fixtures/garbage/bad.json: Could not parse JSON file');
   expect(err.name).toBe('RollupError');
   expect(err.cause.name).toBe('SyntaxError');
   expect(err.id).toMatch(/(.*)bad.json$/);
@@ -161,4 +161,34 @@ test('handles empty keys', async () => {
   expect(json().transform(`{"":"a", "b": "c"}`, 'input.json').code).toEqual(
     'export var b = "c";\nexport default {\n\t"": "a",\n\tb: b\n};\n'
   );
+});
+test('converts json imported with import attributes', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/with-type/main.js',
+    plugins: [json()]
+  });
+  expect.assertions(1);
+  return testBundle(avaAssertions, bundle);
+});
+test('handles transform options without rawId as passed by Rollup 4', async () => {
+  expect(json().transform(`{"a":"b"}`, 'input.json', { attributes: {} }).code).toEqual(
+    'export var a = "b";\nexport default {\n\ta: a\n};\n'
+  );
+});
+const idWithJsonAttributes = `input.json?attributes=${encodeURIComponent(
+  JSON.stringify({ type: 'json' })
+)}`;
+test('includes json files with import attributes', async () => {
+  expect(
+    json({ include: /\.json$/ }).transform(`{"a":"b"}`, idWithJsonAttributes, {
+      rawId: 'input.json'
+    }).code
+  ).toEqual('export var a = "b";\nexport default {\n\ta: a\n};\n');
+});
+test('applies exclude patterns to the raw id instead of the encoded id', async () => {
+  expect(
+    json({ exclude: /attributes/ }).transform(`{"a":"b"}`, idWithJsonAttributes, {
+      rawId: 'input.json'
+    }).code
+  ).toEqual('export var a = "b";\nexport default {\n\ta: a\n};\n');
 });
