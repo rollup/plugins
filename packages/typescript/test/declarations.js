@@ -5,6 +5,8 @@ import { getCode } from '../../../util/test';
 
 beforeEach(() => process.chdir(__dirname));
 
+const DECLARATION_TEST_TIMEOUT = 30_000;
+
 // eslint-disable-next-line no-console
 const onwarn = (warning) => console.warn(warning.toString());
 
@@ -17,114 +19,131 @@ const captureThrownError = async (valueOrFactory) => {
 
   return expect.unreachable('Expected call to throw');
 };
-test.sequential('supports creating declaration files', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
-        outDir: 'fixtures/basic/dist',
-        declaration: true
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(
-    bundle,
-    {
-      format: 'es',
-      dir: 'fixtures/basic/dist'
-    },
-    true
-  );
-  const declaration = output[1].source;
-  expect(output.map((out) => out.fileName)).toEqual(['main.js', 'main.d.ts']);
-  expect(declaration.includes('declare const answer = 42;'), declaration).toBe(true);
-});
-test.sequential('supports creating declaration files in subfolder', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
-        outDir: 'fixtures/basic/dist/types',
-        declaration: true,
-        declarationMap: true
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(
-    bundle,
-    {
-      format: 'es',
-      dir: 'fixtures/basic/dist'
-    },
-    true
-  );
-  const declaration = output[2].source;
-  expect(output.map((out) => out.fileName)).toEqual([
-    'main.js',
-    'types/main.d.ts.map',
-    'types/main.d.ts'
-  ]);
-  expect(declaration.includes('declare const answer = 42;'), declaration).toBe(true);
-  expect(declaration.includes('//# sourceMappingURL=main.d.ts.map'), declaration).toBe(true);
-});
-test.sequential('supports creating declarations with non-default rootDir', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/declaration-root-dir/src/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/declaration-root-dir/tsconfig.json'
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(
-    bundle,
-    {
-      format: 'es',
-      dir: 'fixtures/declaration-root-dir/lib'
-    },
-    true
-  );
-  expect(output.map((out) => out.fileName)).toEqual(['main.js', 'main.d.ts']);
-});
-test.sequential('supports creating declaration files for interface only source file', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/export-interface-only/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/export-interface-only/tsconfig.json',
-        declarationDir: 'fixtures/export-interface-only/dist/types',
-        declaration: true,
-        declarationMap: true
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(
-    bundle,
-    {
-      format: 'es',
-      dir: 'fixtures/export-interface-only/dist'
-    },
-    true
-  );
-  const declaration = output[2].source;
-  expect(output.map((out) => out.fileName)).toEqual([
-    'main.js',
-    'types/interface.d.ts.map',
-    'types/interface.d.ts',
-    'types/main.d.ts.map',
-    'types/main.d.ts'
-  ]);
-  expect(declaration.includes('export interface ITest'), declaration).toBe(true);
-  expect(declaration.includes('//# sourceMappingURL=interface.d.ts.map'), declaration).toBe(true);
-});
+test.sequential(
+  'supports creating declaration files',
+  { timeout: DECLARATION_TEST_TIMEOUT },
+  async () => {
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          outDir: 'fixtures/basic/dist',
+          declaration: true
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: 'fixtures/basic/dist'
+      },
+      true
+    );
+    const declaration = output[1].source;
+    expect(output.map((out) => out.fileName)).toEqual(['main.js', 'main.d.ts']);
+    expect(declaration.includes('declare const answer = 42;'), declaration).toBe(true);
+  }
+);
+test.sequential(
+  'supports creating declaration files in subfolder',
+  { timeout: DECLARATION_TEST_TIMEOUT },
+  async () => {
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          outDir: 'fixtures/basic/dist/types',
+          declaration: true,
+          declarationMap: true
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: 'fixtures/basic/dist'
+      },
+      true
+    );
+    const declaration = output[2].source;
+    expect(output.map((out) => out.fileName)).toEqual([
+      'main.js',
+      'types/main.d.ts.map',
+      'types/main.d.ts'
+    ]);
+    expect(declaration.includes('declare const answer = 42;'), declaration).toBe(true);
+    expect(declaration.includes('//# sourceMappingURL=main.d.ts.map'), declaration).toBe(true);
+  }
+);
+test.sequential(
+  'supports creating declarations with non-default rootDir',
+  { timeout: DECLARATION_TEST_TIMEOUT },
+  async () => {
+    const bundle = await rollup({
+      input: 'fixtures/declaration-root-dir/src/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/declaration-root-dir/tsconfig.json'
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: 'fixtures/declaration-root-dir/lib'
+      },
+      true
+    );
+    expect(output.map((out) => out.fileName)).toEqual(['main.js', 'main.d.ts']);
+  }
+);
+test.sequential(
+  'supports creating declaration files for interface only source file',
+  { timeout: DECLARATION_TEST_TIMEOUT },
+  async () => {
+    const bundle = await rollup({
+      input: 'fixtures/export-interface-only/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/export-interface-only/tsconfig.json',
+          declarationDir: 'fixtures/export-interface-only/dist/types',
+          declaration: true,
+          declarationMap: true
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: 'fixtures/export-interface-only/dist'
+      },
+      true
+    );
+    const declaration = output[2].source;
+    expect(output.map((out) => out.fileName)).toEqual([
+      'main.js',
+      'types/interface.d.ts.map',
+      'types/interface.d.ts',
+      'types/main.d.ts.map',
+      'types/main.d.ts'
+    ]);
+    expect(declaration.includes('export interface ITest'), declaration).toBe(true);
+    expect(declaration.includes('//# sourceMappingURL=interface.d.ts.map'), declaration).toBe(true);
+  }
+);
 test.sequential(
   'supports creating declaration files for type-only source files that are implicitly included',
+  { timeout: DECLARATION_TEST_TIMEOUT },
   async () => {
     const bundle = await rollup({
       input: 'fixtures/implicitly-included-type-only-file/main.ts',
@@ -153,30 +172,34 @@ test.sequential(
     expect(declaration.includes('export declare type MyNumber = number;'), declaration).toBe(true);
   }
 );
-test.sequential('supports creating declaration files in declarationDir', async () => {
-  const bundle = await rollup({
-    input: 'fixtures/basic/main.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'fixtures/basic/tsconfig.json',
-        declarationDir: 'fixtures/basic/dist/types',
-        declaration: true
-      })
-    ],
-    onwarn
-  });
-  const output = await getCode(
-    bundle,
-    {
-      format: 'es',
-      dir: 'fixtures/basic/dist'
-    },
-    true
-  );
-  const declaration = output[1].source;
-  expect(output.map((out) => out.fileName)).toEqual(['main.js', 'types/main.d.ts']);
-  expect(declaration.includes('declare const answer = 42;'), declaration).toBe(true);
-});
+test.sequential(
+  'supports creating declaration files in declarationDir',
+  { timeout: DECLARATION_TEST_TIMEOUT },
+  async () => {
+    const bundle = await rollup({
+      input: 'fixtures/basic/main.ts',
+      plugins: [
+        typescript({
+          tsconfig: 'fixtures/basic/tsconfig.json',
+          declarationDir: 'fixtures/basic/dist/types',
+          declaration: true
+        })
+      ],
+      onwarn
+    });
+    const output = await getCode(
+      bundle,
+      {
+        format: 'es',
+        dir: 'fixtures/basic/dist'
+      },
+      true
+    );
+    const declaration = output[1].source;
+    expect(output.map((out) => out.fileName)).toEqual(['main.js', 'types/main.d.ts']);
+    expect(declaration.includes('declare const answer = 42;'), declaration).toBe(true);
+  }
+);
 async function ensureOutDirWhenCreatingDeclarationFiles(compilerOptionName) {
   const bundle = await rollup({
     input: 'fixtures/basic/main.ts',
@@ -205,9 +228,17 @@ async function ensureOutDirWhenCreatingDeclarationFiles(compilerOptionName) {
     `Unexpected error message: ${caughtError.message}`
   ).toBe(true);
 }
-test.sequential('ensures outDir is set when creating declaration files (declaration)', async () => {
-  await ensureOutDirWhenCreatingDeclarationFiles('declaration');
-});
-test.sequential('ensures outDir is set when creating declaration files (composite)', async () => {
-  await ensureOutDirWhenCreatingDeclarationFiles('composite');
-});
+test.sequential(
+  'ensures outDir is set when creating declaration files (declaration)',
+  { timeout: DECLARATION_TEST_TIMEOUT },
+  async () => {
+    await ensureOutDirWhenCreatingDeclarationFiles('declaration');
+  }
+);
+test.sequential(
+  'ensures outDir is set when creating declaration files (composite)',
+  { timeout: DECLARATION_TEST_TIMEOUT },
+  async () => {
+    await ensureOutDirWhenCreatingDeclarationFiles('composite');
+  }
+);

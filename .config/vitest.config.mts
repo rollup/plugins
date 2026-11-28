@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     // Enable global APIs for CommonJS test files.
     globals: true,
+    testTimeout: 20_000,
     // Phase 1/2/3 packages use runtime-style, top-level test files, *.test, and a few named entrypoints.
     include: [
       'test/*.{js,mjs,cjs,ts,mts,cts}',

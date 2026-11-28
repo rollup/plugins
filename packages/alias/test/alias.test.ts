@@ -414,11 +414,27 @@ describe('plugin-alias', () => {
       ]
     );
     expect(resolverCalls).toEqual([
-      ['entry-point', '/src/importer.js', { attributes: {}, custom: void 0, isEntry: true }],
+      [
+        'entry-point',
+        '/src/importer.js',
+        {
+          attributes: {},
+          custom: void 0,
+          importerAttributes: {},
+          importerRawId: '/src/importer.js',
+          isEntry: true
+        }
+      ],
       [
         'non-entry-point',
         '/src/importer.js',
-        { attributes: {}, custom: { test: 42 }, isEntry: false }
+        {
+          attributes: {},
+          custom: { test: 42 },
+          importerAttributes: {},
+          importerRawId: '/src/importer.js',
+          isEntry: false
+        }
       ]
     ]);
     expect(result).toEqual(['entry-point', 'non-entry-point']);
@@ -451,11 +467,27 @@ describe('plugin-alias', () => {
       ]
     );
     expect(resolverCalls).toEqual([
-      ['entry-point', '/src/importer.js', { attributes: {}, custom: void 0, isEntry: true }],
+      [
+        'entry-point',
+        '/src/importer.js',
+        {
+          attributes: {},
+          custom: void 0,
+          importerAttributes: {},
+          importerRawId: '/src/importer.js',
+          isEntry: true
+        }
+      ],
       [
         'non-entry-point',
         '/src/importer.js',
-        { attributes: {}, custom: { test: 42 }, isEntry: false }
+        {
+          attributes: {},
+          custom: { test: 42 },
+          importerAttributes: {},
+          importerRawId: '/src/importer.js',
+          isEntry: false
+        }
       ]
     ]);
     expect(result).toEqual(['entry-point', 'non-entry-point']);

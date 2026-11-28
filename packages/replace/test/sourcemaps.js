@@ -121,7 +121,7 @@ test('does not generate sourcemaps if disabled in plugin', async () => {
     input: 'main.js',
     onwarn(warning) {
       expect(warning.message).toBe(
-        "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+        "[plugin replace] Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },
@@ -149,7 +149,7 @@ test('does not generate sourcemaps if disabled in plugin (camelcase)', async () 
     input: 'main.js',
     onwarn(warning) {
       expect(warning.message).toBe(
-        "Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
+        "[plugin replace] Sourcemap is likely to be incorrect: a plugin (replace) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help"
       );
       warned = true;
     },
