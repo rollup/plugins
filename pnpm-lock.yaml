@@ -791,17 +791,17 @@ importers:
     dependencies:
       '@rollup/pluginutils':
         specifier: ^5.0.2
-        version: 5.0.4(rollup@4.0.0-24)
+        version: 5.0.4(rollup@5.0.0-3)
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@5.0.0-3)(tslib@2.4.0)(typescript@4.8.4)
       del-cli:
         specifier: ^5.0.0
         version: 5.0.0
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-3
       source-map:
         specifier: ^0.7.4
         version: 0.7.4
@@ -6650,6 +6650,15 @@ snapshots:
       rollup: 4.0.0-24
       tslib: 2.4.0
 
+  '@rollup/plugin-typescript@9.0.1(rollup@5.0.0-3)(tslib@2.4.0)(typescript@4.8.4)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      resolve: 1.22.1
+      typescript: 4.8.4
+    optionalDependencies:
+      rollup: 5.0.0-3
+      tslib: 2.4.0
+
   '@rollup/plugin-typescript@9.0.1(tslib@2.4.0)(typescript@5.9.3)':
     dependencies:
       '@rollup/pluginutils': 4.2.1
@@ -6683,13 +6692,13 @@ snapshots:
     optionalDependencies:
       rollup: 5.0.0-3
 
-  '@rollup/pluginutils@5.0.4(rollup@4.0.0-24)':
+  '@rollup/pluginutils@5.0.4(rollup@5.0.0-3)':
     dependencies:
       '@types/estree': 1.0.0
       estree-walker: 2.0.2
       picomatch: 2.3.1
     optionalDependencies:
-      rollup: 4.0.0-24
+      rollup: 5.0.0-3
 
   '@rollup/pluginutils@5.1.0(rollup@4.0.0-24)':
     dependencies:
