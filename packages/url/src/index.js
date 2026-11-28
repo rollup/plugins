@@ -27,44 +27,47 @@ export default function url(options = {}) {
 
   return {
     name: 'url',
-    load(id) {
-      if (!filter(id)) {
+    load(id, loadOptions) {
+      const rawId = (loadOptions && loadOptions.rawId) || id;
+      if (!filter(rawId)) {
         return null;
       }
-      this.addWatchFile(id);
-      return Promise.all([fsStatPromise(id), fsReadFilePromise(id)]).then(([stats, buffer]) => {
-        let data;
-        if ((limit && stats.size > limit) || limit === 0) {
-          const hash = crypto.createHash('sha1').update(buffer).digest('hex').substr(0, 16);
-          const ext = path.extname(id);
-          const name = path.basename(id, ext);
-          // Determine the directory name of the file based
-          // on either the relative path provided in options,
-          // or the parent directory
-          const relativeDir = options.sourceDir
-            ? path.relative(options.sourceDir, path.dirname(id))
-            : path.dirname(id).split(sep).pop();
+      this.addWatchFile(rawId);
+      return Promise.all([fsStatPromise(rawId), fsReadFilePromise(rawId)]).then(
+        ([stats, buffer]) => {
+          let data;
+          if ((limit && stats.size > limit) || limit === 0) {
+            const hash = crypto.createHash('sha1').update(buffer).digest('hex').substr(0, 16);
+            const ext = path.extname(rawId);
+            const name = path.basename(rawId, ext);
+            // Determine the directory name of the file based
+            // on either the relative path provided in options,
+            // or the parent directory
+            const relativeDir = options.sourceDir
+              ? path.relative(options.sourceDir, path.dirname(rawId))
+              : path.dirname(rawId).split(sep).pop();
 
-          // Generate the output file name based on some string
-          // replacement parameters
-          const outputFileName = fileName
-            .replace(/\[hash\]/g, hash)
-            .replace(/\[extname\]/g, ext)
-            // use `sep` for windows environments
-            .replace(/\[dirname\]/g, relativeDir === '' ? '' : `${relativeDir}${sep}`)
-            .replace(/\[name\]/g, name);
-          // Windows fix - exports must be in unix format
-          data = `${publicPath}${outputFileName.split(sep).join(posix.sep)}`;
-          copies[id] = outputFileName;
-        } else {
-          const mimetype = mime.getType(id);
-          const isSVG = mimetype === 'image/svg+xml';
-          data = isSVG ? encodeSVG(buffer) : buffer.toString('base64');
-          const encoding = isSVG ? '' : ';base64';
-          data = `data:${mimetype}${encoding},${data}`;
+            // Generate the output file name based on some string
+            // replacement parameters
+            const outputFileName = fileName
+              .replace(/\[hash\]/g, hash)
+              .replace(/\[extname\]/g, ext)
+              // use `sep` for windows environments
+              .replace(/\[dirname\]/g, relativeDir === '' ? '' : `${relativeDir}${sep}`)
+              .replace(/\[name\]/g, name);
+            // Windows fix - exports must be in unix format
+            data = `${publicPath}${outputFileName.split(sep).join(posix.sep)}`;
+            copies[rawId] = outputFileName;
+          } else {
+            const mimetype = mime.getType(rawId);
+            const isSVG = mimetype === 'image/svg+xml';
+            data = isSVG ? encodeSVG(buffer) : buffer.toString('base64');
+            const encoding = isSVG ? '' : ';base64';
+            data = `data:${mimetype}${encoding},${data}`;
+          }
+          return `export default "${data}"`;
         }
-        return `export default "${data}"`;
-      });
+      );
     },
     generateBundle: async function write(outputOptions) {
       // Allow skipping saving files for server side builds.

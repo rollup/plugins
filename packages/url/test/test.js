@@ -158,3 +158,34 @@ test.sequential('copy the file according to destDir option', async () => {
     destDir: join(__dirname, 'output/dest')
   });
 });
+test.sequential('inline files imported with import attributes', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/png-with-type.js',
+    plugins: [url({ emitFiles: false, include: '**/*.png', exclude: /attributes/ })]
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+  expect(output[0].code).toContain('data:image/png;base64,');
+});
+test.sequential('copy files imported with import attributes', async () => {
+  const bundle = await rollup({
+    input: 'fixtures/png-with-type.js',
+    plugins: [
+      url({
+        limit: 0,
+        emitFiles: true,
+        fileName: '[dirname][name][extname]',
+        include: '**/*.png',
+        exclude: /attributes/
+      })
+    ]
+  });
+  await bundle.write({
+    format: 'es',
+    file: outputFile
+  });
+  const code = readFileSync(outputFile, 'utf-8');
+  expect(code).toContain('fixtures/png.png');
+  expect(await globby(join(outputDir, '**/*.png').split(sep).join(posix.sep))).toEqual([
+    'output/fixtures/png.png'
+  ]);
+});
