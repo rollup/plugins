@@ -398,13 +398,13 @@ importers:
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^9.0.1
-        version: 9.0.1(rollup@4.0.0-24)(tslib@2.4.0)(typescript@4.8.4)
+        version: 9.0.1(rollup@5.0.0-3)(tslib@2.4.0)(typescript@4.8.4)
       postcss:
         specifier: ^8.4.16
         version: 8.4.17
       rollup:
-        specifier: ^4.0.0-24
-        version: 4.0.0-24
+        specifier: catalog:rollup-next
+        version: 5.0.0-3
       rollup-plugin-postcss:
         specifier: ^4.0.2
         version: 4.0.2(postcss@8.4.17)(ts-node@10.9.1(@swc/core@1.3.78)(@types/node@20.19.23)(typescript@4.8.4))
@@ -6648,6 +6648,15 @@ snapshots:
       typescript: 4.8.4
     optionalDependencies:
       rollup: 4.0.0-24
+      tslib: 2.4.0
+
+  '@rollup/plugin-typescript@9.0.1(rollup@5.0.0-3)(tslib@2.4.0)(typescript@4.8.4)':
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      resolve: 1.22.1
+      typescript: 4.8.4
+    optionalDependencies:
+      rollup: 5.0.0-3
       tslib: 2.4.0
 
   '@rollup/plugin-typescript@9.0.1(tslib@2.4.0)(typescript@5.9.3)':
